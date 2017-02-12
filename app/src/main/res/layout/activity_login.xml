@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_login"
     android:layout_width="match_parent"
@@ -11,4 +12,45 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.liamd.giggity_app.LoginActivity">
 
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textPassword"
+        android:ems="10"
+        android:id="@+id/passwordEditText"
+        android:hint="Password"
+        android:layout_below="@+id/emailEditText"
+        android:layout_alignStart="@+id/emailEditText"
+        android:layout_alignEnd="@+id/emailEditText"/>
+
+    <Button
+        android:text="Login"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/loginButton"
+        android:background="@color/colorPrimary"
+        android:textColor="@color/common_google_signin_btn_text_dark_default"
+        android:layout_below="@+id/passwordEditText"
+        android:layout_alignEnd="@+id/passwordEditText"
+        android:layout_alignStart="@+id/passwordEditText"/>
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textEmailAddress"
+        android:ems="10"
+        android:id="@+id/emailEditText"
+        android:hint="Email"
+        android:layout_below="@+id/imageView10"
+        android:layout_alignStart="@+id/imageView10"
+        android:layout_alignEnd="@+id/imageView10"/>
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:srcCompat="@drawable/logolarge"
+        android:id="@+id/imageView10"
+        android:layout_marginTop="38dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"/>
 </RelativeLayout>
