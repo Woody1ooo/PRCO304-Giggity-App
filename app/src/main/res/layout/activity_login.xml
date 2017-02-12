@@ -41,16 +41,25 @@
         android:ems="10"
         android:id="@+id/emailEditText"
         android:hint="Email"
-        android:layout_below="@+id/imageView10"
-        android:layout_alignStart="@+id/imageView10"
-        android:layout_alignEnd="@+id/imageView10"/>
+        android:layout_below="@+id/logoImageView"
+        android:layout_alignStart="@+id/logoImageView"
+        android:layout_alignEnd="@+id/logoImageView"/>
 
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:srcCompat="@drawable/logolarge"
-        android:id="@+id/imageView10"
+        android:id="@+id/logoImageView"
         android:layout_marginTop="38dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"/>
+
+    <com.google.android.gms.common.SignInButton
+        android:id="@+id/googleButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/loginButton"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"/>
+
 </RelativeLayout>
