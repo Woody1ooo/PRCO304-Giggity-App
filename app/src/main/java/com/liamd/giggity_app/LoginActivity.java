@@ -71,7 +71,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 if(user != null)
                 {
                     // User is already signed in, therefore go straight to the homepage
-                    LoadHomeActivity();
+                    LoadMainActivity();
                 }
             }
         };
@@ -267,7 +267,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                             mProgressDialog.hide();
                             Toast.makeText(LoginActivity.this, "Gmail sign in successful!",
                                     Toast.LENGTH_SHORT).show();
-                            LoadHomeActivity();
+                            LoadMainActivity();
                         }
 
                         else
@@ -304,7 +304,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                             mProgressDialog.hide();
                             Toast.makeText(LoginActivity.this, "Facebook sign in successful!",
                                     Toast.LENGTH_SHORT).show();
-                            LoadHomeActivity();
+                            LoadMainActivity();
                         }
 
                         // If sign in to Firebase fails, a toast displays to that effect
@@ -329,10 +329,10 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     }
 
     // Method to load the home activity. Only called if the user is signed in.
-    private void LoadHomeActivity()
+    private void LoadMainActivity()
     {
         finish();
-        Intent intent = new Intent(this, HomeActivity.class);
+        Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
     }
 }
