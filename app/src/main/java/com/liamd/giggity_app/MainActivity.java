@@ -3,9 +3,6 @@ package com.liamd.giggity_app;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -19,7 +16,6 @@ import android.widget.TextView;
 
 import com.facebook.login.LoginManager;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.squareup.picasso.Picasso;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener
@@ -35,17 +31,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View view)
-            {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -54,6 +39,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        // Sets home as the default selected navigation item
+        navigationView.getMenu().getItem(0).setChecked(true);
+
+        // Initialise visual components
+        setTitle("Home");
     }
 
     @Override
@@ -75,6 +66,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
 
+
         // Calls the method to populate the drawer with the user data
         NavigationDrawerUserData();
 
@@ -90,22 +82,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         {
             // If sign out is selected, the user is signed out and the StartLoginActivity method
             // is called
-
             case R.id.action_settings:
-
-                // Will sign the user out of Gmail or email/password login
-                FirebaseAuth.getInstance().signOut();
-
-                // Will sign the user out of facebook
-                LoginManager.getInstance().logOut();
-
-                // Returns to the login activity
-
-                finish();
-                Intent returnToLoginActivity= new Intent(MainActivity.this, LoginActivity.class);
-                returnToLoginActivity.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                startActivity(returnToLoginActivity);
-
+                Logout();
                 return true;
 
             default:
@@ -120,24 +98,39 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera)
-        {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery)
+        if (id == R.id.nav_home)
         {
 
-        } else if (id == R.id.nav_slideshow)
+        }
+
+        else if (id == R.id.nav_profile)
         {
 
-        } else if (id == R.id.nav_manage)
+        }
+
+        else if (id == R.id.nav_band_finder)
         {
 
-        } else if (id == R.id.nav_share)
+        }
+
+        else if (id == R.id.nav_band_creator)
         {
 
-        } else if (id == R.id.nav_send)
+        }
+
+        else if (id == R.id.nav_requests)
         {
 
+        }
+
+        else if (id == R.id.nav_settings)
+        {
+
+        }
+
+        else if (id == R.id.nav_logout)
+        {
+            Logout();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -160,5 +153,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         userEmail = FirebaseAuth.getInstance().getCurrentUser().getEmail();
         navigationProfileEmailTextView.setText(userEmail);
+    }
+
+    private void Logout()
+    {
+        // Will log the user out of Gmail or email/password login
+        FirebaseAuth.getInstance().signOut();
+
+        // Will log the user out of facebook
+        LoginManager.getInstance().logOut();
+
+        // Returns to the login activity
+
+        finish();
+        Intent returnToLoginActivity= new Intent(MainActivity.this, LoginActivity.class);
+        returnToLoginActivity.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+        startActivity(returnToLoginActivity);
     }
 }
