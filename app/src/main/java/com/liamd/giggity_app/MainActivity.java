@@ -15,14 +15,17 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.facebook.login.LoginManager;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.squareup.picasso.Picasso;
 
-public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener
 {
+    private ImageView navigationProfilePictureImageView;
+    private TextView navigationProfileEmailTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -31,12 +34,6 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        // Test method to display the users photo from their login method
-        // Picasso could be used to make circular images...
-        //Uri photoURI = FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl();
-        //imageView = (ImageView) findViewById(R.id.imageView);
-        //Picasso.with(this).load(photoURI).resize(300, 300).into(imageView);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener()
@@ -77,6 +74,10 @@ public class MainActivity extends AppCompatActivity
     {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
+
+        // Calls the method to populate the drawer with the user data
+        NavigationDrawerUserData();
+
         return true;
     }
 
@@ -142,5 +143,22 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    // Populates the user specific data in the navigation drawer (profile image and email)
+    // The image view needs to be initialised here as onCreate doesn't draw the drawer
+    private void NavigationDrawerUserData()
+    {
+        Uri photoURI;
+        String userEmail;
+
+        navigationProfilePictureImageView = (ImageView) findViewById(R.id.profileImageView);
+        navigationProfileEmailTextView = (TextView) findViewById(R.id.userEmailTextView);
+
+        photoURI = FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl();
+        Picasso.with(this).load(photoURI).resize(220, 220).into(navigationProfilePictureImageView);
+
+        userEmail = FirebaseAuth.getInstance().getCurrentUser().getEmail();
+        navigationProfileEmailTextView.setText(userEmail);
     }
 }
