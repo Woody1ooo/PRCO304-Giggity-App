@@ -13,8 +13,6 @@ import android.view.ViewGroup;
  */
 public class BandFinderFragment extends Fragment
 {
-
-
     public BandFinderFragment()
     {
         // Required empty public constructor

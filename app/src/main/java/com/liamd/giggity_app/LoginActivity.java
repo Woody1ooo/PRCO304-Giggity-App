@@ -38,6 +38,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     private EditText mEmailEditText;
     private EditText mPasswordEditText;
     private Button mLoginButton;
+    private Button mRegisterButton;
     private LoginButton mFacebookLoginButton;
     private ProgressDialog mProgressDialog;
 
@@ -81,6 +82,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         mEmailEditText = (EditText) findViewById(R.id.emailEditText);
         mPasswordEditText = (EditText) findViewById(R.id.passwordEditText);
         mLoginButton = (Button) findViewById(R.id.loginButton);
+        mRegisterButton = (Button) findViewById(R.id.registerButton);
         mProgressDialog = new ProgressDialog(this);
 
         // Facebook callback manager initialisation
@@ -108,6 +110,16 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             public void onClick(View view)
             {
                 SignIn();
+            }
+        });
+
+        // Login button onClickListener calls the LoadRegisterActivity() method
+        mRegisterButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                LoadRegisterActivity();
             }
         });
 
@@ -333,6 +345,13 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     {
         finish();
         Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+    }
+
+    // Method to load the register activity. Called when the register button is clicked
+    private void LoadRegisterActivity()
+    {
+        Intent intent = new Intent(this, RegisterActivity.class);
         startActivity(intent);
     }
 }

@@ -15,6 +15,17 @@
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:inputType="textEmailAddress"
+        android:ems="10"
+        android:id="@+id/emailEditText"
+        android:hint="Email"
+        android:layout_below="@+id/logoImageView"
+        android:layout_alignStart="@+id/logoImageView"
+        android:layout_alignEnd="@+id/logoImageView"/>
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:inputType="textPassword"
         android:ems="10"
         android:id="@+id/passwordEditText"
@@ -33,17 +44,6 @@
         android:layout_below="@+id/passwordEditText"
         android:layout_alignEnd="@+id/passwordEditText"
         android:layout_alignStart="@+id/passwordEditText"/>
-
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:inputType="textEmailAddress"
-        android:ems="10"
-        android:id="@+id/emailEditText"
-        android:hint="Email"
-        android:layout_below="@+id/logoImageView"
-        android:layout_alignStart="@+id/logoImageView"
-        android:layout_alignEnd="@+id/logoImageView"/>
 
     <Button
         android:text="Register"
