@@ -118,6 +118,15 @@ public class RegisterActivity extends AppCompatActivity
                             // Calls the LoadMainActivity method
                             LoadMainActivity();
                         }
+
+                        else
+                        {
+                            mProgressDialog.hide();
+                            Toast.makeText(RegisterActivity.this, "Registration failed! Please note" +
+                                            " that if you have previously registered using a different method," +
+                                            " you will need to use this instead.",
+                                    Toast.LENGTH_LONG).show();
+                        }
                     }
                 });
             }

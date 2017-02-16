@@ -31,6 +31,8 @@ import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class LoginActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, View.OnClickListener
 {
@@ -45,6 +47,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     // Declare Firebase specific variables
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
+    private DatabaseReference mDatabase;
 
     // Declare Google specific variables
     private GoogleApiClient mGoogleApiClient;
@@ -61,6 +64,9 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
         // Creates a reference to Firebase
         mAuth = FirebaseAuth.getInstance();
+
+        // Creates a reference to the Firebase database
+        mDatabase = FirebaseDatabase.getInstance().getReference();
 
         // Check whether the user is already logged in
         mAuthListener = new FirebaseAuth.AuthStateListener()
@@ -279,6 +285,18 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                             mProgressDialog.hide();
                             Toast.makeText(LoginActivity.this, "Gmail sign in successful!",
                                     Toast.LENGTH_SHORT).show();
+
+                            // Upon success, a new user is also created in the firebase database
+                            User newUser = new User();
+                            newUser.setEmail(mAuth.getCurrentUser().getEmail());
+                            newUser.setUserID(mAuth.getCurrentUser().getUid());
+
+                            // This is called each time a user logs in, but no duplicates
+                            // will be created as it simply overwrites the existing node
+                            // as they have the same Uid
+                            mDatabase.child("Users").child(mAuth.getCurrentUser().getUid()).setValue(newUser);
+
+
                             LoadMainActivity();
                         }
 
@@ -316,6 +334,17 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                             mProgressDialog.hide();
                             Toast.makeText(LoginActivity.this, "Facebook sign in successful!",
                                     Toast.LENGTH_SHORT).show();
+
+                            // Upon success, a new user is also created in the firebase database
+                            User newUser = new User();
+                            newUser.setEmail(mAuth.getCurrentUser().getEmail());
+                            newUser.setUserID(mAuth.getCurrentUser().getUid());
+
+                            // This is called each time a user logs in, but no duplicates
+                            // will be created as it simply overwrites the existing node
+                            // as they have the same Uid
+                            mDatabase.child("Users").child(mAuth.getCurrentUser().getUid()).setValue(newUser);
+
                             LoadMainActivity();
                         }
 
@@ -325,9 +354,9 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                             mProgressDialog.hide();
                             Toast.makeText(LoginActivity.this, "Authentication failed! Please note" +
                                     " that only one of these login methods can be used per user." +
-                                    " If you have" + "previously logged in using a different method," +
-                                    " please use this.",
-                                    Toast.LENGTH_SHORT).show();
+                                    " If you have previously logged in using a different method," +
+                                    " please use this instead.",
+                                    Toast.LENGTH_LONG).show();
                         }
                     }
                 });
