@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "865587873395",
+    "firebase_url": "https://prco304-giggity-app.firebaseio.com",
+    "project_id": "prco304-giggity-app",
+    "storage_bucket": "prco304-giggity-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:865587873395:android:1704fb7f8274579f",
+        "android_client_info": {
+          "package_name": "com.liamd.giggity_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "865587873395-r3vapqn3iood03g1bftl30ncirtjgstp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.liamd.giggity_app",
+            "certificate_hash": "748E9B8C29CDD8EF08FFA53A67364246D9290C8D"
+          }
+        },
+        {
+          "client_id": "865587873395-uvo9l8itcerobmvh0f29frvhj7aqm8v4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCIlwn5dlI8mdXsdbg5JFnaGGGKwUZ3PcA"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "865587873395-uvo9l8itcerobmvh0f29frvhj7aqm8v4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
