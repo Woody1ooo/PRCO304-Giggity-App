@@ -9,17 +9,19 @@ public class User
     private String email;
     private String password;
     private String userID;
+    private Boolean hasCompletedSetup;
 
     public User()
     {
 
     }
 
-    public User(String email, String password, String userID)
+    public User(String email, String password, String userID, Boolean hasLoggedIn)
     {
         this.email = email;
         this.password = password;
         this.userID = userID;
+        this.hasCompletedSetup = hasLoggedIn;
     }
 
     public String getEmail()
@@ -50,5 +52,15 @@ public class User
     public void setUserID(String userID)
     {
         this.userID = userID;
+    }
+
+    public Boolean getHasCompletedSetup()
+    {
+        return hasCompletedSetup;
+    }
+
+    public void setHasCompletedSetup(Boolean hasLoggedIn)
+    {
+        this.hasCompletedSetup = hasLoggedIn;
     }
 }

@@ -291,11 +291,13 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                             newUser.setEmail(mAuth.getCurrentUser().getEmail());
                             newUser.setUserID(mAuth.getCurrentUser().getUid());
 
+                            // This field determines whether the user has chosen their account type yet
+                            newUser.setHasCompletedSetup(false);
+
                             // This is called each time a user logs in, but no duplicates
                             // will be created as it simply overwrites the existing node
                             // as they have the same Uid
                             mDatabase.child("Users").child(mAuth.getCurrentUser().getUid()).setValue(newUser);
-
 
                             LoadMainActivity();
                         }
@@ -339,6 +341,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                             User newUser = new User();
                             newUser.setEmail(mAuth.getCurrentUser().getEmail());
                             newUser.setUserID(mAuth.getCurrentUser().getUid());
+                            newUser.setHasCompletedSetup(false);
 
                             // This is called each time a user logs in, but no duplicates
                             // will be created as it simply overwrites the existing node

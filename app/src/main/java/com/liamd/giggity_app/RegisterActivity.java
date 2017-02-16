@@ -104,6 +104,9 @@ public class RegisterActivity extends AppCompatActivity
                             mLoggedInUserID = user.getUid();
                             newUser.setUserID(mLoggedInUserID);
 
+                            // This field determines whether the user has chosen their account type yet
+                            newUser.setHasCompletedSetup(false);
+
                             // The password is set to null before being added to the database,
                             // as for security reasons this shouldn't be stored in plain sight.
                             newUser.setPassword(null);
@@ -114,6 +117,8 @@ public class RegisterActivity extends AppCompatActivity
                             mProgressDialog.hide();
                             Toast.makeText(RegisterActivity.this, "User successfully created!",
                                     Toast.LENGTH_SHORT).show();
+
+
 
                             // Calls the LoadMainActivity method
                             LoadMainActivity();
