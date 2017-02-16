@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -100,32 +101,62 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         if (id == R.id.nav_home)
         {
-
+            setTitle("Home");
+            HomeFragment fragment = new HomeFragment();
+            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.frame, fragment
+                    , "HomeFragment");
+            fragmentTransaction.commit();
         }
 
         else if (id == R.id.nav_profile)
         {
-
+            setTitle("My Musician Profile");
+            MusicianProfileFragment fragment = new MusicianProfileFragment();
+            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.frame, fragment
+                    , "MusicianProfileFragment");
+            fragmentTransaction.commit();
         }
 
         else if (id == R.id.nav_band_finder)
         {
-
+            setTitle("Band Finder");
+            BandFinderFragment fragment = new BandFinderFragment();
+            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.frame, fragment
+                    , "BandFinderFragment");
+            fragmentTransaction.commit();
         }
 
         else if (id == R.id.nav_band_creator)
         {
-
+            setTitle("Band Creator");
+            BandCreatorFragment fragment = new BandCreatorFragment();
+            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.frame, fragment
+                    , "BandCreatorFragment");
+            fragmentTransaction.commit();
         }
 
         else if (id == R.id.nav_requests)
         {
-
+            setTitle("Band Requests");
+            BandRequestsFragment fragment = new BandRequestsFragment();
+            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.frame, fragment
+                    , "BandRequestsFragment");
+            fragmentTransaction.commit();
         }
 
         else if (id == R.id.nav_settings)
         {
-
+            setTitle("Settings");
+            SettingsFragment fragment = new SettingsFragment();
+            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.frame, fragment
+                    , "SettingsFragment");
+            fragmentTransaction.commit();
         }
 
         else if (id == R.id.nav_logout)
