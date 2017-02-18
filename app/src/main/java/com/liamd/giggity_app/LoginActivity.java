@@ -31,8 +31,11 @@ import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class LoginActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, View.OnClickListener
 {
@@ -151,7 +154,6 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
             }
         });
-
     }
 
     @Override
@@ -286,18 +288,38 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                             Toast.makeText(LoginActivity.this, "Gmail sign in successful!",
                                     Toast.LENGTH_SHORT).show();
 
-                            // Upon success, a new user is also created in the firebase database
-                            User newUser = new User();
-                            newUser.setEmail(mAuth.getCurrentUser().getEmail());
-                            newUser.setUserID(mAuth.getCurrentUser().getUid());
+                            // To determine whether this is an account creation or a login,
+                            // the database is queried at "Users/%CurrentUserID%.
+                            mDatabase.child("Users/" + mAuth.getCurrentUser().getUid())
+                                    .addListenerForSingleValueEvent(new ValueEventListener()
+                            {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot)
+                                {
+                                    // If the snapshot at that location returns null, it means
+                                    // it's an account creation, as there isn't an instance of
+                                    // the account stored in the database.
+                                    if(dataSnapshot.getValue() == null)
+                                    {
+                                        // Therefore a new user object is created using the information
+                                        // from the Firebase authentication store
+                                        final User newUser = new User();
+                                        newUser.setEmail(mAuth.getCurrentUser().getEmail());
+                                        newUser.setUserID(mAuth.getCurrentUser().getUid());
 
-                            // This field determines whether the user has chosen their account type yet
-                            newUser.setHasCompletedSetup(false);
+                                        // This is then inserted into the database using the UID
+                                        // as the key.
+                                        mDatabase.child("Users").child(mAuth.getCurrentUser()
+                                                .getUid()).setValue(newUser);
+                                    }
+                                }
 
-                            // This is called each time a user logs in, but no duplicates
-                            // will be created as it simply overwrites the existing node
-                            // as they have the same Uid
-                            mDatabase.child("Users").child(mAuth.getCurrentUser().getUid()).setValue(newUser);
+                                @Override
+                                public void onCancelled(DatabaseError databaseError)
+                                {
+
+                                }
+                            });
 
                             LoadMainActivity();
                         }
@@ -337,16 +359,38 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                             Toast.makeText(LoginActivity.this, "Facebook sign in successful!",
                                     Toast.LENGTH_SHORT).show();
 
-                            // Upon success, a new user is also created in the firebase database
-                            User newUser = new User();
-                            newUser.setEmail(mAuth.getCurrentUser().getEmail());
-                            newUser.setUserID(mAuth.getCurrentUser().getUid());
-                            newUser.setHasCompletedSetup(false);
+                            // To determine whether this is an account creation or a login,
+                            // the database is queried at "Users/%CurrentUserID%.
+                            mDatabase.child("Users/" + mAuth.getCurrentUser().getUid())
+                                    .addListenerForSingleValueEvent(new ValueEventListener()
+                                    {
+                                        @Override
+                                        public void onDataChange(DataSnapshot dataSnapshot)
+                                        {
+                                            // If the snapshot at that location returns null, it means
+                                            // it's an account creation, as there isn't an instance of
+                                            // the account stored in the database.
+                                            if(dataSnapshot.getValue() == null)
+                                            {
+                                                // Therefore a new user object is created using the information
+                                                // from the Firebase authentication store
+                                                final User newUser = new User();
+                                                newUser.setEmail(mAuth.getCurrentUser().getEmail());
+                                                newUser.setUserID(mAuth.getCurrentUser().getUid());
 
-                            // This is called each time a user logs in, but no duplicates
-                            // will be created as it simply overwrites the existing node
-                            // as they have the same Uid
-                            mDatabase.child("Users").child(mAuth.getCurrentUser().getUid()).setValue(newUser);
+                                                // This is then inserted into the database using the UID
+                                                // as the key.
+                                                mDatabase.child("Users").child(mAuth.getCurrentUser()
+                                                        .getUid()).setValue(newUser);
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onCancelled(DatabaseError databaseError)
+                                        {
+
+                                        }
+                                    });
 
                             LoadMainActivity();
                         }

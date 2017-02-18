@@ -17,12 +17,26 @@ import android.widget.TextView;
 
 import com.facebook.login.LoginManager;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener
 {
+    // Declare visual components
     private ImageView navigationProfilePictureImageView;
     private TextView navigationProfileEmailTextView;
+
+    // Declare Firebase specific variables
+    private FirebaseAuth mAuth;
+    private DatabaseReference mDatabase;
+
+    // Variable to hold the currently logged in userID
+    private String mLoggedInUserID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -41,11 +55,48 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        // Creates a reference to Firebase
+        mAuth = FirebaseAuth.getInstance();
+
+        // Creates a reference to the Firebase database
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+
         // Sets home as the default selected navigation item
         navigationView.getMenu().getItem(0).setChecked(true);
 
         // Initialise visual components
         setTitle("Home");
+
+        // Gets the currently logged in user and assigns the value to mLoggedInUserID
+        FirebaseUser user = mAuth.getCurrentUser();
+        mLoggedInUserID = user.getUid();
+
+        // At the database reference "Users/%logged in user id%/hasCompletedSetup", a check is made
+        // to see if the value is true or false.
+        // If the user hasn't completed the account setup yet (i.e. hasCompletedSetup = false)
+        // load the setup fragment on startup
+        mDatabase.child("Users").child(mLoggedInUserID + "/hasCompletedSetup").addListenerForSingleValueEvent(new ValueEventListener()
+        {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot)
+            {
+                if(dataSnapshot.getValue() == null || (boolean)dataSnapshot.getValue() == false)
+                {
+                    setTitle("Initial Account Setup");
+                    PreSetupFragment fragment = new PreSetupFragment();
+                    FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+                    fragmentTransaction.replace(R.id.frame, fragment
+                            , "PreSetupFragment");
+                    fragmentTransaction.commit();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError)
+            {
+
+            }
+        });
     }
 
     @Override

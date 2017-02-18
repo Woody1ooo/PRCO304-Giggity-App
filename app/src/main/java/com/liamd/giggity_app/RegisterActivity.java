@@ -16,8 +16,11 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class RegisterActivity extends AppCompatActivity
 {
@@ -27,7 +30,6 @@ public class RegisterActivity extends AppCompatActivity
     private EditText mPasswordConfirmEditText;
     private Button mRegisterButton;
     private ProgressDialog mProgressDialog;
-    private String mLoggedInUserID;
 
     // Declare Firebase specific variables
     private FirebaseAuth mAuth;
@@ -53,6 +55,7 @@ public class RegisterActivity extends AppCompatActivity
         mRegisterButton = (Button) findViewById(R.id.registerButton);
         mProgressDialog = new ProgressDialog(this);
 
+        // On click listener for the register button which calls the Register() method
         mRegisterButton.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -100,27 +103,43 @@ public class RegisterActivity extends AppCompatActivity
                         // in the database, with the user ID as the key.
                         if(task.isSuccessful())
                         {
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            mLoggedInUserID = user.getUid();
-                            newUser.setUserID(mLoggedInUserID);
-
-                            // This field determines whether the user has chosen their account type yet
-                            newUser.setHasCompletedSetup(false);
-
-                            // The password is set to null before being added to the database,
-                            // as for security reasons this shouldn't be stored in plain sight.
-                            newUser.setPassword(null);
-
-                            // Because after registration, the user is immediately logged in,
-                            // we can get their user ID and use this as the key.
-                            mDatabase.child("Users").child(mLoggedInUserID).setValue(newUser);
                             mProgressDialog.hide();
-                            Toast.makeText(RegisterActivity.this, "User successfully created!",
+                            Toast.makeText(RegisterActivity.this, "Sign in successful!",
                                     Toast.LENGTH_SHORT).show();
 
+                            // To determine whether this is an account creation or a login,
+                            // the database is queried at "Users/%CurrentUserID%.
+                            mDatabase.child("Users/" + mAuth.getCurrentUser().getUid())
+                                    .addListenerForSingleValueEvent(new ValueEventListener()
+                                    {
+                                        @Override
+                                        public void onDataChange(DataSnapshot dataSnapshot)
+                                        {
+                                            // If the snapshot at that location returns null, it means
+                                            // it's an account creation, as there isn't an instance of
+                                            // the account stored in the database.
+                                            if(dataSnapshot.getValue() == null)
+                                            {
+                                                // Therefore a new user object is created using the information
+                                                // from the Firebase authentication store
+                                                final User newUser = new User();
+                                                newUser.setEmail(mAuth.getCurrentUser().getEmail());
+                                                newUser.setUserID(mAuth.getCurrentUser().getUid());
 
+                                                // This is then inserted into the database using the UID
+                                                // as the key.
+                                                mDatabase.child("Users").child(mAuth.getCurrentUser()
+                                                        .getUid()).setValue(newUser);
+                                            }
+                                        }
 
-                            // Calls the LoadMainActivity method
+                                        @Override
+                                        public void onCancelled(DatabaseError databaseError)
+                                        {
+
+                                        }
+                                    });
+
                             LoadMainActivity();
                         }
 
