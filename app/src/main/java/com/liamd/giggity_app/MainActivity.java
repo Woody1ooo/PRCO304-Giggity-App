@@ -25,6 +25,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
+import static com.liamd.giggity_app.R.menu.activity_main_drawer;
+
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener
 {
     // Declare visual components
@@ -43,16 +45,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+        final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        final ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        final NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
         // Creates a reference to Firebase
@@ -88,6 +90,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     fragmentTransaction.replace(R.id.frame, fragment
                             , "PreSetupFragment");
                     fragmentTransaction.commit();
+
+                    // Hides the drawer to prevent users from progressing without setting their
+                    // account type and preferences
+                    toolbar.setNavigationIcon(null);
                 }
             }
 
