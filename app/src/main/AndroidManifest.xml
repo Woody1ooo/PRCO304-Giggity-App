@@ -39,11 +39,18 @@
             android:value="@string/facebook_app_id"/>
 
         <activity
-            android:name=".MainActivity"
+            android:name=".MusicianUserMainActivity"
             android:label="@string/title_activity_main"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
         <activity android:name=".RegisterActivity">
+        </activity>
+        <activity
+            android:name=".VenueUserMainActivity"
+            android:label="@string/title_activity_venue_user_main"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+        <activity android:name=".PreSetupActivity">
         </activity>
     </application>
 

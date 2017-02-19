@@ -420,7 +420,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     private void LoadMainActivity()
     {
         finish();
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, MusicianUserMainActivity.class);
         startActivity(intent);
     }
 

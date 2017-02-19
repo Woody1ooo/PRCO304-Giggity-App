@@ -25,9 +25,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
-import static com.liamd.giggity_app.R.layout.activity_main;
+import static com.liamd.giggity_app.R.layout.musician_user_activity_main;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, DrawerLock
+public class MusicianUserMainActivity extends AppCompatActivity
+        implements NavigationView.OnNavigationItemSelectedListener
 {
     // Declare visual components
     private ImageView navigationProfilePictureImageView;
@@ -45,7 +46,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(activity_main);
+        setContentView(musician_user_activity_main);
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -68,7 +69,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView.getMenu().getItem(0).setChecked(true);
 
         // Initialise visual components
-        setTitle("Home");
+        setTitle("Musician User Home");
 
         // Gets the currently logged in user and assigns the value to mLoggedInUserID
         FirebaseUser user = mAuth.getCurrentUser();
@@ -76,29 +77,41 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         // Load Home fragment by default
         setTitle("Home");
-        HomeFragment fragment = new HomeFragment();
+        MusicianUserHomeFragment fragment = new MusicianUserHomeFragment();
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.frame, fragment
-                , "HomeFragment");
+                , "MusicianUserHomeFragment");
         fragmentTransaction.commit();
 
         // At the database reference "Users/%logged in user id%/hasCompletedSetup", a check is made
         // to see if the value is true or false.
         // If the user hasn't completed the account setup yet (i.e. hasCompletedSetup = false)
-        // load the setup fragment on startup
-        mDatabase.child("Users").child(mLoggedInUserID + "/hasCompletedSetup").addListenerForSingleValueEvent(new ValueEventListener()
+        // load the setup activity on startup
+        mDatabase.child("Users").child(mLoggedInUserID).addListenerForSingleValueEvent(new ValueEventListener()
         {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot)
             {
-                if(dataSnapshot.getValue() == null || !((boolean) dataSnapshot.getValue()))
+                // First check if the user needs to complete the pre setup
+                // If not, then the pre setup activity is launched
+                // When the user returns to this point, it should skip to the else statement
+                if(dataSnapshot.child("/hasCompletedSetup").getValue() == null)
                 {
-                    setTitle("Initial Account Setup");
-                    PreSetupFragment fragment = new PreSetupFragment();
-                    FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-                    fragmentTransaction.replace(R.id.frame, fragment
-                            , "PreSetupFragment");
-                    fragmentTransaction.commit();
+                    Intent startPreSetupActivity = new Intent(MusicianUserMainActivity.this, PreSetupActivity.class);
+                    startActivity(startPreSetupActivity);
+                    finish();
+                }
+
+                // This checks the account type that the user has. If the account is a musician account
+                // then no intents need to be fired as this activity has already been created
+                else
+                {
+                    if (dataSnapshot.child("/accountType").getValue().equals("Venue"))
+                    {
+                        finish();
+                        Intent startVenueUserMainActivity= new Intent(MusicianUserMainActivity.this, VenueUserMainActivity.class);
+                        startActivity(startVenueUserMainActivity);
+                    }
                 }
             }
 
@@ -128,8 +141,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
+        // Inflate the musician_user_menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.musician_user_main, menu);
 
         // Calls the method to populate the drawer with the user data
         NavigationDrawerUserData();
@@ -137,7 +150,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
 
-    // Method to determine the selected menu item
+    // Method to determine the selected musician_user_menu item
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
@@ -164,50 +177,50 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (id == R.id.nav_home)
         {
             setTitle("Home");
-            HomeFragment fragment = new HomeFragment();
+            MusicianUserHomeFragment fragment = new MusicianUserHomeFragment();
             FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
             fragmentTransaction.replace(R.id.frame, fragment
-                    , "HomeFragment");
+                    , "MusicianUserHomeFragment");
             fragmentTransaction.commit();
         }
 
         else if (id == R.id.nav_profile)
         {
             setTitle("My Musician Profile");
-            MusicianProfileFragment fragment = new MusicianProfileFragment();
+            MusicianUserProfileFragment fragment = new MusicianUserProfileFragment();
             FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
             fragmentTransaction.replace(R.id.frame, fragment
-                    , "MusicianProfileFragment");
+                    , "MusicianUserProfileFragment");
             fragmentTransaction.commit();
         }
 
         else if (id == R.id.nav_band_finder)
         {
             setTitle("Band Finder");
-            BandFinderFragment fragment = new BandFinderFragment();
+            MusicianUserBandFinderFragment fragment = new MusicianUserBandFinderFragment();
             FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
             fragmentTransaction.replace(R.id.frame, fragment
-                    , "BandFinderFragment");
+                    , "MusicianUserBandFinderFragment");
             fragmentTransaction.commit();
         }
 
         else if (id == R.id.nav_band_creator)
         {
             setTitle("Band Creator");
-            BandCreatorFragment fragment = new BandCreatorFragment();
+            MusicianUserBandCreatorFragment fragment = new MusicianUserBandCreatorFragment();
             FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
             fragmentTransaction.replace(R.id.frame, fragment
-                    , "BandCreatorFragment");
+                    , "MusicianUserBandCreatorFragment");
             fragmentTransaction.commit();
         }
 
         else if (id == R.id.nav_requests)
         {
             setTitle("Band Requests");
-            BandRequestsFragment fragment = new BandRequestsFragment();
+            MusicianUserBandRequestsFragment fragment = new MusicianUserBandRequestsFragment();
             FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
             fragmentTransaction.replace(R.id.frame, fragment
-                    , "BandRequestsFragment");
+                    , "MusicianUserBandRequestsFragment");
             fragmentTransaction.commit();
         }
 
@@ -259,16 +272,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Returns to the login activity
 
         finish();
-        Intent returnToLoginActivity= new Intent(MainActivity.this, LoginActivity.class);
+        Intent returnToLoginActivity= new Intent(MusicianUserMainActivity.this, LoginActivity.class);
         returnToLoginActivity.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         startActivity(returnToLoginActivity);
-    }
-
-    // The implemented method from DrawerLock to set whether the drawer is locked or unlocked
-    @Override
-    public void setDrawerEnabled(boolean enabled)
-    {
-        int lockMode = enabled ? DrawerLayout.LOCK_MODE_UNLOCKED : DrawerLayout.LOCK_MODE_LOCKED_CLOSED;
-        drawer.setDrawerLockMode(lockMode);
     }
 }

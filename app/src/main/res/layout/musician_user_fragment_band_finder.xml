@@ -2,13 +2,13 @@
              xmlns:tools="http://schemas.android.com/tools"
              android:layout_width="match_parent"
              android:layout_height="match_parent"
-             tools:context="com.liamd.giggity_app.HomeFragment">
+             tools:context="com.liamd.giggity_app.MusicianUserBandFinderFragment">
 
     <!-- TODO: Update blank fragment layout -->
 
     <TextView
-        android:text="Home"
+        android:text="Band Finder"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/textView3"/>
+        android:id="@+id/textView4"/>
 </FrameLayout>

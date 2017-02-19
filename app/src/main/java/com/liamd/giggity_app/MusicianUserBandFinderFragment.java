@@ -11,11 +11,9 @@ import android.view.ViewGroup;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MusicianProfileFragment extends Fragment
+public class MusicianUserBandFinderFragment extends Fragment
 {
-
-
-    public MusicianProfileFragment()
+    public MusicianUserBandFinderFragment()
     {
         // Required empty public constructor
     }
@@ -26,7 +24,7 @@ public class MusicianProfileFragment extends Fragment
                              Bundle savedInstanceState)
     {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_musician_profile, container, false);
+        return inflater.inflate(R.layout.musician_user_fragment_band_finder, container, false);
     }
 
 }
