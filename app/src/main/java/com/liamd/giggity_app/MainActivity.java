@@ -1,8 +1,11 @@
 package com.liamd.giggity_app;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.internal.NavigationMenu;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
@@ -25,13 +28,18 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
+import static android.R.id.toggle;
+import static com.liamd.giggity_app.R.layout.activity_main;
+import static com.liamd.giggity_app.R.layout.app_bar_main;
+import static com.liamd.giggity_app.R.layout.nav_header_main;
 import static com.liamd.giggity_app.R.menu.activity_main_drawer;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, DrawerLock
 {
     // Declare visual components
     private ImageView navigationProfilePictureImageView;
     private TextView navigationProfileEmailTextView;
+    private DrawerLayout drawer;
 
     // Declare Firebase specific variables
     private FirebaseAuth mAuth;
@@ -44,11 +52,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(activity_main);
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         final ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
@@ -73,6 +81,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         FirebaseUser user = mAuth.getCurrentUser();
         mLoggedInUserID = user.getUid();
 
+        // Load Home fragment by default
+        setTitle("Home");
+        HomeFragment fragment = new HomeFragment();
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.frame, fragment
+                , "HomeFragment");
+        fragmentTransaction.commit();
+
         // At the database reference "Users/%logged in user id%/hasCompletedSetup", a check is made
         // to see if the value is true or false.
         // If the user hasn't completed the account setup yet (i.e. hasCompletedSetup = false)
@@ -82,7 +98,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void onDataChange(DataSnapshot dataSnapshot)
             {
-                if(dataSnapshot.getValue() == null || (boolean)dataSnapshot.getValue() == false)
+                if(dataSnapshot.getValue() == null || !((boolean) dataSnapshot.getValue()))
                 {
                     setTitle("Initial Account Setup");
                     PreSetupFragment fragment = new PreSetupFragment();
@@ -90,10 +106,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     fragmentTransaction.replace(R.id.frame, fragment
                             , "PreSetupFragment");
                     fragmentTransaction.commit();
-
-                    // Hides the drawer to prevent users from progressing without setting their
-                    // account type and preferences
-                    toolbar.setNavigationIcon(null);
                 }
             }
 
@@ -112,7 +124,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (drawer.isDrawerOpen(GravityCompat.START))
         {
             drawer.closeDrawer(GravityCompat.START);
-        } else
+        }
+
+        else
         {
             super.onBackPressed();
         }
@@ -124,10 +138,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
 
-
         // Calls the method to populate the drawer with the user data
         NavigationDrawerUserData();
-
         return true;
     }
 
@@ -257,5 +269,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Intent returnToLoginActivity= new Intent(MainActivity.this, LoginActivity.class);
         returnToLoginActivity.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         startActivity(returnToLoginActivity);
+    }
+
+    // The implemented method from DrawerLock to set whether the drawer is locked or unlocked
+    @Override
+    public void setDrawerEnabled(boolean enabled)
+    {
+        int lockMode = enabled ? DrawerLayout.LOCK_MODE_UNLOCKED : DrawerLayout.LOCK_MODE_LOCKED_CLOSED;
+        drawer.setDrawerLockMode(lockMode);
     }
 }
