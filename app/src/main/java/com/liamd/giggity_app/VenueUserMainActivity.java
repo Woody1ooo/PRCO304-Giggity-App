@@ -36,9 +36,6 @@ public class VenueUserMainActivity extends AppCompatActivity
     private FirebaseAuth mAuth;
     private DatabaseReference mDatabase;
 
-    // Variable to hold the currently logged in userID
-    private String mLoggedInUserID;
-
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -67,10 +64,6 @@ public class VenueUserMainActivity extends AppCompatActivity
 
         // Initialise visual components
         setTitle("Venue User Home");
-
-        // Gets the currently logged in user and assigns the value to mLoggedInUserID
-        FirebaseUser user = mAuth.getCurrentUser();
-        mLoggedInUserID = user.getUid();
 
         // Load Home fragment by default
         //setTitle("Home");

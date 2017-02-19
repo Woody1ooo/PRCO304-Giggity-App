@@ -1,5 +1,7 @@
 package com.liamd.giggity_app;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -42,33 +44,52 @@ public class PreSetupActivity extends AppCompatActivity
             @Override
             public void onClick(View view)
             {
-                if(mBandRadio.isChecked())
-                {
-                    mDatabase.child("Users/" + mAuth.getCurrentUser().getUid()
-                            + "/accountType").setValue("Musician");
+                // Creates a new dialog to display when the save button is clicked
+                new AlertDialog.Builder(PreSetupActivity.this)
+                        .setIconAttribute(android.R.attr.alertDialogIcon)
+                        .setTitle("Set Preferences")
+                        .setMessage("Are you sure you want to set these preferences?")
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener()
+                        {
+                            public void onClick(DialogInterface dialog, int which)
+                            {
+                                if(mBandRadio.isChecked())
+                                {
+                                    mDatabase.child("Users/" + mAuth.getCurrentUser().getUid()
+                                            + "/accountType").setValue("Musician");
 
-                    // Calls the ReturnToMusicianUserMainActivity
-                    ReturnToMusicianUserMainActivity();
+                                    // Calls the ReturnToMusicianUserMainActivity
+                                    ReturnToMusicianUserMainActivity();
 
-                    // The hasCompletedSetup field is changed to
-                    // true in the database for the currently logged in user
-                    mDatabase.child("Users/" + mAuth.getCurrentUser().getUid()
-                            + "/hasCompletedSetup").setValue(true);
-                }
+                                    // The hasCompletedSetup field is changed to
+                                    // true in the database for the currently logged in user
+                                    mDatabase.child("Users/" + mAuth.getCurrentUser().getUid()
+                                            + "/hasCompletedSetup").setValue(true);
+                                }
 
-                else
-                {
-                    mDatabase.child("Users/" + mAuth.getCurrentUser().getUid()
-                            + "/accountType").setValue("Venue");
+                                else
+                                {
+                                    mDatabase.child("Users/" + mAuth.getCurrentUser().getUid()
+                                            + "/accountType").setValue("Venue");
 
-                    // Calls the ReturnToVenueUserMainActivity
-                    ReturnToVenueUserMainActivity();
+                                    // Calls the ReturnToVenueUserMainActivity
+                                    ReturnToVenueUserMainActivity();
 
-                    // The hasCompletedSetup field is changed to
-                    // true in the database for the currently logged in user
-                    mDatabase.child("Users/" + mAuth.getCurrentUser().getUid()
-                            + "/hasCompletedSetup").setValue(true);
-                }
+                                    // The hasCompletedSetup field is changed to
+                                    // true in the database for the currently logged in user
+                                    mDatabase.child("Users/" + mAuth.getCurrentUser().getUid()
+                                            + "/hasCompletedSetup").setValue(true);
+                                }
+                            }
+                        })
+                        .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener()
+                        {
+                            public void onClick(DialogInterface dialog, int which)
+                            {
+                                // close the dialog
+                            }
+                        })
+                        .show();
             }
         });
     }
