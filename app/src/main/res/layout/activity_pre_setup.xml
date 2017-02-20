@@ -11,51 +11,95 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.liamd.giggity_app.PreSetupActivity">
 
-    <TextView
-        android:text="Account Type"
-        android:layout_width="wrap_content"
+    <ScrollView
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/textView9"
-        android:textAppearance="@style/TextAppearance.AppCompat.Menu"
         android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true"/>
+        android:layout_alignParentStart="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:weightSum="1">
+
+            <TextView
+                android:text="Account Type"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/textView9"
+                android:textAppearance="@style/TextAppearance.AppCompat.Menu"/>
+
+            <RadioGroup
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="11dp"
+                android:id="@+id/accountTypeRadioGroup"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:text="Musician"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/bandRadio"
+                    android:layout_weight="1"
+                    android:checked="true"/>
+
+                <RadioButton
+                    android:text="Venue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/venueRadio"
+                    android:layout_weight="1"
+                    />
+            </RadioGroup>
+
+            <TextView
+                android:text="Find Your Venue"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/venueFinderHeadingTextView"
+                android:textAppearance="@style/TextAppearance.AppCompat.Menu"
+                android:layout_marginTop="22dp"/>
+
+            <TextView
+                android:text="No Venue Chosen!"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="21dp"
+                android:id="@+id/venueDetails"/>
+
+            <Button
+                android:text="Launch Venue Finder"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/placeFinderButton"
+                android:background="@color/colorPrimaryDark"
+                android:textColor="@color/cardview_light_background"
+                android:layout_marginTop="32dp"/>
+
+            <TextView
+                android:text="Help! I can't find my venue."
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/venueHelpTextView"
+                android:layout_marginTop="30dp"
+                android:textAlignment="center"
+                android:paddingBottom="30dp"
+                android:layout_weight="0.12"
+                android:textColor="@color/colorPrimary"/>
+
+        </LinearLayout>
+    </ScrollView>
 
     <Button
         android:text="Save"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/saveButton"
         android:background="@color/colorPrimary"
         android:textColor="@color/cardview_light_background"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentStart="true"/>
+        android:layout_alignParentEnd="true"/>
 
-    <RadioGroup
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:id="@+id/accountTypeRadioGroup">
-
-        <RadioButton
-            android:text="Musician User"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/bandRadio"
-            android:layout_weight="1"
-            android:checked="true"
-            android:layout_marginTop="32dp"
-            android:layout_below="@+id/textView9"
-            android:layout_alignParentStart="true"/>
-
-        <RadioButton
-            android:text="Venue User"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/venueRadio"
-            android:layout_weight="1"
-            android:layout_marginTop="11dp"
-            android:layout_below="@+id/bandRadio"
-            android:layout_alignParentStart="true"/>
-    </RadioGroup>
 </RelativeLayout>
