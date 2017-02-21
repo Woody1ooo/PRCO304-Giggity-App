@@ -41,7 +41,7 @@
                     android:text="Musician"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/bandRadio"
+                    android:id="@+id/musicianRadio"
                     android:layout_weight="1"
                     android:checked="true"/>
 
@@ -52,7 +52,73 @@
                     android:id="@+id/venueRadio"
                     android:layout_weight="1"
                     />
+
             </RadioGroup>
+
+            <TextView
+                android:text="First Name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/textView8"
+                android:layout_weight="1"
+                android:textAppearance="@style/TextAppearance.AppCompat.Menu"
+                android:layout_marginTop="22dp" />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPersonName"
+                android:ems="10"
+                android:id="@+id/firstNameTxt"/>
+
+            <TextView
+                android:text="Last Name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/textView10"
+                android:layout_weight="1"
+                android:textAppearance="@style/TextAppearance.AppCompat.Menu"
+                android:layout_marginTop="22dp" />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPersonName"
+                android:ems="10"
+                android:id="@+id/lastNameTxt"
+                />
+
+            <TextView
+                android:text="Genres"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/genreHeadingTextView"
+                android:textAppearance="@style/TextAppearance.AppCompat.Menu"
+                android:layout_marginTop="22dp" />
+
+            <com.liamd.giggity_app.MultiSelectSpinner
+                android:id="@+id/genreSpinner"
+                android:layout_width="fill_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="0.15"
+                android:layout_marginBottom="32dp"
+                android:layout_marginTop="22dp"/>
+
+            <TextView
+                android:text="Instruments"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/instrumentHeadingTextView"
+                android:textAppearance="@style/TextAppearance.AppCompat.Menu"
+                android:layout_marginTop="12dp" />
+
+            <com.liamd.giggity_app.MultiSelectSpinner
+                android:id="@+id/instrumentSpinner"
+                android:layout_width="fill_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="0.15"
+                android:layout_marginBottom="22dp"
+                android:layout_marginTop="22dp"/>
 
             <TextView
                 android:text="Find Your Venue"
@@ -87,19 +153,20 @@
                 android:textAlignment="center"
                 android:paddingBottom="30dp"
                 android:layout_weight="0.12"
-                android:textColor="@color/colorPrimary"/>
+                android:textColor="@color/colorPrimary"
+                android:layout_marginBottom="32dp"/>
+
+            <Button
+                android:text="Save"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/saveButton"
+                android:background="@color/colorPrimary"
+                android:textColor="@color/cardview_light_background"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentEnd="true"/>
 
         </LinearLayout>
     </ScrollView>
-
-    <Button
-        android:text="Save"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/saveButton"
-        android:background="@color/colorPrimary"
-        android:textColor="@color/cardview_light_background"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"/>
 
 </RelativeLayout>

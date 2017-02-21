@@ -50,7 +50,8 @@
             android:label="@string/title_activity_venue_user_main"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
-        <activity android:name=".PreSetupActivity">
+        <activity android:name=".PreSetupActivity"
+            android:windowSoftInputMode="adjustPan">
         </activity>
             <meta-data
                 android:name="com.google.android.geo.API_KEY"

@@ -7,6 +7,8 @@ package com.liamd.giggity_app;
 public class User
 {
     private String email;
+    private String firstName;
+    private String lastName;
     private String password;
     private String userID;
     private Boolean hasCompletedSetup;
@@ -16,9 +18,11 @@ public class User
 
     }
 
-    public User(String email, String password, String userID, Boolean hasLoggedIn)
+    public User(String email, String firstName, String lastName, String password, String userID, Boolean hasLoggedIn)
     {
         this.email = email;
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.password = password;
         this.userID = userID;
         this.hasCompletedSetup = hasLoggedIn;
@@ -32,6 +36,26 @@ public class User
     public void setEmail(String email)
     {
         this.email = email;
+    }
+
+    public String getLastName()
+    {
+        return lastName;
+    }
+
+    public void setLastName(String lastName)
+    {
+        this.lastName = lastName;
+    }
+
+    public String getFirstName()
+    {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName)
+    {
+        this.firstName = firstName;
     }
 
     public String getPassword()
