@@ -75,6 +75,8 @@ public class PreSetupActivity extends AppCompatActivity
     // Declare musician user data variables required
     private String mMusicianUserAddress;
     private LatLng mMusicianUserLatLng;
+    private String mInstrumentListToString;
+    private String mGenreListToString;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -139,15 +141,9 @@ public class PreSetupActivity extends AppCompatActivity
         HideVenueUserComponents();
         ShowMusicianUserComponents();
 
-        // Pre enter the user's first and last names if they login through a service that offers
-        // this functionality
-        if(mAuth.getCurrentUser().getDisplayName() != null)
-        {
-            String nameFromAuth = mAuth.getCurrentUser().getDisplayName();
-            splitName = nameFromAuth.split("\\s+");
-            mFirstNameEditText.setText(splitName[0]);
-            mLastNameEditText.setText(splitName[1]);
-        }
+        // Calls the populate name fields method to pre-fill the text boxes
+        PopulateNameFields();
+
 
         mSaveButton.setOnClickListener(new View.OnClickListener()
         {
@@ -278,8 +274,14 @@ public class PreSetupActivity extends AppCompatActivity
                             // This block handles musician users
                             if (mMusicianRadio.isChecked())
                             {
-                                // ensure the location isn't null
-                                if(mMusicianUserAddress != null && mMusicianUserLatLng != null)
+                                // Get the selected items from the spinners as a string to store
+                                // in the database. These can then be parsed later when required.
+                                mInstrumentListToString = mInstrumentSelectSpinner.getSelectedItemsAsString();
+                                mGenreListToString = mGenreSelectSpinner.getSelectedItemsAsString();
+
+                                // ensure the location, genres, and instruments aren't null
+                                if(mMusicianUserAddress != null && mMusicianUserLatLng != null &&
+                                        !mInstrumentListToString.equals("") && !mGenreListToString.equals(""))
                                 {
                                     mDatabase.child("Users/" + mAuth.getCurrentUser().getUid()
                                             + "/accountType").setValue("Musician");
@@ -296,19 +298,26 @@ public class PreSetupActivity extends AppCompatActivity
                                     mDatabase.child("Users/" + mAuth.getCurrentUser().getUid()
                                             + "/homeLocation").setValue(mMusicianUserLatLng);
 
-                                    // Calls the ReturnToMusicianUserMainActivity
-                                    ReturnToMusicianUserMainActivity();
+                                    mDatabase.child("Users/" + mAuth.getCurrentUser().getUid()
+                                             + "/instruments").setValue(mInstrumentListToString);
+
+                                    mDatabase.child("Users/" + mAuth.getCurrentUser().getUid()
+                                             + "/genres").setValue(mGenreListToString);
 
                                     // The hasCompletedSetup field is changed to
                                     // true in the database for the currently logged in user
                                     mDatabase.child("Users/" + mAuth.getCurrentUser().getUid()
                                             + "/hasCompletedSetup").setValue(true);
+
+                                    // Calls the ReturnToMusicianUserMainActivity
+                                    ReturnToMusicianUserMainActivity();
                                 }
 
                                 else
                                 {
                                     Toast.makeText(PreSetupActivity.this,
-                                            "Please ensure you have selected a valid location!",
+                                            "Please ensure you have selected your instruments, genres," +
+                                                    " and a valid location!",
                                             Toast.LENGTH_SHORT).show();
                                 }
                             }
@@ -523,6 +532,19 @@ public class PreSetupActivity extends AppCompatActivity
                     mMusicianUserLatLng = place.getLatLng();
                 }
             }
+        }
+    }
+
+    // Pre enter the user's first and last names if they login through a service that offers
+    // this functionality
+    private void PopulateNameFields()
+    {
+        if(mAuth.getCurrentUser().getDisplayName() != null)
+        {
+            String nameFromAuth = mAuth.getCurrentUser().getDisplayName();
+            splitName = nameFromAuth.split("\\s+");
+            mFirstNameEditText.setText(splitName[0]);
+            mLastNameEditText.setText(splitName[1]);
         }
     }
 
