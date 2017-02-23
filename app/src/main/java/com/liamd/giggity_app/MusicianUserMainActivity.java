@@ -25,13 +25,15 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 import static com.liamd.giggity_app.R.layout.musician_user_activity_main;
 
 public class MusicianUserMainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener
 {
     // Declare visual components
-    private ImageView navigationProfilePictureImageView;
+    private CircleImageView circleImageView;
     private TextView navigationProfileEmailTextView;
     private DrawerLayout drawer;
 
@@ -251,11 +253,11 @@ public class MusicianUserMainActivity extends AppCompatActivity
         Uri photoURI;
         String userEmail;
 
-        navigationProfilePictureImageView = (ImageView) findViewById(R.id.profileImageView);
+        circleImageView = (CircleImageView) findViewById(R.id.profile_image);
         navigationProfileEmailTextView = (TextView) findViewById(R.id.userEmailTextView);
 
         photoURI = FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl();
-        Picasso.with(this).load(photoURI).resize(220, 220).into(navigationProfilePictureImageView);
+        Picasso.with(this).load(photoURI).resize(220, 220).into(circleImageView);
 
         userEmail = FirebaseAuth.getInstance().getCurrentUser().getEmail();
         navigationProfileEmailTextView.setText(userEmail);

@@ -19,17 +19,20 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.facebook.login.LoginManager;
+import com.google.android.gms.ads.formats.NativeAd;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.squareup.picasso.Picasso;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class VenueUserMainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener
 {
     // Declare visual components
-    private ImageView navigationProfilePictureImageView;
+    private CircleImageView circleImageView;
     private TextView navigationProfileEmailTextView;
 
     // Declare Firebase specific variables
@@ -66,14 +69,12 @@ public class VenueUserMainActivity extends AppCompatActivity
         setTitle("Venue User Home");
 
         // Load Home fragment by default
-        //setTitle("Home");
-        //MusicianUserHomeFragment fragment = new MusicianUserHomeFragment();
-        //FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        //fragmentTransaction.replace(R.id.frame, fragment
-                //, "MusicianUserHomeFragment");
-        //fragmentTransaction.commit();
-
-
+        setTitle("Home");
+        VenueUserHomeFragment fragment = new VenueUserHomeFragment();
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.frame, fragment
+                , "VenueUserHomeFragment");
+        fragmentTransaction.commit();
     }
 
     @Override
@@ -124,9 +125,24 @@ public class VenueUserMainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera)
+        if (id == R.id.nav_venue_home)
         {
+            setTitle("Home");
+            VenueUserHomeFragment fragment = new VenueUserHomeFragment();
+            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.frame, fragment
+                    , "VenueUserHomeFragment");
+            fragmentTransaction.commit();
+        }
 
+        else if (id == R.id.nav_create_gig)
+        {
+            setTitle("Create a Gig");
+            VenueUserCreateGigFragment fragment = new VenueUserCreateGigFragment();
+            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.frame, fragment
+                    , "MusicianUserHomeFragment");
+            fragmentTransaction.commit();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -141,11 +157,11 @@ public class VenueUserMainActivity extends AppCompatActivity
         Uri photoURI;
         String userEmail;
 
-        navigationProfilePictureImageView = (ImageView) findViewById(R.id.profileImageView);
+        circleImageView = (CircleImageView) findViewById(R.id.profile_image);
         navigationProfileEmailTextView = (TextView) findViewById(R.id.userEmailTextView);
 
         photoURI = FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl();
-        Picasso.with(this).load(photoURI).resize(220, 220).into(navigationProfilePictureImageView);
+        Picasso.with(this).load(photoURI).resize(220, 220).into(circleImageView);
 
         userEmail = FirebaseAuth.getInstance().getCurrentUser().getEmail();
         navigationProfileEmailTextView.setText(userEmail);

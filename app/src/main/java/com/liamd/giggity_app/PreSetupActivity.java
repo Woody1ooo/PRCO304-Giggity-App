@@ -325,6 +325,10 @@ public class PreSetupActivity extends AppCompatActivity
                             // This block handles venue users
                             else
                             {
+                                // Get the selected items from the spinners as a string to store
+                                // in the database. These can then be parsed later when required.
+                                mGenreListToString = mGenreSelectSpinner.getSelectedItemsAsString();
+
                                 // Creates a venue object to store the venue information generated
                                 // by the place finder
                                 final Venue venue = new Venue();
@@ -358,30 +362,46 @@ public class PreSetupActivity extends AppCompatActivity
                                             // to each place through Google My Business
                                             if(!dataSnapshot.hasChild(mVenueID))
                                             {
-                                                // If the place hasn't already been taken by another
-                                                // user, update the user's entry in the database
-                                                // with the account type selected (venue)
-                                                mDatabase.child("Users/" + mAuth.getCurrentUser().getUid()
-                                                        + "/accountType").setValue("Venue");
+                                                if(!mGenreListToString.equals(""))
+                                                {
+                                                    // If the place hasn't already been taken by another
+                                                    // user, update the user's entry in the database
+                                                    // with the account type selected (venue)
+                                                    mDatabase.child("Users/" + mAuth.getCurrentUser().getUid()
+                                                            + "/accountType").setValue("Venue");
 
-                                                // Add a new entry under the 'Venues' node to store
-                                                // the data stored in the venue object above, with the
-                                                // venue ID as both the identifier, and as an attribute
-                                                mDatabase.child("Venues/" + mVenueID).setValue(venue);
+                                                    // Add a new entry under the 'Venues' node to store
+                                                    // the data stored in the venue object above, with the
+                                                    // venue ID as both the identifier, and as an attribute
+                                                    mDatabase.child("Venues/" + mVenueID).setValue(venue);
 
-                                                mDatabase.child("Users/" + mAuth.getCurrentUser().getUid()
-                                                        + "/firstName").setValue(mFirstNameEditText.getText().toString());
+                                                    // Stores the genres the venue plays
+                                                    mDatabase.child("Venues/" + mVenueID + "/genre")
+                                                            .setValue(mGenreListToString);
 
-                                                mDatabase.child("Users/" + mAuth.getCurrentUser().getUid()
-                                                        + "/lastName").setValue(mLastNameEditText.getText().toString());
+                                                    mDatabase.child("Users/" + mAuth.getCurrentUser().getUid()
+                                                            + "/firstName").setValue(mFirstNameEditText.getText().toString());
 
-                                                // The hasCompletedSetup field is then changed to
-                                                // true in the database for the currently logged in user
-                                                mDatabase.child("Users/" + mAuth.getCurrentUser().getUid()
-                                                        + "/hasCompletedSetup").setValue(true);
+                                                    mDatabase.child("Users/" + mAuth.getCurrentUser().getUid()
+                                                            + "/lastName").setValue(mLastNameEditText.getText().toString());
 
-                                                // Calls the ReturnToVenueUserMainActivity
-                                                ReturnToVenueUserMainActivity();
+
+                                                    // The hasCompletedSetup field is then changed to
+                                                    // true in the database for the currently logged in user
+                                                    mDatabase.child("Users/" + mAuth.getCurrentUser().getUid()
+                                                            + "/hasCompletedSetup").setValue(true);
+
+                                                    // Calls the ReturnToVenueUserMainActivity
+                                                    ReturnToVenueUserMainActivity();
+                                                }
+
+                                                else
+                                                {
+                                                    Toast.makeText(PreSetupActivity.this,
+                                                            "Please ensure you have chosen the genres" +
+                                                                    " your venue is associated with!",
+                                                            Toast.LENGTH_SHORT).show();
+                                                }
                                             }
 
                                             else
@@ -459,11 +479,9 @@ public class PreSetupActivity extends AppCompatActivity
     // Method to display musician user specific visual components
     private void ShowMusicianUserComponents()
     {
-        mGenreSelectSpinner.setVisibility(View.VISIBLE);
-        mGenreHeadingTextView.setVisibility(View.VISIBLE);
         mInstrumentSelectSpinner.setVisibility(View.VISIBLE);
         mInstrumentHeadingTextView.setVisibility(View.VISIBLE);
-        mVenueFinderHeadingTextView.setText("Find Your Location");
+        mVenueFinderHeadingTextView.setText("Find Your Home Location");
         mVenueDetailsTextView.setText("No Location Chosen");
         mPlaceFinderButton.setText("Launch Location Finder");
     }
@@ -471,8 +489,6 @@ public class PreSetupActivity extends AppCompatActivity
     // Method to hide musician user specific visual components
     private void HideMusicianUserComponents()
     {
-        mGenreSelectSpinner.setVisibility(View.GONE);
-        mGenreHeadingTextView.setVisibility(View.GONE);
         mInstrumentSelectSpinner.setVisibility(View.GONE);
         mInstrumentHeadingTextView.setVisibility(View.GONE);
     }
