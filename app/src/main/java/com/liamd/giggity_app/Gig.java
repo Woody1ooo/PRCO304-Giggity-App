@@ -9,7 +9,6 @@ import java.util.Date;
 public class Gig
 {
     private String title;
-    private String venueName;
     private String venueID;
     private Date startDate;
     private Date endDate;
@@ -19,13 +18,12 @@ public class Gig
 
     }
 
-    public Gig(Date endDate, Date startDate, String title, String venueID, String venueName)
+    public Gig(Date endDate, Date startDate, String title, String venueID)
     {
         this.endDate = endDate;
         this.startDate = startDate;
         this.title = title;
         this.venueID = venueID;
-        this.venueName = venueName;
     }
 
     public Date getEndDate()
@@ -66,15 +64,5 @@ public class Gig
     public void setVenueID(String venueID)
     {
         this.venueID = venueID;
-    }
-
-    public String getVenueName()
-    {
-        return venueName;
-    }
-
-    public void setVenueName(String venueName)
-    {
-        this.venueName = venueName;
     }
 }
