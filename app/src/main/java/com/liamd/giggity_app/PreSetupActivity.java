@@ -385,6 +385,9 @@ public class PreSetupActivity extends AppCompatActivity
                                                     mDatabase.child("Users/" + mAuth.getCurrentUser().getUid()
                                                             + "/lastName").setValue(mLastNameEditText.getText().toString());
 
+                                                    mDatabase.child("Users/" + mAuth.getCurrentUser().getUid()
+                                                            +"/venueID").setValue(mVenueID);
+
 
                                                     // The hasCompletedSetup field is then changed to
                                                     // true in the database for the currently logged in user
