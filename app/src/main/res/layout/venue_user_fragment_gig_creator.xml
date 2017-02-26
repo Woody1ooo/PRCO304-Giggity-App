@@ -31,7 +31,7 @@
                 android:inputType="textPersonName"
                 android:paddingLeft="10dp"
                 android:ems="10"
-                android:id="@+id/gigNameTextView"/>
+                android:id="@+id/gigNameEditText"/>
 
             <TextView
                 android:text="Venue"
@@ -50,7 +50,7 @@
                 android:paddingLeft="10dp"
                 android:text=""
                 android:ems="10"
-                android:id="@+id/VenueNameTextView"/>
+                android:id="@+id/VenueNameEditText"/>
 
             <TextView
                 android:text="Start Date"
