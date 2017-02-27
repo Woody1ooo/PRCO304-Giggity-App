@@ -147,6 +147,15 @@ public class VenueUserMainActivity extends AppCompatActivity
             fragmentTransaction.commit();
         }
 
+        else if(id == R.id.nav_my_gigs)
+        {
+            setTitle("My Gigs");
+            VenueUserViewGigsFragment fragment = new VenueUserViewGigsFragment();
+            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.frame, fragment, "VenueUserViewGigsFragment");
+            fragmentTransaction.commit();
+        }
+
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;

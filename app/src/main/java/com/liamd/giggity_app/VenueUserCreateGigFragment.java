@@ -419,7 +419,7 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
                     mDatabase.child("Gigs/").push().setValue(gigToInsert);
 
                     // The user is then taken to the home fragment
-                    ReturnToHome();
+                    ReturnToMyGigs();
                 }
 
                 else
@@ -452,7 +452,7 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
                         mDatabase.child("Gigs/").push().setValue(gigToInsert);
 
                         // The user is then taken to the home fragment
-                        ReturnToHome();
+                        ReturnToMyGigs();
                     }
                 }
             }
@@ -464,7 +464,6 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
         }
     }
 
-
     // Android seems to think this method is required even
     // though it's implemented elsewhere. If it's removed it
     // throws an error so it's been left in for that purpose.
@@ -474,11 +473,12 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
 
     }
 
-    private void ReturnToHome()
+    private void ReturnToMyGigs()
     {
         // The user is then taken to the home fragment
+        getActivity().setTitle("My Gigs");
         final FragmentTransaction ft = getFragmentManager().beginTransaction();
-        ft.replace(R.id.frame, new VenueUserHomeFragment(), "VenueUserHomeFragment");
+        ft.replace(R.id.frame, new VenueUserViewGigsFragment(), "VenueUserViewGigsFragment");
         ft.commit();
     }
 }
