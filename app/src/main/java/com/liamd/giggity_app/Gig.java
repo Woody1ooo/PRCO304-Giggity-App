@@ -12,6 +12,7 @@ public class Gig
     private String venueID;
     private Date startDate;
     private Date endDate;
+    private String gigId;
 
     public Gig()
     {
@@ -24,6 +25,15 @@ public class Gig
         this.startDate = startDate;
         this.title = title;
         this.venueID = venueID;
+    }
+
+    public Gig(Date endDate, Date startDate, String title, String venueID, String gigId)
+    {
+        this.endDate = endDate;
+        this.startDate = startDate;
+        this.title = title;
+        this.venueID = venueID;
+        this.gigId = gigId;
     }
 
     public Date getEndDate()
@@ -64,5 +74,15 @@ public class Gig
     public void setVenueID(String venueID)
     {
         this.venueID = venueID;
+    }
+
+    public String getGigId()
+    {
+        return gigId;
+    }
+
+    public void setGigId(String gigId)
+    {
+        this.gigId = gigId;
     }
 }

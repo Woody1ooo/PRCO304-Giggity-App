@@ -1,11 +1,15 @@
 package com.liamd.giggity_app;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Adapter;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -31,6 +35,7 @@ public class VenueUserViewGigsFragment extends Fragment
     private List<Gig> mListOfUsersGigs = new ArrayList<>();
 
     private ListView mGigsListView;
+    private GigsAdapter adapter;
 
     // Declare Firebase specific variables
     private FirebaseAuth mAuth;
@@ -75,15 +80,19 @@ public class VenueUserViewGigsFragment extends Fragment
                 {
                     Gig gig;
                     gig = child.getValue(Gig.class);
+
+                    // This line ensures that we have the gig ID to pass to the
+                    // gig details fragment
+                    gig.setGigId(child.getKey());
                     mListOfGigs.add(gig);
                 }
 
                 // We then iterate through the list of gigObjects populated above
                 // to find any gigs at the user's venue. If there are any, these are
                 // added to a separate list of gigs specific to the user
-                for(int i = 0; i < mListOfGigs.size(); i++)
+                for (int i = 0; i < mListOfGigs.size(); i++)
                 {
-                    if(mListOfGigs.get(i).getVenueID().equals(mVenueId))
+                    if (mListOfGigs.get(i).getVenueID().equals(mVenueId))
                     {
                         // These are then added to a separate list of just dates
                         mListOfUsersGigs.add(mListOfGigs.get(i));
@@ -94,7 +103,7 @@ public class VenueUserViewGigsFragment extends Fragment
                 Collections.sort(mListOfUsersGigs, new CustomComparator());
 
                 // Using the custom GigsAdapter, the list of users gigs can be displayed
-                GigsAdapter adapter = new GigsAdapter(getActivity(), R.layout.gig_list, mListOfUsersGigs);
+                adapter = new GigsAdapter(getActivity(), R.layout.gig_list, mListOfUsersGigs);
                 mGigsListView.setAdapter(adapter);
             }
 
@@ -105,7 +114,41 @@ public class VenueUserViewGigsFragment extends Fragment
             }
         });
 
+        mGigsListView.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id)
+            {
+                // This returns the selected gig from the list view
+                Gig selectedGig = (Gig)mGigsListView.getItemAtPosition(position);
+
+                // This then stores the id of the selected gig in a bundle which is then
+                // passed to the result fragment to display the gig details
+                VenueUserViewGigDetailsFragment fragment = new VenueUserViewGigDetailsFragment();
+                Bundle arguments = new Bundle();
+                arguments.putString("GigID", selectedGig.getGigId());
+                arguments.putString("GigTitle", selectedGig.getTitle());
+                arguments.putString("GigStartDate", selectedGig.getStartDate().toString());
+                arguments.putString("GigEndDate", selectedGig.getEndDate().toString());
+                fragment.setArguments(arguments);
+
+                // Creates a new fragment transaction to display the details of the selected
+                // gig. Some custom animation has been added also.
+                FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager()
+                        .beginTransaction();
+                fragmentTransaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left);
+                fragmentTransaction.replace(R.id.frame, fragment, "VenueUserGigDetailsFragment")
+                        .addToBackStack(null).commit();
+
+                // These must be cleared to prevent duplication as the database is called again
+                // when the fragment is returned to. This is required to update any changes made
+                // to the gigs by the user
+                mListOfGigs.clear();
+                mListOfUsersGigs.clear();
+                adapter.clear();
+            }
+        });
+
         return fragmentView;
     }
-
 }
