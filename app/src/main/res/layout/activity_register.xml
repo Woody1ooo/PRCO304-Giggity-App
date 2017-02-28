@@ -12,59 +12,80 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.liamd.giggity_app.RegisterActivity">
 
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:inputType="textEmailAddress"
-        android:ems="10"
-        android:id="@+id/emailEditText"
-        android:hint="Email"
-        android:layout_below="@+id/imageView3"
-        android:layout_alignStart="@+id/imageView3"
-        android:layout_alignEnd="@+id/imageView3"
-        android:selectAllOnFocus="true"/>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:inputType="textPassword"
-        android:ems="10"
-        android:id="@+id/passwordEditText"
-        android:hint="Password"
-        android:layout_below="@+id/emailEditText"
-        android:layout_alignStart="@+id/emailEditText"
-        android:layout_alignEnd="@+id/emailEditText"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:srcCompat="@drawable/logolarge"
-        android:layout_marginTop="15dp"
-        android:id="@+id/imageView3"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"/>
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                app:srcCompat="@drawable/logonew"
+                android:id="@+id/imageView3"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="12dp"
+                android:layout_marginTop="10dp"/>
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textEmailAddress"
+                android:ems="10"
+                android:id="@+id/emailEditText"
+                android:hint="Email"
+                android:layout_below="@+id/imageView3"
+                android:layout_alignStart="@+id/imageView3"
+                android:layout_alignEnd="@+id/imageView3"
+                android:selectAllOnFocus="true"
+                android:layout_marginLeft="40dp"
+                android:layout_marginRight="40dp"/>/>
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPassword"
+                android:ems="10"
+                android:id="@+id/passwordConfirmEditText"
+                android:hint="Confirm Password"
+                android:layout_below="@+id/passwordEditText"
+                android:layout_alignStart="@+id/passwordEditText"
+                android:layout_alignEnd="@+id/passwordEditText"
+                android:layout_marginLeft="40dp"
+                android:layout_marginRight="40dp"/>/>
+
+            <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword"
+            android:ems="10"
+            android:id="@+id/passwordEditText"
+            android:hint="Password"
+            android:layout_below="@+id/emailEditText"
+            android:layout_alignStart="@+id/emailEditText"
+            android:layout_alignEnd="@+id/emailEditText"
+            android:layout_marginLeft="40dp"
+            android:layout_marginRight="40dp"/>/>
+
+            <Button
+                android:text="Register"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/registerButton"
+                android:background="@color/common_google_signin_btn_text_dark_focused"
+                android:textColor="@color/cardview_light_background"
+                android:layout_below="@+id/passwordConfirmEditText"
+                android:layout_alignStart="@+id/passwordConfirmEditText"
+                android:layout_alignEnd="@+id/imageView3"
+                android:layout_marginLeft="40dp"
+                android:layout_marginRight="40dp"/>/>
+
+        </LinearLayout>
+    </ScrollView>
 
 
-
-    <Button
-        android:text="Register"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/registerButton"
-        android:background="@color/common_google_signin_btn_text_dark_focused"
-        android:textColor="@color/cardview_light_background"
-        android:layout_below="@+id/passwordConfirmEditText"
-        android:layout_alignStart="@+id/passwordConfirmEditText"
-        android:layout_alignEnd="@+id/imageView3"/>
-
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:inputType="textPassword"
-        android:ems="10"
-        android:id="@+id/passwordConfirmEditText"
-        android:hint="Confirm Password"
-        android:layout_below="@+id/passwordEditText"
-        android:layout_alignStart="@+id/passwordEditText"
-        android:layout_alignEnd="@+id/passwordEditText"/>
 </RelativeLayout>
