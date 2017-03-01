@@ -72,7 +72,7 @@
 
             <Button
                 android:text="Select a start date"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/LaunchStartDatePickerButton"
                 android:layout_marginTop="20dp"
@@ -81,7 +81,9 @@
                 android:background="@color/colorPrimaryDark"
                 android:textColor="@color/cardview_light_background"
                 android:layout_gravity="center"
-                android:textSize="14sp"/>
+                android:textSize="14sp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"/>
 
             <TextView
                 android:text="Finish Date"
@@ -103,7 +105,7 @@
 
             <Button
                 android:text="Select a finish date"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/LaunchFinishDatePickerButton"
                 android:layout_marginTop="20dp"
@@ -112,7 +114,9 @@
                 android:background="@color/colorPrimaryDark"
                 android:textColor="@color/cardview_light_background"
                 android:layout_gravity="center"
-                android:textSize="14sp"/>
+                android:textSize="14sp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"/>
 
             <TextView
                 android:text="Start Time"
@@ -134,7 +138,7 @@
 
             <Button
                 android:text="Select a start time"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/LaunchStartTimePickerButton"
                 android:layout_marginTop="20dp"
@@ -143,7 +147,9 @@
                 android:background="@color/colorPrimaryDark"
                 android:textColor="@color/cardview_light_background"
                 android:layout_gravity="center"
-                android:textSize="14sp"/>
+                android:textSize="14sp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"/>
 
             <TextView
                 android:text="Finish Time"
@@ -165,7 +171,7 @@
 
             <Button
                 android:text="Select a finish time"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/LaunchFinishTimePickerButton"
                 android:layout_marginTop="20dp"
@@ -174,7 +180,10 @@
                 android:background="@color/colorPrimaryDark"
                 android:textColor="@color/cardview_light_background"
                 android:layout_gravity="center"
-                android:textSize="14sp"/>
+                android:textSize="14sp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginBottom="20dp"/>
 
             <Button
                 android:text="Create Gig"

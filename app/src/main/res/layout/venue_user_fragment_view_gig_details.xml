@@ -52,9 +52,9 @@
 
         <Button
             android:text="Update start date"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/LaunchStartDatePickerButton"
+            android:id="@+id/UpdateStartDatePickerButton"
             android:layout_marginTop="20dp"
             android:paddingRight="10dp"
             android:paddingLeft="10dp"
@@ -83,9 +83,9 @@
 
         <Button
             android:text="Update finish date"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/LaunchFinishDatePickerButton"
+            android:id="@+id/UpdateFinishDatePickerButton"
             android:layout_marginTop="20dp"
             android:paddingRight="10dp"
             android:paddingLeft="10dp"
@@ -114,9 +114,9 @@
 
         <Button
             android:text="Update start time"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/LaunchStartTimePickerButton"
+            android:id="@+id/UpdateStartTimePickerButton"
             android:layout_marginTop="20dp"
             android:paddingRight="10dp"
             android:paddingLeft="10dp"
@@ -145,21 +145,22 @@
 
         <Button
             android:text="Update finish time"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/LaunchFinishTimePickerButton"
+            android:id="@+id/UpdateFinishTimePickerButton"
             android:layout_marginTop="20dp"
             android:paddingRight="10dp"
             android:paddingLeft="10dp"
             android:background="@color/colorPrimaryDark"
             android:textColor="@color/cardview_light_background"
             android:layout_gravity="center"
-            android:textSize="14sp"/>
+            android:textSize="14sp"
+            android:layout_marginBottom="20dp"/>
         <Button
             android:text="Update Gig"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/createGigButton"
+            android:id="@+id/UpdateGigButton"
             android:background="@color/colorPrimary"
             android:textColor="@color/cardview_light_background"/>
     </LinearLayout>
