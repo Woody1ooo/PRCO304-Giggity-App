@@ -3,8 +3,10 @@ package com.liamd.giggity_app;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.app.TimePickerDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -18,6 +20,7 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.google.android.gms.nearby.messages.internal.Update;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -34,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 
 /**
@@ -54,7 +58,6 @@ public class VenueUserViewGigDetailsFragment extends Fragment implements DatePic
     private Button mUpdateGigButton;
 
     // Declare Firebase specific variables
-    private FirebaseAuth mAuth;
     private DatabaseReference mDatabase;
 
     // Declare existing start date variables
@@ -70,7 +73,6 @@ public class VenueUserViewGigDetailsFragment extends Fragment implements DatePic
     private int mFormattedFinishMonth;
 
     // Declare new start date variables
-    private Date mUpdatedStartDate;
     private int mUpdatedStartHour;
     private int mUpdatedStartMinute;
     private int mUpdatedStartYear;
@@ -78,7 +80,6 @@ public class VenueUserViewGigDetailsFragment extends Fragment implements DatePic
     private int mUpdatedStartDay;
 
     // Declare new finish date variables
-    private Date mUpdatedFinishDate;
     private int mUpdatedFinishHour;
     private int mUpdatedFinishMinute;
     private int mUpdatedFinishYear;
@@ -90,7 +91,8 @@ public class VenueUserViewGigDetailsFragment extends Fragment implements DatePic
     private String mVenueId;
     private List<Gig> mListOfVenueGigs = new ArrayList<>();
     private List<Date> mListOfGigDates = new ArrayList<>();
-    private Boolean isStartDate;
+    private boolean isStartDate;
+    private boolean goodDates = false;
 
     // These variables determine which elements of the gig have been edited
     private Boolean isStartDateEdited = false;
@@ -98,8 +100,9 @@ public class VenueUserViewGigDetailsFragment extends Fragment implements DatePic
     private Boolean isStartTimeEdited = false;
     private Boolean isFinishTimeEdited = false;
 
-    Date currentlySetStartDate;
-    Date currentlySetEndDate;
+    // These variables hold the converted month values e.g. from Jan to 01
+    private String mExistingStartDateConvertedMonth;
+    private String mExistingFinishDateConvertedMonth;
 
 
     public VenueUserViewGigDetailsFragment()
@@ -131,9 +134,6 @@ public class VenueUserViewGigDetailsFragment extends Fragment implements DatePic
         mFinishTimeSelectedTextView = (TextView) fragmentView.findViewById(R.id.FinishTimeSelectedLabel);
 
         mUpdateGigButton = (Button) fragmentView.findViewById(R.id.UpdateGigButton);
-
-        // Creates a reference to Firebase
-        mAuth = FirebaseAuth.getInstance();
 
         // Creates a reference to the Firebase database
         mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -240,13 +240,109 @@ public class VenueUserViewGigDetailsFragment extends Fragment implements DatePic
         mExistingStartDate = getArguments().getString("GigStartDate");
         mExistingFinishDate = getArguments().getString("GigEndDate");
 
+        // These lines splits the existing dates into two string arrays
+        // so the individual date elements can be extracted and formatted into
+        // the correct format
+        String[] mExistingStartDateSplit = mExistingStartDate.split("\\s+");
+        String[] mExistingFinishDateSplit = mExistingFinishDate.split("\\s+");
+
+        // These switch statements facilitate the conversion from
+        // Jan to 01 for example
+        switch (mExistingStartDateSplit[1])
+        {
+            case "Jan":
+                mExistingStartDateConvertedMonth = "01";
+                break;
+            case "Feb":
+                mExistingStartDateConvertedMonth = "02";
+                break;
+            case "Mar":
+                mExistingStartDateConvertedMonth = "03";
+                break;
+            case "Apr":
+                mExistingStartDateConvertedMonth = "04";
+                break;
+            case "May":
+                mExistingStartDateConvertedMonth = "05";
+                break;
+            case "Jun":
+                mExistingStartDateConvertedMonth = "06";
+                break;
+            case "Jul":
+                mExistingStartDateConvertedMonth = "07";
+                break;
+            case "Aug":
+                mExistingStartDateConvertedMonth = "08";
+                break;
+            case "Sep":
+                mExistingStartDateConvertedMonth = "09";
+                break;
+            case "Oct":
+                mExistingStartDateConvertedMonth = "10";
+                break;
+            case "Nov":
+                mExistingStartDateConvertedMonth = "11";
+                break;
+            case "Dec":
+                mExistingStartDateConvertedMonth = "12";
+                break;
+        }
+
+        switch (mExistingFinishDateSplit[1])
+        {
+            case "Jan":
+                mExistingFinishDateConvertedMonth = "01";
+                break;
+            case "Feb":
+                mExistingFinishDateConvertedMonth = "02";
+                break;
+            case "Mar":
+                mExistingFinishDateConvertedMonth = "03";
+                break;
+            case "Apr":
+                mExistingFinishDateConvertedMonth = "04";
+                break;
+            case "May":
+                mExistingFinishDateConvertedMonth = "05";
+                break;
+            case "Jun":
+                mExistingFinishDateConvertedMonth = "06";
+                break;
+            case "Jul":
+                mExistingFinishDateConvertedMonth = "07";
+                break;
+            case "Aug":
+                mExistingFinishDateConvertedMonth = "08";
+                break;
+            case "Sep":
+                mExistingFinishDateConvertedMonth = "09";
+                break;
+            case "Oct":
+                mExistingFinishDateConvertedMonth = "10";
+                break;
+            case "Nov":
+                mExistingFinishDateConvertedMonth = "11";
+                break;
+            case "Dec":
+                mExistingFinishDateConvertedMonth = "12";
+                break;
+        }
+
         // This parses the dates from a String back into a Date object
-        SimpleDateFormat format = new SimpleDateFormat("EEE MMM dd kk:mm:ss z yyyy");
+        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss.SSS");
         try
         {
-            mParsedStartDate = format.parse(mExistingStartDate);
-            mParsedFinishDate = format.parse(mExistingFinishDate);
+            // The elements of the split string are then concatenated together
+            // to form the correct date format where they are then converted into
+            // date objects and stored within mParsedStartDate and mParsedFinishDate
+            String startDateToParse = mExistingStartDateSplit[2] + "/" + mExistingStartDateConvertedMonth + "/" + mExistingStartDateSplit[5] + " " + mExistingStartDateSplit[3] + "." + "000";
+            String endDateToParse = mExistingFinishDateSplit[2] + "/" + mExistingFinishDateConvertedMonth + "/" + mExistingFinishDateSplit[5] + " " + mExistingFinishDateSplit[3] + "." + "000";
+            mParsedStartDate = format.parse(startDateToParse);
+            mParsedFinishDate = format.parse(endDateToParse);
 
+            // These variables are then used to populate the visual components.
+            // The additions at the end are required due to the....unique way that
+            // java stores dates...
             mFormattedStartYear = mParsedStartDate.getYear() + 1900;
             mFormattedStartMonth = mParsedStartDate.getMonth() + 1;
 
@@ -266,8 +362,6 @@ public class VenueUserViewGigDetailsFragment extends Fragment implements DatePic
         mStartTimeSelectedTextView.setText(mParsedStartDate.getHours() + ":" + mParsedStartDate.getMinutes());
         mFinishTimeSelectedTextView.setText(mParsedFinishDate.getHours() + ":" + mParsedFinishDate.getMinutes());
     }
-
-
 
     private void StartDateShowCalendar()
     {
@@ -429,165 +523,492 @@ public class VenueUserViewGigDetailsFragment extends Fragment implements DatePic
         }
     }
 
-    // This method takes all the data and creates a gig in the database
+    // This method handles what happens when a gig is updated. Because of the way this needs to be
+    // handled, the only way I could feasibly manage this was to take into account each edit possibility
+    // and then update only these features accordingly
     private void UpdateGig()
     {
-        try
+        // This dialog is created to confirm that the users want to edit the fields
+        // they have chosen
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle("Save Gig Changes");
+        builder.setMessage("Are you sure you wish to save these changes?");
+        builder.setPositiveButton("Save", new DialogInterface.OnClickListener()
         {
-            // The start date currently held by the selected gig
-            currentlySetStartDate = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss.SSS")
-                    .parse(mParsedFinishDate.getDate() + "/" + mParsedFinishDate.getMonth()
-                            + "/" + mParsedFinishDate.getYear() + " " + mParsedFinishDate.getHours()
-                            + ":" + mParsedFinishDate.getMinutes() + ":" + 00.000);
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i)
+            {
+                if (!isStartDateEdited && !isFinishDateEdited && !isStartTimeEdited && !isFinishTimeEdited && TitleIsCompleted())
+                {
+                    mDatabase.child("Gigs/" + mGigID + "/" + "title").setValue(mGigNameEditText.getText().toString());
+                    mDatabase.child("Gigs/" + mGigID + "/" + "venueID").setValue(mVenueId);
+                }
 
-            // The end date currently held by the selected gig
-            currentlySetEndDate = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss.SSS")
-                    .parse(mParsedStartDate.getDate() + "/" + mParsedStartDate.getMonth()
-                            + "/" + mParsedStartDate.getYear() + " " + mParsedStartDate.getHours()
-                    + ":" + mParsedStartDate.getMinutes() + ":" + 00.000);
-        }
-        catch (ParseException e)
+                if (isStartDateEdited && isFinishDateEdited && isStartTimeEdited && isFinishTimeEdited && TitleIsCompleted())
+                {
+                    Date newStartDate;
+                    Date newEndDate;
+
+                    try
+                    {
+                        newStartDate = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss.SSS")
+                                .parse(mUpdatedStartDay + "/" + mUpdatedStartMonth
+                                        + "/" + mUpdatedStartYear + " " + mUpdatedStartHour
+                                        + ":" + mUpdatedStartMinute + ":" + 00.000);
+
+                        newEndDate = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss.SSS")
+                                .parse(mUpdatedFinishDay + "/" + mUpdatedFinishMonth
+                                        + "/" + mUpdatedFinishYear + " " + mUpdatedFinishHour
+                                        + ":" + mUpdatedFinishMinute + ":" + 00.000);
+
+                        //newStartDate.setMonth(newStartDate.getMonth() + 1);
+                        //newStartDate.setYear(newStartDate.getYear() + 1900);
+                        //newEndDate.setMonth(newEndDate.getMonth() + 1);
+                        //newEndDate.setYear(newEndDate.getYear() + 1900);
+
+                        if(CheckDates(newStartDate, newEndDate))
+                        {
+                            mDatabase.child("Gigs/" + mGigID + "/" + "title").setValue(mGigNameEditText.getText().toString());
+                            mDatabase.child("Gigs/" + mGigID + "/" + "venueID").setValue(mVenueId);
+                            mDatabase.child("Gigs/" + mGigID + "/" + "startDate").setValue(newStartDate);
+                            mDatabase.child("Gigs/" + mGigID + "/" + "endDate").setValue(newEndDate);
+                        }
+
+                        else
+                        {
+                            Toast.makeText(getActivity(),
+                                    "Please ensure the start dates and times are before the end date" +
+                                            "and times!",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+
+                    }
+                    catch (ParseException e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
+
+                else if (isStartDateEdited && !isFinishDateEdited && isStartTimeEdited && !isFinishTimeEdited && TitleIsCompleted())
+                {
+                    Date newStartDate;
+
+                    try
+                    {
+                        newStartDate = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss.SSS")
+                                .parse(mUpdatedStartDay + "/" + mUpdatedStartMonth
+                                        + "/" + mUpdatedStartYear + " " + mUpdatedStartHour
+                                        + ":" + mUpdatedStartMinute + ":" + 00.000);
+
+                        //newStartDate.setMonth(newStartDate.getMonth() + 1);
+                        //newStartDate.setYear(newStartDate.getYear() + 1900);
+
+                        if(CheckDates(newStartDate, mParsedFinishDate))
+                        {
+                            mDatabase.child("Gigs/" + mGigID + "/" + "title").setValue(mGigNameEditText.getText().toString());
+                            mDatabase.child("Gigs/" + mGigID + "/" + "startDate").setValue(newStartDate);
+                            mDatabase.child("Gigs/" + mGigID + "/" + "venueID").setValue(mVenueId);
+                        }
+
+                        else
+                        {
+                            Toast.makeText(getActivity(),
+                                    "Please ensure the start dates and times are before the end date" +
+                                            "and times!",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+
+                    } catch (ParseException e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
+
+                else if (!isStartDateEdited && isFinishDateEdited && !isStartTimeEdited && isFinishTimeEdited && TitleIsCompleted())
+                {
+                    Date newEndDate;
+
+                    try
+                    {
+                        newEndDate = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss.SSS")
+                                .parse(mUpdatedFinishDay + "/" + mUpdatedFinishMonth
+                                        + "/" + mUpdatedFinishYear + " " + mUpdatedFinishHour
+                                        + ":" + mUpdatedFinishMinute + ":" + 00.000);
+
+                        //newEndDate.setMonth(newEndDate.getMonth() + 1);
+                        //newEndDate.setYear(newEndDate.getYear() + 1900);
+
+                        if(CheckDates(mParsedStartDate, newEndDate))
+                        {
+                            mDatabase.child("Gigs/" + mGigID + "/" + "title").setValue(mGigNameEditText.getText().toString());
+                            mDatabase.child("Gigs/" + mGigID + "/" + "endDate").setValue(newEndDate);
+                            mDatabase.child("Gigs/" + mGigID + "/" + "venueID").setValue(mVenueId);
+                        }
+
+                        else
+                        {
+                            Toast.makeText(getActivity(),
+                                    "Please ensure the start dates and times are before the end date" +
+                                            "and times!",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    } catch (ParseException e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
+
+                // If both the dates are edited, but neither of the times
+                else if (isStartDateEdited && isFinishDateEdited && !isStartTimeEdited && !isFinishTimeEdited && TitleIsCompleted())
+                {
+                    Date newStartDateWithExistingTime;
+                    Date newFinishDateWithExistingTime;
+
+                    try
+                    {
+                        newStartDateWithExistingTime = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss.SSS")
+                                .parse(mUpdatedStartDay + "/" + mUpdatedStartMonth
+                                        + "/" + mUpdatedStartYear + " " + mParsedStartDate.getHours()
+                                        + ":" + mParsedStartDate.getMinutes() + ":" + 00.000);
+
+                        newFinishDateWithExistingTime = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss.SSS")
+                                .parse(mUpdatedFinishDay + "/" + mUpdatedFinishMonth
+                                        + "/" + mUpdatedFinishYear + " " + mParsedFinishDate.getHours()
+                                        + ":" + mParsedFinishDate.getMinutes() + ":" + 00.000);
+
+                        //newStartDateWithExistingTime.setMonth(newStartDateWithExistingTime.getMonth() + 1);
+                        //newStartDateWithExistingTime.setYear(newStartDateWithExistingTime.getYear() + 1900);
+                        //newFinishDateWithExistingTime.setMonth(newFinishDateWithExistingTime.getMonth() + 1);
+                        //newFinishDateWithExistingTime.setYear(newFinishDateWithExistingTime.getYear() + 1900);
+
+
+                        if(CheckDates(newStartDateWithExistingTime, newFinishDateWithExistingTime))
+                        {
+                            mDatabase.child("Gigs/" + mGigID + "/" + "title").setValue(mGigNameEditText.getText().toString());
+                            mDatabase.child("Gigs/" + mGigID + "/" + "startDate").setValue(newStartDateWithExistingTime);
+                            mDatabase.child("Gigs/" + mGigID + "/" + "endDate").setValue(newFinishDateWithExistingTime);
+                            mDatabase.child("Gigs/" + mGigID + "/" + "venueID").setValue(mVenueId);
+                        }
+                        else
+                        {
+                            Toast.makeText(getActivity(),
+                                    "Please ensure the start dates and times are before the end date" +
+                                            "and times!",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    } catch (ParseException e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
+
+                else if (!isStartDateEdited && !isFinishDateEdited && isStartTimeEdited && isFinishTimeEdited && TitleIsCompleted())
+                {
+                    Date newStartTimeWithExistingDate;
+                    Date newFinishTimeWithExistingDate;
+
+                    try
+                    {
+                        newStartTimeWithExistingDate = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss.SSS")
+                                .parse(mParsedStartDate.getDate() + "/" + mParsedStartDate.getMonth()
+                                        + "/" + mParsedStartDate.getYear() + " " + mUpdatedStartHour
+                                        + ":" + mUpdatedStartMinute + ":" + 00.000);
+
+                        newFinishTimeWithExistingDate = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss.SSS")
+                                .parse(mParsedFinishDate.getDate() + "/" + mParsedFinishDate.getMonth()
+                                        + "/" + mParsedFinishDate.getYear() + " " + mUpdatedFinishHour
+                                        + ":" + mUpdatedFinishMinute + ":" + 00.000);
+
+                        newStartTimeWithExistingDate.setMonth(newStartTimeWithExistingDate.getMonth() + 1);
+                        newStartTimeWithExistingDate.setYear(newStartTimeWithExistingDate.getYear() + 1900);
+                        newFinishTimeWithExistingDate.setMonth(newFinishTimeWithExistingDate.getMonth() + 1);
+                        newFinishTimeWithExistingDate.setYear(newFinishTimeWithExistingDate.getYear() + 1900);
+
+                        if(CheckDates(newStartTimeWithExistingDate, newFinishTimeWithExistingDate))
+                        {
+                            mDatabase.child("Gigs/" + mGigID + "/" + "title").setValue(mGigNameEditText.getText().toString());
+                            mDatabase.child("Gigs/" + mGigID + "/" + "startDate").setValue(newStartTimeWithExistingDate);
+                            mDatabase.child("Gigs/" + mGigID + "/" + "endDate").setValue(newFinishTimeWithExistingDate);
+                            mDatabase.child("Gigs/" + mGigID + "/" + "venueID").setValue(mVenueId);
+                        }
+                        else
+                        {
+                            Toast.makeText(getActivity(),
+                                    "Please ensure the start dates and times are before the end date" +
+                                            "and times!",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+
+                    } catch (ParseException e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
+
+                else if (!isStartDateEdited && isFinishDateEdited && isStartTimeEdited && !isFinishTimeEdited && TitleIsCompleted())
+                {
+                    Date newStartTimeWithExistingDate;
+                    Date newFinishDateWithExistingTime;
+
+                    try
+                    {
+                        newStartTimeWithExistingDate = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss.SSS")
+                                .parse(mParsedStartDate.getDate() + "/" + mParsedStartDate.getMonth()
+                                        + "/" + mParsedStartDate.getYear() + " " + mUpdatedStartHour
+                                        + ":" + mUpdatedStartMinute + ":" + 00.000);
+
+                        newFinishDateWithExistingTime = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss.SSS")
+                                .parse(mUpdatedFinishDay + "/" + mUpdatedFinishMonth
+                                        + "/" + mUpdatedFinishYear + " " + mParsedFinishDate.getHours()
+                                        + ":" + mParsedFinishDate.getMinutes() + ":" + 00.000);
+
+                        newStartTimeWithExistingDate.setMonth(newStartTimeWithExistingDate.getMonth() + 1);
+                        newStartTimeWithExistingDate.setYear(newStartTimeWithExistingDate.getYear() + 1900);
+                        //newFinishDateWithExistingTime.setMonth(newFinishDateWithExistingTime.getMonth() + 1);
+                        //newFinishDateWithExistingTime.setYear(newFinishDateWithExistingTime.getYear() + 1900);
+
+                        if(CheckDates(newStartTimeWithExistingDate, newFinishDateWithExistingTime))
+                        {
+                            mDatabase.child("Gigs/" + mGigID + "/" + "title").setValue(mGigNameEditText.getText().toString());
+                            mDatabase.child("Gigs/" + mGigID + "/" + "startDate").setValue(newStartTimeWithExistingDate);
+                            mDatabase.child("Gigs/" + mGigID + "/" + "endDate").setValue(newFinishDateWithExistingTime);
+                            mDatabase.child("Gigs/" + mGigID + "/" + "venueID").setValue(mVenueId);
+                        }
+
+                        else
+                        {
+                            Toast.makeText(getActivity(),
+                                    "Please ensure the start dates and times are before the end date" +
+                                            "and times!",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    } catch (ParseException e)
+                    {
+                        e.printStackTrace();
+                    }
+
+                }
+
+                else if (isStartDateEdited && !isFinishDateEdited && !isStartTimeEdited && isFinishTimeEdited && TitleIsCompleted())
+                {
+                    Date newStartDateWithExistingTime;
+                    Date newFinishTimeWithExistingDate;
+
+                    try
+                    {
+                        newStartDateWithExistingTime = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss.SSS")
+                                .parse(mUpdatedStartDay + "/" + mUpdatedStartMonth
+                                        + "/" + mUpdatedStartYear + " " + mParsedStartDate.getHours()
+                                        + ":" + mParsedStartDate.getMinutes() + ":" + 00.000);
+
+                        newFinishTimeWithExistingDate = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss.SSS")
+                                .parse(mParsedFinishDate.getDate() + "/" + mParsedFinishDate.getMonth()
+                                        + "/" + mParsedFinishDate.getYear() + " " + mUpdatedFinishHour
+                                        + ":" + mUpdatedFinishMinute + ":" + 00.000);
+
+                        //newStartDateWithExistingTime.setMonth(newStartDateWithExistingTime.getMonth() + 1);
+                        //newStartDateWithExistingTime.setYear(newStartDateWithExistingTime.getYear() + 1900);
+                        newFinishTimeWithExistingDate.setMonth(newFinishTimeWithExistingDate.getMonth() + 1);
+                        newFinishTimeWithExistingDate.setYear(newFinishTimeWithExistingDate.getYear() + 1900);
+
+                        if(CheckDates(newStartDateWithExistingTime, newFinishTimeWithExistingDate))
+                        {
+                            mDatabase.child("Gigs/" + mGigID + "/" + "title").setValue(mGigNameEditText.getText().toString());
+                            mDatabase.child("Gigs/" + mGigID + "/" + "startDate").setValue(newStartDateWithExistingTime);
+                            mDatabase.child("Gigs/" + mGigID + "/" + "endDate").setValue(newFinishTimeWithExistingDate);
+                            mDatabase.child("Gigs/" + mGigID + "/" + "venueID").setValue(mVenueId);
+                        }
+
+                        else
+                        {
+                            Toast.makeText(getActivity(),
+                                    "Please ensure the start dates and times are before the end date" +
+                                            "and times!",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    } catch (ParseException e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
+
+                else if (!isStartDateEdited && !isFinishDateEdited && !isStartTimeEdited && isFinishTimeEdited && TitleIsCompleted())
+                {
+                    Date newFinishTimeWithExistingDate;
+
+                    try
+                    {
+                        newFinishTimeWithExistingDate = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss.SSS")
+                                .parse(mParsedFinishDate.getDate() + "/" + mParsedFinishDate.getMonth()
+                                        + "/" + mParsedFinishDate.getYear() + " " + mUpdatedFinishHour
+                                        + ":" + mUpdatedFinishMinute + ":" + 00.000);
+
+                        newFinishTimeWithExistingDate.setMonth(newFinishTimeWithExistingDate.getMonth() + 1);
+                        newFinishTimeWithExistingDate.setYear(newFinishTimeWithExistingDate.getYear() + 1900);
+
+                        if(CheckDates(mParsedStartDate, newFinishTimeWithExistingDate))
+                        {
+                            mDatabase.child("Gigs/" + mGigID + "/" + "title").setValue(mGigNameEditText.getText().toString());
+                            mDatabase.child("Gigs/" + mGigID + "/" + "endDate").setValue(newFinishTimeWithExistingDate);
+                            mDatabase.child("Gigs/" + mGigID + "/" + "venueID").setValue(mVenueId);
+                        }
+
+                        else
+                        {
+                            Toast.makeText(getActivity(),
+                                    "Please ensure the start dates and times are before the end date" +
+                                            "and times!",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    } catch (ParseException e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
+
+                else if (!isStartDateEdited && !isFinishDateEdited && isStartTimeEdited && !isFinishTimeEdited && TitleIsCompleted())
+                {
+                    Date newStartTimeWithExistingDate;
+
+                    try
+                    {
+                        newStartTimeWithExistingDate = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss.SSS")
+                                .parse(mParsedStartDate.getDate() + "/" + mParsedStartDate.getMonth()
+                                        + "/" + mParsedStartDate.getYear() + " " + mUpdatedStartHour
+                                        + ":" + mUpdatedStartMinute + ":" + 00.000);
+
+                        newStartTimeWithExistingDate.setMonth(newStartTimeWithExistingDate.getMonth() + 1);
+                        newStartTimeWithExistingDate.setYear(newStartTimeWithExistingDate.getYear() + 1900);
+
+                        if(CheckDates(newStartTimeWithExistingDate, mParsedFinishDate))
+                        {
+                            mDatabase.child("Gigs/" + mGigID + "/" + "title").setValue(mGigNameEditText.getText().toString());
+                            mDatabase.child("Gigs/" + mGigID + "/" + "endDate").setValue(newStartTimeWithExistingDate);
+                            mDatabase.child("Gigs/" + mGigID + "/" + "venueID").setValue(mVenueId);
+                        }
+                        else
+                        {
+                            Toast.makeText(getActivity(),
+                                    "Please ensure the start dates and times are before the end date" +
+                                            "and times!",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    } catch (ParseException e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
+
+                else if (!isStartDateEdited && isFinishDateEdited && !isStartTimeEdited && !isFinishTimeEdited && TitleIsCompleted())
+                {
+                    Date newFinishDateWithExistingTime;
+
+                    try
+                    {
+                        newFinishDateWithExistingTime = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss.SSS")
+                                .parse(mUpdatedFinishDay + "/" + mUpdatedFinishMonth
+                                        + "/" + mUpdatedFinishYear + " " + mParsedFinishDate.getHours()
+                                        + ":" + mParsedFinishDate.getMinutes() + ":" + 00.000);
+
+                        //newFinishDateWithExistingTime.setMonth(newFinishDateWithExistingTime.getMonth() + 1);
+                        //newFinishDateWithExistingTime.setYear(newFinishDateWithExistingTime.getYear() + 1900);
+
+                        if(CheckDates(mParsedStartDate, newFinishDateWithExistingTime))
+                        {
+                            mDatabase.child("Gigs/" + mGigID + "/" + "title").setValue(mGigNameEditText.getText().toString());
+                            mDatabase.child("Gigs/" + mGigID + "/" + "endDate").setValue(newFinishDateWithExistingTime);
+                            mDatabase.child("Gigs/" + mGigID + "/" + "venueID").setValue(mVenueId);
+                        }
+                        else
+                        {
+                            Toast.makeText(getActivity(),
+                                    "Please ensure the start dates and times are before the end date" +
+                                            "and times!",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    } catch (ParseException e)
+                    {
+                        e.printStackTrace();
+                    }
+
+                }
+
+                else if (isStartDateEdited && !isFinishDateEdited && !isStartTimeEdited && !isFinishTimeEdited && TitleIsCompleted())
+                {
+                    Date newStartDateWithExistingTime;
+
+                    try
+                    {
+                        newStartDateWithExistingTime = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss.SSS")
+                                .parse(mUpdatedStartDay + "/" + mUpdatedStartMonth
+                                        + "/" + mUpdatedStartYear + " " + mParsedStartDate.getHours()
+                                        + ":" + mParsedStartDate.getMinutes() + ":" + 00.000);
+
+                        //newStartDateWithExistingTime.setMonth(newStartDateWithExistingTime.getMonth() + 1);
+                        //newStartDateWithExistingTime.setYear(newStartDateWithExistingTime.getYear() + 1900);
+
+                        if(CheckDates(newStartDateWithExistingTime, mParsedFinishDate))
+                        {
+                            mDatabase.child("Gigs/" + mGigID + "/" + "title").setValue(mGigNameEditText.getText().toString());
+                            mDatabase.child("Gigs/" + mGigID + "/" + "startDate").setValue(newStartDateWithExistingTime);
+                            mDatabase.child("Gigs/" + mGigID + "/" + "venueID").setValue(mVenueId);
+                        }
+                        else
+                        {
+                            Toast.makeText(getActivity(),
+                                    "Please ensure the start dates and times are before the end date" +
+                                            "and times!",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+
+                    } catch (ParseException e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
+
+                if(TitleIsCompleted() && goodDates)
+                {
+                    ReturnToMyGigs();
+                }
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener()
         {
-            e.printStackTrace();
-        }
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i)
+            {
 
-        // If all elements are edited
-        if(isStartDateEdited && isFinishDateEdited && isStartTimeEdited && isFinishTimeEdited)
+            }
+        });
+        builder.show();
+    }
+
+    // This method checks that the title has been completed, and returns a boolean to that effect
+    private boolean TitleIsCompleted()
+    {
+        boolean isTitleCompleted = true;
+
+        if(mGigNameEditText.getText().toString().matches(""))
         {
-            Date newStartDate;
-            Date newEndDate;
+            Toast.makeText(getActivity(),
+                    "Please ensure you have given a value for gig name!",
+                    Toast.LENGTH_SHORT).show();
 
-            try
-            {
-                newStartDate = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss.SSS")
-                        .parse(mUpdatedStartDay + "/" + mUpdatedStartMonth
-                                + "/" + mUpdatedStartYear + " " + mUpdatedStartHour
-                                + ":" + mUpdatedStartMinute + ":" + 00.000);
-
-                newEndDate = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss.SSS")
-                        .parse(mUpdatedFinishDay + "/" + mUpdatedFinishMonth
-                                + "/" + mUpdatedFinishYear + " " + mUpdatedFinishHour
-                                + ":" + mUpdatedFinishMinute + ":" + 00.000);
-
-                Gig gig = new Gig();
-                gig.setGigId(mGigID);
-                gig.setStartDate(newStartDate);
-                gig.setEndDate(newEndDate);
-
-                mDatabase.child("Gigs/" + mGigID + "/" + "title").setValue(mGigNameEditText.getText().toString());
-                mDatabase.child("Gigs/" + mGigID).setValue(gig);
-            }
-            catch (ParseException e)
-            {
-                e.printStackTrace();
-            }
+            isTitleCompleted = false;
         }
 
-        // In this instance, only the start date and time has been edited
-        // Therefore a new start date is created using the variables, and inserted into a gig object
-        // This updates the existing gig with a new start date and title, but doesn't touch the finish
-        // date or time.
-        else if(isStartDateEdited && !isFinishDateEdited && isStartTimeEdited && !isFinishTimeEdited)
+        return isTitleCompleted;
+    }
+
+    private boolean CheckDates(Date startDate, Date endDate)
+    {
+        if(startDate.before(endDate))
         {
-            Date newStartDate;
-
-            try
-            {
-                newStartDate = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss.SSS")
-                        .parse(mUpdatedStartDay + "/" + mUpdatedStartMonth
-                                + "/" + mUpdatedStartYear + " " + mUpdatedStartHour
-                                + ":" + mUpdatedStartMinute + ":" + 00.000);
-
-                Gig gig = new Gig();
-                gig.setGigId(mGigID);
-                gig.setStartDate(newStartDate);
-
-                mDatabase.child("Gigs/" + mGigID + "/" + "title").setValue(mGigNameEditText.getText().toString());
-                mDatabase.child("Gigs/" + mGigID + "/" + "startDate").setValue(newStartDate);
-            }
-            catch (ParseException e)
-            {
-                e.printStackTrace();
-            }
+            goodDates = true;
         }
 
-        // If the finish date and finish time are edited
-        else if(!isStartDateEdited && isFinishDateEdited && !isStartTimeEdited && isFinishTimeEdited)
-        {
-            Date newEndDate;
-
-            try
-            {
-                newEndDate = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss.SSS")
-                        .parse(mUpdatedFinishDay + "/" + mUpdatedFinishMonth
-                                + "/" + mUpdatedFinishYear + " " + mUpdatedFinishHour
-                                + ":" + mUpdatedFinishMinute + ":" + 00.000);
-
-                mDatabase.child("Gigs/" + mGigID + "/" + "title").setValue(mGigNameEditText.getText().toString());
-                mDatabase.child("Gigs/" + mGigID + "/" + "endDate").setValue(newEndDate);
-            }
-            catch (ParseException e)
-            {
-                e.printStackTrace();
-            }
-        }
-
-        // If both the dates are edited, but neither of the times
-        else if(isStartDateEdited && isFinishDateEdited && !isStartTimeEdited && !isFinishTimeEdited)
-        {
-            Date newStartDateWithExistingTime;
-            Date newFinishDateWithExistingTime;
-
-            try
-            {
-                newStartDateWithExistingTime = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss.SSS")
-                        .parse(mUpdatedStartDay + "/" + mUpdatedStartMonth
-                                + "/" + mUpdatedStartYear + " " + currentlySetStartDate.getHours()
-                                + ":" + currentlySetStartDate.getMinutes() + ":" + 00.000);
-
-                newFinishDateWithExistingTime = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss.SSS")
-                        .parse(mUpdatedFinishDay + "/" + mUpdatedFinishMonth
-                                + "/" + mUpdatedFinishYear + " " + currentlySetEndDate.getHours()
-                                + ":" + currentlySetEndDate.getMinutes() + ":" + 00.000);
-
-                mDatabase.child("Gigs/" + mGigID + "/" + "title").setValue(mGigNameEditText.getText().toString());
-                mDatabase.child("Gigs/" + mGigID + "/" + "startDate").setValue(newStartDateWithExistingTime);
-                mDatabase.child("Gigs/" + mGigID + "/" + "endDate").setValue(newFinishDateWithExistingTime);
-            }
-            catch (ParseException e)
-            {
-                e.printStackTrace();
-            }
-        }
-
-        else if(!isStartDateEdited && !isFinishDateEdited && isStartTimeEdited && isFinishTimeEdited)
-        {
-            Date newStartTimeWithExistingDate;
-            Date newFinishTimeWithExistingDate;
-
-            try
-            {
-                newStartTimeWithExistingDate = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss.SSS")
-                        .parse(currentlySetStartDate.getDate() + "/" + currentlySetStartDate.getMonth()
-                                + "/" + currentlySetStartDate.getYear() + " " + mUpdatedStartHour
-                                + ":" + mUpdatedStartMinute + ":" + 00.000);
-
-                newFinishTimeWithExistingDate = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss.SSS")
-                        .parse(currentlySetEndDate.getDate() + "/" + currentlySetEndDate.getMonth()
-                                + "/" + currentlySetEndDate.getYear() + " " + mUpdatedFinishHour
-                                + ":" + mUpdatedFinishMinute + ":" + 00.000);
-
-                mDatabase.child("Gigs/" + mGigID + "/" + "title").setValue(mGigNameEditText.getText().toString());
-                mDatabase.child("Gigs/" + mGigID + "/" + "startDate").setValue(newStartTimeWithExistingDate);
-                mDatabase.child("Gigs/" + mGigID + "/" + "endDate").setValue(newFinishTimeWithExistingDate);
-            }
-            catch (ParseException e)
-            {
-                e.printStackTrace();
-            }
-        }
-
-
+        return goodDates;
     }
 
     // Android seems to think this method is required even
