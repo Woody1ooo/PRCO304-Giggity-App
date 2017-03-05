@@ -93,6 +93,8 @@ public class VenueUserViewGigDetailsFragment extends Fragment implements DatePic
     private List<Date> mListOfGigDates = new ArrayList<>();
     private boolean isStartDate;
     private boolean goodDates = false;
+    private String mFormattedStartDateMinutes;
+    private String mFormattedEndDateMinutes;
 
     // These variables determine which elements of the gig have been edited
     private Boolean isStartDateEdited = false;
@@ -103,7 +105,6 @@ public class VenueUserViewGigDetailsFragment extends Fragment implements DatePic
     // These variables hold the converted month values e.g. from Jan to 01
     private String mExistingStartDateConvertedMonth;
     private String mExistingFinishDateConvertedMonth;
-
 
     public VenueUserViewGigDetailsFragment()
     {
@@ -359,8 +360,27 @@ public class VenueUserViewGigDetailsFragment extends Fragment implements DatePic
         mStartDateSelectedTextView.setText(mParsedStartDate.getDate() + "/" + mFormattedStartMonth + "/" + mFormattedStartYear);
         mFinishDateSelectedTextView.setText(mParsedFinishDate.getDate() + "/" + mFormattedFinishMonth + "/" + mFormattedFinishYear);
 
-        mStartTimeSelectedTextView.setText(mParsedStartDate.getHours() + ":" + mParsedStartDate.getMinutes());
-        mFinishTimeSelectedTextView.setText(mParsedFinishDate.getHours() + ":" + mParsedFinishDate.getMinutes());
+        if(mParsedStartDate.getMinutes() < 10)
+        {
+            mFormattedStartDateMinutes = "0" + mParsedStartDate.getMinutes();
+            mStartTimeSelectedTextView.setText(mParsedStartDate.getHours() + ":" + mFormattedStartDateMinutes);
+        }
+
+        if(mParsedFinishDate.getMinutes() < 10)
+        {
+            mFormattedEndDateMinutes = "0" + mParsedFinishDate.getMinutes();
+            mFinishTimeSelectedTextView.setText(mParsedFinishDate.getHours() + ":" + mFormattedEndDateMinutes);
+        }
+
+        if(mParsedStartDate.getMinutes() > 10)
+        {
+            mStartTimeSelectedTextView.setText(mParsedStartDate.getHours() + ":" + mParsedStartDate.getMinutes());
+        }
+
+        if(mParsedFinishDate.getMinutes() > 10)
+        {
+            mFinishTimeSelectedTextView.setText(mParsedFinishDate.getHours() + ":" + mParsedFinishDate.getMinutes());
+        }
     }
 
     private void StartDateShowCalendar()
@@ -447,7 +467,17 @@ public class VenueUserViewGigDetailsFragment extends Fragment implements DatePic
                 // these global variables so they can be accessed by the CreateGig() method
                 mUpdatedStartHour = selectedHour;
                 mUpdatedStartMinute = selectedMinute;
-                mStartTimeSelectedTextView.setText(selectedHour + ":" + selectedMinute);
+
+                if(selectedMinute < 10)
+                {
+                    mStartTimeSelectedTextView.setText(selectedHour + ":" + "0" + selectedMinute);
+                }
+
+                else
+                {
+                    mStartTimeSelectedTextView.setText(selectedHour + ":" + selectedMinute);
+                }
+
 
                 isStartTimeEdited = true;
             }
@@ -472,7 +502,16 @@ public class VenueUserViewGigDetailsFragment extends Fragment implements DatePic
             {
                 mUpdatedFinishHour = selectedHour;
                 mUpdatedFinishMinute = selectedMinute;
-                mFinishTimeSelectedTextView.setText(selectedHour + ":" + selectedMinute);
+
+                if(selectedMinute < 10)
+                {
+                    mFinishTimeSelectedTextView.setText(selectedHour + ":" + "0" + selectedMinute);
+                }
+
+                else
+                {
+                    mFinishTimeSelectedTextView.setText(selectedHour + ":" + selectedMinute);
+                }
 
                 isFinishTimeEdited = true;
             }
@@ -1003,7 +1042,7 @@ public class VenueUserViewGigDetailsFragment extends Fragment implements DatePic
 
     private boolean CheckDates(Date startDate, Date endDate)
     {
-        if(startDate.before(endDate))
+        if(startDate.getTime() < endDate.getTime())
         {
             goodDates = true;
         }
