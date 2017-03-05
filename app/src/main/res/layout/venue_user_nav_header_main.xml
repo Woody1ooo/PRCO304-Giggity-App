@@ -14,17 +14,37 @@
     android:theme="@style/ThemeOverlay.AppCompat.Dark"
     android:weightSum="1">
 
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/profile_image"
-        app:civ_border_width="2dp"
-        app:civ_border_color="#FF000000"
-        android:layout_marginBottom="15dp"
-        android:layout_alignParentEnd="true"
-        app:srcCompat="@drawable/com_facebook_profile_picture_blank_portrait"
-        android:paddingRight="10dp"/>
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/logoImageView"
+            android:layout_width="173dp"
+            android:layout_height="98dp"
+            android:paddingTop="@dimen/nav_header_vertical_spacing"
+            android:paddingBottom="10dp"
+            app:srcCompat="@drawable/logonewgreyscale"
+            android:scaleType="fitStart"
+            android:cropToPadding="false"
+            android:adjustViewBounds="false"
+            android:layout_above="@+id/userEmailTextView"
+            android:layout_alignParentStart="true"/>
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/profile_image"
+            app:civ_border_width="2dp"
+            app:civ_border_color="#FF000000"
+            android:layout_marginTop="15dp"
+            android:layout_alignParentEnd="true"
+            app:srcCompat="@drawable/com_facebook_profile_picture_blank_portrait"
+            android:paddingRight="10dp"
+            android:layout_weight="1"/>
+
+    </LinearLayout>
 
     <TextView
         android:text="User Email"
@@ -36,17 +56,4 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true"/>
 
-    <ImageView
-        android:id="@+id/logoImageView"
-        android:layout_width="200dp"
-        android:layout_height="500dp"
-        android:paddingTop="@dimen/nav_header_vertical_spacing"
-        android:paddingBottom="10dp"
-        app:srcCompat="@drawable/logonobackground"
-        android:scaleType="fitStart"
-        android:layout_weight="0.38"
-        android:cropToPadding="false"
-        android:adjustViewBounds="false"
-        android:layout_above="@+id/userEmailTextView"
-        android:layout_alignParentStart="true"/>
 </RelativeLayout>
