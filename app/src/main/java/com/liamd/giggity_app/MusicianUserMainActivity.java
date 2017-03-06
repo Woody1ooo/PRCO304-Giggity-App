@@ -196,6 +196,16 @@ public class MusicianUserMainActivity extends AppCompatActivity
             fragmentTransaction.commit();
         }
 
+        else if (id == R.id.nav_gig_finder)
+        {
+            setTitle("Gig Finder");
+            MusicianUserGigFinderFragment fragment = new MusicianUserGigFinderFragment();
+            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.frame, fragment
+                    , "MusicianUserGigFinderFragment");
+            fragmentTransaction.commit();
+        }
+
         else if (id == R.id.nav_band_finder)
         {
             setTitle("Band Finder");
