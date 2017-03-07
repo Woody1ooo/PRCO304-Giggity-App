@@ -3,6 +3,8 @@
           package="com.liamd.giggity_app">
 
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
 
     <application
         android:allowBackup="true"
@@ -55,7 +57,8 @@
         </activity>
             <meta-data
                 android:name="com.google.android.geo.API_KEY"
-                android:value="AIzaSyCIlwn5dlI8mdXsdbg5JFnaGGGKwUZ3PcA"/>
+                android:value="AIzaSyA38WiFsiLfiQj_1jUxZ6ekmFUdNITRw_A"/>
     </application>
 
 </manifest>
+

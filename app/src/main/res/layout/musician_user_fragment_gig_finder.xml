@@ -25,13 +25,14 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:weightSum="1">
-            <TextView
-                android:text="Distance"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/textView8"
-                android:layout_weight="1"
-                android:textAppearance="@style/TextAppearance.AppCompat.Menu"/>
+
+                <TextView
+                    android:text="Distance"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/textView8"
+                    android:layout_weight="1"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Menu"/>
 
                 <RadioGroup
                     android:layout_width="match_parent"
@@ -72,6 +73,32 @@
                     android:id="@+id/distanceValueTextView"
                     android:layout_weight="1"
                     android:layout_marginTop="22dp" />
+
+                <TextView
+                    android:text="Gig Genre"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/textView9"
+                    android:layout_weight="1"
+                    android:layout_marginTop="22dp"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Menu"/>
+
+                <com.liamd.giggity_app.MultiSelectSpinner
+                    android:id="@+id/genreSpinner"
+                    android:layout_width="fill_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.15"
+                    android:layout_marginBottom="32dp"
+                    android:layout_marginTop="22dp"/>
+
+                <Button
+                    android:text="Search"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/searchButton"
+                    android:layout_weight="1"
+                    android:background="@color/colorPrimary"
+                    android:textColor="@color/cardview_light_background"/>
 
             </LinearLayout>
         </ScrollView>
