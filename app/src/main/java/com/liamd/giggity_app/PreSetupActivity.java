@@ -14,7 +14,6 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.RadioButton;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -71,6 +70,14 @@ public class PreSetupActivity extends AppCompatActivity
     // Declare venue user data variables required
     private String mVenueName;
     private String mVenueID;
+    private LatLng mVenueLocation;
+
+    // This variable is the place information that is stored in the database.
+    // This is required because when the location data is retrieved, the built-in
+    // google maps latlng object doesn't have an empty constructor which is required
+    // by firebase for retrieving data. This therefore stores the lat lng data in my
+    // own LatLng class.
+    private com.liamd.giggity_app.LatLng mPlaceToStoreLatLng;
 
     // Declare musician user data variables required
     private String mMusicianUserAddress;
@@ -296,7 +303,7 @@ public class PreSetupActivity extends AppCompatActivity
                                             + "/homeAddress").setValue(mMusicianUserAddress);
 
                                     mDatabase.child("Users/" + mAuth.getCurrentUser().getUid()
-                                            + "/homeLocation").setValue(mMusicianUserLatLng);
+                                            + "/homeLocation").setValue(mPlaceToStoreLatLng);
 
                                     mDatabase.child("Users/" + mAuth.getCurrentUser().getUid()
                                              + "/instruments").setValue(mInstrumentListToString);
@@ -378,6 +385,9 @@ public class PreSetupActivity extends AppCompatActivity
                                                     // Stores the genres the venue plays
                                                     mDatabase.child("Venues/" + mVenueID + "/genre")
                                                             .setValue(mGenreListToString);
+
+                                                    mDatabase.child("Venues/" + mVenueID + "/venueLocation")
+                                                            .setValue(mPlaceToStoreLatLng);
 
                                                     mDatabase.child("Users/" + mAuth.getCurrentUser().getUid()
                                                             + "/firstName").setValue(mFirstNameEditText.getText().toString());
@@ -535,10 +545,23 @@ public class PreSetupActivity extends AppCompatActivity
                 // venue, and store the name and ID in the required variables
                 if(mVenueRadio.isChecked())
                 {
+                    mPlaceToStoreLatLng = new com.liamd.giggity_app.LatLng();
+
                     // Store the selected place details in the text view and variables
                     mVenueDetailsTextView.setText(place.getName() + " \n" + place.getAddress());
                     mVenueName = place.getName().toString();
                     mVenueID = place.getId();
+                    mVenueLocation = place.getLatLng();
+
+                    // This takes the place data from mVenueLocation and stores it in
+                    // two double variables
+                    double placeLat = mVenueLocation.latitude;
+                    double placeLng = mVenueLocation.longitude;
+
+                    // These are then stored in the mPlaceToStoreLatLng variable to be stored
+                    // in the database
+                    mPlaceToStoreLatLng.setLatitude(placeLat);
+                    mPlaceToStoreLatLng.setLongitude(placeLng);
                 }
 
                 // If the musician radio button is checked, display just the address of the
@@ -546,9 +569,17 @@ public class PreSetupActivity extends AppCompatActivity
                 // Then store the name and ID in the required variables.
                 else
                 {
+                    mPlaceToStoreLatLng = new com.liamd.giggity_app.LatLng();
+
                     mVenueDetailsTextView.setText(place.getAddress());
                     mMusicianUserAddress = place.getAddress().toString();
                     mMusicianUserLatLng = place.getLatLng();
+
+                    double placeLat = mMusicianUserLatLng.latitude;
+                    double placeLng = mMusicianUserLatLng.longitude;
+
+                    mPlaceToStoreLatLng.setLatitude(placeLat);
+                    mPlaceToStoreLatLng.setLongitude(placeLng);
                 }
             }
         }

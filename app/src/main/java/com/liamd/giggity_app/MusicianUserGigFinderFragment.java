@@ -181,9 +181,17 @@ public class MusicianUserGigFinderFragment extends Fragment
     private void GetUserCurrentLocation()
     {
         location = getLastKnownLocation();
-        double latitude = location.getLatitude();
-        double longitude = location.getLongitude();
-        mCurrentLocation = new LatLng(latitude, longitude);
+        if(location == null)
+        {
+            Toast.makeText(getActivity(), "Are you sure you have location services enabled?" +
+                    " We can't find you!", Toast.LENGTH_SHORT).show();
+        }
+        else
+        {
+            double latitude = location.getLatitude();
+            double longitude = location.getLongitude();
+            mCurrentLocation = new LatLng(latitude, longitude);
+        }
     }
 
     // This method checks to ensure the correct permissions have been given, then returns the
@@ -208,8 +216,6 @@ public class MusicianUserGigFinderFragment extends Fragment
                 Location location = mLocationManager.getLastKnownLocation(provider);
                 if (location == null)
                 {
-                    Toast.makeText(getActivity(), "Are you sure you have location services enabled?" +
-                            " We can't find you!", Toast.LENGTH_SHORT).show();
                 }
                 if (closestLocation == null || location.getAccuracy() < closestLocation.getAccuracy())
                 {

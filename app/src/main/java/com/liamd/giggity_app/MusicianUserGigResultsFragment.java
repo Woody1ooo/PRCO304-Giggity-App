@@ -2,11 +2,20 @@ package com.liamd.giggity_app;
 
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResolvingResultCallbacks;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.PlaceBuffer;
+import com.google.android.gms.location.places.Places;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -42,6 +51,9 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
     private DataSnapshot mGigDataSnapshot;
     private DataSnapshot mVenueDataSnapshot;
 
+    // Declare Google specific variables
+    private GoogleApiClient mGoogleApiClient;
+
     // Declare general variables
     private ArrayList<Gig> mListOfGigs = new ArrayList<>();
     private ArrayList<Venue> mListOfVenues = new ArrayList<>();
@@ -50,7 +62,6 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
     {
         // Required empty public constructor
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -97,11 +108,23 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
     public void onMapReady(GoogleMap map)
     {
         mGoogleMap = map;
+
+        // Once the map is ready, it can be set up using SetupMap()
         SetupMap();
     }
 
+    // This initialises the map and takes a data snapshot from both the Gigs and Venues sections
+    // of the database which are then stored in global variables so they can be accessed throughout
+    // the class
     private void SetupMap()
     {
+        // May be required if any information regarding places is needed later
+        //mGoogleApiClient = new GoogleApiClient
+                //.Builder(getActivity())
+                //.addApi(Places.GEO_DATA_API)
+                //.addApi(Places.PLACE_DETECTION_API)
+                //.build();
+
         mDatabase.child("Gigs").addListenerForSingleValueEvent(new ValueEventListener()
         {
             @Override
@@ -124,6 +147,8 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
             {
                 mVenueDataSnapshot = dataSnapshot;
 
+                // Once the two snapshots have been taken, the gig markers are added
+                // to the map using AddGigMarkers, taking the two snapshots as parameters
                 AddGigMarkers(mGigDataSnapshot, mVenueDataSnapshot);
             }
 
@@ -134,15 +159,25 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
             }
         });
 
+        // This zooms the map in to a reasonable level (12) and centers it on the location provided
         float zoomLevel = 12;
         mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mLocation, zoomLevel));
-        mGoogleMap.addMarker(new MarkerOptions().position(mLocation).title("You are here!"));
     }
 
+    // This method iterates through the two snapshots to add markers for each gig at the relevant
+    // location on the map
     private void AddGigMarkers(DataSnapshot gigsSnapshot, DataSnapshot venuesSnapshot)
     {
-        // Each gig is then iterated through and added to an
-        // array list of gigs (mListOfVenueGigs)
+        // This iterates through the venues and adds them to a list (mListOfVenues)
+        Iterable<DataSnapshot> venueChildren = venuesSnapshot.getChildren();
+        for (DataSnapshot child : venueChildren)
+        {
+            Venue venue;
+            venue = child.getValue(Venue.class);
+            mListOfVenues.add(venue);
+        }
+
+        // Each gig is then iterated through and added to a list of gigs (mListOfVenueGigs)
         Iterable<DataSnapshot> gigChildren = gigsSnapshot.getChildren();
         for (DataSnapshot child : gigChildren)
         {
@@ -152,12 +187,36 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
             mListOfGigs.add(gig);
         }
 
-        Iterable<DataSnapshot> venueChildren = gigsSnapshot.getChildren();
-        for (DataSnapshot child : venueChildren)
+        // This then iterates through the list of gigs, and obtains the venue ID's of
+        // each gig.
+        for(int i = 0; i < mListOfGigs.size(); i++)
         {
-            Venue venue;
-            venue = child.getValue(Venue.class);
-            mListOfVenues.add(venue);
+            String venueId;
+            venueId = mListOfGigs.get(i).getVenueID();
+
+            // It then iterates through the list of venues to check for a match.
+            for(int j = 0; j < mListOfVenues.size(); j++)
+            {
+                if(mListOfVenues.get(j).getVenueID().equals(venueId))
+                {
+                    // Once a match is found, a gigLocation object is created which determines the
+                    // placement on the map of the marker.
+                    com.liamd.giggity_app.LatLng gigLocation = mListOfVenues.get(j).getVenueLocation();
+
+                    // To expose the methods required for marker placement, the gigLocation
+                    // variable is then converted back into the standard Google Maps
+                    // LatLng object (convertedGigLocation)
+                    com.google.android.gms.maps.model.LatLng convertedGigLocation =
+                            new com.google.android.gms.maps.model.LatLng(gigLocation.getLatitude(),
+                                    gigLocation.getLongitude());
+
+                    // A marker is then added at the gig location along with the title of the
+                    // gig to identify it
+                    mGoogleMap.addMarker(new MarkerOptions()
+                            .position(convertedGigLocation)
+                            .title(mListOfGigs.get(i).getTitle()));
+                }
+            }
         }
     }
 }
