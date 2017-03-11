@@ -40,8 +40,6 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
     private LatLng mLocation;
     private Boolean mLocationType;
 
-    private Marker mMarker;
-
     // Declare Firebase specific variables
     private FirebaseAuth mAuth;
     private DatabaseReference mDatabase;
@@ -52,6 +50,7 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
     private ArrayList<Gig> mListOfGigs = new ArrayList<>();
     private ArrayList<Venue> mListOfVenues = new ArrayList<>();
     private ArrayList<MarkerInfo> mListOfMarkerInfo = new ArrayList<>();
+    private Marker mMarker;
 
     // Declare variables to be stored to pass to the next fragment
     private String mGigId;
@@ -106,6 +105,7 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
         return fragmentView;
     }
 
+    // When the map is ready, call the SetupMap method
     @Override
     public void onMapReady(GoogleMap map)
     {
@@ -165,8 +165,6 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
     // location on the map
     private void AddGigMarkers(DataSnapshot gigsSnapshot, DataSnapshot venuesSnapshot)
     {
-        int i;
-
         // This iterates through the venues and adds them to a list (mListOfVenues)
         Iterable<DataSnapshot> venueChildren = venuesSnapshot.getChildren();
         for (DataSnapshot child : venueChildren)
@@ -188,11 +186,13 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
 
         // This then iterates through the list of gigs, and obtains the venue ID's of
         // each gig.
-        for(i = 0; i < mListOfGigs.size(); i++)
+        for(int i = 0; i < mListOfGigs.size(); i++)
         {
             String venueId;
             venueId = mListOfGigs.get(i).getVenueID();
 
+            // The gig information is then extracted each time and the values assigned
+            // to these global variables to be accessed later
             mGigId = mListOfGigs.get(i).getGigId();
             mGigName = mListOfGigs.get(i).getTitle();
             mGigStartDate = mListOfGigs.get(i).getStartDate();
@@ -215,38 +215,46 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
                             new com.google.android.gms.maps.model.LatLng(gigLocation.getLatitude(),
                                     gigLocation.getLongitude());
 
-                    mMarker = mGoogleMap.addMarker(new MarkerOptions()
-                            .position(convertedGigLocation));
+                    // The marker is then added to the map
+                    mMarker = mGoogleMap.addMarker(new MarkerOptions().position(convertedGigLocation));
 
-                    MarkerInfo marker = new MarkerInfo(mGigFinishDate, mGigId, mGigName, mGigStartDate, mMarker.getId(), mVenueName);
+                    // A new MarkerInfo object is created to store the information about the marker.
+                    // This needs to be done because a standard marker can only hold a title and snippet
+                    MarkerInfo marker = new MarkerInfo(mGigFinishDate, mGigId, mGigName, mGigStartDate,
+                            mMarker.getId(), mVenueName);
                     mListOfMarkerInfo.add(marker);
 
+                    // This sets the custom window adapter (gig_window_layout)
                     mGoogleMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter()
                     {
                         @Override
-                        public View getInfoWindow(Marker arg0)
+                        public View getInfoWindow(Marker markerSelected)
                         {
                             return null;
                         }
 
                         @Override
-                        public View getInfoContents(Marker arg0)
+                        public View getInfoContents(Marker markerSelected)
                         {
-                            // Getting view from the layout file info_window_layout
+                            // Getting view from the layout file
                             View v = getActivity().getLayoutInflater().inflate(R.layout.gig_window_layout, null);
 
-                            // Getting reference to the TextView to set latitude
+                            // This then references the text views found in that layout
+                            // (note gig id is a hidden text view)
                             TextView mGigIdTextView = (TextView) v.findViewById(R.id.gigIdTextView);
                             TextView mGigNameTextView = (TextView) v.findViewById(R.id.gigNameTextView);
                             TextView mGigStartDateTextView = (TextView) v.findViewById(R.id.gigStartDateTextView);
                             TextView mGigFinishDateTextView = (TextView) v.findViewById(R.id.gigFinishDateTextView);
                             TextView mVenueNameTextView = (TextView) v.findViewById(R.id.venueNameTextView);
 
+                            // The marker info list is then iterated through
                             for(int i = 0; i < mListOfMarkerInfo.size(); i++)
                             {
                                 mListOfMarkerInfo.get(i);
 
-                                if(mListOfMarkerInfo.get(i).getMarkerId().equals(arg0.getId()))
+                                // When the selected marker id matches one from the list it means there is a match
+                                // and the text fields are updated to reflect this.
+                                if(mListOfMarkerInfo.get(i).getMarkerId().equals(markerSelected.getId()))
                                 {
                                     mGigIdTextView.setText(mListOfMarkerInfo.get(i).getGigId());
                                     mGigNameTextView.setText(mListOfMarkerInfo.get(i).getGigName());
@@ -265,18 +273,19 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
         }
     }
 
+    // If a marker info window is clicked the data is passed to the next fragment as bundle arguments
     @Override
     public void onInfoWindowClick(Marker marker)
     {
-        // This then stores the id of the selected gig in a bundle which is then
-        // passed to the result fragment to display the gig details
         MusicianUserGigDetailsFragment fragment = new MusicianUserGigDetailsFragment();
         Bundle arguments = new Bundle();
 
+        // This loops through the list of marker info to determine the marker clicked
         for(int i = 0; i < mListOfMarkerInfo.size(); i++)
         {
             mListOfMarkerInfo.get(i);
 
+            // Once a match has been found the data can be extracted and passed as a bundle argument
             if(mListOfMarkerInfo.get(i).getMarkerId().equals(marker.getId()))
             {
                 arguments.putString("GigId", mListOfMarkerInfo.get(i).getGigId());
