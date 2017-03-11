@@ -6,6 +6,9 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+
+import org.w3c.dom.Text;
 
 
 /**
@@ -14,6 +17,8 @@ import android.view.ViewGroup;
 public class MusicianUserGigDetailsFragment extends Fragment
 {
 
+    private TextView mGigIdTextView;
+    private TextView mGigNameTextView;
 
     public MusicianUserGigDetailsFragment()
     {
@@ -26,7 +31,15 @@ public class MusicianUserGigDetailsFragment extends Fragment
                              Bundle savedInstanceState)
     {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.musician_user_fragment_gig_details, container, false);
+        View fragmentView = inflater.inflate(R.layout.musician_user_fragment_gig_details, container, false);
+
+        mGigIdTextView = (TextView) fragmentView.findViewById(R.id.gigIdTextView);
+        mGigNameTextView = (TextView) fragmentView.findViewById(R.id.gigNameTextView);
+
+        mGigIdTextView.setText(getArguments().getString("GigId"));
+        mGigNameTextView.setText(getArguments().getString("GigName"));
+
+        return fragmentView;
     }
 
 }

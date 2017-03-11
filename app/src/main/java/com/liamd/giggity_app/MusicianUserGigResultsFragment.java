@@ -2,28 +2,17 @@ package com.liamd.giggity_app;
 
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.ResolvingResultCallbacks;
-import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.location.places.Place;
-import com.google.android.gms.location.places.PlaceBuffer;
-import com.google.android.gms.location.places.Places;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -34,11 +23,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Set;
+import java.util.Date;
 
 
 /**
@@ -65,10 +51,14 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
     // Declare general variables
     private ArrayList<Gig> mListOfGigs = new ArrayList<>();
     private ArrayList<Venue> mListOfVenues = new ArrayList<>();
-    private ArrayList<Marker> mListOfMarkers = new ArrayList<>();
+    private ArrayList<MarkerInfo> mListOfMarkerInfo = new ArrayList<>();
 
+    // Declare variables to be stored to pass to the next fragment
     private String mGigId;
     private String mGigName;
+    private String mVenueName;
+    private Date mGigStartDate;
+    private Date mGigFinishDate;
 
     public MusicianUserGigResultsFragment()
     {
@@ -203,8 +193,11 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
             String venueId;
             venueId = mListOfGigs.get(i).getVenueID();
 
-            //mGigId = mListOfGigs.get(i).getGigId();
-           // mGigName = mListOfGigs.get(i).getTitle();
+            mGigId = mListOfGigs.get(i).getGigId();
+            mGigName = mListOfGigs.get(i).getTitle();
+            mGigStartDate = mListOfGigs.get(i).getStartDate();
+            mGigFinishDate = mListOfGigs.get(i).getEndDate();
+            mVenueName = mVenueDataSnapshot.child(venueId + "/name").getValue().toString();
 
             // It then iterates through the list of venues to check for a match.
             for(int j = 0; j < mListOfVenues.size(); j++)
@@ -223,13 +216,12 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
                                     gigLocation.getLongitude());
 
                     mMarker = mGoogleMap.addMarker(new MarkerOptions()
-                            .position(convertedGigLocation)
-                            .title(mListOfVenues.get(j).getName())
-                            .snippet(mListOfGigs.get(i).getTitle()));
+                            .position(convertedGigLocation));
 
-                    mListOfMarkers.add(mMarker);
+                    MarkerInfo marker = new MarkerInfo(mGigFinishDate, mGigId, mGigName, mGigStartDate, mMarker.getId(), mVenueName);
+                    mListOfMarkerInfo.add(marker);
 
-                    /*mGoogleMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter()
+                    mGoogleMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter()
                     {
                         @Override
                         public View getInfoWindow(Marker arg0)
@@ -241,31 +233,37 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
                         public View getInfoContents(Marker arg0)
                         {
                             // Getting view from the layout file info_window_layout
-                            View v = getActivity().getLayoutInflater().inflate(R.layout.gigwindowlayout, null);
+                            View v = getActivity().getLayoutInflater().inflate(R.layout.gig_window_layout, null);
 
                             // Getting reference to the TextView to set latitude
                             TextView mGigIdTextView = (TextView) v.findViewById(R.id.gigIdTextView);
-
                             TextView mGigNameTextView = (TextView) v.findViewById(R.id.gigNameTextView);
-
                             TextView mGigStartDateTextView = (TextView) v.findViewById(R.id.gigStartDateTextView);
-
                             TextView mGigFinishDateTextView = (TextView) v.findViewById(R.id.gigFinishDateTextView);
+                            TextView mVenueNameTextView = (TextView) v.findViewById(R.id.venueNameTextView);
 
-                            mGigIdTextView.setText(mGigId);
+                            for(int i = 0; i < mListOfMarkerInfo.size(); i++)
+                            {
+                                mListOfMarkerInfo.get(i);
 
-                            mGigNameTextView.setText(mGigName);
+                                if(mListOfMarkerInfo.get(i).getMarkerId().equals(arg0.getId()))
+                                {
+                                    mGigIdTextView.setText(mListOfMarkerInfo.get(i).getGigId());
+                                    mGigNameTextView.setText(mListOfMarkerInfo.get(i).getGigName());
+                                    mGigStartDateTextView.setText(mListOfMarkerInfo.get(i).getGigStartDate().toString());
+                                    mGigFinishDateTextView.setText(mListOfMarkerInfo.get(i).getGigEndDate().toString());
+                                    mVenueNameTextView.setText(mListOfMarkerInfo.get(i).getVenueName());
+                                }
+                            }
 
                             // Returning the view containing InfoWindow contents
                             return v;
                         }
                     });
-                    */
                 }
             }
         }
     }
-
 
     @Override
     public void onInfoWindowClick(Marker marker)
@@ -274,8 +272,18 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
         // passed to the result fragment to display the gig details
         MusicianUserGigDetailsFragment fragment = new MusicianUserGigDetailsFragment();
         Bundle arguments = new Bundle();
-        arguments.putString("GigTitle", marker.getTitle());
-        arguments.putString("GigTitle", marker.getTitle());
+
+        for(int i = 0; i < mListOfMarkerInfo.size(); i++)
+        {
+            mListOfMarkerInfo.get(i);
+
+            if(mListOfMarkerInfo.get(i).getMarkerId().equals(marker.getId()))
+            {
+                arguments.putString("GigId", mListOfMarkerInfo.get(i).getGigId());
+                arguments.putString("GigName", mListOfMarkerInfo.get(i).getGigName());
+            }
+        }
+
         fragment.setArguments(arguments);
 
         // Creates a new fragment transaction to display the details of the selected
