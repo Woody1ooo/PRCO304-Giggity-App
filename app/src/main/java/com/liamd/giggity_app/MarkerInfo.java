@@ -12,16 +12,18 @@ public class MarkerInfo
     private String gigId;
     private String gigName;
     private String venueName;
+    private String venueId;
     private Date gigStartDate;
     private Date gigEndDate;
 
-    public MarkerInfo(Date gigEndDate, String gigId, String gigName, Date gigStartDate, String markerId, String venueName)
+    public MarkerInfo(Date gigEndDate, String gigId, String gigName, Date gigStartDate, String markerId, String venueId, String venueName)
     {
         this.gigEndDate = gigEndDate;
         this.gigId = gigId;
         this.gigName = gigName;
         this.gigStartDate = gigStartDate;
         this.markerId = markerId;
+        this.venueId = venueId;
         this.venueName = venueName;
     }
 
@@ -75,6 +77,16 @@ public class MarkerInfo
         this.markerId = markerId;
     }
 
+    public String getVenueId()
+    {
+        return venueId;
+    }
+
+    public void setVenueId(String venueId)
+    {
+        this.venueId = venueId;
+    }
+
     public String getVenueName()
     {
         return venueName;
@@ -85,4 +97,6 @@ public class MarkerInfo
         this.venueName = venueName;
     }
 }
+
+
 

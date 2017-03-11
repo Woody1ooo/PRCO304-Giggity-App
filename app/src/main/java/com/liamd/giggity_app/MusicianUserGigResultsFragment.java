@@ -56,8 +56,11 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
     private String mGigId;
     private String mGigName;
     private String mVenueName;
+    private String mVenueId;
     private Date mGigStartDate;
     private Date mGigFinishDate;
+
+    private Boolean multipleGigs;
 
     public MusicianUserGigResultsFragment()
     {
@@ -165,6 +168,7 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
     // location on the map
     private void AddGigMarkers(DataSnapshot gigsSnapshot, DataSnapshot venuesSnapshot)
     {
+
         // This iterates through the venues and adds them to a list (mListOfVenues)
         Iterable<DataSnapshot> venueChildren = venuesSnapshot.getChildren();
         for (DataSnapshot child : venueChildren)
@@ -188,8 +192,7 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
         // each gig.
         for(int i = 0; i < mListOfGigs.size(); i++)
         {
-            String venueId;
-            venueId = mListOfGigs.get(i).getVenueID();
+            mVenueId = mListOfGigs.get(i).getVenueID();
 
             // The gig information is then extracted each time and the values assigned
             // to these global variables to be accessed later
@@ -197,12 +200,12 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
             mGigName = mListOfGigs.get(i).getTitle();
             mGigStartDate = mListOfGigs.get(i).getStartDate();
             mGigFinishDate = mListOfGigs.get(i).getEndDate();
-            mVenueName = mVenueDataSnapshot.child(venueId + "/name").getValue().toString();
+            mVenueName = mVenueDataSnapshot.child(mVenueId + "/name").getValue().toString();
 
             // It then iterates through the list of venues to check for a match.
             for(int j = 0; j < mListOfVenues.size(); j++)
             {
-                if(mListOfVenues.get(j).getVenueID().equals(venueId))
+                if(mListOfVenues.get(j).getVenueID().equals(mVenueId))
                 {
                     // Once a match is found, a gigLocation object is created which determines the
                     // placement on the map of the marker.
@@ -218,10 +221,11 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
                     // The marker is then added to the map
                     mMarker = mGoogleMap.addMarker(new MarkerOptions().position(convertedGigLocation));
 
+
                     // A new MarkerInfo object is created to store the information about the marker.
                     // This needs to be done because a standard marker can only hold a title and snippet
                     MarkerInfo marker = new MarkerInfo(mGigFinishDate, mGigId, mGigName, mGigStartDate,
-                            mMarker.getId(), mVenueName);
+                            mMarker.getId(), mVenueId, mVenueName);
                     mListOfMarkerInfo.add(marker);
 
                     // This sets the custom window adapter (gig_window_layout)
@@ -247,20 +251,40 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
                             TextView mGigFinishDateTextView = (TextView) v.findViewById(R.id.gigFinishDateTextView);
                             TextView mVenueNameTextView = (TextView) v.findViewById(R.id.venueNameTextView);
 
-                            // The marker info list is then iterated through
-                            for(int i = 0; i < mListOfMarkerInfo.size(); i++)
-                            {
-                                mListOfMarkerInfo.get(i);
 
-                                // When the selected marker id matches one from the list it means there is a match
-                                // and the text fields are updated to reflect this.
-                                if(mListOfMarkerInfo.get(i).getMarkerId().equals(markerSelected.getId()))
+                            // Loop through the marker info to see if any existing markers have the same venue ID
+                            // If they do, do something...
+                            for(int k = 0; k < mListOfMarkerInfo.size(); k++)
+                            {
+                                if(mListOfMarkerInfo.get(k).getVenueId().equals(mVenueId))
                                 {
-                                    mGigIdTextView.setText(mListOfMarkerInfo.get(i).getGigId());
-                                    mGigNameTextView.setText(mListOfMarkerInfo.get(i).getGigName());
-                                    mGigStartDateTextView.setText(mListOfMarkerInfo.get(i).getGigStartDate().toString());
-                                    mGigFinishDateTextView.setText(mListOfMarkerInfo.get(i).getGigEndDate().toString());
-                                    mVenueNameTextView.setText(mListOfMarkerInfo.get(i).getVenueName());
+                                    multipleGigs = true;
+                                }
+
+                            }
+
+                            if(multipleGigs)
+                            {
+                                mGigNameTextView.setText("Multiple Gigs at this venue!");
+                            }
+
+                            else
+                            {
+                                // The marker info list is then iterated through
+                                for(int i = 0; i < mListOfMarkerInfo.size(); i++)
+                                {
+                                    mListOfMarkerInfo.get(i);
+
+                                    // When the selected marker id matches one from the list it means there is a match
+                                    // and the text fields are updated to reflect this.
+                                    if(mListOfMarkerInfo.get(i).getMarkerId().equals(markerSelected.getId()))
+                                    {
+                                        mGigIdTextView.setText(mListOfMarkerInfo.get(i).getGigId());
+                                        mGigNameTextView.setText(mListOfMarkerInfo.get(i).getGigName());
+                                        mGigStartDateTextView.setText(mListOfMarkerInfo.get(i).getGigStartDate().toString());
+                                        mGigFinishDateTextView.setText(mListOfMarkerInfo.get(i).getGigEndDate().toString());
+                                        mVenueNameTextView.setText(mListOfMarkerInfo.get(i).getVenueName());
+                                    }
                                 }
                             }
 
