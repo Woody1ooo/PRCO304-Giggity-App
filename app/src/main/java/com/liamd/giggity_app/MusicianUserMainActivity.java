@@ -4,7 +4,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.FragmentTransaction;
+import android.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -12,7 +12,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ImageView;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TabHost;
 import android.widget.TextView;
 
 import com.facebook.login.LoginManager;
@@ -80,10 +82,11 @@ public class MusicianUserMainActivity extends AppCompatActivity
         // Load Home fragment by default
         setTitle("Home");
         MusicianUserHomeFragment fragment = new MusicianUserHomeFragment();
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.frame, fragment
                 , "MusicianUserHomeFragment");
         fragmentTransaction.commit();
+
 
         // At the database reference "Users/%logged in user id%/hasCompletedSetup", a check is made
         // to see if the value is true or false.
@@ -180,7 +183,7 @@ public class MusicianUserMainActivity extends AppCompatActivity
         {
             setTitle("Home");
             MusicianUserHomeFragment fragment = new MusicianUserHomeFragment();
-            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+            FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
             fragmentTransaction.replace(R.id.frame, fragment
                     , "MusicianUserHomeFragment");
             fragmentTransaction.commit();
@@ -190,7 +193,7 @@ public class MusicianUserMainActivity extends AppCompatActivity
         {
             setTitle("My Musician Profile");
             MusicianUserProfileFragment fragment = new MusicianUserProfileFragment();
-            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+            FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
             fragmentTransaction.replace(R.id.frame, fragment
                     , "MusicianUserProfileFragment");
             fragmentTransaction.commit();
@@ -200,7 +203,7 @@ public class MusicianUserMainActivity extends AppCompatActivity
         {
             setTitle("Gig Finder");
             MusicianUserGigFinderFragment fragment = new MusicianUserGigFinderFragment();
-            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+            FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
             fragmentTransaction.replace(R.id.frame, fragment
                     , "MusicianUserGigFinderFragment");
             fragmentTransaction.commit();
@@ -210,7 +213,7 @@ public class MusicianUserMainActivity extends AppCompatActivity
         {
             setTitle("Band Finder");
             MusicianUserBandFinderFragment fragment = new MusicianUserBandFinderFragment();
-            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+            FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
             fragmentTransaction.replace(R.id.frame, fragment
                     , "MusicianUserBandFinderFragment");
             fragmentTransaction.commit();
@@ -220,7 +223,7 @@ public class MusicianUserMainActivity extends AppCompatActivity
         {
             setTitle("Band Creator");
             MusicianUserBandCreatorFragment fragment = new MusicianUserBandCreatorFragment();
-            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+            FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
             fragmentTransaction.replace(R.id.frame, fragment
                     , "MusicianUserBandCreatorFragment");
             fragmentTransaction.commit();
@@ -230,7 +233,7 @@ public class MusicianUserMainActivity extends AppCompatActivity
         {
             setTitle("Band Requests");
             MusicianUserBandRequestsFragment fragment = new MusicianUserBandRequestsFragment();
-            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+            FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
             fragmentTransaction.replace(R.id.frame, fragment
                     , "MusicianUserBandRequestsFragment");
             fragmentTransaction.commit();
@@ -240,7 +243,7 @@ public class MusicianUserMainActivity extends AppCompatActivity
         {
             setTitle("Settings");
             SettingsFragment fragment = new SettingsFragment();
-            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+            FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
             fragmentTransaction.replace(R.id.frame, fragment
                     , "SettingsFragment");
             fragmentTransaction.commit();

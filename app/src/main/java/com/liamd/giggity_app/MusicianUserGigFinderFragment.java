@@ -1,26 +1,20 @@
 package com.liamd.giggity_app;
 
 
-import android.*;
 import android.Manifest;
-import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.provider.MediaStore;
-import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.ContextCompat;
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.SeekBar;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,12 +26,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.jar.*;
 
 import static android.content.Context.LOCATION_SERVICE;
 
@@ -326,9 +317,9 @@ public class MusicianUserGigFinderFragment extends Fragment
 
         // Creates a new fragment transaction to display the details of the selected
         // preferences. Some custom animation has been added also.
-        FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager()
+        FragmentTransaction fragmentTransaction = getActivity().getFragmentManager()
                 .beginTransaction();
-        fragmentTransaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left);
+        fragmentTransaction.setCustomAnimations(R.animator.enter_from_right, R.animator.enter_from_left);
         fragmentTransaction.replace(R.id.frame, fragment, "GigResultsMapFragment")
                 .addToBackStack(null).commit();
     }

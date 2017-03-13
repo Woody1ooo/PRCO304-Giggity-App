@@ -1,14 +1,13 @@
 package com.liamd.giggity_app;
 
 
-import android.content.Intent;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
@@ -21,8 +20,6 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 
 
@@ -35,13 +32,14 @@ public class VenueUserViewGigsFragment extends Fragment
     private List<Gig> mListOfUsersGigs = new ArrayList<>();
 
     private ListView mGigsListView;
-    private GigsAdapter adapter;
+    private VenueGigsAdapter adapter;
 
     // Declare Firebase specific variables
     private FirebaseAuth mAuth;
     private DatabaseReference mDatabase;
 
     private String mVenueId;
+
 
     public VenueUserViewGigsFragment()
     {
@@ -62,6 +60,7 @@ public class VenueUserViewGigsFragment extends Fragment
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
         mGigsListView = (ListView) fragmentView.findViewById(R.id.gigListView);
+
 
         mDatabase.addListenerForSingleValueEvent(new ValueEventListener()
         {
@@ -102,8 +101,8 @@ public class VenueUserViewGigsFragment extends Fragment
                 // This sorts the list of gigs by date
                 Collections.sort(mListOfUsersGigs, new CustomComparator());
 
-                // Using the custom GigsAdapter, the list of users gigs can be displayed
-                adapter = new GigsAdapter(getActivity(), R.layout.gig_list, mListOfUsersGigs);
+                // Using the custom VenueGigsAdapter, the list of users gigs can be displayed
+                adapter = new VenueGigsAdapter(getActivity(), R.layout.venue_user_gig_list, mListOfUsersGigs);
                 mGigsListView.setAdapter(adapter);
             }
 

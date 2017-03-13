@@ -1,12 +1,16 @@
 package com.liamd.giggity_app;
 
 
+import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
+import android.app.Fragment;
+import android.app.FragmentTransaction;
+import android.provider.ContactsContract;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
+import android.widget.TabHost;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -24,6 +28,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 
 
@@ -37,20 +42,25 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
     private GoogleMap mGoogleMap;
     private Double mLatitude;
     private Double mLongitude;
-    private LatLng mLocation;
+    private static LatLng mLocation;
     private Boolean mLocationType;
 
     // Declare Firebase specific variables
     private FirebaseAuth mAuth;
     private DatabaseReference mDatabase;
     private DataSnapshot mGigDataSnapshot;
-    private DataSnapshot mVenueDataSnapshot;
+    private static DataSnapshot mVenueDataSnapshot;
 
     // Declare general variables
     private ArrayList<Gig> mListOfGigs = new ArrayList<>();
     private ArrayList<Venue> mListOfVenues = new ArrayList<>();
     private ArrayList<MarkerInfo> mListOfMarkerInfo = new ArrayList<>();
     private Marker mMarker;
+    private Boolean multipleGigs = false;
+
+    // Declare Visual Components
+    private ListView mGigsListView;
+    private MusicianGigsAdapter adapter;
 
     // Declare variables to be stored to pass to the next fragment
     private String mGigId;
@@ -59,8 +69,6 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
     private String mVenueId;
     private Date mGigStartDate;
     private Date mGigFinishDate;
-
-    private Boolean multipleGigs = false;
 
     public MusicianUserGigResultsFragment()
     {
@@ -73,6 +81,21 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
     {
         // Inflate the layout for this fragment
         View fragmentView = inflater.inflate(R.layout.musician_user_fragment_gig_results, container, false);
+
+        // This initialises the tabs used to hold the different views
+        TabHost tabs = (TabHost) fragmentView.findViewById(R.id.tabhost);
+        tabs.setup();
+
+        TabHost.TabSpec tabSpec = tabs.newTabSpec("tag1");
+
+        tabSpec.setContent(R.id.ListTab);
+        tabSpec.setIndicator("List");
+        tabs.addTab(tabSpec);
+
+        tabSpec = tabs.newTabSpec("tag2");
+        tabSpec.setContent(R.id.mapTab);
+        tabSpec.setIndicator("Map");
+        tabs.addTab(tabSpec);
 
         // Creates a reference to Firebase
         mAuth = FirebaseAuth.getInstance();
@@ -96,6 +119,7 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
             mLongitude = getArguments().getDouble("HomeLocationLongitude");
         }
 
+
         // This creates a location for the current user
         mLocation = new LatLng(mLatitude, mLongitude);
 
@@ -104,6 +128,9 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
         mMapView.onCreate(savedInstanceState);
         mMapView.onResume();
         mMapView.getMapAsync(this);
+
+        // Initialise the list view
+        mGigsListView = (ListView) fragmentView.findViewById(R.id.gigsListView);
 
         return fragmentView;
     }
@@ -168,7 +195,6 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
     // location on the map
     private void AddGigMarkers(DataSnapshot gigsSnapshot, DataSnapshot venuesSnapshot)
     {
-
         // This iterates through the venues and adds them to a list (mListOfVenues)
         Iterable<DataSnapshot> venueChildren = venuesSnapshot.getChildren();
         for (DataSnapshot child : venueChildren)
@@ -187,6 +213,9 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
             gig.setGigId(child.getKey());
             mListOfGigs.add(gig);
         }
+
+        // This method is then called to populate the list view once the map view has its markers in place
+        PopulateListView();
 
         // This then iterates through the list of gigs, and obtains the venue ID's of
         // each gig.
@@ -354,10 +383,31 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
 
         // Creates a new fragment transaction to display the details of the selected
         // gig. Some custom animation has been added also.
-        FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager()
+        FragmentTransaction fragmentTransaction = getActivity().getFragmentManager()
                 .beginTransaction();
-        fragmentTransaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left);
+        fragmentTransaction.setCustomAnimations(R.animator.enter_from_right, R.animator.enter_from_left);
         fragmentTransaction.replace(R.id.frame, fragment, "MusicianUserGigDetailsFragment")
                 .addToBackStack(null).commit();
+    }
+
+    private void PopulateListView()
+    {
+        // This sorts the list of gigs by date
+        Collections.sort(mListOfGigs, new CustomComparator());
+
+        // Using the custom VenueGigsAdapter, the list of users gigs can be displayed
+        adapter = new MusicianGigsAdapter(getActivity(), R.layout.musician_user_gig_list, mListOfGigs);
+        mGigsListView.setAdapter(adapter);
+    }
+
+    // This accessor allows the user's location to be passed to the gigs adapter
+    public static LatLng getLocation()
+    {
+        return mLocation;
+    }
+
+    public static DataSnapshot getVenueSnapshot()
+    {
+        return mVenueDataSnapshot;
     }
 }
