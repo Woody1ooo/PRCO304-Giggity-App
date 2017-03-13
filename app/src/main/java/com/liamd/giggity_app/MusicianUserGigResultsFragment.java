@@ -60,7 +60,7 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
     private Date mGigStartDate;
     private Date mGigFinishDate;
 
-    private Boolean multipleGigs;
+    private Boolean multipleGigs = false;
 
     public MusicianUserGigResultsFragment()
     {
@@ -214,7 +214,7 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
                     // To expose the methods required for marker placement, the gigLocation
                     // variable is then converted back into the standard Google Maps
                     // LatLng object (convertedGigLocation)
-                    com.google.android.gms.maps.model.LatLng convertedGigLocation =
+                    final com.google.android.gms.maps.model.LatLng convertedGigLocation =
                             new com.google.android.gms.maps.model.LatLng(gigLocation.getLatitude(),
                                     gigLocation.getLongitude());
 
@@ -251,41 +251,69 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
                             TextView mGigFinishDateTextView = (TextView) v.findViewById(R.id.gigFinishDateTextView);
                             TextView mVenueNameTextView = (TextView) v.findViewById(R.id.venueNameTextView);
 
-
-                            // Loop through the marker info to see if any existing markers have the same venue ID
-                            // If they do, do something...
-                            for(int k = 0; k < mListOfMarkerInfo.size(); k++)
+                            // The marker info list is then iterated through
+                            for (int i = 0; i < mListOfMarkerInfo.size(); i++)
                             {
-                                if(mListOfMarkerInfo.get(k).getVenueId().equals(mVenueId))
+                                // When the selected marker id matches one from the list it means there is a match
+                                // and the text fields are updated to reflect this.
+                                if (mListOfMarkerInfo.get(i).getMarkerId().equals(markerSelected.getId()))
                                 {
-                                    multipleGigs = true;
+                                    mGigIdTextView.setText(mListOfMarkerInfo.get(i).getGigId());
+                                    mGigNameTextView.setText(mListOfMarkerInfo.get(i).getGigName());
+                                    mGigStartDateTextView.setText(mListOfMarkerInfo.get(i).getGigStartDate().toString());
+                                    mGigFinishDateTextView.setText(mListOfMarkerInfo.get(i).getGigEndDate().toString());
+                                    mVenueNameTextView.setText(mListOfMarkerInfo.get(i).getVenueName());
                                 }
 
-                            }
-
-                            if(multipleGigs)
-                            {
-                                mGigNameTextView.setText("Multiple Gigs at this venue!");
-                            }
-
-                            else
-                            {
-                                // The marker info list is then iterated through
-                                for(int i = 0; i < mListOfMarkerInfo.size(); i++)
+                                // Loop through the marker info to see if any existing markers have the same venue ID
+                                // If they do it means there are multiple gigs at the selected venue and the UI should be
+                                // updated to accommodate this
+                                for (int k = 0; k < mListOfMarkerInfo.size(); k++)
                                 {
-                                    mListOfMarkerInfo.get(i);
+                                    int gigCounter = 0;
 
-                                    // When the selected marker id matches one from the list it means there is a match
-                                    // and the text fields are updated to reflect this.
-                                    if(mListOfMarkerInfo.get(i).getMarkerId().equals(markerSelected.getId()))
+                                    // Get the id of the marker selected
+                                    String markerSelectedId = markerSelected.getId();
+
+                                    // If the marker id from the list matches the selected one
+                                    // extract its venue Id so we know which venue to check for
+                                    // multiple gigs at.
+                                    if (mListOfMarkerInfo.get(k).getMarkerId().equals(markerSelectedId))
                                     {
-                                        mGigIdTextView.setText(mListOfMarkerInfo.get(i).getGigId());
-                                        mGigNameTextView.setText(mListOfMarkerInfo.get(i).getGigName());
-                                        mGigStartDateTextView.setText(mListOfMarkerInfo.get(i).getGigStartDate().toString());
-                                        mGigFinishDateTextView.setText(mListOfMarkerInfo.get(i).getGigEndDate().toString());
-                                        mVenueNameTextView.setText(mListOfMarkerInfo.get(i).getVenueName());
+                                        String venueId = mListOfMarkerInfo.get(k).getVenueId();
+
+                                        // With the venue id, we can now go through the list and find any gigs
+                                        // at that venue id. If we find more than one, it means that there are
+                                        // multiple gigs at that venue, therefore the UI needs to reflect that.
+                                        for(int l = 0; l < mListOfMarkerInfo.size(); l++)
+                                        {
+                                            // If the list contains a gig at the venue selected by the user
+                                            // increment the gigCounter variable
+                                            if(mListOfMarkerInfo.get(l).getVenueId().equals(venueId))
+                                            {
+                                                gigCounter++;
+                                            }
+
+                                            // If the gigCounter variable contains 2 or more gigs then set the
+                                            // multipleGigs boolean to true
+                                            if(gigCounter >= 2)
+                                            {
+                                                multipleGigs = true;
+                                            }
+                                        }
                                     }
                                 }
+
+                                // If there are multiple gigs update the UI accordingly
+                                if (multipleGigs)
+                                {
+                                    mGigNameTextView.setText("Multiple Gigs at this venue!");
+                                    mGigStartDateTextView.setText("Click to see what's on offer!");
+                                    mGigFinishDateTextView.setText("");
+                                }
+
+                                // Reset multiple gigs for when another marker is clicked
+                                multipleGigs = false;
                             }
 
                             // Returning the view containing InfoWindow contents
@@ -318,6 +346,11 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
         }
 
         fragment.setArguments(arguments);
+
+        // These lists are then cleared otherwise this creates an issue when the fragment is returned to
+        mListOfMarkerInfo.clear();
+        mListOfGigs.clear();
+        mListOfVenues.clear();
 
         // Creates a new fragment transaction to display the details of the selected
         // gig. Some custom animation has been added also.
