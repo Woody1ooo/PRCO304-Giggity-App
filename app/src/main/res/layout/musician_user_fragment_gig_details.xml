@@ -16,16 +16,68 @@
             android:orientation="vertical">
 
             <TextView
-                android:text="TextView"
+                android:text="Gig Name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/gigIdTextView"/>
+                android:id="@+id/textView18"
+                android:paddingTop="20dp"
+                android:layout_marginLeft="10dp"/>
 
             <TextView
                 android:text="TextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/gigNameTextView"/>
+                android:id="@+id/gigNameTextView"
+                android:paddingTop="20dp"
+                android:layout_marginLeft="10dp"/>
+
+            <TextView
+                android:text="Gig Start Date"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/textView19"
+                android:paddingTop="20dp"
+                android:layout_marginLeft="10dp"/>
+
+            <TextView
+                android:text="TextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/startDateTextView"
+                android:paddingTop="20dp"
+                android:layout_marginLeft="10dp"/>
+
+            <TextView
+                android:text="Gig End Date"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/textView20"
+                android:paddingTop="20dp"
+                android:layout_marginLeft="10dp"/>
+
+            <TextView
+                android:text="TextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/finishDateTextView"
+                android:paddingTop="20dp"
+                android:layout_marginLeft="10dp"/>
+
+            <TextView
+                android:text="Venue"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/textView21"
+                android:paddingTop="20dp"
+                android:layout_marginLeft="10dp"/>
+
+            <TextView
+                android:text="TextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/venueTextView"
+                android:paddingTop="20dp"
+                android:layout_marginLeft="10dp"/>
         </LinearLayout>
     </ScrollView>
 </FrameLayout>

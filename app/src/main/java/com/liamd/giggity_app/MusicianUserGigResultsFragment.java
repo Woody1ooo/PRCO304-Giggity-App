@@ -9,6 +9,7 @@ import android.provider.ContactsContract;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TabHost;
 import android.widget.TextView;
@@ -352,6 +353,34 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
                 }
             }
         }
+
+        // When a list item is selected, the same fragment opens as when a pin info window is clicked
+        mGigsListView.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id)
+            {
+                Gig selectedGig = (Gig) mGigsListView.getItemAtPosition(position);
+
+                MusicianUserGigDetailsFragment fragment = new MusicianUserGigDetailsFragment();
+
+                Bundle arguments = new Bundle();
+                arguments.putString("GigID", selectedGig.getGigId());
+                arguments.putString("GigTitle", selectedGig.getTitle());
+                arguments.putString("GigStartDate", selectedGig.getStartDate().toString());
+                arguments.putString("GigEndDate", selectedGig.getEndDate().toString());
+                arguments.putString("GigVenueID", selectedGig.getVenueID());
+                fragment.setArguments(arguments);
+
+                // Creates a new fragment transaction to display the details of the selected
+                // gig. Some custom animation has been added also.
+                FragmentTransaction fragmentTransaction = getActivity().getFragmentManager()
+                        .beginTransaction();
+                fragmentTransaction.setCustomAnimations(R.animator.enter_from_right, R.animator.enter_from_left);
+                fragmentTransaction.replace(R.id.frame, fragment, "MusicianUserGigDetailsFragment")
+                        .addToBackStack(null).commit();
+            }
+        });
     }
 
     // If a marker info window is clicked the data is passed to the next fragment as bundle arguments
@@ -370,7 +399,10 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
             if(mListOfMarkerInfo.get(i).getMarkerId().equals(marker.getId()))
             {
                 arguments.putString("GigId", mListOfMarkerInfo.get(i).getGigId());
-                arguments.putString("GigName", mListOfMarkerInfo.get(i).getGigName());
+                arguments.putString("GigTitle", mListOfMarkerInfo.get(i).getGigName());
+                arguments.putString("GigStartDate", mListOfMarkerInfo.get(i).getGigStartDate().toString());
+                arguments.putString("GigEndDate", mListOfMarkerInfo.get(i).getGigEndDate().toString());
+                arguments.putString("GigVenueID", mListOfMarkerInfo.get(i).getVenueId());
             }
         }
 

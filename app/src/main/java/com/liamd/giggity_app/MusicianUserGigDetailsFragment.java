@@ -17,9 +17,10 @@ import org.w3c.dom.Text;
  */
 public class MusicianUserGigDetailsFragment extends Fragment
 {
-
-    private TextView mGigIdTextView;
     private TextView mGigNameTextView;
+    private TextView mGigStartDateTextView;
+    private TextView mGigEndDateTextView;
+    private TextView mGigVenueTextView;
 
     public MusicianUserGigDetailsFragment()
     {
@@ -34,11 +35,14 @@ public class MusicianUserGigDetailsFragment extends Fragment
         // Inflate the layout for this fragment
         View fragmentView = inflater.inflate(R.layout.musician_user_fragment_gig_details, container, false);
 
-        mGigIdTextView = (TextView) fragmentView.findViewById(R.id.gigIdTextView);
         mGigNameTextView = (TextView) fragmentView.findViewById(R.id.gigNameTextView);
+        mGigStartDateTextView = (TextView) fragmentView.findViewById(R.id.startDateTextView);
+        mGigEndDateTextView = (TextView) fragmentView.findViewById(R.id.finishDateTextView);
+        mGigVenueTextView = (TextView) fragmentView.findViewById(R.id.venueTextView);
 
-        mGigIdTextView.setText(getArguments().getString("GigId"));
-        mGigNameTextView.setText(getArguments().getString("GigName"));
+        mGigNameTextView.setText(getArguments().getString("GigTitle"));
+        mGigStartDateTextView.setText(getArguments().getString("GigStartDate"));
+        mGigEndDateTextView.setText(getArguments().getString("GigEndDate"));
 
         return fragmentView;
     }

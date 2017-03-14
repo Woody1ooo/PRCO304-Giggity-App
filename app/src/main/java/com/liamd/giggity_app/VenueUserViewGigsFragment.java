@@ -119,7 +119,7 @@ public class VenueUserViewGigsFragment extends Fragment
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id)
             {
                 // This returns the selected gig from the list view
-                Gig selectedGig = (Gig)mGigsListView.getItemAtPosition(position);
+                Gig selectedGig = (Gig) mGigsListView.getItemAtPosition(position);
 
                 // This then stores the id of the selected gig in a bundle which is then
                 // passed to the result fragment to display the gig details
