@@ -4,11 +4,13 @@ package com.liamd.giggity_app;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,12 +38,13 @@ import static android.content.Context.LOCATION_SERVICE;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MusicianUserGigFinderFragment extends Fragment
+public class MusicianUserGigFinderFragment extends Fragment implements LocationListener
 {
     // Declare visual components
     private SeekBar mDistanceSeekbar;
     private TextView mDistanceTextView;
     private RadioButton mCurrentLocationRadio;
+    private RadioButton mHomeLocationRadio;
     private MultiSelectSpinner mGenreSelectSpinner;
     private Button mSearchButton;
 
@@ -57,7 +60,13 @@ public class MusicianUserGigFinderFragment extends Fragment
     private LocationManager mLocationManager;
     private Location location;
 
-    final static int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
+    // The minimum distance to change Updates in meters
+    private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 10; // 10 meters
+
+    // The minimum time between updates in milliseconds
+    private static final long MIN_TIME_BW_UPDATES = 1000 * 60 * 1; // 1 minute
+
+    private final static int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
 
     public MusicianUserGigFinderFragment()
     {
@@ -81,6 +90,7 @@ public class MusicianUserGigFinderFragment extends Fragment
         mDistanceSeekbar = (SeekBar) fragmentView.findViewById(R.id.distanceSeekBar);
         mDistanceTextView = (TextView) fragmentView.findViewById(R.id.distanceValueTextView);
         mCurrentLocationRadio = (RadioButton) fragmentView.findViewById(R.id.currentLocationRadio);
+        mHomeLocationRadio = (RadioButton) fragmentView.findViewById(R.id.homeLocationRadio);
         mGenreSelectSpinner = (MultiSelectSpinner) fragmentView.findViewById(R.id.genreSpinner);
         mSearchButton = (Button) fragmentView.findViewById(R.id.searchButton);
 
@@ -101,6 +111,9 @@ public class MusicianUserGigFinderFragment extends Fragment
 
         mGenreSelectSpinner.setItems(mGenreList);
 
+        // This method gets the users current/last known location
+        GetUserCurrentLocation();
+
         mDatabase.child("Users").addListenerForSingleValueEvent(new ValueEventListener()
         {
             @Override
@@ -113,9 +126,6 @@ public class MusicianUserGigFinderFragment extends Fragment
                 // This method gets the value from the database of the users set home location
                 // and assigns its value to mHomeLocation
                 GetUserHomeLocation(dataSnapshot);
-
-                // This method gets the users current/last known location
-                GetUserCurrentLocation();
             }
 
             @Override
@@ -172,11 +182,13 @@ public class MusicianUserGigFinderFragment extends Fragment
     private void GetUserCurrentLocation()
     {
         location = getLastKnownLocation();
-        if(location == null)
+
+        if (location == null)
         {
             Toast.makeText(getActivity(), "Are you sure you have location services enabled?" +
                     " We can't find you!", Toast.LENGTH_SHORT).show();
         }
+
         else
         {
             double latitude = location.getLatitude();
@@ -189,38 +201,83 @@ public class MusicianUserGigFinderFragment extends Fragment
     // location as a Location variable
     private Location getLastKnownLocation()
     {
-        mLocationManager = (LocationManager) getActivity().getApplicationContext().getSystemService(LOCATION_SERVICE);
-        List<String> providers = mLocationManager.getProviders(true);
-        Location closestLocation = null;
-        for (String provider : providers)
+        Boolean isGPSEnabled;
+        Boolean isNetworkEnabled;
+
+        try
         {
-            if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)
-                    != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(),
-                    Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+            mLocationManager = (LocationManager) getActivity().getApplicationContext().getSystemService(LOCATION_SERVICE);
+
+            // getting GPS status
+            isGPSEnabled = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+
+            // getting network status
+            isNetworkEnabled = mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+
+            if (!isGPSEnabled && !isNetworkEnabled)
             {
-                // Request permission.
-                ActivityCompat.requestPermissions(getActivity(), new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
-                        MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+                // no network provider is enabled
             }
+
             else
             {
-                Location location = mLocationManager.getLastKnownLocation(provider);
-                if (location == null)
+                if (isNetworkEnabled)
                 {
+                    if (ActivityCompat.checkSelfPermission(getActivity().getApplicationContext(),
+                            Manifest.permission.ACCESS_FINE_LOCATION)
+                            != PackageManager.PERMISSION_GRANTED
+                            && ActivityCompat.checkSelfPermission(getActivity().getApplicationContext(),
+                            Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+                    {
+                        requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+                    }
+
+                    else
+                    {
+                        mLocationManager.requestLocationUpdates(
+                                LocationManager.NETWORK_PROVIDER,
+                                MIN_TIME_BW_UPDATES,
+                                MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
+                        Log.d("Network", "Network Enabled");
+
+                        if (mLocationManager != null)
+                        {
+                            location = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                        }
+                    }
                 }
-                if (closestLocation == null || location.getAccuracy() < closestLocation.getAccuracy())
+
+                // if GPS Enabled get lat/long using GPS Services
+                if (isGPSEnabled)
                 {
-                    // Found best last known location: %s", l);
-                    closestLocation = location;
+                    if (location == null)
+                    {
+                        mLocationManager.requestLocationUpdates(
+                                LocationManager.GPS_PROVIDER,
+                                MIN_TIME_BW_UPDATES,
+                                MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
+                        Log.d("GPS", "GPS Enabled");
+
+                        if (mLocationManager != null)
+                        {
+                            location = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                        }
+                    }
                 }
             }
+
         }
-        return closestLocation;
+
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+
+        return location;
     }
 
     // This method should process the result of the permission selected, though
     // at the moment doesn't get called for some reason
-
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults)
     {
@@ -232,9 +289,14 @@ public class MusicianUserGigFinderFragment extends Fragment
             {
                 GetUserCurrentLocation();
             }
+
             else
             {
-                // Permission was denied. Display an error message.
+                Toast.makeText(getActivity(), "If you wish to use your current location," +
+                        " please ensure you have given the permission.", Toast.LENGTH_SHORT).show();
+
+                mHomeLocationRadio.isSelected();
+                mCurrentLocationRadio.setEnabled(false);
             }
         }
     }
@@ -322,5 +384,29 @@ public class MusicianUserGigFinderFragment extends Fragment
         fragmentTransaction.setCustomAnimations(R.animator.enter_from_right, R.animator.enter_from_left);
         fragmentTransaction.replace(R.id.frame, fragment, "GigResultsMapFragment")
                 .addToBackStack(null).commit();
+    }
+
+    @Override
+    public void onLocationChanged(Location location)
+    {
+
+    }
+
+    @Override
+    public void onStatusChanged(String s, int i, Bundle bundle)
+    {
+
+    }
+
+    @Override
+    public void onProviderEnabled(String s)
+    {
+
+    }
+
+    @Override
+    public void onProviderDisabled(String s)
+    {
+
     }
 }

@@ -18,6 +18,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -31,6 +32,8 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+
+import static com.google.android.gms.maps.model.BitmapDescriptorFactory.HUE_AZURE;
 
 
 /**
@@ -142,6 +145,14 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
     {
         mGoogleMap = map;
 
+        // This places a marker at the users chosen location
+        mGoogleMap.addMarker(new MarkerOptions()
+                .position(mLocation)
+                .icon(BitmapDescriptorFactory.defaultMarker(HUE_AZURE)));
+
+        // This zooms the map in to a reasonable level (12) and centers it on the location provided
+        float zoomLevel = 15;
+        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mLocation, zoomLevel));
         mGoogleMap.setOnInfoWindowClickListener(this);
 
         // Once the map is ready, it can be set up using SetupMap()
@@ -186,10 +197,6 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
 
             }
         });
-
-        // This zooms the map in to a reasonable level (12) and centers it on the location provided
-        float zoomLevel = 12;
-        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mLocation, zoomLevel));
     }
 
     // This method iterates through the two snapshots to add markers for each gig at the relevant
