@@ -16,6 +16,11 @@ public class MarkerInfo
     private Date gigStartDate;
     private Date gigEndDate;
 
+    public MarkerInfo(String markerId)
+    {
+        this.markerId = markerId;
+    }
+
     public MarkerInfo(Date gigEndDate, String gigId, String gigName, Date gigStartDate, String markerId, String venueId, String venueName)
     {
         this.gigEndDate = gigEndDate;

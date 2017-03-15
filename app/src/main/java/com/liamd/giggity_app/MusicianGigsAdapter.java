@@ -2,7 +2,6 @@ package com.liamd.giggity_app;
 
 import android.content.Context;
 import android.graphics.Typeface;
-import android.location.Location;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +16,6 @@ import com.google.android.gms.location.places.PlacePhotoMetadataBuffer;
 import com.google.android.gms.location.places.PlacePhotoMetadataResult;
 import com.google.android.gms.location.places.PlacePhotoResult;
 import com.google.android.gms.location.places.Places;
-
 import java.util.List;
 
 /**
@@ -35,13 +33,6 @@ public class MusicianGigsAdapter extends ArrayAdapter<Gig>
 
     // Declare general variables
     private String mVenueName;
-    private String mDistance;
-    private Location mGigLocation;
-    private double mGigLocationLat;
-    private double mGigLocationLng;
-    private Location mUserLocation;
-    private double mUserLocationLat;
-    private double mUserLocationLng;
 
     private GoogleApiClient mGoogleApiClient;
 
@@ -86,36 +77,13 @@ public class MusicianGigsAdapter extends ArrayAdapter<Gig>
 
         //placePhotosAsync();
 
-        // Initialise other variables required
-        mGigLocation = new Location("");
-        mUserLocation = new Location("");
-
         // Get the name of the gigs venue from the previous fragment
         mVenueName = MusicianUserGigResultsFragment.getVenueSnapshot().child(gig.getVenueID() + "/name").getValue().toString();
-
-        // Get the location of the gig from the previous fragment
-        mGigLocationLat = MusicianUserGigResultsFragment.getVenueSnapshot().child(gig.getVenueID() + "/venueLocation/latitude").getValue(Double.class);
-        mGigLocationLng = MusicianUserGigResultsFragment.getVenueSnapshot().child(gig.getVenueID() + "/venueLocation/longitude").getValue(Double.class);
-
-        // Then set the data as parameters for the gig location object
-        mGigLocation.setLatitude(mGigLocationLat);
-        mGigLocation.setLongitude(mGigLocationLng);
-
-        // Get the user's location from the previous fragment and set it against the mUserLocation variable
-        mUserLocationLat = MusicianUserGigResultsFragment.getLocation().latitude;
-        mUserLocationLng = MusicianUserGigResultsFragment.getLocation().longitude;
-
-        // Then set the data as parameters for the user location object
-        mUserLocation.setLatitude(mUserLocationLat);
-        mUserLocation.setLongitude(mUserLocationLng);
-
-        // Calculate the distance between the provided location and the gig
-        mDistance = Double.toString(CalculateDistance(mGigLocation, mUserLocation));
 
         // Set list view fields to display the correct information
         mVenueNameTextView.setText(mVenueName);
         mVenueNameTextView.setTypeface(null, Typeface.BOLD);
-        mDistanceTextView.setText(mDistance + "km");
+        mDistanceTextView.setText(gig.getGigDistance() + "km");
         mGigNameTextView.setText(gig.getTitle());
         mGigDateTextView.setText(gig.getStartDate().toString());
 
@@ -124,24 +92,6 @@ public class MusicianGigsAdapter extends ArrayAdapter<Gig>
 
         return gigsListView;
     }
-
-    // This method takes the gig location and the user's location and calculates the distance between the two
-    private double CalculateDistance(Location gigLocation, Location userLocation)
-    {
-        double distance;
-
-        // This calculates the distance between the passed gig location and the user's current location
-        distance = gigLocation.distanceTo(userLocation);
-
-        // This converts the distance into km
-        distance = distance / 1000;
-
-        // This then rounds the distance to 2DP
-        distance = Math.round(distance * 100D) / 100D;
-
-        return distance;
-    }
-
 
     private ResultCallback<PlacePhotoResult> mDisplayPhotoResultCallback = new ResultCallback<PlacePhotoResult>()
     {

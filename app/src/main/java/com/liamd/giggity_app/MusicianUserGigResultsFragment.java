@@ -2,6 +2,7 @@ package com.liamd.giggity_app;
 
 
 import android.content.Context;
+import android.location.Location;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
@@ -59,8 +60,10 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
     private ArrayList<Gig> mListOfGigs = new ArrayList<>();
     private ArrayList<Venue> mListOfVenues = new ArrayList<>();
     private ArrayList<MarkerInfo> mListOfMarkerInfo = new ArrayList<>();
+    private ArrayList<Integer> mFilteredGigsToRemove = new ArrayList<>();
     private Marker mMarker;
     private Boolean multipleGigs = false;
+    private int mGigDistanceSelected;
 
     // Declare Visual Components
     private ListView mGigsListView;
@@ -73,6 +76,13 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
     private String mVenueId;
     private Date mGigStartDate;
     private Date mGigFinishDate;
+
+    // Location variables
+    private double mDistance;
+    private Location mGigLocation;
+    private double mGigLocationLat;
+    private double mGigLocationLng;
+    private Location mUserLocation;
 
     public MusicianUserGigResultsFragment()
     {
@@ -110,6 +120,16 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
         // Initialise variables
         mLocationType = getArguments().getBoolean("CurrentLocation");
 
+        // Initialise other variables required
+        mGigLocation = new Location("");
+        mUserLocation = new Location("");
+
+        // Clears the various lists when this fragment is returned to
+        mListOfGigs.clear();
+        mListOfVenues.clear();
+        mListOfMarkerInfo.clear();
+        mFilteredGigsToRemove.clear();
+
         // Determine the type of search the user has carried out based on the boolean above
         if(mLocationType == true)
         {
@@ -123,9 +143,11 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
             mLongitude = getArguments().getDouble("HomeLocationLongitude");
         }
 
-
         // This creates a location for the current user
         mLocation = new LatLng(mLatitude, mLongitude);
+
+        // This gets the distance value the user has selected
+        mGigDistanceSelected = getArguments().getInt("DistanceSelected");
 
         // Initialise the map
         mMapView = (MapView) fragmentView.findViewById(R.id.googleMap);
@@ -415,11 +437,6 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
 
         fragment.setArguments(arguments);
 
-        // These lists are then cleared otherwise this creates an issue when the fragment is returned to
-        mListOfMarkerInfo.clear();
-        mListOfGigs.clear();
-        mListOfVenues.clear();
-
         // Creates a new fragment transaction to display the details of the selected
         // gig. Some custom animation has been added also.
         FragmentTransaction fragmentTransaction = getActivity().getFragmentManager()
@@ -434,15 +451,72 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
         // This sorts the list of gigs by date
         Collections.sort(mListOfGigs, new CustomComparator());
 
+        GetGigLocation();
+
         // Using the custom VenueGigsAdapter, the list of users gigs can be displayed
         adapter = new MusicianGigsAdapter(getActivity(), R.layout.musician_user_gig_list, mListOfGigs);
+
         mGigsListView.setAdapter(adapter);
     }
 
-    // This accessor allows the user's location to be passed to the gigs adapter
-    public static LatLng getLocation()
+    private void GetGigLocation()
     {
-        return mLocation;
+        for(int i = 0; i < mListOfGigs.size(); i++)
+        {
+            // Get the location of the gig from the previous fragment
+            mGigLocationLat = mVenueDataSnapshot.child(mListOfGigs.get(i).getVenueID() + "/venueLocation/latitude").getValue(Double.class);
+            mGigLocationLng = mVenueDataSnapshot.child(mListOfGigs.get(i).getVenueID() + "/venueLocation/longitude").getValue(Double.class);
+
+            // Then set the data as parameters for the gig location object
+            mGigLocation.setLatitude(mGigLocationLat);
+            mGigLocation.setLongitude(mGigLocationLng);
+
+            // Then set the data as parameters for the user location object
+            mUserLocation.setLatitude(mLocation.latitude);
+            mUserLocation.setLongitude(mLocation.longitude);
+
+            // Calculate the distance between the provided location and the gig
+            mDistance = CalculateDistance(mGigLocation, mUserLocation);
+
+            mListOfGigs.get(i).setGigDistance(mDistance);
+
+            FilterByDistance(i);
+        }
+
+        for(int i = mFilteredGigsToRemove.size() - 1; i >= 0; i--)
+        {
+            int itemToRemove;
+
+            itemToRemove = mFilteredGigsToRemove.get(i);
+            mListOfGigs.remove(itemToRemove);
+        }
+    }
+
+    // This method takes the gig location and the user's location and calculates the distance between the two
+    private double CalculateDistance(Location gigLocation, Location userLocation)
+    {
+        double distance;
+
+        // This calculates the distance between the passed gig location and the user's current location
+        distance = gigLocation.distanceTo(userLocation);
+
+        // This converts the distance into km
+        distance = distance / 1000;
+
+        // This then rounds the distance to 2DP
+        distance = Math.round(distance * 100D) / 100D;
+
+        return distance;
+    }
+
+    // Each time this method is called it looks at an item from the list of gigs and works out whether the distance between the gig
+    // and the users chosen location is larger than the distance specified on the slider
+    private void FilterByDistance(int listIndex)
+    {
+        if(mListOfGigs.get(listIndex).getGigDistance() > mGigDistanceSelected)
+        {
+            mFilteredGigsToRemove.add(listIndex);
+        }
     }
 
     public static DataSnapshot getVenueSnapshot()
