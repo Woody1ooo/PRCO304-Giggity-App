@@ -3,13 +3,13 @@ package com.liamd.giggity_app;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.app.Fragment;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.view.LayoutInflater;
@@ -19,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.firebase.ui.storage.images.FirebaseImageLoader;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -42,6 +43,7 @@ public class MusicianUserProfileFragment extends Fragment
 {
     // Declare visual components
     private CircleImageView profileImageView;
+    private CircleImageView mainActivityImageView;
     private TextView changeImageTextView;
     private TextView removeImageTextView;
     private ProgressDialog mProgressDialog;
@@ -71,6 +73,7 @@ public class MusicianUserProfileFragment extends Fragment
 
         // Initialise visual components
         profileImageView = (CircleImageView) fragmentView.findViewById(R.id.profile_image);
+        mainActivityImageView = (CircleImageView) getActivity().findViewById(R.id.headerProfileImage);
         changeImageTextView = (TextView) fragmentView.findViewById(R.id.changeImageTextView);
         removeImageTextView = (TextView) fragmentView.findViewById(R.id.removeImageTextView);
         mProgressDialog = new ProgressDialog(getContext());
@@ -87,7 +90,7 @@ public class MusicianUserProfileFragment extends Fragment
 
         // Creates a reference to the storage element of firebase
         mStorage = FirebaseStorage.getInstance();
-        mProfileImageReference = mStorage.getReference("ProfileImages/");
+        mProfileImageReference = mStorage.getReference();
 
         // This method loads the profile picture from the chosen login method
         LoadProfilePicture();
@@ -119,13 +122,29 @@ public class MusicianUserProfileFragment extends Fragment
     // changed to pull the users chosen pictures
     private void LoadProfilePicture()
     {
-        Uri photoURI;
-        photoURI = FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl();
-
-        if (!photoURI.equals(null))
+        // This reference looks at the Firebase storage and works out whether the current user has an image
+        mProfileImageReference.child("ProfileImages/" + mAuth.getCurrentUser().getUid() + "/profileImage")
+                .getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>()
         {
-            Picasso.with(getContext()).load(photoURI).resize(350, 350).into(profileImageView);
-        }
+            // If the user has an image this is loaded into the image view
+            @Override
+            public void onSuccess(Uri uri)
+            {
+                // The caching and memory features have been disabled to allow only the latest image to display
+                Glide.with(getContext()).using(new FirebaseImageLoader()).load
+                        (mProfileImageReference.child("ProfileImages/" + mAuth.getCurrentUser().getUid() + "/profileImage"))
+                        .diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).override(350, 350).into(profileImageView);
+            }
+
+            // If the user doesn't have an image the default image is loaded
+        }).addOnFailureListener(new OnFailureListener()
+        {
+            @Override
+            public void onFailure(@NonNull Exception e)
+            {
+                Picasso.with(getContext()).load(R.drawable.com_facebook_profile_picture_blank_portrait).resize(350, 350).into(profileImageView);
+            }
+        });
     }
 
     // This method checks to see whether the user has allowed the app to access the storage
@@ -167,9 +186,13 @@ public class MusicianUserProfileFragment extends Fragment
                 // Displays the progress dialog
                 mProgressDialog.setMessage("Deleting profile picture...");
                 mProgressDialog.show();
-                mProfileImageReference.child(mAuth.getCurrentUser().getUid() + "/").delete();
+                mProfileImageReference.child("ProfileImages/" + mAuth.getCurrentUser().getUid() + "/profileImage").delete();
                 Picasso.with(getContext()).load(R.drawable.com_facebook_profile_picture_blank_portrait).resize(350, 350).into(profileImageView);
+
+                // This updates the image on the navigation drawer as well
+                Picasso.with(getContext()).load(R.drawable.com_facebook_profile_picture_blank_portrait).resize(220, 220).into(mainActivityImageView);
                 mProgressDialog.hide();
+
             }
         });
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener()
@@ -189,8 +212,7 @@ public class MusicianUserProfileFragment extends Fragment
     {
         if (requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK && null != data)
         {
-            // This dialog is created to confirm that the users want to edit the fields
-            // they have chosen
+            // This dialog is created to confirm that the user wants to edit their picture
             final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             builder.setTitle("Update Profile Picture");
             builder.setMessage("Are you sure you wish to use this image for your profile picture?");
@@ -199,8 +221,15 @@ public class MusicianUserProfileFragment extends Fragment
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i)
                 {
+                    // Displays the progress dialog
+                    mProgressDialog.setMessage("Updating profile picture...");
+                    mProgressDialog.show();
+
+                    // This gets the data from the intent and stores it in the selectedImage variable as well as uploading it to the firebase storage
                     final Uri selectedImage = data.getData();
-                    mUploadTask = mProfileImageReference.child(mAuth.getCurrentUser().getUid() + "/").putFile(selectedImage);
+                    StorageReference profileImagesRef = mProfileImageReference.child("ProfileImages/" + mAuth.getCurrentUser().getUid() + "/profileImage");
+
+                    mUploadTask = profileImagesRef.putFile(selectedImage);
 
                     mUploadTask.addOnFailureListener(new OnFailureListener()
                     {
@@ -211,15 +240,26 @@ public class MusicianUserProfileFragment extends Fragment
                         }
                     });
 
-                    // If the upload is successful
+                    // If the upload is successful the image is then displayed
                     mUploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>()
                     {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot)
                         {
-                            profileImageView.setImageResource(0);
+                            profileImageView.setImageDrawable(null);
+
+                            // The caching and memory features have been disabled to allow only the latest image to display
+                            StorageReference profileImagesRef = mProfileImageReference.child("ProfileImages/" + mAuth.getCurrentUser().getUid() + "/profileImage");
                             Glide.with(getContext()).using(new FirebaseImageLoader()).load
-                                    (mProfileImageReference.child(mAuth.getCurrentUser().getUid() + "/" + selectedImage.getLastPathSegment())).override(350, 350).into(profileImageView);
+                                    (profileImagesRef).diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).override(350, 350).into(profileImageView);
+
+                            // This updates the image on the navigation drawer as well
+                            Glide.with(getContext()).using(new FirebaseImageLoader()).load
+                                    (profileImagesRef).diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).override(220, 220).into(mainActivityImageView);
+
+                            mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/overriddenProfilePicture/").setValue(true);
+
+                            mProgressDialog.hide();
                         }
                     });
                 }

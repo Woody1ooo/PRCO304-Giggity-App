@@ -3,6 +3,7 @@ package com.liamd.giggity_app;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
@@ -12,12 +13,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
-import android.widget.TabHost;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.facebook.login.LoginManager;
+import com.firebase.ui.storage.images.FirebaseImageLoader;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -25,6 +28,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -35,16 +40,19 @@ public class MusicianUserMainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener
 {
     // Declare visual components
-    private CircleImageView circleImageView;
+    private CircleImageView profileImageView;
     private TextView navigationProfileEmailTextView;
     private DrawerLayout drawer;
 
     // Declare Firebase specific variables
     private FirebaseAuth mAuth;
     private DatabaseReference mDatabase;
+    private FirebaseStorage mStorage;
+    private StorageReference mProfileImageReference;
 
-    // Variable to hold the currently logged in userID
+    // Declare general variables
     private String mLoggedInUserID;
+    private boolean mOverriddenProfilePicture;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -68,6 +76,10 @@ public class MusicianUserMainActivity extends AppCompatActivity
 
         // Creates a reference to the Firebase database
         mDatabase = FirebaseDatabase.getInstance().getReference();
+
+        // Creates a reference to the storage element of firebase
+        mStorage = FirebaseStorage.getInstance();
+        mProfileImageReference = mStorage.getReference();
 
         // Sets home as the default selected navigation item
         navigationView.getMenu().getItem(0).setChecked(true);
@@ -117,6 +129,11 @@ public class MusicianUserMainActivity extends AppCompatActivity
                         Intent startVenueUserMainActivity= new Intent(MusicianUserMainActivity.this, VenueUserMainActivity.class);
                         startActivity(startVenueUserMainActivity);
                     }
+                }
+
+                if(dataSnapshot.child("/overriddenProfilePicture").getValue(boolean.class))
+                {
+                    mOverriddenProfilePicture = true;
                 }
             }
 
@@ -263,14 +280,30 @@ public class MusicianUserMainActivity extends AppCompatActivity
     // The image view needs to be initialised here as onCreate doesn't draw the drawer
     private void NavigationDrawerUserData()
     {
-        Uri photoURI;
         String userEmail;
 
-        circleImageView = (CircleImageView) findViewById(R.id.profile_image);
+        profileImageView = (CircleImageView) findViewById(R.id.headerProfileImage);
         navigationProfileEmailTextView = (TextView) findViewById(R.id.userEmailTextView);
 
-        photoURI = FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl();
-        Picasso.with(this).load(photoURI).resize(220, 220).into(circleImageView);
+        mProfileImageReference.child("ProfileImages/" + mAuth.getCurrentUser().getUid() + "/profileImage")
+                .getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>()
+        {
+            @Override
+            public void onSuccess(Uri uri)
+            {
+                Glide.with(getApplicationContext()).using(new FirebaseImageLoader()).load
+                        (mProfileImageReference.child("ProfileImages/" + mAuth.getCurrentUser().getUid() + "/profileImage"))
+                        .diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).override(220, 220).into(profileImageView);
+            }
+
+        }).addOnFailureListener(new OnFailureListener()
+        {
+            @Override
+            public void onFailure(@NonNull Exception e)
+            {
+                Picasso.with(getApplicationContext()).load(R.drawable.com_facebook_profile_picture_blank_portrait).resize(220, 220).into(profileImageView);
+            }
+        });
 
         userEmail = FirebaseAuth.getInstance().getCurrentUser().getEmail();
         navigationProfileEmailTextView.setText(userEmail);

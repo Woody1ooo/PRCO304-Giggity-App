@@ -5,10 +5,6 @@
     android:id="@+id/activity_pre_setup"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.liamd.giggity_app.PreSetupActivity">
 
     <ScrollView
@@ -28,6 +24,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/textView9"
+                android:paddingTop="20dp"
+                android:paddingLeft="10dp"
                 android:textAppearance="@style/TextAppearance.AppCompat.Menu"/>
 
             <RadioGroup
@@ -35,7 +33,8 @@
                 android:layout_height="match_parent"
                 android:layout_marginTop="11dp"
                 android:id="@+id/accountTypeRadioGroup"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:paddingLeft="10dp">
 
                 <RadioButton
                     android:text="Musician"
@@ -43,6 +42,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/musicianRadio"
                     android:layout_weight="1"
+                    android:paddingLeft="10dp"
                     android:checked="true"/>
 
                 <RadioButton
@@ -50,6 +50,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/venueRadio"
+                    android:paddingLeft="10dp"
                     android:layout_weight="1"
                     />
 
@@ -62,14 +63,16 @@
                 android:id="@+id/textView8"
                 android:layout_weight="1"
                 android:textAppearance="@style/TextAppearance.AppCompat.Menu"
-                android:layout_marginTop="22dp" />
+                android:layout_marginTop="22dp"
+                android:paddingLeft="10dp"/>
 
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textPersonName"
                 android:ems="10"
-                android:id="@+id/firstNameTxt"/>
+                android:id="@+id/firstNameTxt"
+                android:paddingLeft="10dp"/>
 
             <TextView
                 android:text="Last Name"
@@ -78,7 +81,8 @@
                 android:id="@+id/textView10"
                 android:layout_weight="1"
                 android:textAppearance="@style/TextAppearance.AppCompat.Menu"
-                android:layout_marginTop="22dp" />
+                android:layout_marginTop="22dp"
+                android:paddingLeft="10dp"/>
 
             <EditText
                 android:layout_width="match_parent"
@@ -86,6 +90,7 @@
                 android:inputType="textPersonName"
                 android:ems="10"
                 android:id="@+id/lastNameTxt"
+                android:paddingLeft="10dp"
                 />
 
             <TextView
@@ -94,7 +99,8 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/genreHeadingTextView"
                 android:textAppearance="@style/TextAppearance.AppCompat.Menu"
-                android:layout_marginTop="22dp" />
+                android:layout_marginTop="22dp"
+                android:paddingLeft="10dp"/>
 
             <com.liamd.giggity_app.MultiSelectSpinner
                 android:id="@+id/genreSpinner"
@@ -102,7 +108,8 @@
                 android:layout_height="match_parent"
                 android:layout_weight="0.15"
                 android:layout_marginBottom="32dp"
-                android:layout_marginTop="22dp"/>
+                android:layout_marginTop="22dp"
+                android:paddingLeft="10dp"/>
 
             <TextView
                 android:text="Instruments"
@@ -110,7 +117,8 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/instrumentHeadingTextView"
                 android:textAppearance="@style/TextAppearance.AppCompat.Menu"
-                android:layout_marginTop="12dp" />
+                android:layout_marginTop="12dp"
+                android:paddingLeft="10dp"/>
 
             <com.liamd.giggity_app.MultiSelectSpinner
                 android:id="@+id/instrumentSpinner"
@@ -118,7 +126,8 @@
                 android:layout_height="match_parent"
                 android:layout_weight="0.15"
                 android:layout_marginBottom="22dp"
-                android:layout_marginTop="22dp"/>
+                android:layout_marginTop="22dp"
+                android:paddingLeft="10dp"/>
 
             <TextView
                 android:text="Find Your Venue"
@@ -126,14 +135,16 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/venueFinderHeadingTextView"
                 android:textAppearance="@style/TextAppearance.AppCompat.Menu"
-                android:layout_marginTop="22dp"/>
+                android:layout_marginTop="22dp"
+                android:paddingLeft="10dp"/>
 
             <TextView
                 android:text="No Venue Chosen!"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="21dp"
-                android:id="@+id/venueDetails"/>
+                android:id="@+id/venueDetails"
+                android:paddingLeft="10dp"/>
 
             <Button
                 android:text="Launch Venue Finder"
