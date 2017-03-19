@@ -52,7 +52,6 @@ public class MusicianUserMainActivity extends AppCompatActivity
 
     // Declare general variables
     private String mLoggedInUserID;
-    private boolean mOverriddenProfilePicture;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -129,11 +128,6 @@ public class MusicianUserMainActivity extends AppCompatActivity
                         Intent startVenueUserMainActivity= new Intent(MusicianUserMainActivity.this, VenueUserMainActivity.class);
                         startActivity(startVenueUserMainActivity);
                     }
-                }
-
-                if(dataSnapshot.child("/overriddenProfilePicture").getValue(boolean.class))
-                {
-                    mOverriddenProfilePicture = true;
                 }
             }
 

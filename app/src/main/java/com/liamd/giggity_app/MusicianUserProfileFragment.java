@@ -4,6 +4,8 @@ package com.liamd.giggity_app;
 import android.Manifest;
 import android.app.AlertDialog;
 import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -12,40 +14,66 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.firebase.ui.storage.images.FirebaseImageLoader;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.youtube.player.YouTubeInitializationResult;
+import com.google.android.youtube.player.YouTubePlayer;
+import com.google.android.youtube.player.YouTubePlayerFragment;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import de.hdodenhof.circleimageview.CircleImageView;
-
 import static android.app.Activity.RESULT_OK;
-
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MusicianUserProfileFragment extends Fragment
+public class MusicianUserProfileFragment extends Fragment implements YouTubePlayer.OnInitializedListener
 {
     // Declare visual components
     private CircleImageView profileImageView;
     private CircleImageView mainActivityImageView;
     private TextView changeImageTextView;
     private TextView removeImageTextView;
+    private EditText firstNameEditText;
+    private EditText lastNameEditText;
+    private EditText emailEditText;
+    private MultiSelectSpinner genreSpinner;
+    private MultiSelectSpinner instrumentSpinner;
+    private TextView chosenLocationTextView;
+    private Button launchHomeFinderButton;
+    private EditText youtubeUrlEditText;
+    private Button saveButton;
     private ProgressDialog mProgressDialog;
 
     // Declare Firebase specific variables
@@ -56,8 +84,26 @@ public class MusicianUserProfileFragment extends Fragment
     private UploadTask mUploadTask;
 
     // Declare general variables
-    private static int RESULT_LOAD_IMAGE = 1;
     private final static int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 1;
+    private List<String> mGenreList;
+    private List<String> mInstrumentList;
+    private String youtubeUrlEntered;
+
+    // This variable is the place information that is stored in the database.
+    // This is required because when the location data is retrieved, the built-in
+    // google maps latlng object doesn't have an empty constructor which is required
+    // by firebase for retrieving data. This therefore stores the lat lng data in my
+    // own LatLng class.
+    private com.liamd.giggity_app.LatLng mPlaceToStoreLatLng;
+
+    // Declare musician user data variables required
+    private String mMusicianUserAddress;
+    private com.google.android.gms.maps.model.LatLng mMusicianUserLatLng;
+
+    // Declare activity result variables
+    // These have differing values to differentiate them in the activity result method
+    private int PLACE_PICKER_REQUEST = 1;
+    private static int RESULT_LOAD_IMAGE = 0;
 
     public MusicianUserProfileFragment()
     {
@@ -76,7 +122,44 @@ public class MusicianUserProfileFragment extends Fragment
         mainActivityImageView = (CircleImageView) getActivity().findViewById(R.id.headerProfileImage);
         changeImageTextView = (TextView) fragmentView.findViewById(R.id.changeImageTextView);
         removeImageTextView = (TextView) fragmentView.findViewById(R.id.removeImageTextView);
+        firstNameEditText = (EditText) fragmentView.findViewById(R.id.firstNameEditText);
+        lastNameEditText = (EditText) fragmentView.findViewById(R.id.lastNameEditText);
+        emailEditText = (EditText) fragmentView.findViewById(R.id.emailEditText);
+        genreSpinner = (MultiSelectSpinner) fragmentView.findViewById(R.id.genreSpinner);
+        instrumentSpinner = (MultiSelectSpinner) fragmentView.findViewById(R.id.instrumentSpinner);
+        chosenLocationTextView = (TextView) fragmentView.findViewById(R.id.locationDetailsTextView);
+        launchHomeFinderButton = (Button) fragmentView.findViewById(R.id.placeFinderButton);
+        youtubeUrlEditText = (EditText) fragmentView.findViewById(R.id.youtubeUrlEditText);
+        saveButton = (Button) fragmentView.findViewById(R.id.saveButton);
         mProgressDialog = new ProgressDialog(getContext());
+
+        // Add items to the genre list, and set the spinner to use these
+        mGenreList = new ArrayList<>();
+        mGenreList.add("Classic Rock");
+        mGenreList.add("Alternative Rock");
+        mGenreList.add("Blues");
+        mGenreList.add("Indie");
+        mGenreList.add("Metal");
+        mGenreList.add("Pop");
+        mGenreList.add("Classical");
+        mGenreList.add("Jazz");
+        mGenreList.add("Acoustic");
+
+        genreSpinner.setItems(mGenreList);
+
+        // Add items to the instrument list, and set the spinner to use these
+        mInstrumentList = new ArrayList<>();
+        mInstrumentList.add("Lead Vocals");
+        mInstrumentList.add("Backing Vocals");
+        mInstrumentList.add("Lead Guitar");
+        mInstrumentList.add("Rhythm Guitar");
+        mInstrumentList.add("Acoustic Guitar");
+        mInstrumentList.add("Bass Guitar");
+        mInstrumentList.add("Drums");
+        mInstrumentList.add("Keyboards");
+        mInstrumentList.add("Piano");
+
+        instrumentSpinner.setItems(mInstrumentList);
 
         // Add the images to the text views
         changeImageTextView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_insert_photo_black_18dp, 0, 0, 0);
@@ -112,6 +195,107 @@ public class MusicianUserProfileFragment extends Fragment
             public void onClick(View view)
             {
                 DeleteProfilePicture();
+            }
+        });
+
+        // Pull the existing information from the database to populate the various fields
+        mDatabase.child("Users/").addListenerForSingleValueEvent(new ValueEventListener()
+        {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot)
+            {
+                String urlStored;
+
+                String firstName = dataSnapshot.child(mAuth.getCurrentUser().getUid() + "/firstName").getValue().toString();
+                firstNameEditText.setText(firstName);
+
+                String lastName = dataSnapshot.child(mAuth.getCurrentUser().getUid() + "/lastName").getValue().toString();
+                lastNameEditText.setText(lastName);
+
+                String email = dataSnapshot.child(mAuth.getCurrentUser().getUid() + "/email").getValue().toString();
+                emailEditText.setText(email);
+
+                // This method populates the genre spinner with the genres the user
+                // selected when setting up their account
+                genreSpinner.setSelection(PopulateUserGenreData(dataSnapshot));
+
+                // This method populates the instrument spinner with the instruments the user
+                // selected when setting up their account
+                instrumentSpinner.setSelection(PopulateUserInstrumentData(dataSnapshot));
+
+                String location = dataSnapshot.child(mAuth.getCurrentUser().getUid() + "/homeAddress").getValue().toString();
+                chosenLocationTextView.setText(location);
+
+                // If the user already has a youtube url stored against their profile append this to the text box and parse this
+                // to load the video player
+                if(dataSnapshot.child(mAuth.getCurrentUser().getUid() + "/youtubeUrl/").exists())
+                {
+                    urlStored = dataSnapshot.child(mAuth.getCurrentUser().getUid() + "/youtubeUrl").getValue().toString();
+                    youtubeUrlEditText.setText(urlStored);
+
+                    youtubeUrlEntered = ParseURL(youtubeUrlEditText.getText());
+                    LoadYoutubePlayer();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError)
+            {
+
+            }
+        });
+
+        // When the user changes their focus on the youtube text box, the youtube widget will try and load if the text box is not empty
+        youtubeUrlEditText.setOnFocusChangeListener(new View.OnFocusChangeListener()
+        {
+            @Override
+            public void onFocusChange(View view, boolean hasFocus)
+            {
+                if(!hasFocus)
+                {
+                    if (!TextUtils.isEmpty(youtubeUrlEditText.getText()))
+                    {
+                        youtubeUrlEntered = ParseURL(youtubeUrlEditText.getText());
+                        LoadYoutubePlayer();
+                    }
+                }
+            }
+        });
+
+        // If the location finder button is selected, call the LaunchPlacePicker to start
+        // the place picker activity
+        launchHomeFinderButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                // Displays the progress dialog
+                mProgressDialog.show();
+                mProgressDialog.setMessage("Loading location finder...");
+
+                try
+                {
+                    LaunchPlacePicker();
+                }
+
+                catch (GooglePlayServicesNotAvailableException e)
+                {
+                    e.printStackTrace();
+                }
+
+                catch (GooglePlayServicesRepairableException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        saveButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+
             }
         });
 
@@ -206,10 +390,10 @@ public class MusicianUserProfileFragment extends Fragment
         builder.show();
     }
 
-    // When the image has been selected upload the image to the firebase URL specified by mProfileImageReference
     @Override
     public void onActivityResult(int requestCode, int resultCode, final Intent data)
     {
+        // When the image has been selected upload the image to the firebase URL specified by mProfileImageReference
         if (requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK && null != data)
         {
             // This dialog is created to confirm that the user wants to edit their picture
@@ -274,6 +458,27 @@ public class MusicianUserProfileFragment extends Fragment
             });
             builder.show();
         }
+
+        // If the request is for the place picker (i.e. if it matches the request code)
+        else if(requestCode == PLACE_PICKER_REQUEST && resultCode == RESULT_OK && null != data)
+        {
+            // Store the relevant location data in the variables and display the address of the location
+            // because otherwise it will just display a latlng
+            mProgressDialog.hide();
+            Place place = PlacePicker.getPlace(data, getActivity());
+
+            mPlaceToStoreLatLng = new com.liamd.giggity_app.LatLng();
+
+            chosenLocationTextView.setText(place.getAddress());
+            mMusicianUserAddress = place.getAddress().toString();
+            mMusicianUserLatLng = place.getLatLng();
+
+            double placeLat = mMusicianUserLatLng.latitude;
+            double placeLng = mMusicianUserLatLng.longitude;
+
+            mPlaceToStoreLatLng.setLatitude(placeLat);
+            mPlaceToStoreLatLng.setLongitude(placeLng);
+        }
     }
 
     // This method processes the result of the permission request
@@ -297,5 +502,128 @@ public class MusicianUserProfileFragment extends Fragment
                         " please ensure you have given permission to access your storage.", Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+    // If the youtube initialisation is successful load the URL from the text box if there is one
+    @Override
+    public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer youTubePlayer, boolean wasRestored)
+    {
+        // Determines whether the player was restored from a saved state. If not cue the video
+        if(!wasRestored)
+        {
+            youTubePlayer.cueVideo(youtubeUrlEntered);
+        }
+    }
+
+    // If the youtube initialisation fails this is called. Usually due to not having youtube installed
+    @Override
+    public void onInitializationFailure(YouTubePlayer.Provider provider, YouTubeInitializationResult youTubeInitializationResult)
+    {
+        Toast.makeText(getActivity(),"The YouTube player can't be initialised! Please ensure you have the YouTube app installed.",Toast.LENGTH_LONG).show();
+    }
+
+    // This method takes a snapshot of the database as a parameter and returns a
+    // list of trimmed strings to populate the list of genres that the user selected
+    // when they created their account
+    private ArrayList<String> PopulateUserGenreData(DataSnapshot dataSnapshot)
+    {
+        // This takes the list of genres from the database that the user has selected
+        // and adds them to a string
+        String userPulledGenres = dataSnapshot.child(mAuth.getCurrentUser().getUid()
+                + "/genres").getValue().toString();
+
+        // This then splits this string into an array of strings, each separated by
+        // a comma
+        List<String> splitUserPulledGenres = Arrays.asList(userPulledGenres.split(","));
+
+        // For the select list to understand this, they need any leading or trailing
+        // spaces to be removed
+        ArrayList<String> splitUserPulledGenresFormatted = new ArrayList<>();
+
+        // The string array is then iterated through and added to a separate string
+        // array and passed to the spinner.
+        for(int i = 0; i < splitUserPulledGenres.size(); i++)
+        {
+            String formattedGenreStringToAdd;
+
+            formattedGenreStringToAdd = splitUserPulledGenres.get(i).trim();
+
+            splitUserPulledGenresFormatted.add(formattedGenreStringToAdd);
+        }
+
+        return splitUserPulledGenresFormatted;
+    }
+
+    // This method takes a snapshot of the database as a parameter and returns a
+    // list of trimmed strings to populate the list of instruments that the user selected
+    // when they created their account
+    private ArrayList<String> PopulateUserInstrumentData(DataSnapshot dataSnapshot)
+    {
+        // This takes the list of instruments from the database that the user has selected
+        // and adds them to a string
+        String userPulledInstruments = dataSnapshot.child(mAuth.getCurrentUser().getUid()
+                + "/instruments").getValue().toString();
+
+        // This then splits this string into an array of strings, each separated by
+        // a comma
+        List<String> splitUserPulledInstruments = Arrays.asList(userPulledInstruments.split(","));
+
+        // For the select list to understand this, they need any leading or trailing
+        // spaces to be removed
+        ArrayList<String> splitUserPulledInstrumentsFormatted = new ArrayList<>();
+
+        // The string array is then iterated through and added to a separate string
+        // array and passed to the spinner.
+        for(int i = 0; i < splitUserPulledInstruments.size(); i++)
+        {
+            String formattedGenreStringToAdd;
+
+            formattedGenreStringToAdd = splitUserPulledInstruments.get(i).trim();
+
+            splitUserPulledInstrumentsFormatted.add(formattedGenreStringToAdd);
+        }
+
+        return splitUserPulledInstrumentsFormatted;
+    }
+
+    // Using some REGEX this trims the youtube url entered to just get the video id at the end
+    private String ParseURL(CharSequence youtubeURL)
+    {
+        String videoIdPattern = "(?<=watch\\?v=|/videos/|embed\\/)[^#\\&\\?]*";
+
+        Pattern compiledPattern = Pattern.compile(videoIdPattern);
+        Matcher matcher = compiledPattern.matcher(youtubeURL);
+
+        if(matcher.find())
+        {
+            return matcher.group();
+        }
+
+        else
+        {
+            return null;
+        }
+    }
+
+    // Method to create a new instance of the place picker intent builder
+    private void LaunchPlacePicker() throws GooglePlayServicesNotAvailableException,
+            GooglePlayServicesRepairableException
+    {
+        PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
+        startActivityForResult(builder.build(getActivity()), PLACE_PICKER_REQUEST);
+
+    }
+
+    // This method initialises the player using the api key, relevant layout, fragment etc
+    private void LoadYoutubePlayer()
+    {
+        // Initialise and setup the embedded youtube player
+        YouTubePlayerFragment youtubePlayerFragment = new YouTubePlayerFragment();
+        youtubePlayerFragment.initialize(getString(R.string.api_key), this);
+
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.youtube_layout, youtubePlayerFragment);
+        fragmentTransaction.commit();
     }
 }

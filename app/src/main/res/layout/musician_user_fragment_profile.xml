@@ -58,6 +58,159 @@
 
             </LinearLayout>
 
+            <TextView
+                android:text="First Name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/textView8"
+                android:layout_weight="1"
+                android:textAppearance="@style/TextAppearance.AppCompat.Menu"
+                android:layout_marginTop="22dp"
+                android:paddingLeft="10dp"/>
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPersonName"
+                android:ems="10"
+                android:id="@+id/firstNameEditText"
+                android:paddingLeft="10dp"/>
+
+            <TextView
+                android:text="Last Name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/textView10"
+                android:layout_weight="1"
+                android:textAppearance="@style/TextAppearance.AppCompat.Menu"
+                android:layout_marginTop="22dp"
+                android:paddingLeft="10dp"/>
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPersonName"
+                android:ems="10"
+                android:id="@+id/lastNameEditText"
+                android:paddingLeft="10dp"/>
+
+            <TextView
+                android:text="Email"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/textView13"
+                android:layout_weight="1"
+                android:textAppearance="@style/TextAppearance.AppCompat.Menu"
+                android:layout_marginTop="22dp"
+                android:paddingLeft="10dp"/>
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPersonName"
+                android:ems="10"
+                android:id="@+id/emailEditText"
+                android:enabled="false"
+                android:paddingLeft="10dp"
+                />
+
+            <TextView
+                android:text="Genres"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/genreHeadingTextView"
+                android:textAppearance="@style/TextAppearance.AppCompat.Menu"
+                android:layout_marginTop="22dp"
+                android:paddingLeft="10dp"/>
+
+            <com.liamd.giggity_app.MultiSelectSpinner
+                android:id="@+id/genreSpinner"
+                android:layout_width="fill_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="0.15"
+                android:layout_marginBottom="32dp"
+                android:layout_marginTop="22dp"
+                android:paddingLeft="10dp"/>
+
+            <TextView
+                android:text="Instruments"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/instrumentHeadingTextView"
+                android:textAppearance="@style/TextAppearance.AppCompat.Menu"
+                android:layout_marginTop="12dp"
+                android:paddingLeft="10dp"/>
+
+            <com.liamd.giggity_app.MultiSelectSpinner
+                android:id="@+id/instrumentSpinner"
+                android:layout_width="fill_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="0.15"
+                android:layout_marginBottom="22dp"
+                android:layout_marginTop="22dp"
+                android:paddingLeft="10dp"/>
+
+            <TextView
+                android:text="Find Your Location"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/locationFinderHeadingTextView"
+                android:textAppearance="@style/TextAppearance.AppCompat.Menu"
+                android:layout_marginTop="22dp"
+                android:paddingLeft="10dp"/>
+
+            <TextView
+                android:text="No Location Chosen!"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="21dp"
+                android:id="@+id/locationDetailsTextView"
+                android:paddingLeft="10dp"/>
+
+            <Button
+                android:text="Launch Location Finder"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/placeFinderButton"
+                android:background="@color/colorPrimaryDark"
+                android:textColor="@color/cardview_light_background"
+                android:layout_marginTop="32dp"/>
+
+            <TextView
+                android:text="Youtube Promo URL"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/youtubeUrlTextView"
+                android:layout_weight="1"
+                android:textAppearance="@style/TextAppearance.AppCompat.Menu"
+                android:layout_marginTop="22dp"
+                android:paddingLeft="10dp"/>
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textUri"
+                android:ems="10"
+                android:id="@+id/youtubeUrlEditText"
+                android:paddingLeft="10dp"/>
+
+            <FrameLayout
+                android:id="@+id/youtube_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:visibility="visible"
+                android:layout_marginTop="22dp"/>
+
+            <Button
+                android:text="Save"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/saveButton"
+                android:background="@color/colorPrimary"
+                android:textColor="@color/cardview_light_background"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentEnd="true"/>
         </LinearLayout>
     </ScrollView>
 
