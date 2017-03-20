@@ -2,7 +2,9 @@ package com.liamd.giggity_app;
 
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.app.TimePickerDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -418,8 +420,21 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
                     // command to generate a new random identifier
                     mDatabase.child("Gigs/").push().setValue(gigToInsert);
 
-                    // The user is then taken to the home fragment
-                    ReturnToMyGigs();
+                    // A dialog is then shown to alert the user that the changes have been made
+                    final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    builder.setTitle("Confirmation");
+                    builder.setMessage("Gig Created!");
+                    builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i)
+                        {
+                            // The user is then taken to the my gigs fragment
+                            ReturnToMyGigs();
+                        }
+                    });
+                    builder.setCancelable(false);
+                    builder.show();
                 }
 
                 else
@@ -451,8 +466,21 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
                         // command to generate a new random identifier
                         mDatabase.child("Gigs/").push().setValue(gigToInsert);
 
-                        // The user is then taken to the home fragment
-                        ReturnToMyGigs();
+                        // A dialog is then shown to alert the user that the changes have been made
+                        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                        builder.setTitle("Confirmation");
+                        builder.setMessage("Gig Created!");
+                        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                        {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i)
+                            {
+                                // The user is then taken to the my gigs fragment
+                                ReturnToMyGigs();
+                            }
+                        });
+                        builder.setCancelable(false);
+                        builder.show();
                     }
                 }
             }
@@ -475,7 +503,7 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
 
     private void ReturnToMyGigs()
     {
-        // The user is then taken to the home fragment
+        // The user is then taken to the my gigs fragment
         getActivity().setTitle("My Gigs");
         final FragmentTransaction ft = getFragmentManager().beginTransaction();
         ft.replace(R.id.frame, new VenueUserViewGigsFragment(), "VenueUserViewGigsFragment");

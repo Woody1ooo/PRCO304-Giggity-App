@@ -89,16 +89,14 @@ public class MusicianUserProfileFragment extends Fragment implements YouTubePlay
     private List<String> mInstrumentList;
     private String youtubeUrlEntered;
 
+    // Declare musician user data variables required
+
     // This variable is the place information that is stored in the database.
     // This is required because when the location data is retrieved, the built-in
     // google maps latlng object doesn't have an empty constructor which is required
     // by firebase for retrieving data. This therefore stores the lat lng data in my
     // own LatLng class.
-    private com.liamd.giggity_app.LatLng mPlaceToStoreLatLng;
-
-    // Declare musician user data variables required
-    private String mMusicianUserAddress;
-    private com.google.android.gms.maps.model.LatLng mMusicianUserLatLng;
+    private LatLng mMusicianUserLatLng;
 
     // Declare activity result variables
     // These have differing values to differentiate them in the activity result method
@@ -205,6 +203,8 @@ public class MusicianUserProfileFragment extends Fragment implements YouTubePlay
             public void onDataChange(DataSnapshot dataSnapshot)
             {
                 String urlStored;
+                String userStoredLat;
+                String userStoredLng;
 
                 String firstName = dataSnapshot.child(mAuth.getCurrentUser().getUid() + "/firstName").getValue().toString();
                 firstNameEditText.setText(firstName);
@@ -226,9 +226,24 @@ public class MusicianUserProfileFragment extends Fragment implements YouTubePlay
                 String location = dataSnapshot.child(mAuth.getCurrentUser().getUid() + "/homeAddress").getValue().toString();
                 chosenLocationTextView.setText(location);
 
+                userStoredLat = dataSnapshot.child(mAuth.getCurrentUser().getUid()
+                        + "/homeLocation/latitude").getValue().toString();
+                userStoredLng = dataSnapshot.child(mAuth.getCurrentUser().getUid()
+                        + "/homeLocation/longitude").getValue().toString();
+
+                String latLng = userStoredLat + "," + userStoredLng;
+                List<String> splitUserHomeLocation = Arrays.asList(latLng.split(","));
+
+                double latitude = Double.parseDouble(splitUserHomeLocation.get(0));
+                double longitude = Double.parseDouble(splitUserHomeLocation.get(1));
+
+                mMusicianUserLatLng = new LatLng();
+                mMusicianUserLatLng.setLatitude(latitude);
+                mMusicianUserLatLng.setLongitude(longitude);
+
                 // If the user already has a youtube url stored against their profile append this to the text box and parse this
                 // to load the video player
-                if(dataSnapshot.child(mAuth.getCurrentUser().getUid() + "/youtubeUrl/").exists())
+                if (dataSnapshot.child(mAuth.getCurrentUser().getUid() + "/youtubeUrl/").exists())
                 {
                     urlStored = dataSnapshot.child(mAuth.getCurrentUser().getUid() + "/youtubeUrl").getValue().toString();
                     youtubeUrlEditText.setText(urlStored);
@@ -251,7 +266,7 @@ public class MusicianUserProfileFragment extends Fragment implements YouTubePlay
             @Override
             public void onFocusChange(View view, boolean hasFocus)
             {
-                if(!hasFocus)
+                if (!hasFocus)
                 {
                     if (!TextUtils.isEmpty(youtubeUrlEditText.getText()))
                     {
@@ -276,14 +291,10 @@ public class MusicianUserProfileFragment extends Fragment implements YouTubePlay
                 try
                 {
                     LaunchPlacePicker();
-                }
-
-                catch (GooglePlayServicesNotAvailableException e)
+                } catch (GooglePlayServicesNotAvailableException e)
                 {
                     e.printStackTrace();
-                }
-
-                catch (GooglePlayServicesRepairableException e)
+                } catch (GooglePlayServicesRepairableException e)
                 {
                     e.printStackTrace();
                 }
@@ -295,7 +306,7 @@ public class MusicianUserProfileFragment extends Fragment implements YouTubePlay
             @Override
             public void onClick(View view)
             {
-
+                Save();
             }
         });
 
@@ -340,9 +351,7 @@ public class MusicianUserProfileFragment extends Fragment implements YouTubePlay
                 != PackageManager.PERMISSION_GRANTED)
         {
             requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
-        }
-
-        else
+        } else
         {
             UpdateProfilePicture();
         }
@@ -441,8 +450,6 @@ public class MusicianUserProfileFragment extends Fragment implements YouTubePlay
                             Glide.with(getContext()).using(new FirebaseImageLoader()).load
                                     (profileImagesRef).diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).override(220, 220).into(mainActivityImageView);
 
-                            mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/overriddenProfilePicture/").setValue(true);
-
                             mProgressDialog.hide();
                         }
                     });
@@ -460,24 +467,25 @@ public class MusicianUserProfileFragment extends Fragment implements YouTubePlay
         }
 
         // If the request is for the place picker (i.e. if it matches the request code)
-        else if(requestCode == PLACE_PICKER_REQUEST && resultCode == RESULT_OK && null != data)
+        else if (requestCode == PLACE_PICKER_REQUEST && resultCode == RESULT_OK && null != data)
         {
+            com.google.android.gms.maps.model.LatLng latLngChosenHolder;
+
             // Store the relevant location data in the variables and display the address of the location
             // because otherwise it will just display a latlng
             mProgressDialog.hide();
             Place place = PlacePicker.getPlace(data, getActivity());
 
-            mPlaceToStoreLatLng = new com.liamd.giggity_app.LatLng();
+            mMusicianUserLatLng = new LatLng();
 
             chosenLocationTextView.setText(place.getAddress());
-            mMusicianUserAddress = place.getAddress().toString();
-            mMusicianUserLatLng = place.getLatLng();
+            latLngChosenHolder = place.getLatLng();
 
-            double placeLat = mMusicianUserLatLng.latitude;
-            double placeLng = mMusicianUserLatLng.longitude;
+            double placeLat = latLngChosenHolder.latitude;
+            double placeLng = latLngChosenHolder.longitude;
 
-            mPlaceToStoreLatLng.setLatitude(placeLat);
-            mPlaceToStoreLatLng.setLongitude(placeLng);
+            mMusicianUserLatLng.setLatitude(placeLat);
+            mMusicianUserLatLng.setLongitude(placeLng);
         }
     }
 
@@ -509,7 +517,7 @@ public class MusicianUserProfileFragment extends Fragment implements YouTubePlay
     public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer youTubePlayer, boolean wasRestored)
     {
         // Determines whether the player was restored from a saved state. If not cue the video
-        if(!wasRestored)
+        if (!wasRestored)
         {
             youTubePlayer.cueVideo(youtubeUrlEntered);
         }
@@ -519,7 +527,7 @@ public class MusicianUserProfileFragment extends Fragment implements YouTubePlay
     @Override
     public void onInitializationFailure(YouTubePlayer.Provider provider, YouTubeInitializationResult youTubeInitializationResult)
     {
-        Toast.makeText(getActivity(),"The YouTube player can't be initialised! Please ensure you have the YouTube app installed.",Toast.LENGTH_LONG).show();
+        Toast.makeText(getActivity(), "The YouTube player can't be initialised! Please ensure you have the YouTube app installed.", Toast.LENGTH_LONG).show();
     }
 
     // This method takes a snapshot of the database as a parameter and returns a
@@ -542,7 +550,7 @@ public class MusicianUserProfileFragment extends Fragment implements YouTubePlay
 
         // The string array is then iterated through and added to a separate string
         // array and passed to the spinner.
-        for(int i = 0; i < splitUserPulledGenres.size(); i++)
+        for (int i = 0; i < splitUserPulledGenres.size(); i++)
         {
             String formattedGenreStringToAdd;
 
@@ -574,7 +582,7 @@ public class MusicianUserProfileFragment extends Fragment implements YouTubePlay
 
         // The string array is then iterated through and added to a separate string
         // array and passed to the spinner.
-        for(int i = 0; i < splitUserPulledInstruments.size(); i++)
+        for (int i = 0; i < splitUserPulledInstruments.size(); i++)
         {
             String formattedGenreStringToAdd;
 
@@ -594,12 +602,10 @@ public class MusicianUserProfileFragment extends Fragment implements YouTubePlay
         Pattern compiledPattern = Pattern.compile(videoIdPattern);
         Matcher matcher = compiledPattern.matcher(youtubeURL);
 
-        if(matcher.find())
+        if (matcher.find())
         {
             return matcher.group();
-        }
-
-        else
+        } else
         {
             return null;
         }
@@ -625,5 +631,83 @@ public class MusicianUserProfileFragment extends Fragment implements YouTubePlay
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.youtube_layout, youtubePlayerFragment);
         fragmentTransaction.commit();
+    }
+
+    // This method is called when the user clicks the save button
+    private void Save()
+    {
+        // This dialog is created to confirm that the user wants to edit the chosen fields
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle("Update Profile Preferences");
+        builder.setMessage("Are you sure you wish to update these fields?");
+        builder.setPositiveButton("Update", new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i)
+            {
+                String firstName = firstNameEditText.getText().toString();
+                String lastName = lastNameEditText.getText().toString();
+                String genreList = genreSpinner.getSelectedItemsAsString();
+                String instrumentList = instrumentSpinner.getSelectedItemsAsString();
+                String address = chosenLocationTextView.getText().toString();
+                String youtubeUrl = youtubeUrlEditText.getText().toString();
+
+                // When update is clicked the fields are checked to ensure none are blank
+                if (TextUtils.isEmpty(firstNameEditText.getText())
+                        || TextUtils.isEmpty(lastNameEditText.getText())
+                        || TextUtils.isEmpty(chosenLocationTextView.getText())
+                        || genreSpinner.getSelectedItemsAsString().isEmpty()
+                        || instrumentSpinner.getSelectedItemsAsString().isEmpty())
+                {
+                    Toast.makeText(getActivity(), "Please ensure you have given a value for each field! Please note that the Youtube URL is optional.", Toast.LENGTH_LONG).show();
+                }
+
+                // If the fields are correct then the relevant database nodes are updated
+                else
+                {
+                    mDatabase.child("Users/" + mAuth.getCurrentUser().getUid()).child("firstName").setValue(firstName);
+                    mDatabase.child("Users/" + mAuth.getCurrentUser().getUid()).child("lastName").setValue(lastName);
+                    mDatabase.child("Users/" + mAuth.getCurrentUser().getUid()).child("genres").setValue(genreList);
+                    mDatabase.child("Users/" + mAuth.getCurrentUser().getUid()).child("instruments").setValue(instrumentList);
+                    mDatabase.child("Users/" + mAuth.getCurrentUser().getUid()).child("homeAddress").setValue(address);
+                    mDatabase.child("Users/" + mAuth.getCurrentUser().getUid()).child("homeLocation").setValue(mMusicianUserLatLng);
+                    mDatabase.child("Users/" + mAuth.getCurrentUser().getUid()).child("youtubeUrl").setValue(youtubeUrl);
+
+                    // A dialog is then shown to alert the user that the changes have been made
+                    final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    builder.setTitle("Confirmation");
+                    builder.setMessage("Fields Updated!");
+                    builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                            {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i)
+                                {
+                                    ReturnToHome();
+                                }
+                            });
+                    builder.setCancelable(false);
+                    builder.show();
+                }
+            }
+        });
+
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i)
+            {
+
+            }
+        });
+        builder.show();
+    }
+
+    private void ReturnToHome()
+    {
+        // The user is then taken to the home fragment
+        getActivity().setTitle("Home");
+        final FragmentTransaction ft = getFragmentManager().beginTransaction();
+        ft.replace(R.id.frame, new MusicianUserHomeFragment(), "MusicianUserHomeFragment");
+        ft.commit();
     }
 }

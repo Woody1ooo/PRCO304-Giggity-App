@@ -12,6 +12,11 @@ public class User
     private String password;
     private String userID;
     private Boolean hasCompletedSetup;
+    private String accountType;
+    private String genres;
+    private String instruments;
+    private LatLng homeLocation;
+    private String homeAddress;
 
     public User()
     {
@@ -26,6 +31,20 @@ public class User
         this.password = password;
         this.userID = userID;
         this.hasCompletedSetup = hasLoggedIn;
+    }
+
+    public User(String accountType, String email, String firstName, String genres, Boolean hasCompletedSetup, String homeAddress, LatLng homeLocation, String instruments, String lastName, String userID)
+    {
+        this.accountType = accountType;
+        this.email = email;
+        this.firstName = firstName;
+        this.genres = genres;
+        this.hasCompletedSetup = hasCompletedSetup;
+        this.homeAddress = homeAddress;
+        this.homeLocation = homeLocation;
+        this.instruments = instruments;
+        this.lastName = lastName;
+        this.userID = userID;
     }
 
     public String getEmail()

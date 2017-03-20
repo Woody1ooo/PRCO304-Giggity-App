@@ -316,8 +316,21 @@ public class PreSetupActivity extends AppCompatActivity
                                     mDatabase.child("Users/" + mAuth.getCurrentUser().getUid()
                                             + "/hasCompletedSetup").setValue(true);
 
-                                    // Calls the ReturnToMusicianUserMainActivity
-                                    ReturnToMusicianUserMainActivity();
+                                    // A dialog is then shown to alert the user that the changes have been made
+                                    final AlertDialog.Builder builder = new AlertDialog.Builder(PreSetupActivity.this);
+                                    builder.setTitle("Confirmation");
+                                    builder.setMessage("Preferences Set!");
+                                    builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                                    {
+                                        @Override
+                                        public void onClick(DialogInterface dialogInterface, int i)
+                                        {
+                                            // Calls the ReturnToMusicianUserMainActivity
+                                            ReturnToMusicianUserMainActivity();
+                                        }
+                                    });
+                                    builder.setCancelable(false);
+                                    builder.show();
                                 }
 
                                 else
@@ -342,11 +355,6 @@ public class PreSetupActivity extends AppCompatActivity
                                 venue.setName(mVenueName);
                                 venue.setVenueID(mVenueID);
                                 venue.setUserID(mAuth.getCurrentUser().getUid());
-
-                                // Creates a venue user object to store the newly added user information
-                                final VenueUser venueUser = new VenueUser();
-                                venueUser.setFirstName(mFirstNameEditText.getText().toString());
-                                venueUser.setLastName(mLastNameEditText.getText().toString());
 
                                 // Check to ensure that a venue has been chosen
                                 if(venue.getVenueID() == null)
@@ -404,8 +412,21 @@ public class PreSetupActivity extends AppCompatActivity
                                                     mDatabase.child("Users/" + mAuth.getCurrentUser().getUid()
                                                             + "/hasCompletedSetup").setValue(true);
 
-                                                    // Calls the ReturnToVenueUserMainActivity
-                                                    ReturnToVenueUserMainActivity();
+                                                    // A dialog is then shown to alert the user that the changes have been made
+                                                    final AlertDialog.Builder builder = new AlertDialog.Builder(PreSetupActivity.this);
+                                                    builder.setTitle("Confirmation");
+                                                    builder.setMessage("Preferences Set!");
+                                                    builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                                                    {
+                                                        @Override
+                                                        public void onClick(DialogInterface dialogInterface, int i)
+                                                        {
+                                                            // Calls the ReturnToVenueUserMainActivity
+                                                            ReturnToVenueUserMainActivity();
+                                                        }
+                                                    });
+                                                    builder.setCancelable(false);
+                                                    builder.show();
                                                 }
 
                                                 else
