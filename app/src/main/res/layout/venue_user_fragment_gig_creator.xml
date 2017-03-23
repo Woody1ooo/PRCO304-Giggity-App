@@ -7,50 +7,50 @@
     <!-- TODO: Update blank fragment layout -->
 
     <ScrollView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
-        <LinearLayout
-            android:orientation="vertical"
+        <TextView
+            android:text="Gig Name"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:paddingTop="20dp"
+            android:paddingLeft="10dp"
+            android:id="@+id/textView11"
+            android:textSize="16sp"
+            android:textColor="@color/cast_expanded_controller_background_color"/>
 
-            <TextView
-                android:text="Gig Name"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingTop="20dp"
-                android:paddingLeft="10dp"
-                android:id="@+id/textView11"
-                android:textSize="16sp"
-                android:textColor="@color/cast_expanded_controller_background_color"/>
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPersonName"
+            android:paddingLeft="10dp"
+            android:ems="10"
+            android:id="@+id/gigNameEditText"/>
 
-            <EditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textPersonName"
-                android:paddingLeft="10dp"
-                android:ems="10"
-                android:id="@+id/gigNameEditText"/>
+        <TextView
+            android:text="Venue"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="20dp"
+            android:paddingLeft="10dp"
+            android:id="@+id/textView12"
+            android:textSize="16sp"
+            android:textColor="@color/cast_expanded_controller_background_color"/>
 
-            <TextView
-                android:text="Venue"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingTop="20dp"
-                android:paddingLeft="10dp"
-                android:id="@+id/textView12"
-                android:textSize="16sp"
-                android:textColor="@color/cast_expanded_controller_background_color"/>
-
-            <EditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textPersonName"
-                android:paddingLeft="10dp"
-                android:text=""
-                android:ems="10"
-                android:id="@+id/VenueNameEditText"/>
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPersonName"
+            android:paddingLeft="10dp"
+            android:text=""
+            android:ems="10"
+            android:id="@+id/VenueNameEditText"/>
 
             <TextView
                 android:text="Start Date"

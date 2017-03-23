@@ -2,6 +2,8 @@ package com.liamd.giggity_app;
 
 
 import android.Manifest;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
@@ -122,6 +124,27 @@ public class MusicianUserGigFinderFragment extends Fragment implements LocationL
                 // This method populates the genre spinners with the genres the user
                 // selected when setting up their account
                 mGenreSelectSpinner.setSelection(PopulateUserGenreData(dataSnapshot));
+
+                // This checks the database to see if the user is currently a member of a band.
+                // If not inform them that they can't apply for gig opportunities.
+                if(dataSnapshot.child(mAuth.getCurrentUser().getUid() + "/isInBand").getValue().equals(false))
+                {
+                    // A dialog is then shown to alert the user that the changes have been made
+                    final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    builder.setTitle("Notice");
+                    builder.setMessage("Please note that as you are not currently a member of a band or a solo artist, you cannot apply for any gig opportunities." +
+                            " You are however still able to browse.");
+                    builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i)
+                        {
+
+                        }
+                    });
+                    builder.show();
+                }
+
 
                 // This method gets the value from the database of the users set home location
                 // and assigns its value to mHomeLocation
