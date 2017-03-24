@@ -2,13 +2,14 @@ package com.liamd.giggity_app;
 
 
 import android.app.AlertDialog;
+import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
 import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,11 +26,17 @@ import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -37,7 +44,7 @@ import static android.app.Activity.RESULT_OK;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MusicianUserBandCreatorFragment extends Fragment
+public class MusicianUserBandManagementFragment extends Fragment
 {
     // Declare general visual components
     private EditText mBandNameEditText;
@@ -46,7 +53,7 @@ public class MusicianUserBandCreatorFragment extends Fragment
     private TextView mLocationChosenTextView;
     private Button mLaunchLocationFinderButton;
     private TextView mHelpTextView;
-    private Button mCreateButton;
+    private Button mUpdateButton;
     private ProgressDialog mProgressDialog;
     private TextView mPositionOneTitle;
     private MultiSelectSpinner mPositionOneSpinner;
@@ -62,6 +69,7 @@ public class MusicianUserBandCreatorFragment extends Fragment
     // Declare general variables
     private List<String> mGenreList;
     private List<String> mInstrumentList;
+    private Band mBandFromDatabase;
     private int PLACE_PICKER_REQUEST = 0;
     private String mBandID;
     private String mBandName;
@@ -78,7 +86,7 @@ public class MusicianUserBandCreatorFragment extends Fragment
     private FirebaseAuth mAuth;
     private DatabaseReference mDatabase;
 
-    public MusicianUserBandCreatorFragment()
+    public MusicianUserBandManagementFragment()
     {
         // Required empty public constructor
     }
@@ -88,7 +96,7 @@ public class MusicianUserBandCreatorFragment extends Fragment
                              Bundle savedInstanceState)
     {
         // Inflate the layout for this fragment
-        View fragmentView = inflater.inflate(R.layout.musician_user_fragment_band_creator, container, false);
+        View fragmentView = inflater.inflate(R.layout.musician_user_fragment_band_management, container, false);
 
         // Creates a reference to Firebase
         mAuth = FirebaseAuth.getInstance();
@@ -102,7 +110,7 @@ public class MusicianUserBandCreatorFragment extends Fragment
         mLocationChosenTextView = (TextView) fragmentView.findViewById(R.id.bandLocationDetailsTextView);
         mLaunchLocationFinderButton = (Button) fragmentView.findViewById(R.id.placeFinderButton);
         mHelpTextView = (TextView) fragmentView.findViewById(R.id.locationHelpTextView);
-        mCreateButton = (Button) fragmentView.findViewById(R.id.createButton);
+        mUpdateButton = (Button) fragmentView.findViewById(R.id.updateButton);
         mProgressDialog = new ProgressDialog(getActivity());
         mPositionOneTitle = (TextView) fragmentView.findViewById(R.id.positionOneTextView);
         mPositionOneSpinner = (MultiSelectSpinner) fragmentView.findViewById(R.id.bandPositionOneSpinner);
@@ -153,6 +161,12 @@ public class MusicianUserBandCreatorFragment extends Fragment
         mInstrumentList.add("Keyboards");
         mInstrumentList.add("Piano");
 
+        mPositionOneSpinner.setItems(mInstrumentList);
+        mPositionTwoSpinner.setItems(mInstrumentList);
+        mPositionThreeSpinner.setItems(mInstrumentList);
+        mPositionFourSpinner.setItems(mInstrumentList);
+        mPositionFiveSpinner.setItems(mInstrumentList);
+
         // This gets the number from the band positions spinner and then displays/hides the relevant components as needed
         mPositionsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
         {
@@ -178,7 +192,6 @@ public class MusicianUserBandCreatorFragment extends Fragment
                     // Display the relevant visual components
                     mPositionOneTitle.setVisibility(View.VISIBLE);
                     mPositionOneSpinner.setVisibility(View.VISIBLE);
-                    mPositionOneSpinner.setItems(mInstrumentList);
 
                     // Hide the others
                     mPositionTwoTitle.setVisibility(View.GONE);
@@ -196,10 +209,8 @@ public class MusicianUserBandCreatorFragment extends Fragment
                     // Display the relevant visual components
                     mPositionOneTitle.setVisibility(View.VISIBLE);
                     mPositionOneSpinner.setVisibility(View.VISIBLE);
-                    mPositionOneSpinner.setItems(mInstrumentList);
                     mPositionTwoTitle.setVisibility(View.VISIBLE);
                     mPositionTwoSpinner.setVisibility(View.VISIBLE);
-                    mPositionTwoSpinner.setItems(mInstrumentList);
 
                     // Hide the others
                     mPositionThreeTitle.setVisibility(View.GONE);
@@ -215,13 +226,10 @@ public class MusicianUserBandCreatorFragment extends Fragment
                     // Display the relevant visual components
                     mPositionOneTitle.setVisibility(View.VISIBLE);
                     mPositionOneSpinner.setVisibility(View.VISIBLE);
-                    mPositionOneSpinner.setItems(mInstrumentList);
                     mPositionTwoTitle.setVisibility(View.VISIBLE);
                     mPositionTwoSpinner.setVisibility(View.VISIBLE);
-                    mPositionTwoSpinner.setItems(mInstrumentList);
                     mPositionThreeTitle.setVisibility(View.VISIBLE);
                     mPositionThreeSpinner.setVisibility(View.VISIBLE);
-                    mPositionThreeSpinner.setItems(mInstrumentList);
 
                     // Hide the others
                     mPositionFourTitle.setVisibility(View.GONE);
@@ -235,16 +243,12 @@ public class MusicianUserBandCreatorFragment extends Fragment
                     // Display the relevant visual components
                     mPositionOneTitle.setVisibility(View.VISIBLE);
                     mPositionOneSpinner.setVisibility(View.VISIBLE);
-                    mPositionOneSpinner.setItems(mInstrumentList);
                     mPositionTwoTitle.setVisibility(View.VISIBLE);
                     mPositionTwoSpinner.setVisibility(View.VISIBLE);
-                    mPositionTwoSpinner.setItems(mInstrumentList);
                     mPositionThreeTitle.setVisibility(View.VISIBLE);
                     mPositionThreeSpinner.setVisibility(View.VISIBLE);
-                    mPositionThreeSpinner.setItems(mInstrumentList);
                     mPositionFourTitle.setVisibility(View.VISIBLE);
                     mPositionFourSpinner.setVisibility(View.VISIBLE);
-                    mPositionFourSpinner.setItems(mInstrumentList);
 
                     // Hide the others
                     mPositionFiveTitle.setVisibility(View.GONE);
@@ -256,24 +260,37 @@ public class MusicianUserBandCreatorFragment extends Fragment
                     // Display the relevant visual components
                     mPositionOneTitle.setVisibility(View.VISIBLE);
                     mPositionOneSpinner.setVisibility(View.VISIBLE);
-                    mPositionOneSpinner.setItems(mInstrumentList);
                     mPositionTwoTitle.setVisibility(View.VISIBLE);
                     mPositionTwoSpinner.setVisibility(View.VISIBLE);
-                    mPositionTwoSpinner.setItems(mInstrumentList);
                     mPositionThreeTitle.setVisibility(View.VISIBLE);
                     mPositionThreeSpinner.setVisibility(View.VISIBLE);
-                    mPositionThreeSpinner.setItems(mInstrumentList);
                     mPositionFourTitle.setVisibility(View.VISIBLE);
                     mPositionFourSpinner.setVisibility(View.VISIBLE);
-                    mPositionFourSpinner.setItems(mInstrumentList);
                     mPositionFiveTitle.setVisibility(View.VISIBLE);
                     mPositionFiveSpinner.setVisibility(View.VISIBLE);
-                    mPositionFiveSpinner.setItems(mInstrumentList);
                 }
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> adapterView)
+            {
+
+            }
+        });
+
+        mDatabase.addListenerForSingleValueEvent(new ValueEventListener()
+        {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot)
+            {
+                mBandID = dataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/bandID").getValue().toString();
+                mBandFromDatabase = new Band();
+                mBandFromDatabase = dataSnapshot.child("Bands/" + mBandID).getValue(Band.class);
+                PopulateFields();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError)
             {
 
             }
@@ -330,12 +347,12 @@ public class MusicianUserBandCreatorFragment extends Fragment
         });
 
         // When clicked this calls the create band method
-        mCreateButton.setOnClickListener(new View.OnClickListener()
+        mUpdateButton.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View view)
             {
-                CreateBand();
+                UpdateBand();
             }
         });
 
@@ -377,19 +394,379 @@ public class MusicianUserBandCreatorFragment extends Fragment
         }
     }
 
+    private void PopulateFields()
+    {
+        mBandName = mBandFromDatabase.getName();
+        mBandNameEditText.setText(mBandName);
+
+        mGenreSpinner.setSelection(GetGenres());
+
+        mNumberOfPositions = mBandFromDatabase.getNumberOfPositions();
+        mPositionsSpinner.setSelection(getIndex(mPositionsSpinner, mNumberOfPositions));
+
+        GetPositionInstruments();
+
+        mBandLocationLatLng = mBandFromDatabase.getBaseLocation();
+
+        mLocationChosenTextView.setText(GetAddressFromLatLng(mBandLocationLatLng));
+    }
+
+    // This method determines how many positions are selected and then populates each spinner with a string array
+    private void GetPositionInstruments()
+    {
+        List<String> splitUserPulledInstrumentsOne;
+        List<String> splitUserPulledInstrumentsTwo;
+        List<String> splitUserPulledInstrumentsThree;
+        List<String> splitUserPulledInstrumentsFour;
+        List<String> splitUserPulledInstrumentsFive;
+
+        // This then splits this string into an array of strings, each separated by a comma
+        if(mPositionsSpinner.getSelectedItem().equals("1"))
+        {
+            splitUserPulledInstrumentsOne = Arrays.asList(mBandFromDatabase.getPositionOne().split(","));
+
+            // For the select list to understand this, they need any leading or trailing
+            // spaces to be removed
+            ArrayList<String> splitUserPulledInstrumentsOneFormatted = new ArrayList<>();
+
+            // The string array is then iterated through and added to a separate string
+            // array and passed to the spinner.
+            for (int i = 0; i < splitUserPulledInstrumentsOne.size(); i++)
+            {
+                String formattedInstrumentsStringToAdd;
+                formattedInstrumentsStringToAdd = splitUserPulledInstrumentsOne.get(i).trim();
+                splitUserPulledInstrumentsOneFormatted.add(formattedInstrumentsStringToAdd);
+            }
+
+            mPositionOneSpinner.setSelection(splitUserPulledInstrumentsOneFormatted);
+        }
+
+        else if(mPositionsSpinner.getSelectedItem().equals("2"))
+        {
+            splitUserPulledInstrumentsOne = Arrays.asList(mBandFromDatabase.getPositionOne().split(","));
+
+            // For the select list to understand this, they need any leading or trailing
+            // spaces to be removed
+            ArrayList<String> splitUserPulledInstrumentsOneFormatted = new ArrayList<>();
+
+            // The string array is then iterated through and added to a separate string
+            // array and passed to the spinner.
+            for (int i = 0; i < splitUserPulledInstrumentsOne.size(); i++)
+            {
+                String formattedInstrumentsStringToAdd;
+                formattedInstrumentsStringToAdd = splitUserPulledInstrumentsOne.get(i).trim();
+                splitUserPulledInstrumentsOneFormatted.add(formattedInstrumentsStringToAdd);
+            }
+
+            mPositionOneSpinner.setSelection(splitUserPulledInstrumentsOneFormatted);
+
+            splitUserPulledInstrumentsTwo = Arrays.asList(mBandFromDatabase.getPositionTwo().split(","));
+
+            // For the select list to understand this, they need any leading or trailing
+            // spaces to be removed
+            ArrayList<String> splitUserPulledInstrumentsTwoFormatted = new ArrayList<>();
+
+            // The string array is then iterated through and added to a separate string
+            // array and passed to the spinner.
+            for (int i = 0; i < splitUserPulledInstrumentsTwo.size(); i++)
+            {
+                String formattedInstrumentsStringToAdd;
+                formattedInstrumentsStringToAdd = splitUserPulledInstrumentsTwo.get(i).trim();
+                splitUserPulledInstrumentsTwoFormatted.add(formattedInstrumentsStringToAdd);
+            }
+
+            mPositionTwoSpinner.setSelection(splitUserPulledInstrumentsTwoFormatted);
+        }
+
+        else if(mPositionsSpinner.getSelectedItem().equals("3"))
+        {
+            splitUserPulledInstrumentsOne = Arrays.asList(mBandFromDatabase.getPositionOne().split(","));
+
+            // For the select list to understand this, they need any leading or trailing
+            // spaces to be removed
+            ArrayList<String> splitUserPulledInstrumentsOneFormatted = new ArrayList<>();
+
+            // The string array is then iterated through and added to a separate string
+            // array and passed to the spinner.
+            for (int i = 0; i < splitUserPulledInstrumentsOne.size(); i++)
+            {
+                String formattedInstrumentsStringToAdd;
+                formattedInstrumentsStringToAdd = splitUserPulledInstrumentsOne.get(i).trim();
+                splitUserPulledInstrumentsOneFormatted.add(formattedInstrumentsStringToAdd);
+            }
+
+            mPositionOneSpinner.setSelection(splitUserPulledInstrumentsOneFormatted);
+
+            splitUserPulledInstrumentsTwo = Arrays.asList(mBandFromDatabase.getPositionTwo().split(","));
+
+            // For the select list to understand this, they need any leading or trailing
+            // spaces to be removed
+            ArrayList<String> splitUserPulledInstrumentsTwoFormatted = new ArrayList<>();
+
+            // The string array is then iterated through and added to a separate string
+            // array and passed to the spinner.
+            for (int i = 0; i < splitUserPulledInstrumentsTwo.size(); i++)
+            {
+                String formattedInstrumentsStringToAdd;
+                formattedInstrumentsStringToAdd = splitUserPulledInstrumentsTwo.get(i).trim();
+                splitUserPulledInstrumentsTwoFormatted.add(formattedInstrumentsStringToAdd);
+            }
+
+            mPositionTwoSpinner.setSelection(splitUserPulledInstrumentsTwoFormatted);
+
+            splitUserPulledInstrumentsThree = Arrays.asList(mBandFromDatabase.getPositionThree().split(","));
+
+            // For the select list to understand this, they need any leading or trailing
+            // spaces to be removed
+            ArrayList<String> splitUserPulledInstrumentsThreeFormatted = new ArrayList<>();
+
+            // The string array is then iterated through and added to a separate string
+            // array and passed to the spinner.
+            for (int i = 0; i < splitUserPulledInstrumentsThree.size(); i++)
+            {
+                String formattedInstrumentsStringToAdd;
+                formattedInstrumentsStringToAdd = splitUserPulledInstrumentsThree.get(i).trim();
+                splitUserPulledInstrumentsThreeFormatted.add(formattedInstrumentsStringToAdd);
+            }
+
+            mPositionThreeSpinner.setSelection(splitUserPulledInstrumentsThreeFormatted);
+        }
+
+        else if(mPositionsSpinner.getSelectedItem().equals("4"))
+        {
+            splitUserPulledInstrumentsOne = Arrays.asList(mBandFromDatabase.getPositionOne().split(","));
+
+            // For the select list to understand this, they need any leading or trailing
+            // spaces to be removed
+            ArrayList<String> splitUserPulledInstrumentsOneFormatted = new ArrayList<>();
+
+            // The string array is then iterated through and added to a separate string
+            // array and passed to the spinner.
+            for (int i = 0; i < splitUserPulledInstrumentsOne.size(); i++)
+            {
+                String formattedInstrumentsStringToAdd;
+                formattedInstrumentsStringToAdd = splitUserPulledInstrumentsOne.get(i).trim();
+                splitUserPulledInstrumentsOneFormatted.add(formattedInstrumentsStringToAdd);
+            }
+
+            mPositionOneSpinner.setSelection(splitUserPulledInstrumentsOneFormatted);
+
+            splitUserPulledInstrumentsTwo = Arrays.asList(mBandFromDatabase.getPositionTwo().split(","));
+
+            // For the select list to understand this, they need any leading or trailing
+            // spaces to be removed
+            ArrayList<String> splitUserPulledInstrumentsTwoFormatted = new ArrayList<>();
+
+            // The string array is then iterated through and added to a separate string
+            // array and passed to the spinner.
+            for (int i = 0; i < splitUserPulledInstrumentsTwo.size(); i++)
+            {
+                String formattedInstrumentsStringToAdd;
+                formattedInstrumentsStringToAdd = splitUserPulledInstrumentsTwo.get(i).trim();
+                splitUserPulledInstrumentsTwoFormatted.add(formattedInstrumentsStringToAdd);
+            }
+
+            mPositionTwoSpinner.setSelection(splitUserPulledInstrumentsTwoFormatted);
+
+            splitUserPulledInstrumentsThree = Arrays.asList(mBandFromDatabase.getPositionThree().split(","));
+
+            // For the select list to understand this, they need any leading or trailing
+            // spaces to be removed
+            ArrayList<String> splitUserPulledInstrumentsThreeFormatted = new ArrayList<>();
+
+            // The string array is then iterated through and added to a separate string
+            // array and passed to the spinner.
+            for (int i = 0; i < splitUserPulledInstrumentsThree.size(); i++)
+            {
+                String formattedInstrumentsStringToAdd;
+                formattedInstrumentsStringToAdd = splitUserPulledInstrumentsThree.get(i).trim();
+                splitUserPulledInstrumentsThreeFormatted.add(formattedInstrumentsStringToAdd);
+            }
+
+            mPositionThreeSpinner.setSelection(splitUserPulledInstrumentsThreeFormatted);
+
+            splitUserPulledInstrumentsFour = Arrays.asList(mBandFromDatabase.getPositionFour().split(","));
+
+            // For the select list to understand this, they need any leading or trailing
+            // spaces to be removed
+            ArrayList<String> splitUserPulledInstrumentsFourFormatted = new ArrayList<>();
+
+            // The string array is then iterated through and added to a separate string
+            // array and passed to the spinner.
+            for (int i = 0; i < splitUserPulledInstrumentsFour.size(); i++)
+            {
+                String formattedInstrumentsStringToAdd;
+                formattedInstrumentsStringToAdd = splitUserPulledInstrumentsFour.get(i).trim();
+                splitUserPulledInstrumentsFourFormatted.add(formattedInstrumentsStringToAdd);
+            }
+
+            mPositionFourSpinner.setSelection(splitUserPulledInstrumentsFourFormatted);
+        }
+
+        else if(mPositionsSpinner.getSelectedItem().equals("5"))
+        {
+            splitUserPulledInstrumentsOne = Arrays.asList(mBandFromDatabase.getPositionOne().split(","));
+
+            // For the select list to understand this, they need any leading or trailing
+            // spaces to be removed
+            ArrayList<String> splitUserPulledInstrumentsOneFormatted = new ArrayList<>();
+
+            // The string array is then iterated through and added to a separate string
+            // array and passed to the spinner.
+            for (int i = 0; i < splitUserPulledInstrumentsOne.size(); i++)
+            {
+                String formattedInstrumentsStringToAdd;
+                formattedInstrumentsStringToAdd = splitUserPulledInstrumentsOne.get(i).trim();
+                splitUserPulledInstrumentsOneFormatted.add(formattedInstrumentsStringToAdd);
+            }
+
+            mPositionOneSpinner.setSelection(splitUserPulledInstrumentsOneFormatted);
+
+            splitUserPulledInstrumentsTwo = Arrays.asList(mBandFromDatabase.getPositionTwo().split(","));
+
+            // For the select list to understand this, they need any leading or trailing
+            // spaces to be removed
+            ArrayList<String> splitUserPulledInstrumentsTwoFormatted = new ArrayList<>();
+
+            // The string array is then iterated through and added to a separate string
+            // array and passed to the spinner.
+            for (int i = 0; i < splitUserPulledInstrumentsTwo.size(); i++)
+            {
+                String formattedInstrumentsStringToAdd;
+                formattedInstrumentsStringToAdd = splitUserPulledInstrumentsTwo.get(i).trim();
+                splitUserPulledInstrumentsTwoFormatted.add(formattedInstrumentsStringToAdd);
+            }
+
+            mPositionTwoSpinner.setSelection(splitUserPulledInstrumentsTwoFormatted);
+
+            splitUserPulledInstrumentsThree = Arrays.asList(mBandFromDatabase.getPositionThree().split(","));
+
+            // For the select list to understand this, they need any leading or trailing
+            // spaces to be removed
+            ArrayList<String> splitUserPulledInstrumentsThreeFormatted = new ArrayList<>();
+
+            // The string array is then iterated through and added to a separate string
+            // array and passed to the spinner.
+            for (int i = 0; i < splitUserPulledInstrumentsThree.size(); i++)
+            {
+                String formattedInstrumentsStringToAdd;
+                formattedInstrumentsStringToAdd = splitUserPulledInstrumentsThree.get(i).trim();
+                splitUserPulledInstrumentsThreeFormatted.add(formattedInstrumentsStringToAdd);
+            }
+
+            mPositionThreeSpinner.setSelection(splitUserPulledInstrumentsThreeFormatted);
+
+            splitUserPulledInstrumentsFour = Arrays.asList(mBandFromDatabase.getPositionFour().split(","));
+
+            // For the select list to understand this, they need any leading or trailing
+            // spaces to be removed
+            ArrayList<String> splitUserPulledInstrumentsFourFormatted = new ArrayList<>();
+
+            // The string array is then iterated through and added to a separate string
+            // array and passed to the spinner.
+            for (int i = 0; i < splitUserPulledInstrumentsFour.size(); i++)
+            {
+                String formattedInstrumentsStringToAdd;
+                formattedInstrumentsStringToAdd = splitUserPulledInstrumentsFour.get(i).trim();
+                splitUserPulledInstrumentsFourFormatted.add(formattedInstrumentsStringToAdd);
+            }
+
+            mPositionFourSpinner.setSelection(splitUserPulledInstrumentsFourFormatted);
+
+            splitUserPulledInstrumentsFive = Arrays.asList(mBandFromDatabase.getPositionFive().split(","));
+
+            // For the select list to understand this, they need any leading or trailing
+            // spaces to be removed
+            ArrayList<String> splitUserPulledInstrumentsFiveFormatted = new ArrayList<>();
+
+            // The string array is then iterated through and added to a separate string
+            // array and passed to the spinner.
+            for (int i = 0; i < splitUserPulledInstrumentsFive.size(); i++)
+            {
+                String formattedInstrumentsStringToAdd;
+                formattedInstrumentsStringToAdd = splitUserPulledInstrumentsFive.get(i).trim();
+                splitUserPulledInstrumentsFiveFormatted.add(formattedInstrumentsStringToAdd);
+            }
+
+            mPositionFiveSpinner.setSelection(splitUserPulledInstrumentsFiveFormatted);
+        }
+    }
+
+    // This takes the genres from the database and
+    private ArrayList<String> GetGenres()
+    {
+        // This then splits this string into an array of strings, each separated by
+        // a comma
+        List<String> splitUserPulledGenres = Arrays.asList(mBandFromDatabase.getGenres().split(","));
+
+        // For the select list to understand this, they need any leading or trailing
+        // spaces to be removed
+        ArrayList<String> splitUserPulledGenresFormatted = new ArrayList<>();
+
+        // The string array is then iterated through and added to a separate string
+        // array and passed to the spinner.
+        for (int i = 0; i < splitUserPulledGenres.size(); i++)
+        {
+            String formattedGenreStringToAdd;
+
+            formattedGenreStringToAdd = splitUserPulledGenres.get(i).trim();
+
+            splitUserPulledGenresFormatted.add(formattedGenreStringToAdd);
+        }
+
+        return splitUserPulledGenresFormatted;
+    }
+
+    // This takes the latlng stored in the database to get the address using Google's Geocoder
+    private String GetAddressFromLatLng(LatLng latLng)
+    {
+        Geocoder geocoder;
+        List<Address> addresses;
+        String address = "";
+        geocoder = new Geocoder(getActivity(), Locale.getDefault());
+
+        try
+        {
+            addresses = geocoder.getFromLocation(latLng.getLatitude(), latLng.getLongitude(), 1);
+            address = addresses.get(0).getAddressLine(0);
+        }
+
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+
+        return address;
+    }
+
+    // This gets the index of a spinner that contains a particular value
+    private int getIndex(Spinner spinner, String myString)
+    {
+        int index = 0;
+
+        for (int i=0; i<spinner.getCount(); i++)
+        {
+            if (spinner.getItemAtPosition(i).toString().equalsIgnoreCase(myString))
+            {
+                index = i;
+                break;
+            }
+        }
+        return index;
+    }
+
     // When called, this should do all the relevant checks to create a band object and post it to the database
-    private void CreateBand()
+    private void UpdateBand()
     {
         // This dialog is created to confirm that the user wants to edit the chosen fields
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle("Create Band");
-        builder.setMessage("Are you sure you wish to create this band?");
-        builder.setPositiveButton("Create", new DialogInterface.OnClickListener()
+        builder.setTitle("Update Band");
+        builder.setMessage("Are you sure you wish to update these fields?");
+        builder.setPositiveButton("Update", new DialogInterface.OnClickListener()
         {
             @Override
             public void onClick(DialogInterface dialogInterface, int i)
             {
-                mBandID = mDatabase.child("Bands/").push().getKey();
                 mBandName = mBandNameEditText.getText().toString();
                 mGenres = mGenreSpinner.getSelectedItemsAsString();
                 mNumberOfPositions = mPositionsSpinner.getSelectedItem().toString();
@@ -423,7 +800,7 @@ public class MusicianUserBandCreatorFragment extends Fragment
                             mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/isInBand").setValue(true);
                             mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/bandID").setValue(mBandID);
 
-                                    // A dialog is then shown to alert the user that the changes have been made
+                            // A dialog is then shown to alert the user that the changes have been made
                             final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                             builder.setTitle("Confirmation");
                             builder.setMessage("Band Updated!");
@@ -660,13 +1037,13 @@ public class MusicianUserBandCreatorFragment extends Fragment
                 }
             }
         })
-        .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener()
-        {
-            public void onClick(DialogInterface dialog, int which)
-            {
-            // close the dialog
-            }
-        }).show();
+                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener()
+                {
+                    public void onClick(DialogInterface dialog, int which)
+                    {
+                        // close the dialog
+                    }
+                }).show();
     }
 
     private void ReturnToHome()

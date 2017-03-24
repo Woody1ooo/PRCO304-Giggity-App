@@ -83,6 +83,10 @@ public class MusicianUserMainActivity extends AppCompatActivity
         // Sets home as the default selected navigation item
         navigationView.getMenu().getItem(0).setChecked(true);
 
+        // Hides the manager item by default
+        Menu menu = navigationView.getMenu();
+        menu.findItem(R.id.nav_band_manager).setVisible(false);
+
         // Initialise visual components
         setTitle("Musician User Home");
 
@@ -108,6 +112,20 @@ public class MusicianUserMainActivity extends AppCompatActivity
             @Override
             public void onDataChange(DataSnapshot dataSnapshot)
             {
+                // Check if the node exists then determine whether they are in a band already to show/hide items
+                if(dataSnapshot.child("/isInBand").exists())
+                {
+                    if(dataSnapshot.child("/isInBand").getValue().equals(true))
+                    {
+                        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+                        Menu menu = navigationView.getMenu();
+                        menu.findItem(R.id.nav_band_manager).setVisible(true);
+                        menu.findItem(R.id.nav_band_creator).setVisible(false);
+                        menu.findItem(R.id.nav_band_finder).setVisible(false);
+                        menu.findItem(R.id.nav_requests).setVisible(false);
+                    }
+                }
+
                 // First check if the user needs to complete the pre setup
                 // If not, then the pre setup activity is launched
                 // When the user returns to this point, it should skip to the else statement
@@ -257,6 +275,16 @@ public class MusicianUserMainActivity extends AppCompatActivity
             FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
             fragmentTransaction.replace(R.id.frame, fragment
                     , "SettingsFragment");
+            fragmentTransaction.commit();
+        }
+
+        else if (id == R.id.nav_band_manager)
+        {
+            setTitle("Band Manager");
+            MusicianUserBandManagementFragment fragment = new MusicianUserBandManagementFragment();
+            FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.frame, fragment
+                    , "MusicianUserBandManagementFragment");
             fragmentTransaction.commit();
         }
 

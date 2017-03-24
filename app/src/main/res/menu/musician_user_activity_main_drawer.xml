@@ -46,6 +46,15 @@
                                 android:id="@+id/nav_requests"
                                 android:icon="@drawable/ic_swap_vert_black_24dp"
                                 android:title="Band Requests"/>
+                            <item
+                                android:id="@+id/nav_band_manager"
+                                android:icon="@drawable/ic_menu_manage"
+                                android:title="Band Manager"/>
+                            <item
+                                android:id="@+id/nav_band_members"
+                                android:icon="@drawable/ic_group_black_24dp"
+                                android:title="Band Members"/>
+
                         </group>
                     </menu>
                 </item>

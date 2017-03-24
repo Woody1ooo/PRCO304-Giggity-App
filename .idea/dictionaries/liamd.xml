@@ -2,6 +2,7 @@
   <dictionary name="liamd">
     <words>
       <w>firebase</w>
+      <w>geocoder</w>
       <w>giggity</w>
       <w>gmail</w>
       <w>latlng</w>
