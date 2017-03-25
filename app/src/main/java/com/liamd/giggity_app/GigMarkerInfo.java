@@ -6,7 +6,7 @@ import java.util.Date;
  * Created by liamd on 11/03/2017.
  */
 
-public class MarkerInfo
+public class GigMarkerInfo
 {
     private String markerId;
     private String gigId;
@@ -16,12 +16,12 @@ public class MarkerInfo
     private Date gigStartDate;
     private Date gigEndDate;
 
-    public MarkerInfo(String markerId)
+    public GigMarkerInfo(String markerId)
     {
         this.markerId = markerId;
     }
 
-    public MarkerInfo(Date gigEndDate, String gigId, String gigName, Date gigStartDate, String markerId, String venueId, String venueName)
+    public GigMarkerInfo(Date gigEndDate, String gigId, String gigName, Date gigStartDate, String markerId, String venueId, String venueName)
     {
         this.gigEndDate = gigEndDate;
         this.gigId = gigId;

@@ -16,6 +16,7 @@ public class Band
     String positionFour;
     String positionFive;
     LatLng baseLocation;
+    private double bandDistance;
 
     public Band()
     {
@@ -180,5 +181,15 @@ public class Band
     public void setBaseLocation(LatLng baseLocation)
     {
         this.baseLocation = baseLocation;
+    }
+
+    public double getBandDistance()
+    {
+        return bandDistance;
+    }
+
+    public void setBandDistance(double bandDistance)
+    {
+        this.bandDistance = bandDistance;
     }
 }

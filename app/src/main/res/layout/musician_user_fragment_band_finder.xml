@@ -5,10 +5,125 @@
              tools:context="com.liamd.giggity_app.MusicianUserBandFinderFragment">
 
     <!-- TODO: Update blank fragment layout -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-    <TextView
-        android:text="Band Finder"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/textView4"/>
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:weightSum="1">
+
+                <TextView
+                    android:text="Distance"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/textView8"
+                    android:layout_weight="1"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Menu"
+                    android:paddingLeft="10dp"
+                    android:paddingTop="20dp"/>
+
+                <RadioGroup
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="11dp"
+                    android:id="@+id/distanceTypeRadioGroup"
+                    android:orientation="horizontal"
+                    android:paddingLeft="10dp">
+
+                    <RadioButton
+                        android:text="Current Location"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/currentLocationRadio"
+                        android:layout_weight="1"
+                        android:checked="true"
+                        android:paddingLeft="10dp"/>
+
+                    <RadioButton
+                        android:text="Home Location"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/homeLocationRadio"
+                        android:layout_weight="1"
+                        android:checked="true"
+                        android:paddingLeft="10dp"/>
+
+                </RadioGroup>
+
+                <SeekBar
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/distanceSeekBar"
+                    android:layout_marginTop="22dp"
+                    android:max="100"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"/>
+
+                <TextView
+                    android:text="Distance (km):"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/distanceValueTextView"
+                    android:layout_weight="1"
+                    android:layout_marginTop="22dp"
+                    android:paddingLeft="10dp"/>
+
+                <TextView
+                    android:text="Band Genre"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/textView9"
+                    android:layout_weight="1"
+                    android:layout_marginTop="22dp"
+                    android:paddingLeft="10dp"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Menu"/>
+
+                <com.liamd.giggity_app.MultiSelectSpinner
+                    android:id="@+id/genreSpinner"
+                    android:layout_width="fill_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.15"
+                    android:layout_marginBottom="32dp"
+                    android:paddingLeft="10dp"
+                    android:layout_marginTop="22dp"/>
+
+                <TextView
+                    android:text="Role"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/textView10"
+                    android:layout_weight="1"
+                    android:layout_marginTop="22dp"
+                    android:paddingLeft="10dp"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Menu"/>
+
+                <com.liamd.giggity_app.MultiSelectSpinner
+                    android:id="@+id/roleSpinner"
+                    android:layout_width="fill_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.15"
+                    android:layout_marginBottom="32dp"
+                    android:paddingLeft="10dp"
+                    android:layout_marginTop="22dp"/>
+
+                <Button
+                    android:text="Search"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/searchButton"
+                    android:layout_weight="1"
+                    android:background="@color/colorPrimary"
+                    android:textColor="@color/cardview_light_background"/>
+            </LinearLayout>
+        </ScrollView>
+    </RelativeLayout>
 </FrameLayout>

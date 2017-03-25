@@ -123,6 +123,9 @@ public class MusicianUserBandManagementFragment extends Fragment
         mPositionFiveTitle = (TextView) fragmentView.findViewById(R.id.positionFiveTextView);
         mPositionFiveSpinner = (MultiSelectSpinner) fragmentView.findViewById(R.id.bandPositionFiveSpinner);
 
+        mProgressDialog.show();
+        mProgressDialog.setMessage("Loading...");
+
         // Initially hide all the position spinners/text views until the number chosen is selected from the spinner
         mPositionOneTitle.setVisibility(View.GONE);
         mPositionOneSpinner.setVisibility(View.GONE);
@@ -409,6 +412,8 @@ public class MusicianUserBandManagementFragment extends Fragment
         mBandLocationLatLng = mBandFromDatabase.getBaseLocation();
 
         mLocationChosenTextView.setText(GetAddressFromLatLng(mBandLocationLatLng));
+
+        mProgressDialog.hide();
     }
 
     // This method determines how many positions are selected and then populates each spinner with a string array

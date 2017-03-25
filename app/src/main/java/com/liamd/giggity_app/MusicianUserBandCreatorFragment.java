@@ -426,7 +426,7 @@ public class MusicianUserBandCreatorFragment extends Fragment
                                     // A dialog is then shown to alert the user that the changes have been made
                             final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                             builder.setTitle("Confirmation");
-                            builder.setMessage("Band Updated!");
+                            builder.setMessage("Band Created!");
                             builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
                             {
                                 @Override
@@ -475,7 +475,7 @@ public class MusicianUserBandCreatorFragment extends Fragment
                             // A dialog is then shown to alert the user that the changes have been made
                             final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                             builder.setTitle("Confirmation");
-                            builder.setMessage("Band Updated!");
+                            builder.setMessage("Band Created!");
                             builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
                             {
                                 @Override
@@ -526,7 +526,7 @@ public class MusicianUserBandCreatorFragment extends Fragment
                             // A dialog is then shown to alert the user that the changes have been made
                             final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                             builder.setTitle("Confirmation");
-                            builder.setMessage("Band Updated!");
+                            builder.setMessage("Band Created!");
                             builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
                             {
                                 @Override
@@ -578,7 +578,7 @@ public class MusicianUserBandCreatorFragment extends Fragment
                             // A dialog is then shown to alert the user that the changes have been made
                             final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                             builder.setTitle("Confirmation");
-                            builder.setMessage("Band Updated!");
+                            builder.setMessage("Band Created!");
                             builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
                             {
                                 @Override
@@ -635,7 +635,7 @@ public class MusicianUserBandCreatorFragment extends Fragment
                             // A dialog is then shown to alert the user that the changes have been made
                             final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                             builder.setTitle("Confirmation");
-                            builder.setMessage("Band Updated!");
+                            builder.setMessage("Band Created!");
                             builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
                             {
                                 @Override
