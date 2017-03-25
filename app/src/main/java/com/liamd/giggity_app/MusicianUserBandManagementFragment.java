@@ -1,15 +1,20 @@
 package com.liamd.giggity_app;
 
 
+import android.*;
 import android.app.AlertDialog;
 import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
+import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,20 +22,30 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.firebase.ui.storage.images.FirebaseImageLoader;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -47,6 +62,9 @@ import static android.app.Activity.RESULT_OK;
 public class MusicianUserBandManagementFragment extends Fragment
 {
     // Declare general visual components
+    private ImageView mBandImageView;
+    private TextView mChangeImageTextView;
+    private TextView mRemoveImageTextView;
     private EditText mBandNameEditText;
     private MultiSelectSpinner mGenreSpinner;
     private Spinner mPositionsSpinner;
@@ -70,7 +88,9 @@ public class MusicianUserBandManagementFragment extends Fragment
     private List<String> mGenreList;
     private List<String> mInstrumentList;
     private Band mBandFromDatabase;
+    private final static int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 1;
     private int PLACE_PICKER_REQUEST = 0;
+    private static int RESULT_LOAD_IMAGE = 1;
     private String mBandID;
     private String mBandName;
     private String mGenres;
@@ -85,6 +105,9 @@ public class MusicianUserBandManagementFragment extends Fragment
     // Declare Firebase specific variables
     private FirebaseAuth mAuth;
     private DatabaseReference mDatabase;
+    private FirebaseStorage mStorage;
+    private StorageReference mBandProfileImageReference;
+    private UploadTask mUploadTask;
 
     public MusicianUserBandManagementFragment()
     {
@@ -104,6 +127,9 @@ public class MusicianUserBandManagementFragment extends Fragment
         // Creates a reference to the Firebase database
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
+        mBandImageView = (ImageView) fragmentView.findViewById(R.id.bandImageView);
+        mChangeImageTextView = (TextView) fragmentView.findViewById(R.id.changeImageTextView);
+        mRemoveImageTextView = (TextView) fragmentView.findViewById(R.id.removeImageTextView);
         mBandNameEditText = (EditText) fragmentView.findViewById(R.id.bandNameEditText);
         mGenreSpinner = (MultiSelectSpinner) fragmentView.findViewById(R.id.genreSpinner);
         mPositionsSpinner = (Spinner) fragmentView.findViewById(R.id.bandPositionSpinner);
@@ -138,6 +164,10 @@ public class MusicianUserBandManagementFragment extends Fragment
         mPositionFiveTitle.setVisibility(View.GONE);
         mPositionFiveSpinner.setVisibility(View.GONE);
 
+        // Creates a reference to the storage element of firebase
+        mStorage = FirebaseStorage.getInstance();
+        mBandProfileImageReference = mStorage.getReference();
+
         // Add items to the genre list, and set the spinner to use these
         mGenreList = new ArrayList<>();
         mGenreList.add("Classic Rock");
@@ -169,6 +199,10 @@ public class MusicianUserBandManagementFragment extends Fragment
         mPositionThreeSpinner.setItems(mInstrumentList);
         mPositionFourSpinner.setItems(mInstrumentList);
         mPositionFiveSpinner.setItems(mInstrumentList);
+
+        // Add the images to the text views
+        mChangeImageTextView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_insert_photo_black_18dp, 0, 0, 0);
+        mRemoveImageTextView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_delete_black_18dp, 0, 0, 0);
 
         // This gets the number from the band positions spinner and then displays/hides the relevant components as needed
         mPositionsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
@@ -281,6 +315,26 @@ public class MusicianUserBandManagementFragment extends Fragment
             }
         });
 
+        // When the changeImageTextView is clicked the CheckForPermissions method is called
+        mChangeImageTextView.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                CheckForPermissions();
+            }
+        });
+
+        // When the removeImageTextView is clicked the CheckForPermissions method is called
+        mRemoveImageTextView.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                DeleteProfilePicture();
+            }
+        });
+
         mDatabase.addListenerForSingleValueEvent(new ValueEventListener()
         {
             @Override
@@ -290,6 +344,9 @@ public class MusicianUserBandManagementFragment extends Fragment
                 mBandFromDatabase = new Band();
                 mBandFromDatabase = dataSnapshot.child("Bands/" + mBandID).getValue(Band.class);
                 PopulateFields();
+
+                // This method loads the profile picture from the chosen login method
+                LoadProfilePicture();
             }
 
             @Override
@@ -362,6 +419,91 @@ public class MusicianUserBandManagementFragment extends Fragment
         return fragmentView;
     }
 
+    // This method loads the user's profile picture from their chosen login method. This will need to be
+    // changed to pull the users chosen pictures
+    private void LoadProfilePicture()
+    {
+        // This reference looks at the Firebase storage and works out whether the current user has an image
+        mBandProfileImageReference.child("BandProfileImages/" + mBandID + "/profileImage")
+                .getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>()
+        {
+            // If the user has an image this is loaded into the image view
+            @Override
+            public void onSuccess(Uri uri)
+            {
+                // The caching and memory features have been disabled to allow only the latest image to display
+                Glide.with(getContext()).using(new FirebaseImageLoader()).load
+                        (mBandProfileImageReference.child("BandProfileImages/" + mBandID + "/profileImage"))
+                        .diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).into(mBandImageView);
+            }
+
+            // If the user doesn't have an image the default image is loaded
+        }).addOnFailureListener(new OnFailureListener()
+        {
+            @Override
+            public void onFailure(@NonNull Exception e)
+            {
+                Picasso.with(getContext()).load(R.drawable.com_facebook_profile_picture_blank_portrait).resize(350, 350).into(mBandImageView);
+            }
+        });
+    }
+
+    // This method checks to see whether the user has allowed the app to access the storage
+    // If the permission is granted call the UpdateProfilePicture method
+    private void CheckForPermissions()
+    {
+        if (ActivityCompat.checkSelfPermission(getActivity().getApplicationContext(),
+                android.Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED)
+        {
+            requestPermissions(new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
+        }
+
+        else
+        {
+            UpdateProfilePicture();
+        }
+    }
+
+    // This method starts an intent to open the user's storage to select a photo
+    private void UpdateProfilePicture()
+    {
+        Intent selectImage = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(selectImage, RESULT_LOAD_IMAGE);
+    }
+
+    private void DeleteProfilePicture()
+    {
+        // This dialog is created to confirm that the users want to edit the fields
+        // they have chosen
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle("Delete Band Image");
+        builder.setMessage("Are you sure you wish to delete this band image?");
+        builder.setPositiveButton("Delete", new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i)
+            {
+                // Displays the progress dialog
+                mProgressDialog.setMessage("Deleting Band Image...");
+                mProgressDialog.show();
+                mBandProfileImageReference.child("BandProfileImages/" + mBandID + "/profileImage").delete();
+                Picasso.with(getContext()).load(R.drawable.com_facebook_profile_picture_blank_portrait).resize(350, 350).into(mBandImageView);
+
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i)
+            {
+
+            }
+        });
+        builder.show();
+    }
+
+
     // Method to create a new instance of the place picker intent builder
     private void LaunchPlacePicker() throws GooglePlayServicesNotAvailableException, GooglePlayServicesRepairableException
     {
@@ -394,6 +536,65 @@ public class MusicianUserBandManagementFragment extends Fragment
 
             mBandLocationLatLng.setLatitude(placeLat);
             mBandLocationLatLng.setLongitude(placeLng);
+        }
+
+        else if (requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK && null != data)
+        {
+            // This dialog is created to confirm that the user wants to edit their picture
+            final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setTitle("Update Band Image");
+            builder.setMessage("Are you sure you wish to use this image for your band?");
+            builder.setPositiveButton("Update", new DialogInterface.OnClickListener()
+            {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i)
+                {
+                    // Displays the progress dialog
+                    mProgressDialog.setMessage("Updating Band Image...");
+                    mProgressDialog.show();
+
+                    // This gets the data from the intent and stores it in the selectedImage variable as well as uploading it to the firebase storage
+                    final Uri selectedImage = data.getData();
+                    StorageReference profileImagesRef = mBandProfileImageReference.child("BandProfileImages/" + mBandID + "/profileImage");
+
+                    mUploadTask = profileImagesRef.putFile(selectedImage);
+
+                    mUploadTask.addOnFailureListener(new OnFailureListener()
+                    {
+                        @Override
+                        public void onFailure(@NonNull Exception e)
+                        {
+
+                        }
+                    });
+
+                    // If the upload is successful the image is then displayed
+                    mUploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>()
+                    {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot)
+                        {
+                            mBandImageView.setImageDrawable(null);
+
+                            // The caching and memory features have been disabled to allow only the latest image to display
+                            StorageReference profileImagesRef = mBandProfileImageReference.child("BandProfileImages/" + mBandID + "/profileImage");
+                            Glide.with(getContext()).using(new FirebaseImageLoader()).load
+                                    (profileImagesRef).diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).into(mBandImageView);
+
+                            mProgressDialog.hide();
+                        }
+                    });
+                }
+            });
+            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener()
+            {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i)
+                {
+
+                }
+            });
+            builder.show();
         }
     }
 

@@ -2,21 +2,31 @@ package com.liamd.giggity_app;
 
 
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.provider.ContactsContract;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TabHost;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.firebase.ui.storage.images.FirebaseImageLoader;
+import com.google.android.gms.ads.formats.NativeAd;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.*;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.vision.text.Text;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -24,6 +34,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -47,6 +60,8 @@ public class MusicianUserBandResultsFragment extends Fragment implements OnMapRe
     private FirebaseAuth mAuth;
     private DatabaseReference mDatabase;
     private DataSnapshot mBandDataSnapshot;
+    private FirebaseStorage mStorage;
+    private StorageReference mProfileImageReference;
 
     // Declare Visual Components
     private ListView mBandsListView;
@@ -106,6 +121,10 @@ public class MusicianUserBandResultsFragment extends Fragment implements OnMapRe
 
         // Creates a reference to the Firebase database
         mDatabase = FirebaseDatabase.getInstance().getReference();
+
+        // Creates a reference to the storage element of firebase
+        mStorage = FirebaseStorage.getInstance();
+        mProfileImageReference = mStorage.getReference();
 
         // Initialise variables
         mLocationType = getArguments().getBoolean("CurrentLocation");
@@ -254,6 +273,7 @@ public class MusicianUserBandResultsFragment extends Fragment implements OnMapRe
                     TextView mBandDistanceTextView = (TextView) v.findViewById(R.id.bandDistanceTextView);
                     TextView mNumberOfPositions = (TextView) v.findViewById(R.id.bandPositionsTextView);
                     TextView mBandGenres = (TextView) v.findViewById(R.id.genresTextView);
+                    ImageView mBandImage = (ImageView) v.findViewById(R.id.bandProfileImage);
 
                     // The marker info list is then iterated through
                     for (int i = 0; i < mListOfBandMarkerInfo.size(); i++)
