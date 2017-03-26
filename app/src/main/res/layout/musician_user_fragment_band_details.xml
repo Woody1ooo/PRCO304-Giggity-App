@@ -2,10 +2,9 @@
              xmlns:tools="http://schemas.android.com/tools"
              android:layout_width="match_parent"
              android:layout_height="match_parent"
-             tools:context="com.liamd.giggity_app.MusicianUserGigDetailsFragment">
+             tools:context="com.liamd.giggity_app.MusicianUserBandDetailsFragment">
 
     <!-- TODO: Update blank fragment layout -->
-
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -16,64 +15,51 @@
             android:orientation="vertical">
 
             <TextView
-                android:text="Gig Name"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
                 android:id="@+id/textView18"
-                android:paddingTop="20dp"
-                android:layout_marginLeft="10dp"/>
-
-            <TextView
-                android:id="@+id/gigNameTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
-                android:paddingTop="20dp"/>
+                android:paddingTop="20dp"
+                android:text="Band Name"/>
 
             <TextView
-                android:text="Gig Start Date"
+                android:id="@+id/bandNameTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:paddingTop="20dp"
+                />
+
+            <TextView
                 android:id="@+id/textView19"
-                android:paddingTop="20dp"
-                android:layout_marginLeft="10dp"/>
-
-            <TextView
-                android:id="@+id/startDateTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
-                android:paddingTop="20dp"/>
-
-            <TextView
-                android:text="Gig End Date"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/textView20"
                 android:paddingTop="20dp"
-                android:layout_marginLeft="10dp"/>
+                android:text="Band Genres"/>
 
             <TextView
-                android:id="@+id/finishDateTextView"
+                android:id="@+id/bandGenresTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
-                android:paddingTop="20dp"/>
+                android:paddingTop="20dp"
+                />
 
             <TextView
-                android:text="Venue"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/textView21"
+                android:layout_marginLeft="10dp"
                 android:paddingTop="20dp"
-                android:layout_marginLeft="10dp"/>
+                android:text="Number Of Positions"/>
 
             <TextView
-                android:id="@+id/venueTextView"
+                android:id="@+id/numberOfPositionsTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
                 android:paddingTop="20dp"/>
         </LinearLayout>
     </ScrollView>
+
 </FrameLayout>

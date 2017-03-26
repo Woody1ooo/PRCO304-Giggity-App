@@ -424,6 +424,7 @@ public class MusicianUserBandCreatorFragment extends Fragment
 
                             mDatabase.child("Bands/" + mBandID).setValue(bandToInsert);
                             mDatabase.child("Bands/" + mBandID + "/bandCreator").setValue(mAuth.getCurrentUser().getUid());
+                            mDatabase.child("Bands/" + mBandID + "/positionOneMember").setValue("Vacant");
                             mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/isInBand").setValue(true);
                             mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/bandID").setValue(mBandID);
 
@@ -473,6 +474,8 @@ public class MusicianUserBandCreatorFragment extends Fragment
 
                             mDatabase.child("Bands/" + mBandID).setValue(bandToInsert);
                             mDatabase.child("Bands/" + mBandID + "/bandCreator").setValue(mAuth.getCurrentUser().getUid());
+                            mDatabase.child("Bands/" + mBandID + "/positionOneMember").setValue("Vacant");
+                            mDatabase.child("Bands/" + mBandID + "/positionTwoMember").setValue("Vacant");
                             mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/isInBand").setValue(true);
                             mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/bandID").setValue(mBandID);
 
@@ -524,6 +527,9 @@ public class MusicianUserBandCreatorFragment extends Fragment
 
                             mDatabase.child("Bands/" + mBandID).setValue(bandToInsert);
                             mDatabase.child("Bands/" + mBandID + "/bandCreator").setValue(mAuth.getCurrentUser().getUid());
+                            mDatabase.child("Bands/" + mBandID + "/positionOneMember").setValue("Vacant");
+                            mDatabase.child("Bands/" + mBandID + "/positionTwoMember").setValue("Vacant");
+                            mDatabase.child("Bands/" + mBandID + "/positionThreeMember").setValue("Vacant");
                             mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/isInBand").setValue(true);
                             mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/bandID").setValue(mBandID);
 
@@ -576,6 +582,10 @@ public class MusicianUserBandCreatorFragment extends Fragment
 
                             mDatabase.child("Bands/" + mBandID).setValue(bandToInsert);
                             mDatabase.child("Bands/" + mBandID + "/bandCreator").setValue(mAuth.getCurrentUser().getUid());
+                            mDatabase.child("Bands/" + mBandID + "/positionOneMember").setValue("Vacant");
+                            mDatabase.child("Bands/" + mBandID + "/positionTwoMember").setValue("Vacant");
+                            mDatabase.child("Bands/" + mBandID + "/positionThreeMember").setValue("Vacant");
+                            mDatabase.child("Bands/" + mBandID + "/positionFourMember").setValue("Vacant");
                             mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/isInBand").setValue(true);
                             mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/bandID").setValue(mBandID);
 
@@ -633,6 +643,11 @@ public class MusicianUserBandCreatorFragment extends Fragment
 
                             mDatabase.child("Bands/" + mBandID).setValue(bandToInsert);
                             mDatabase.child("Bands/" + mBandID + "/bandCreator").setValue(mAuth.getCurrentUser().getUid());
+                            mDatabase.child("Bands/" + mBandID + "/positionOneMember").setValue("Vacant");
+                            mDatabase.child("Bands/" + mBandID + "/positionTwoMember").setValue("Vacant");
+                            mDatabase.child("Bands/" + mBandID + "/positionThreeMember").setValue("Vacant");
+                            mDatabase.child("Bands/" + mBandID + "/positionFourMember").setValue("Vacant");
+                            mDatabase.child("Bands/" + mBandID + "/positionFiveMember").setValue("Vacant");
                             mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/isInBand").setValue(true);
                             mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/bandID").setValue(mBandID);
 

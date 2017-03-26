@@ -15,6 +15,11 @@ public class Band
     String positionThree;
     String positionFour;
     String positionFive;
+    String positionOneMember;
+    String positionTwoMember;
+    String positionThreeMember;
+    String positionFourMember;
+    String positionFiveMember;
     LatLng baseLocation;
     private double bandDistance;
 
@@ -81,6 +86,86 @@ public class Band
         this.positionFour = positionFour;
         this.positionFive = positionFive;
         this.baseLocation = baseLocation;
+    }
+
+    public Band(String bandID, String name, String genres, String numberOfPositions, String positionOne, String positionOneMember, LatLng baseLocation, double bandDistance)
+    {
+        this.bandID = bandID;
+        this.name = name;
+        this.genres = genres;
+        this.numberOfPositions = numberOfPositions;
+        this.positionOne = positionOne;
+        this.positionOneMember = positionOneMember;
+        this.baseLocation = baseLocation;
+        this.bandDistance = bandDistance;
+    }
+
+    public Band(String bandID, String name, String genres, String numberOfPositions, String positionOne, String positionTwo, String positionOneMember, String positionTwoMember, LatLng baseLocation, double bandDistance)
+    {
+        this.bandID = bandID;
+        this.name = name;
+        this.genres = genres;
+        this.numberOfPositions = numberOfPositions;
+        this.positionOne = positionOne;
+        this.positionTwo = positionTwo;
+        this.positionOneMember = positionOneMember;
+        this.positionTwoMember = positionTwoMember;
+        this.baseLocation = baseLocation;
+        this.bandDistance = bandDistance;
+    }
+
+    public Band(String bandID, String name, String genres, String numberOfPositions, String positionOne, String positionTwo, String positionThree, String positionOneMember, String positionTwoMember, String positionThreeMember, LatLng baseLocation, double bandDistance)
+    {
+        this.bandID = bandID;
+        this.name = name;
+        this.genres = genres;
+        this.numberOfPositions = numberOfPositions;
+        this.positionOne = positionOne;
+        this.positionTwo = positionTwo;
+        this.positionThree = positionThree;
+        this.positionOneMember = positionOneMember;
+        this.positionTwoMember = positionTwoMember;
+        this.positionThreeMember = positionThreeMember;
+        this.baseLocation = baseLocation;
+        this.bandDistance = bandDistance;
+    }
+
+    public Band(String bandID, String name, String genres, String numberOfPositions, String positionOne, String positionTwo, String positionThree, String positionFour, String positionOneMember, String positionTwoMember, String positionThreeMember, String positionFourMember, LatLng baseLocation, double bandDistance)
+    {
+        this.bandID = bandID;
+        this.name = name;
+        this.genres = genres;
+        this.numberOfPositions = numberOfPositions;
+        this.positionOne = positionOne;
+        this.positionTwo = positionTwo;
+        this.positionThree = positionThree;
+        this.positionFour = positionFour;
+        this.positionOneMember = positionOneMember;
+        this.positionTwoMember = positionTwoMember;
+        this.positionThreeMember = positionThreeMember;
+        this.positionFourMember = positionFourMember;
+        this.baseLocation = baseLocation;
+        this.bandDistance = bandDistance;
+    }
+
+    public Band(String bandID, String name, String genres, String numberOfPositions, String positionOne, String positionTwo, String positionThree, String positionFour, String positionFive, String positionOneMember, String positionTwoMember, String positionThreeMember, String positionFourMember, String positionFiveMember, LatLng baseLocation, double bandDistance)
+    {
+        this.bandID = bandID;
+        this.name = name;
+        this.genres = genres;
+        this.numberOfPositions = numberOfPositions;
+        this.positionOne = positionOne;
+        this.positionTwo = positionTwo;
+        this.positionThree = positionThree;
+        this.positionFour = positionFour;
+        this.positionFive = positionFive;
+        this.positionOneMember = positionOneMember;
+        this.positionTwoMember = positionTwoMember;
+        this.positionThreeMember = positionThreeMember;
+        this.positionFourMember = positionFourMember;
+        this.positionFiveMember = positionFiveMember;
+        this.baseLocation = baseLocation;
+        this.bandDistance = bandDistance;
     }
 
     public String getBandID()
@@ -191,5 +276,55 @@ public class Band
     public void setBandDistance(double bandDistance)
     {
         this.bandDistance = bandDistance;
+    }
+
+    public String getPositionOneMember()
+    {
+        return positionOneMember;
+    }
+
+    public void setPositionOneMember(String positionOneMember)
+    {
+        this.positionOneMember = positionOneMember;
+    }
+
+    public String getPositionTwoMember()
+    {
+        return positionTwoMember;
+    }
+
+    public void setPositionTwoMember(String positionTwoMember)
+    {
+        this.positionTwoMember = positionTwoMember;
+    }
+
+    public String getPositionThreeMember()
+    {
+        return positionThreeMember;
+    }
+
+    public void setPositionThreeMember(String positionThreeMember)
+    {
+        this.positionThreeMember = positionThreeMember;
+    }
+
+    public String getPositionFourMember()
+    {
+        return positionFourMember;
+    }
+
+    public void setPositionFourMember(String positionFourMember)
+    {
+        this.positionFourMember = positionFourMember;
+    }
+
+    public String getPositionFiveMember()
+    {
+        return positionFiveMember;
+    }
+
+    public void setPositionFiveMember(String positionFiveMember)
+    {
+        this.positionFiveMember = positionFiveMember;
     }
 }
