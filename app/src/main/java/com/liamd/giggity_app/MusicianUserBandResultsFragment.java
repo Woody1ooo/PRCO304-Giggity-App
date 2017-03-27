@@ -87,6 +87,7 @@ public class MusicianUserBandResultsFragment extends Fragment implements OnMapRe
     private Marker mMarker;
     private int mBandDistanceSelected;
     private String mGenresSelected;
+    private String mInstrumentsSelected;
 
     // Location variables
     private double mDistance;
@@ -165,6 +166,9 @@ public class MusicianUserBandResultsFragment extends Fragment implements OnMapRe
 
         // This gets the genres the user has selected
         mGenresSelected = getArguments().getString("Genres");
+
+        // This gets the instruments the user has selected
+        mInstrumentsSelected = getArguments().getString("Instruments");
 
         // Initialise the map
         mMapView = (MapView) fragmentView.findViewById(R.id.googleMap);
@@ -404,6 +408,16 @@ public class MusicianUserBandResultsFragment extends Fragment implements OnMapRe
             splitUserChosenGenresTrimmed.add(splitUserChosenGenres.get(i).trim());
         }
 
+        List<String> splitUserChosenInstruments;
+        splitUserChosenInstruments = Arrays.asList(mInstrumentsSelected.split(","));
+        ArrayList<String> splitUserChosenInstrumentsTrimmed = new ArrayList<>();
+
+        // This loops through the split instruments chosen by the user and trims the spaces
+        for(int i = 0; i < splitUserChosenInstruments.size(); i++)
+        {
+            splitUserChosenInstrumentsTrimmed.add(splitUserChosenInstruments.get(i).trim());
+        }
+
         // This initially checks that the band is within the distance selected by the user
         if (mListOfBands.get(listIndex).getBandDistance() > mBandDistanceSelected)
         {
@@ -425,7 +439,41 @@ public class MusicianUserBandResultsFragment extends Fragment implements OnMapRe
                 if(i + 1 == splitUserChosenGenresTrimmed.size())
                 {
                     mFilteredBandsToRemove.add(listIndex);
+                    break;
                 }
+            }
+        }
+
+        // This then loops through the trimmed array list checking if the genres the band has matches those submitted by the user
+        for(int i = 0; i < splitUserChosenInstrumentsTrimmed.size(); i++)
+        {
+            try
+            {
+                // If it finds a match break out of the loop and carry on
+                if (mListOfBands.get(listIndex).getPositionOne().contains(splitUserChosenInstrumentsTrimmed.get(i))
+                        || mListOfBands.get(listIndex).getPositionTwo().contains(splitUserChosenInstrumentsTrimmed.get(i))
+                        || mListOfBands.get(listIndex).getPositionThree().contains(splitUserChosenInstrumentsTrimmed.get(i))
+                        || mListOfBands.get(listIndex).getPositionFour().contains(splitUserChosenInstrumentsTrimmed.get(i))
+                        || mListOfBands.get(listIndex).getPositionFive().contains(splitUserChosenInstrumentsTrimmed.get(i)))
+                {
+                    break;
+                }
+
+                // Otherwise once every element has been looped through add this element to the list to be removed
+                else
+                {
+                    if(i + 1 == splitUserChosenInstrumentsTrimmed.size())
+                    {
+                        mFilteredBandsToRemove.add(listIndex);
+                        break;
+                    }
+                }
+            }
+
+            catch(NullPointerException e)
+            {
+                mFilteredBandsToRemove.add(listIndex);
+                break;
             }
         }
 
