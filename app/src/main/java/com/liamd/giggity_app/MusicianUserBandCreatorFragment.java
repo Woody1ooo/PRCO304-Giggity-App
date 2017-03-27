@@ -25,6 +25,9 @@ import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
+import com.google.android.youtube.player.YouTubeInitializationResult;
+import com.google.android.youtube.player.YouTubePlayer;
+import com.google.android.youtube.player.YouTubePlayerFragment;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -34,6 +37,8 @@ import com.google.firebase.storage.UploadTask;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -41,7 +46,7 @@ import static android.app.Activity.RESULT_OK;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MusicianUserBandCreatorFragment extends Fragment
+public class MusicianUserBandCreatorFragment extends Fragment implements YouTubePlayer.OnInitializedListener
 {
     // Declare general visual components
     private EditText mBandNameEditText;
@@ -62,6 +67,7 @@ public class MusicianUserBandCreatorFragment extends Fragment
     private MultiSelectSpinner mPositionFourSpinner;
     private TextView mPositionFiveTitle;
     private MultiSelectSpinner mPositionFiveSpinner;
+    private EditText youtubeUrlEditText;
 
     // Declare general variables
     private List<String> mGenreList;
@@ -77,6 +83,7 @@ public class MusicianUserBandCreatorFragment extends Fragment
     private String mPositionThreeValue;
     private String mPositionFourValue;
     private String mPositionFiveValue;
+    private String youtubeUrlEntered;
 
     // Declare Firebase specific variables
     private FirebaseAuth mAuth;
@@ -118,6 +125,7 @@ public class MusicianUserBandCreatorFragment extends Fragment
         mPositionFourSpinner = (MultiSelectSpinner) fragmentView.findViewById(R.id.bandPositionFourSpinner);
         mPositionFiveTitle = (TextView) fragmentView.findViewById(R.id.positionFiveTextView);
         mPositionFiveSpinner = (MultiSelectSpinner) fragmentView.findViewById(R.id.bandPositionFiveSpinner);
+        youtubeUrlEditText = (EditText) fragmentView.findViewById(R.id.youtubeUrlEditText);
 
         // Initially hide all the position spinners/text views until the number chosen is selected from the spinner
         mPositionOneTitle.setVisibility(View.GONE);
@@ -343,6 +351,23 @@ public class MusicianUserBandCreatorFragment extends Fragment
             }
         });
 
+        // When the user changes their focus on the youtube text box, the youtube widget will try and load if the text box is not empty
+        youtubeUrlEditText.setOnFocusChangeListener(new View.OnFocusChangeListener()
+        {
+            @Override
+            public void onFocusChange(View view, boolean hasFocus)
+            {
+                if (!hasFocus)
+                {
+                    if (!TextUtils.isEmpty(youtubeUrlEditText.getText()))
+                    {
+                        youtubeUrlEntered = ParseURL(youtubeUrlEditText.getText());
+                        LoadYoutubePlayer();
+                    }
+                }
+            }
+        });
+
         return fragmentView;
     }
 
@@ -384,6 +409,7 @@ public class MusicianUserBandCreatorFragment extends Fragment
     // When called, this should do all the relevant checks to create a band object and post it to the database
     private void CreateBand()
     {
+
         // This dialog is created to confirm that the user wants to edit the chosen fields
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle("Create Band");
@@ -425,6 +451,12 @@ public class MusicianUserBandCreatorFragment extends Fragment
                             mDatabase.child("Bands/" + mBandID).setValue(bandToInsert);
                             mDatabase.child("Bands/" + mBandID + "/bandCreator").setValue(mAuth.getCurrentUser().getUid());
                             mDatabase.child("Bands/" + mBandID + "/positionOneMember").setValue("Vacant");
+
+                            if(!youtubeUrlEditText.getText().equals(null))
+                            {
+                                mDatabase.child("Bands/" + mBandID + "/youtubeUrl").setValue(youtubeUrlEditText.getText().toString());
+                            }
+
                             mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/isInBand").setValue(true);
                             mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/bandID").setValue(mBandID);
 
@@ -476,6 +508,12 @@ public class MusicianUserBandCreatorFragment extends Fragment
                             mDatabase.child("Bands/" + mBandID + "/bandCreator").setValue(mAuth.getCurrentUser().getUid());
                             mDatabase.child("Bands/" + mBandID + "/positionOneMember").setValue("Vacant");
                             mDatabase.child("Bands/" + mBandID + "/positionTwoMember").setValue("Vacant");
+
+                            if(!youtubeUrlEditText.getText().equals(null))
+                            {
+                                mDatabase.child("Bands/" + mBandID + "/youtubeUrl").setValue(youtubeUrlEditText.getText().toString());
+                            }
+
                             mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/isInBand").setValue(true);
                             mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/bandID").setValue(mBandID);
 
@@ -530,6 +568,12 @@ public class MusicianUserBandCreatorFragment extends Fragment
                             mDatabase.child("Bands/" + mBandID + "/positionOneMember").setValue("Vacant");
                             mDatabase.child("Bands/" + mBandID + "/positionTwoMember").setValue("Vacant");
                             mDatabase.child("Bands/" + mBandID + "/positionThreeMember").setValue("Vacant");
+
+                            if(!youtubeUrlEditText.getText().equals(null))
+                            {
+                                mDatabase.child("Bands/" + mBandID + "/youtubeUrl").setValue(youtubeUrlEditText.getText().toString());
+                            }
+
                             mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/isInBand").setValue(true);
                             mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/bandID").setValue(mBandID);
 
@@ -586,6 +630,12 @@ public class MusicianUserBandCreatorFragment extends Fragment
                             mDatabase.child("Bands/" + mBandID + "/positionTwoMember").setValue("Vacant");
                             mDatabase.child("Bands/" + mBandID + "/positionThreeMember").setValue("Vacant");
                             mDatabase.child("Bands/" + mBandID + "/positionFourMember").setValue("Vacant");
+
+                            if(!youtubeUrlEditText.getText().equals(null))
+                            {
+                                mDatabase.child("Bands/" + mBandID + "/youtubeUrl").setValue(youtubeUrlEditText.getText().toString());
+
+                            }
                             mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/isInBand").setValue(true);
                             mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/bandID").setValue(mBandID);
 
@@ -648,6 +698,12 @@ public class MusicianUserBandCreatorFragment extends Fragment
                             mDatabase.child("Bands/" + mBandID + "/positionThreeMember").setValue("Vacant");
                             mDatabase.child("Bands/" + mBandID + "/positionFourMember").setValue("Vacant");
                             mDatabase.child("Bands/" + mBandID + "/positionFiveMember").setValue("Vacant");
+
+                            if(!youtubeUrlEditText.getText().equals(null))
+                            {
+                                mDatabase.child("Bands/" + mBandID + "/youtubeUrl").setValue(youtubeUrlEditText.getText().toString());
+                            }
+
                             mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/isInBand").setValue(true);
                             mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/bandID").setValue(mBandID);
 
@@ -686,6 +742,56 @@ public class MusicianUserBandCreatorFragment extends Fragment
             // close the dialog
             }
         }).show();
+    }
+
+    // If the youtube initialisation is successful load the URL from the text box if there is one
+    @Override
+    public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer youTubePlayer, boolean wasRestored)
+    {
+        // Determines whether the player was restored from a saved state. If not cue the video
+        if (!wasRestored)
+        {
+            youTubePlayer.cueVideo(youtubeUrlEntered);
+        }
+    }
+
+    // If the youtube initialisation fails this is called. Usually due to not having youtube installed
+    @Override
+    public void onInitializationFailure(YouTubePlayer.Provider provider, YouTubeInitializationResult youTubeInitializationResult)
+    {
+        Toast.makeText(getActivity(), "The YouTube player can't be initialised! Please ensure you have the YouTube app installed.", Toast.LENGTH_LONG).show();
+    }
+
+    // Using some REGEX this trims the youtube url entered to just get the video id at the end
+    private String ParseURL(CharSequence youtubeURL)
+    {
+        String videoIdPattern = "(?<=watch\\?v=|/videos/|embed\\/)[^#\\&\\?]*";
+
+        Pattern compiledPattern = Pattern.compile(videoIdPattern);
+        Matcher matcher = compiledPattern.matcher(youtubeURL);
+
+        if (matcher.find())
+        {
+            return matcher.group();
+        }
+
+        else
+        {
+            return null;
+        }
+    }
+
+    // This method initialises the player using the api key, relevant layout, fragment etc
+    private void LoadYoutubePlayer()
+    {
+        // Initialise and setup the embedded youtube player
+        YouTubePlayerFragment youtubePlayerFragment = new YouTubePlayerFragment();
+        youtubePlayerFragment.initialize(getString(R.string.api_key), this);
+
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.youtubeLayout, youtubePlayerFragment);
+        fragmentTransaction.commit();
     }
 
     private void ReturnToHome()

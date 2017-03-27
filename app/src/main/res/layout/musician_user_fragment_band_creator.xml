@@ -193,10 +193,35 @@
                 android:layout_marginBottom="32dp"
                 android:layout_marginTop="30dp"
                 android:layout_weight="0.12"
-                android:paddingBottom="30dp"
                 android:text="What does this mean?"
                 android:textAlignment="center"
                 android:textColor="@color/colorPrimary"/>
+
+            <TextView
+                android:text="Youtube Promo URL"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/youtubeUrlTextView"
+                android:layout_weight="1"
+                android:textAppearance="@style/TextAppearance.AppCompat.Menu"
+                android:layout_marginTop="22dp"
+                android:paddingLeft="10dp"/>
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textUri"
+                android:ems="10"
+                android:id="@+id/youtubeUrlEditText"
+                android:paddingLeft="10dp"/>
+
+            <FrameLayout
+                android:id="@+id/youtubeLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:visibility="visible"
+                android:layout_marginTop="22dp"/>
 
             <Button
                 android:id="@+id/createButton"

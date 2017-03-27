@@ -11,7 +11,8 @@
             android:id="@+id/bandName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingTop="5dp"/>
+            android:paddingTop="5dp"
+            android:layout_marginBottom="5dp"/>
         <ImageView
             android:id="@+id/bandImage"
             android:layout_width="wrap_content"
@@ -23,6 +24,11 @@
             android:paddingTop="5dp"/>
         <TextView
             android:id="@+id/numberOfMembers"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="5dp"/>
+        <TextView
+            android:id="@+id/numberOfVacancies"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingTop="5dp"/>

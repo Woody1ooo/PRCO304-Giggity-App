@@ -28,7 +28,7 @@ public class Band
 
     }
 
-    public Band(String bandID, String name, String genres, String numberOfPositions, String positionOne , LatLng baseLocation)
+    public Band(String bandID, String name, String genres, String numberOfPositions, String positionOne, LatLng baseLocation)
     {
         this.bandID = bandID;
         this.name = name;
@@ -326,5 +326,116 @@ public class Band
     public void setPositionFiveMember(String positionFiveMember)
     {
         this.positionFiveMember = positionFiveMember;
+    }
+
+    // These methods determine how many vacancies the band has. They are overloaded to accommodate any number of members
+    public int GetNumberOfVacancies(String positionOne)
+    {
+        int numberOfVacancies = 0;
+
+        if(positionOne.equals("Vacant"))
+        {
+            numberOfVacancies++;
+        }
+
+        return numberOfVacancies;
+    }
+
+    public int GetNumberOfVacancies(String positionOne, String positionTwo)
+    {
+        int numberOfVacancies = 0;
+
+        if(positionOne.equals("Vacant"))
+        {
+            numberOfVacancies++;
+        }
+
+        if(positionTwo.equals("Vacant"))
+        {
+            numberOfVacancies++;
+        }
+
+        return numberOfVacancies;
+    }
+
+    public int GetNumberOfVacancies(String positionOne, String positionTwo, String positionThree)
+    {
+        int numberOfVacancies = 0;
+
+        if(positionOne.equals("Vacant"))
+        {
+            numberOfVacancies++;
+        }
+
+        if(positionTwo.equals("Vacant"))
+        {
+            numberOfVacancies++;
+        }
+
+        if(positionThree.equals("Vacant"))
+        {
+            numberOfVacancies++;
+        }
+
+        return numberOfVacancies;
+    }
+
+    public int GetNumberOfVacancies(String positionOne, String positionTwo, String positionThree, String positionFour)
+    {
+        int numberOfVacancies = 0;
+
+        if(positionOne.equals("Vacant"))
+        {
+            numberOfVacancies++;
+        }
+
+        if(positionTwo.equals("Vacant"))
+        {
+            numberOfVacancies++;
+        }
+
+        if(positionThree.equals("Vacant"))
+        {
+            numberOfVacancies++;
+        }
+
+        if(positionFour.equals("Vacant"))
+        {
+            numberOfVacancies++;
+        }
+
+        return numberOfVacancies;
+    }
+
+    public int GetNumberOfVacancies(String positionOne, String positionTwo, String positionThree, String positionFour, String positionFive)
+    {
+        int numberOfVacancies = 0;
+
+        if(positionOne.equals("Vacant"))
+        {
+            numberOfVacancies++;
+        }
+
+        if(positionTwo.equals("Vacant"))
+        {
+            numberOfVacancies++;
+        }
+
+        if(positionThree.equals("Vacant"))
+        {
+            numberOfVacancies++;
+        }
+
+        if(positionFour.equals("Vacant"))
+        {
+            numberOfVacancies++;
+        }
+
+        if(positionFive.equals("Vacant"))
+        {
+            numberOfVacancies++;
+        }
+
+        return numberOfVacancies;
     }
 }

@@ -438,8 +438,16 @@ public class MusicianUserBandResultsFragment extends Fragment implements OnMapRe
             {
                 if(i + 1 == splitUserChosenGenresTrimmed.size())
                 {
-                    mFilteredBandsToRemove.add(listIndex);
-                    break;
+                    if(!mFilteredBandsToRemove.contains(listIndex))
+                    {
+                        mFilteredBandsToRemove.add(listIndex);
+                        break;
+                    }
+
+                    else
+                    {
+                        break;
+                    }
                 }
             }
         }
@@ -464,16 +472,27 @@ public class MusicianUserBandResultsFragment extends Fragment implements OnMapRe
                 {
                     if(i + 1 == splitUserChosenInstrumentsTrimmed.size())
                     {
-                        mFilteredBandsToRemove.add(listIndex);
-                        break;
+                        if(!mFilteredBandsToRemove.contains(listIndex))
+                        {
+                            mFilteredBandsToRemove.add(listIndex);
+                            break;
+                        }
+
+                        else
+                        {
+                            break;
+                        }
                     }
                 }
             }
 
             catch(NullPointerException e)
             {
-                mFilteredBandsToRemove.add(listIndex);
-                break;
+                if(!mFilteredBandsToRemove.contains(listIndex))
+                {
+                    mFilteredBandsToRemove.add(listIndex);
+                    break;
+                }
             }
         }
 
@@ -482,7 +501,10 @@ public class MusicianUserBandResultsFragment extends Fragment implements OnMapRe
         {
             if (!mListOfBands.get(listIndex).getPositionOneMember().equals("Vacant"))
             {
-                mFilteredBandsToRemove.add(listIndex);
+                if(!mFilteredBandsToRemove.contains(listIndex))
+                {
+                    mFilteredBandsToRemove.add(listIndex);
+                }
             }
         }
 
@@ -491,7 +513,10 @@ public class MusicianUserBandResultsFragment extends Fragment implements OnMapRe
             if (!mListOfBands.get(listIndex).getPositionOneMember().equals("Vacant")
                     && !mListOfBands.get(listIndex).getPositionTwoMember().equals("Vacant"))
             {
-                mFilteredBandsToRemove.add(listIndex);
+                if(!mFilteredBandsToRemove.contains(listIndex))
+                {
+                    mFilteredBandsToRemove.add(listIndex);
+                }
             }
         }
 
@@ -501,7 +526,10 @@ public class MusicianUserBandResultsFragment extends Fragment implements OnMapRe
                     && !mListOfBands.get(listIndex).getPositionTwoMember().equals("Vacant")
                     && !mListOfBands.get(listIndex).getPositionThreeMember().equals("Vacant"))
             {
-                mFilteredBandsToRemove.add(listIndex);
+                if(!mFilteredBandsToRemove.contains(listIndex))
+                {
+                    mFilteredBandsToRemove.add(listIndex);
+                }
             }
         }
 
@@ -512,7 +540,10 @@ public class MusicianUserBandResultsFragment extends Fragment implements OnMapRe
                     && !mListOfBands.get(listIndex).getPositionThreeMember().equals("Vacant")
                     && !mListOfBands.get(listIndex).getPositionFourMember().equals("Vacant"))
             {
-                mFilteredBandsToRemove.add(listIndex);
+                if(!mFilteredBandsToRemove.contains(listIndex))
+                {
+                    mFilteredBandsToRemove.add(listIndex);
+                }
             }
         }
 
@@ -524,7 +555,10 @@ public class MusicianUserBandResultsFragment extends Fragment implements OnMapRe
                     && !mListOfBands.get(listIndex).getPositionFourMember().equals("Vacant")
                     && !mListOfBands.get(listIndex).getPositionFiveMember().equals("Vacant"))
             {
-                mFilteredBandsToRemove.add(listIndex);
+                if(!mFilteredBandsToRemove.contains(listIndex))
+                {
+                    mFilteredBandsToRemove.add(listIndex);
+                }
             }
         }
     }

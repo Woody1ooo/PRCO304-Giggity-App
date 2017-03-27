@@ -34,6 +34,7 @@ public class MusicianBandsAdapter extends ArrayAdapter<Band>
     private TextView mNumberOfMembers;
     private TextView mGenresTextView;
     private TextView mDistanceTextView;
+    private TextView mNumberOfVacancies;
     private ImageView mBandImage;
     private FirebaseStorage mStorage;
     private StorageReference mProfileImageReference;
@@ -78,6 +79,7 @@ public class MusicianBandsAdapter extends ArrayAdapter<Band>
         mGenresTextView = (TextView) bandsListView.findViewById(R.id.genres);
         mNumberOfMembers = (TextView) bandsListView.findViewById(R.id.numberOfMembers);
         mBandImage = (ImageView) bandsListView.findViewById(R.id.bandImage);
+        mNumberOfVacancies = (TextView) bandsListView.findViewById(R.id.numberOfVacancies);
 
         Glide.with(getContext()).using(new FirebaseImageLoader()).load
                 (mProfileImageReference.child("BandProfileImages/" +  band.getBandID() +  "/profileImage"))
@@ -85,12 +87,37 @@ public class MusicianBandsAdapter extends ArrayAdapter<Band>
 
 
         // Set list view fields to display the correct information
-        mBandNameTextView.setText(band.getName());
+        mBandNameTextView.setText("Name: " + band.getName());
         mBandNameTextView.setTypeface(null, Typeface.BOLD);
-        mDistanceTextView.setText(band.getBandDistance() + "km");
-        mGenresTextView.setText(band.getGenres());
-        mNumberOfMembers.setText("Total Positions: " + band.getNumberOfPositions());
+        mDistanceTextView.setText("Distance: " + band.getBandDistance() + "km");
+        mGenresTextView.setText("Genres: " + band.getGenres());
+        mNumberOfMembers.setText("Total Band Positions: " + band.getNumberOfPositions());
 
+        // This checks how many positions the band has and from that determines which class method to call to determine the number of vacancies
+        if(band.getNumberOfPositions().equals("1"))
+        {
+            mNumberOfVacancies.setText("Number of Band Positions Available: " + band.GetNumberOfVacancies(band.getPositionOneMember()));
+        }
+
+        else if(band.getNumberOfPositions().equals("2"))
+        {
+            mNumberOfVacancies.setText("Number of Band Positions Available: " + band.GetNumberOfVacancies(band.getPositionOneMember(), band.getPositionTwoMember()));
+        }
+
+        else if(band.getNumberOfPositions().equals("3"))
+        {
+            mNumberOfVacancies.setText("Number of Band Positions Available: " + band.GetNumberOfVacancies(band.getPositionOneMember(), band.getPositionTwoMember(), band.getPositionThreeMember()));
+        }
+
+        else if(band.getNumberOfPositions().equals("4"))
+        {
+            mNumberOfVacancies.setText("Number of Band Positions Available: " + band.GetNumberOfVacancies(band.getPositionOneMember(), band.getPositionTwoMember(), band.getPositionThreeMember(), band.getPositionFourMember()));
+        }
+
+        else if(band.getNumberOfPositions().equals("5"))
+        {
+            mNumberOfVacancies.setText("Number of Band Positions Available: " + band.GetNumberOfVacancies(band.getPositionOneMember(), band.getPositionTwoMember(), band.getPositionThreeMember(), band.getPositionFourMember(), band.getPositionFiveMember()));
+        }
 
         return bandsListView;
     }
