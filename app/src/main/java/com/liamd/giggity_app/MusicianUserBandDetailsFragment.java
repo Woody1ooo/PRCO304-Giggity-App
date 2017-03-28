@@ -1,19 +1,28 @@
 package com.liamd.giggity_app;
 
 
+import android.app.AlertDialog;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.firebase.ui.storage.images.FirebaseImageLoader;
 import com.google.android.gms.games.multiplayer.turnbased.TurnBasedMatch;
+import com.google.android.youtube.player.YouTubeInitializationResult;
+import com.google.android.youtube.player.YouTubePlayer;
+import com.google.android.youtube.player.YouTubePlayerFragment;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -24,13 +33,16 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MusicianUserBandDetailsFragment extends Fragment
+public class MusicianUserBandDetailsFragment extends Fragment implements YouTubePlayer.OnInitializedListener
 {
     // Declare visual components
     private ImageView mBandImageView;
@@ -62,6 +74,8 @@ public class MusicianUserBandDetailsFragment extends Fragment
     private TextView mPositionFiveNameTextView;
     private CircleImageView mPositionFiveProfileImageView;
     private Button mApplyForPositionFiveButton;
+    private TextView mYouTubeShowcaseHeadingTextView;
+    private FrameLayout mYouTubeFrame;
 
     // Declare Firebase specific variables
     private FirebaseAuth mAuth;
@@ -73,6 +87,9 @@ public class MusicianUserBandDetailsFragment extends Fragment
     private String mBandId;
     private String mNumberOfPositions;
     private DataSnapshot mDataSnapshot;
+    private String mYoutubeURL;
+    private String mParsedYoutubeURL;
+    private String mPositionAppliedFor;
 
     public MusicianUserBandDetailsFragment()
     {
@@ -132,6 +149,9 @@ public class MusicianUserBandDetailsFragment extends Fragment
         mPositionFiveNameTextView = (TextView) fragmentView.findViewById(R.id.positionFiveNameTextView);
         mPositionFiveProfileImageView = (CircleImageView) fragmentView.findViewById(R.id.positionFiveProfileImageView);
         mApplyForPositionFiveButton = (Button) fragmentView.findViewById(R.id.applyForPositionFiveButton);
+
+        mYouTubeShowcaseHeadingTextView = (TextView) fragmentView.findViewById(R.id.youtubeHeadingTextView);
+        mYouTubeFrame = (FrameLayout) fragmentView.findViewById(R.id.youtube_layout);
 
         // Retrieve the variables passed from the previous fragment
         mBandId = getArguments().getString("BandID");
@@ -305,6 +325,60 @@ public class MusicianUserBandDetailsFragment extends Fragment
             mApplyForPositionFiveButton.setVisibility(View.VISIBLE);
         }
 
+        mApplyForPositionOneButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                mPositionAppliedFor = "1";
+
+                ApplyForPosition(mPositionAppliedFor);
+            }
+        });
+
+        mApplyForPositionTwoButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                mPositionAppliedFor = "2";
+
+                ApplyForPosition(mPositionAppliedFor);
+            }
+        });
+
+        mApplyForPositionThreeButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                mPositionAppliedFor = "3";
+
+                ApplyForPosition(mPositionAppliedFor);
+            }
+        });
+
+        mApplyForPositionFourButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                mPositionAppliedFor = "4";
+
+                ApplyForPosition(mPositionAppliedFor);
+            }
+        });
+
+        mApplyForPositionFiveButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                mPositionAppliedFor = "5";
+
+                ApplyForPosition(mPositionAppliedFor);
+            }
+        });
 
         mDatabase.addListenerForSingleValueEvent(new ValueEventListener()
         {
@@ -313,6 +387,21 @@ public class MusicianUserBandDetailsFragment extends Fragment
             {
                 mDataSnapshot = dataSnapshot;
                 PopulateFields();
+
+                // If the band ahas a youtube url stored against their profile parse this to load into the video player
+                if (dataSnapshot.child("Bands/" + mBandId + "/youtubeUrl").exists())
+                {
+                    mYoutubeURL = dataSnapshot.child("Bands/" + mBandId + "/youtubeUrl").getValue().toString();
+                    mParsedYoutubeURL = ParseURL(mYoutubeURL);
+                    LoadYoutubePlayer();
+                }
+
+                // Otherwise hide the heading and frame
+                else
+                {
+                    mYouTubeShowcaseHeadingTextView.setVisibility(View.GONE);
+                    mYouTubeFrame.setVisibility(View.GONE);
+                }
             }
 
             @Override
@@ -323,6 +412,54 @@ public class MusicianUserBandDetailsFragment extends Fragment
         });
 
         return fragmentView;
+    }
+
+    // If the youtube initialisation is successful load the URL from the text box if there is one
+    @Override
+    public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer youTubePlayer, boolean wasRestored)
+    {
+        // Determines whether the player was restored from a saved state. If not cue the video
+        if (!wasRestored)
+        {
+            youTubePlayer.cueVideo(mParsedYoutubeURL);
+        }
+    }
+
+    // If the youtube initialisation fails this is called. Usually due to not having youtube installed
+    @Override
+    public void onInitializationFailure(YouTubePlayer.Provider provider, YouTubeInitializationResult youTubeInitializationResult)
+    {
+        Toast.makeText(getActivity(), "The YouTube player can't be initialised! Please ensure you have the YouTube app installed.", Toast.LENGTH_LONG).show();
+    }
+
+    // Using some REGEX this trims the youtube url entered to just get the video id at the end
+    private String ParseURL(CharSequence youtubeURL)
+    {
+        String videoIdPattern = "(?<=watch\\?v=|/videos/|embed\\/)[^#\\&\\?]*";
+
+        Pattern compiledPattern = Pattern.compile(videoIdPattern);
+        Matcher matcher = compiledPattern.matcher(youtubeURL);
+
+        if (matcher.find())
+        {
+            return matcher.group();
+        } else
+        {
+            return null;
+        }
+    }
+
+    // This method initialises the player using the api key, relevant layout, fragment etc
+    private void LoadYoutubePlayer()
+    {
+        // Initialise and setup the embedded youtube player
+        YouTubePlayerFragment youtubePlayerFragment = new YouTubePlayerFragment();
+        youtubePlayerFragment.initialize(getString(R.string.api_key), this);
+
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.youtube_layout, youtubePlayerFragment);
+        fragmentTransaction.commit();
     }
 
     private void PopulateFields()
@@ -668,5 +805,108 @@ public class MusicianUserBandDetailsFragment extends Fragment
 
             mPositionFiveInstrumentTextView.append(mDataSnapshot.child("Bands/" + mBandId + "/positionFive").getValue().toString());
         }
+    }
+
+    // This method determines the place applied for and then posts this request to the database
+    private void ApplyForPosition(final String positionAppliedFor)
+    {
+        // This dialog is created to confirm that the users want to edit the fields
+        // they have chosen
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle("Apply For Position");
+        builder.setMessage("Are you sure you wish to apply for this position?");
+        builder.setPositiveButton("Confirm", new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i)
+            {
+                // Once the position is determined the MusicianSetBandRequests are updated using a generated key
+                if(positionAppliedFor.equals("1"))
+                {
+                    String pushKey = mDatabase.push().getKey();
+                    mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + pushKey).child("bandID").setValue(mBandId);
+                    mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + pushKey).child("bandPosition").setValue("positionOne");
+                    mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + pushKey).child("positionInstruments").setValue(mPositionOneInstrumentTextView.getText().toString());
+                    mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + pushKey).child("requestStatus").setValue("Pending");
+                    ConfirmDialog();
+                }
+
+                else if(positionAppliedFor.equals("2"))
+                {
+                    String pushKey = mDatabase.push().getKey();
+                    mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + pushKey).child("bandID").setValue(mBandId);
+                    mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + pushKey).child("bandPosition").setValue("positionTwo");
+                    mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + pushKey).child("positionInstruments").setValue(mPositionTwoInstrumentTextView.getText().toString());
+                    mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + pushKey).child("requestStatus").setValue("Pending");
+                    ConfirmDialog();
+                }
+
+                else if(positionAppliedFor.equals("3"))
+                {
+                    String pushKey = mDatabase.push().getKey();
+                    mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + pushKey).child("bandID").setValue(mBandId);
+                    mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + pushKey).child("bandPosition").setValue("positionThree");
+                    mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + pushKey).child("positionInstruments").setValue(mPositionThreeInstrumentTextView.getText().toString());
+                    mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + pushKey).child("requestStatus").setValue("Pending");
+                    ConfirmDialog();
+                }
+
+                else if(positionAppliedFor.equals("4"))
+                {
+                    String pushKey = mDatabase.push().getKey();
+                    mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + pushKey).child("bandID").setValue(mBandId);
+                    mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + pushKey).child("bandPosition").setValue("positionFour");
+                    mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + pushKey).child("positionInstruments").setValue(mPositionFourInstrumentTextView.getText().toString());
+                    mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + pushKey).child("requestStatus").setValue("Pending");
+                    ConfirmDialog();
+                }
+
+                else if(positionAppliedFor.equals("5"))
+                {
+                    String pushKey = mDatabase.push().getKey();
+                    mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + pushKey).child("bandID").setValue(mBandId);
+                    mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + pushKey).child("bandPosition").setValue("positionFive");
+                    mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + pushKey).child("positionInstruments").setValue(mPositionFiveInstrumentTextView.getText().toString());
+                    mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + pushKey).child("requestStatus").setValue("Pending");
+                    ConfirmDialog();
+                }
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i)
+            {
+
+            }
+        });
+        builder.show();
+    }
+
+    private void ConfirmDialog()
+    {
+        // A dialog is then shown to alert the user that the changes have been made
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle("Confirmation");
+        builder.setMessage("Application Submitted! Please check your sent requests to view the status.");
+        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i)
+            {
+                ReturnToHome();
+            }
+        });
+        builder.setCancelable(false);
+        builder.show();
+    }
+
+    private void ReturnToHome()
+    {
+        // The user is then taken to the home fragment
+        getActivity().setTitle("Home");
+        final FragmentTransaction ft = getFragmentManager().beginTransaction();
+        ft.replace(R.id.frame, new MusicianUserHomeFragment(), "MusicianUserHomeFragment");
+        ft.commit();
     }
 }
