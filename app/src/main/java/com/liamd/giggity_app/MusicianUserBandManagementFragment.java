@@ -3,6 +3,7 @@ package com.liamd.giggity_app;
 
 import android.*;
 import android.app.AlertDialog;
+import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -36,6 +37,9 @@ import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.youtube.player.YouTubeInitializationResult;
+import com.google.android.youtube.player.YouTubePlayer;
+import com.google.android.youtube.player.YouTubePlayerFragment;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -52,6 +56,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -59,7 +65,7 @@ import static android.app.Activity.RESULT_OK;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MusicianUserBandManagementFragment extends Fragment
+public class MusicianUserBandManagementFragment extends Fragment implements YouTubePlayer.OnInitializedListener
 {
     // Declare general visual components
     private ImageView mBandImageView;
@@ -83,6 +89,7 @@ public class MusicianUserBandManagementFragment extends Fragment
     private MultiSelectSpinner mPositionFourSpinner;
     private TextView mPositionFiveTitle;
     private MultiSelectSpinner mPositionFiveSpinner;
+    private EditText youtubeUrlEditText;
 
     // Declare general variables
     private List<String> mGenreList;
@@ -101,6 +108,8 @@ public class MusicianUserBandManagementFragment extends Fragment
     private String mPositionThreeValue;
     private String mPositionFourValue;
     private String mPositionFiveValue;
+    private String youtubeUrlEntered;
+    private String parsedYouTubeURL;
 
     // Declare Firebase specific variables
     private FirebaseAuth mAuth;
@@ -148,6 +157,7 @@ public class MusicianUserBandManagementFragment extends Fragment
         mPositionFourSpinner = (MultiSelectSpinner) fragmentView.findViewById(R.id.bandPositionFourSpinner);
         mPositionFiveTitle = (TextView) fragmentView.findViewById(R.id.positionFiveTextView);
         mPositionFiveSpinner = (MultiSelectSpinner) fragmentView.findViewById(R.id.bandPositionFiveSpinner);
+        youtubeUrlEditText = (EditText) fragmentView.findViewById(R.id.youtubeUrlEditText);
 
         mProgressDialog.show();
         mProgressDialog.setMessage("Loading...");
@@ -343,6 +353,19 @@ public class MusicianUserBandManagementFragment extends Fragment
                 mBandID = dataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/bandID").getValue().toString();
                 mBandFromDatabase = new Band();
                 mBandFromDatabase = dataSnapshot.child("Bands/" + mBandID).getValue(Band.class);
+
+                // If the band already has a youtube url stored against their profile append this to the text box and parse this
+                // to load the video player
+                if (dataSnapshot.child("Bands/" + mBandID + "/youtubeUrl/").exists())
+                {
+                    youtubeUrlEntered = dataSnapshot.child("Bands/" + mBandID + "/youtubeUrl/").getValue().toString();
+                    youtubeUrlEditText.setText(youtubeUrlEntered);
+
+                    parsedYouTubeURL = ParseURL(youtubeUrlEditText.getText());
+                    LoadYoutubePlayer();
+                }
+
+
                 PopulateFields();
 
                 // This method loads the profile picture from the chosen login method
@@ -1250,6 +1273,56 @@ public class MusicianUserBandManagementFragment extends Fragment
                         // close the dialog
                     }
                 }).show();
+    }
+
+    // If the youtube initialisation is successful load the URL from the text box if there is one
+    @Override
+    public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer youTubePlayer, boolean wasRestored)
+    {
+        // Determines whether the player was restored from a saved state. If not cue the video
+        if (!wasRestored)
+        {
+            youTubePlayer.cueVideo(parsedYouTubeURL);
+        }
+    }
+
+    // If the youtube initialisation fails this is called. Usually due to not having youtube installed
+    @Override
+    public void onInitializationFailure(YouTubePlayer.Provider provider, YouTubeInitializationResult youTubeInitializationResult)
+    {
+        Toast.makeText(getActivity(), "The YouTube player can't be initialised! Please ensure you have the YouTube app installed.", Toast.LENGTH_LONG).show();
+    }
+
+    // Using some REGEX this trims the youtube url entered to just get the video id at the end
+    private String ParseURL(CharSequence youtubeURL)
+    {
+        String videoIdPattern = "(?<=watch\\?v=|/videos/|embed\\/)[^#\\&\\?]*";
+
+        Pattern compiledPattern = Pattern.compile(videoIdPattern);
+        Matcher matcher = compiledPattern.matcher(youtubeURL);
+
+        if (matcher.find())
+        {
+            return matcher.group();
+        }
+
+        else
+        {
+            return null;
+        }
+    }
+
+    // This method initialises the player using the api key, relevant layout, fragment etc
+    private void LoadYoutubePlayer()
+    {
+        // Initialise and setup the embedded youtube player
+        YouTubePlayerFragment youtubePlayerFragment = new YouTubePlayerFragment();
+        youtubePlayerFragment.initialize(getString(R.string.api_key), this);
+
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.youtubeLayout, youtubePlayerFragment);
+        fragmentTransaction.commit();
     }
 
     private void ReturnToHome()

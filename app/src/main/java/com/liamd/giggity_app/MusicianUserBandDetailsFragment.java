@@ -823,52 +823,93 @@ public class MusicianUserBandDetailsFragment extends Fragment implements YouTube
                 // Once the position is determined the MusicianSetBandRequests are updated using a generated key
                 if(positionAppliedFor.equals("1"))
                 {
-                    String pushKey = mDatabase.push().getKey();
-                    mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + pushKey).child("bandID").setValue(mBandId);
-                    mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + pushKey).child("bandPosition").setValue("positionOne");
-                    mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + pushKey).child("positionInstruments").setValue(mPositionOneInstrumentTextView.getText().toString());
-                    mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + pushKey).child("requestStatus").setValue("Pending");
-                    ConfirmDialog();
+                    // If the user has already submitted a request to this band alert them of this and decline the request
+                    if(mDataSnapshot.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).exists())
+                    {
+                        RequestExistsDialog();
+                    }
+
+                    else
+                    {
+                        mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("bandID").setValue(mBandId);
+                        mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("bandPosition").setValue("positionOne");
+                        mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("positionInstruments").setValue(mPositionOneInstrumentTextView.getText().toString());
+                        mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("requestStatus").setValue("Pending");
+                        mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("bandName").setValue(mBandNameTextView.getText().toString());
+                        ConfirmDialog();
+                    }
                 }
 
                 else if(positionAppliedFor.equals("2"))
                 {
-                    String pushKey = mDatabase.push().getKey();
-                    mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + pushKey).child("bandID").setValue(mBandId);
-                    mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + pushKey).child("bandPosition").setValue("positionTwo");
-                    mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + pushKey).child("positionInstruments").setValue(mPositionTwoInstrumentTextView.getText().toString());
-                    mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + pushKey).child("requestStatus").setValue("Pending");
-                    ConfirmDialog();
+                    if(mDataSnapshot.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).exists())
+                    {
+                        RequestExistsDialog();
+                    }
+
+                    else
+                    {
+                        mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("bandID").setValue(mBandId);
+                        mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("bandPosition").setValue("positionTwo");
+                        mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("positionInstruments").setValue(mPositionTwoInstrumentTextView.getText().toString());
+                        mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("requestStatus").setValue("Pending");
+                        mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("bandName").setValue(mBandNameTextView.getText().toString());
+                        ConfirmDialog();
+                    }
                 }
 
                 else if(positionAppliedFor.equals("3"))
                 {
-                    String pushKey = mDatabase.push().getKey();
-                    mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + pushKey).child("bandID").setValue(mBandId);
-                    mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + pushKey).child("bandPosition").setValue("positionThree");
-                    mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + pushKey).child("positionInstruments").setValue(mPositionThreeInstrumentTextView.getText().toString());
-                    mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + pushKey).child("requestStatus").setValue("Pending");
-                    ConfirmDialog();
+                    if(mDataSnapshot.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).exists())
+                    {
+                        RequestExistsDialog();
+                    }
+
+                    else
+                    {
+                        mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("bandID").setValue(mBandId);
+                        mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("bandPosition").setValue("positionThree");
+                        mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("positionInstruments").setValue(mPositionThreeInstrumentTextView.getText().toString());
+                        mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("requestStatus").setValue("Pending");
+                        mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("bandName").setValue(mBandNameTextView.getText().toString());
+                        ConfirmDialog();
+                    }
                 }
 
                 else if(positionAppliedFor.equals("4"))
                 {
-                    String pushKey = mDatabase.push().getKey();
-                    mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + pushKey).child("bandID").setValue(mBandId);
-                    mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + pushKey).child("bandPosition").setValue("positionFour");
-                    mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + pushKey).child("positionInstruments").setValue(mPositionFourInstrumentTextView.getText().toString());
-                    mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + pushKey).child("requestStatus").setValue("Pending");
-                    ConfirmDialog();
+                    if(mDataSnapshot.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).exists())
+                    {
+                        RequestExistsDialog();
+                    }
+
+                    else
+                    {
+                        mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("bandID").setValue(mBandId);
+                        mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("bandPosition").setValue("positionFour");
+                        mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("positionInstruments").setValue(mPositionFourInstrumentTextView.getText().toString());
+                        mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("requestStatus").setValue("Pending");
+                        mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("bandName").setValue(mBandNameTextView.getText().toString());
+                        ConfirmDialog();
+                    }
                 }
 
                 else if(positionAppliedFor.equals("5"))
                 {
-                    String pushKey = mDatabase.push().getKey();
-                    mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + pushKey).child("bandID").setValue(mBandId);
-                    mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + pushKey).child("bandPosition").setValue("positionFive");
-                    mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + pushKey).child("positionInstruments").setValue(mPositionFiveInstrumentTextView.getText().toString());
-                    mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + pushKey).child("requestStatus").setValue("Pending");
-                    ConfirmDialog();
+                    if(mDataSnapshot.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).exists())
+                    {
+                        RequestExistsDialog();
+                    }
+
+                    else
+                    {
+                        mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("bandID").setValue(mBandId);
+                        mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("bandPosition").setValue("positionFive");
+                        mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("positionInstruments").setValue(mPositionFiveInstrumentTextView.getText().toString());
+                        mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("requestStatus").setValue("Pending");
+                        mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("bandName").setValue(mBandNameTextView.getText().toString());
+                        ConfirmDialog();
+                    }
                 }
             }
         });
@@ -889,6 +930,24 @@ public class MusicianUserBandDetailsFragment extends Fragment implements YouTube
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle("Confirmation");
         builder.setMessage("Application Submitted! Please check your sent requests to view the status.");
+        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i)
+            {
+                ReturnToHome();
+            }
+        });
+        builder.setCancelable(false);
+        builder.show();
+    }
+
+    private void RequestExistsDialog()
+    {
+        // A dialog is then shown to alert the user that they have already submitted a request to this band
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle("Alert");
+        builder.setMessage("Application Rejected! You have already sent a request to this band.");
         builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
         {
             @Override

@@ -1,0 +1,78 @@
+package com.liamd.giggity_app;
+
+/**
+ * Created by liamd on 28/03/2017.
+ */
+
+public class BandRequest
+{
+    private String bandID;
+    private String bandName;
+    private String bandPosition;
+    private String positionInstruments;
+    private String requestStatus;
+
+    public BandRequest()
+    {
+
+    }
+
+    public BandRequest(String bandID, String bandName, String bandPosition, String positionInstruments, String requestStatus)
+    {
+        this.bandID = bandID;
+        this.bandName = bandName;
+        this.bandPosition = bandPosition;
+        this.positionInstruments = positionInstruments;
+        this.requestStatus = requestStatus;
+    }
+
+    public String getBandID()
+    {
+        return bandID;
+    }
+
+    public void setBandID(String bandID)
+    {
+        this.bandID = bandID;
+    }
+
+    public String getBandName()
+    {
+        return bandName;
+    }
+
+    public void setBandName(String bandName)
+    {
+        this.bandName = bandName;
+    }
+
+    public String getBandPosition()
+    {
+        return bandPosition;
+    }
+
+    public void setBandPosition(String bandPosition)
+    {
+        this.bandPosition = bandPosition;
+    }
+
+    public String getPositionInstruments()
+    {
+        return positionInstruments;
+    }
+
+    public void setPositionInstruments(String positionInstruments)
+    {
+        this.positionInstruments = positionInstruments;
+    }
+
+    public String getRequestStatus()
+    {
+        return requestStatus;
+    }
+
+    public void setRequestStatus(String requestStatus)
+    {
+        this.requestStatus = requestStatus;
+    }
+}
