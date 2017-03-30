@@ -1,8 +1,11 @@
 package com.liamd.giggity_app;
 
 
+import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.DialogInterface;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
@@ -60,6 +63,7 @@ public class MusicianUserBandRequestsInBandDetailsFragment extends Fragment impl
     private TextView mGenresTextView;
     private TextView mInstrumentsTextView;
     private TextView mBaseLocationTextView;
+    private TextView mLocationDistanceTextView;
     private TextView mYoutubeHeadingTextView;
     private Button mAcceptButton;
     private Button mRejectButton;
@@ -71,12 +75,21 @@ public class MusicianUserBandRequestsInBandDetailsFragment extends Fragment impl
     private DatabaseReference mDatabase;
     private FirebaseStorage mStorage;
     private StorageReference mProfileImageReference;
-    private DataSnapshot mUserSnapshot;
+    private DataSnapshot mSnapshot;
 
     // Declare general variables
     private String mUserId;
-    private com.google.android.gms.maps.model.LatLng mUserConvertedLocation;
+    private String mBandId;
+    private com.google.android.gms.maps.model.LatLng mUserConvertedLatLng;
     private String mYoutubeUrlEntered;
+    private String mBandPosition;
+
+    // Location variables
+    private double mDistance;
+    private Location mBandLocation;
+    private double mBandLocationLat;
+    private double mBandLocationLng;
+    private Location mUserLocation;
 
     public MusicianUserBandRequestsInBandDetailsFragment()
     {
@@ -95,6 +108,7 @@ public class MusicianUserBandRequestsInBandDetailsFragment extends Fragment impl
         mGenresTextView = (TextView) fragmentView.findViewById(R.id.genreTextView);
         mInstrumentsTextView = (TextView) fragmentView.findViewById(R.id.instrumentsTextView);
         mBaseLocationTextView = (TextView) fragmentView.findViewById(R.id.locationDetailsTextView);
+        mLocationDistanceTextView = (TextView) fragmentView.findViewById(R.id.locationDistanceTextView);
         mYoutubeHeadingTextView = (TextView) fragmentView.findViewById(R.id.youtubeUrlTextView);
         mAcceptButton = (Button) fragmentView.findViewById(R.id.acceptButton);
         mRejectButton = (Button) fragmentView.findViewById(R.id.rejectButton);
@@ -111,12 +125,35 @@ public class MusicianUserBandRequestsInBandDetailsFragment extends Fragment impl
 
         mUserId = getArguments().getString("UserID");
         mNameTextView.setText(getArguments().getString("UserName"));
+        mBandId = getArguments().getString("BandID");
 
         // Initialise the map
         mMapView = (MapView) fragmentView.findViewById(R.id.locationMapView);
         mMapView.onCreate(savedInstanceState);
         mMapView.onResume();
         mMapView.getMapAsync(this);
+
+        // Initialise other variables required
+        mBandLocation = new Location("");
+        mUserLocation = new Location("");
+
+        mAcceptButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                Accept();
+            }
+        });
+
+        mRejectButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                Reject();
+            }
+        });
 
         return fragmentView;
     }
@@ -140,17 +177,23 @@ public class MusicianUserBandRequestsInBandDetailsFragment extends Fragment impl
             @Override
             public void onDataChange(DataSnapshot dataSnapshot)
             {
-                mUserSnapshot = dataSnapshot;
+                mSnapshot = dataSnapshot;
                 PopulateFields();
 
                 // This places a marker at the users chosen location
                 mGoogleMap.addMarker(new MarkerOptions()
-                        .position(mUserConvertedLocation)
+                        .position(mUserConvertedLatLng)
                         .icon(BitmapDescriptorFactory.defaultMarker(HUE_AZURE)));
+                GetBandLocation();
+
+                mLocationDistanceTextView.setText("Distance From Band: " + mDistance + "km");
+
+                // This gets the position applied for from the snapshot
+                mBandPosition = mSnapshot.child("MusicianSentBandRequests/" + mUserId + "/" + mBandId + "/bandPosition").getValue().toString();
 
                 // This zooms the map in to a reasonable level (12) and centers it on the location provided
                 float zoomLevel = 15;
-                mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mUserConvertedLocation, zoomLevel));
+                mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mUserConvertedLatLng, zoomLevel));
             }
 
             @Override
@@ -189,12 +232,12 @@ public class MusicianUserBandRequestsInBandDetailsFragment extends Fragment impl
             }
         });
 
-        mGenresTextView.setText(mUserSnapshot.child("Users/" + mUserId + "/genres").getValue().toString());
-        mInstrumentsTextView.setText(mUserSnapshot.child("Users/" + mUserId + "/instruments").getValue().toString());
-        mBaseLocationTextView.setText(mUserSnapshot.child("Users/" + mUserId + "/homeAddress").getValue().toString());
+        mGenresTextView.setText(mSnapshot.child("Users/" + mUserId + "/genres").getValue().toString());
+        mInstrumentsTextView.setText(mSnapshot.child("Users/" + mUserId + "/instruments").getValue().toString());
+        mBaseLocationTextView.setText(mSnapshot.child("Users/" + mUserId + "/homeAddress").getValue().toString());
 
-        String userBaseLat = mUserSnapshot.child("Users/" + mUserId + "/homeLocation/latitude").getValue().toString();
-        String userBaseLng = mUserSnapshot.child("Users/" + mUserId + "/homeLocation/longitude").getValue().toString();
+        String userBaseLat = mSnapshot.child("Users/" + mUserId + "/homeLocation/latitude").getValue().toString();
+        String userBaseLng = mSnapshot.child("Users/" + mUserId + "/homeLocation/longitude").getValue().toString();
 
         String latLng = userBaseLat + "," + userBaseLng;
         List<String> splitUserHomeLocation = Arrays.asList(latLng.split(","));
@@ -202,15 +245,15 @@ public class MusicianUserBandRequestsInBandDetailsFragment extends Fragment impl
         double latitude = Double.parseDouble(splitUserHomeLocation.get(0));
         double longitude = Double.parseDouble(splitUserHomeLocation.get(1));
 
-        mUserConvertedLocation = new com.google.android.gms.maps.model.LatLng(latitude, longitude);
+        mUserConvertedLatLng = new com.google.android.gms.maps.model.LatLng(latitude, longitude);
 
         // If the user already has a youtube url stored against their profile append this to the text box and parse this
         // to load the video player
-        if(mUserSnapshot.child("Users/" + mUserId + "/youtubeUrl/").exists())
+        if(mSnapshot.child("Users/" + mUserId + "/youtubeUrl/").exists())
         {
-            if (!mUserSnapshot.child("Users/" + mUserId + "/youtubeUrl/").getValue().equals(""))
+            if (!mSnapshot.child("Users/" + mUserId + "/youtubeUrl/").getValue().equals(""))
             {
-                urlStored = mUserSnapshot.child("Users/" + mUserId + "/youtubeUrl").getValue().toString();
+                urlStored = mSnapshot.child("Users/" + mUserId + "/youtubeUrl").getValue().toString();
                 mYoutubeUrlEntered = ParseURL(urlStored);
                 LoadYoutubePlayer();
             }
@@ -281,5 +324,136 @@ public class MusicianUserBandRequestsInBandDetailsFragment extends Fragment impl
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.youtube_layout, youtubePlayerFragment);
         fragmentTransaction.commit();
+    }
+
+    // This method retrieves the location of the band and applies the attributes to a location object
+    // The same is then done with the user location and then the Calculate Distance method is called
+    private void GetBandLocation()
+    {
+        // Get the location of the gig from the previous fragment
+        mBandLocationLat = mSnapshot.child("Bands/" + mBandId + "/baseLocation/latitude").getValue(Double.class);
+        mBandLocationLng = mSnapshot.child("Bands/" + mBandId + "/baseLocation/longitude").getValue(Double.class);
+
+        // Then set the data as parameters for the gig location object
+        mBandLocation.setLatitude(mBandLocationLat);
+        mBandLocation.setLongitude(mBandLocationLng);
+
+        // Then set the data as parameters for the user location object
+        mUserLocation.setLatitude(mUserConvertedLatLng.latitude);
+        mUserLocation.setLongitude(mUserConvertedLatLng.longitude);
+
+        // Calculate the distance between the provided location and the gig
+        mDistance = CalculateDistance(mBandLocation, mUserLocation);
+    }
+
+    // This method takes the band location and the user's location and calculates the distance between the two
+    private double CalculateDistance(Location bandLocation, Location userLocation)
+    {
+        double distance;
+
+        // This calculates the distance between the passed band location and the user's current location
+        distance = bandLocation.distanceTo(userLocation);
+
+        // This converts the distance into km
+        distance = distance / 1000;
+
+        // This then rounds the distance to 2DP
+        distance = Math.round(distance * 100D) / 100D;
+
+        return distance;
+    }
+
+    private void Accept()
+    {
+        // This dialog is created to confirm that the user wants to edit the chosen fields
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle("Add User To Band");
+        builder.setMessage("Are you sure you wish to add this user to your band?");
+        builder.setPositiveButton("Confirm", new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i)
+            {
+                mDatabase.child("MusicianSentBandRequests/" + mUserId + "/" + mBandId + "/requestStatus").setValue("Accepted");
+                mDatabase.child("Users/" + mUserId + "/isInBand").setValue(true);
+                mDatabase.child("Users/" + mUserId + "/bandId").setValue(mBandId);
+                mDatabase.child("Bands/" + mBandId + "/" + mBandPosition + "Member").setValue(mUserId);
+
+                // A dialog is then shown to alert the user that the changes have been made
+                final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setTitle("Confirmation");
+                builder.setMessage("User Added!");
+                builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i)
+                    {
+                        ReturnToRequests();
+                    }
+                });
+                builder.setCancelable(false);
+                builder.show();
+            }
+        });
+
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i)
+            {
+
+            }
+        });
+        builder.show();
+    }
+
+    private void Reject()
+    {
+        // This dialog is created to confirm that the user wants to edit the chosen fields
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle("Reject User From Band");
+        builder.setMessage("Are you sure you wish to reject this user from your band?");
+        builder.setPositiveButton("Confirm", new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i)
+            {
+                mDatabase.child("MusicianSentBandRequests/" + mUserId + "/" + mBandId + "/requestStatus").setValue("Denied");
+
+                // A dialog is then shown to alert the user that the changes have been made
+                final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setTitle("Confirmation");
+                builder.setMessage("User Rejected!");
+                builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i)
+                    {
+                        ReturnToRequests();
+                    }
+                });
+                builder.setCancelable(false);
+                builder.show();
+            }
+        });
+
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i)
+            {
+
+            }
+        });
+        builder.show();
+    }
+
+    private void ReturnToRequests()
+    {
+        // The user is then taken to the home fragment
+        getActivity().setTitle("Band Requests");
+        final FragmentTransaction ft = getFragmentManager().beginTransaction();
+        ft.replace(R.id.frame, new MusicianUserBandRequestsInBandFragment(), "MusicianUserBandRequestsInBandFragment");
+        ft.commit();
     }
 }

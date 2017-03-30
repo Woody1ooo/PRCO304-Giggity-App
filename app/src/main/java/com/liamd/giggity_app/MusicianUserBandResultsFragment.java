@@ -552,6 +552,30 @@ public class MusicianUserBandResultsFragment extends Fragment implements OnMapRe
     @Override
     public void onInfoWindowClick(Marker marker)
     {
+        MusicianUserBandDetailsFragment fragment = new MusicianUserBandDetailsFragment();
+        Bundle arguments = new Bundle();
 
+        for(int i = 0; i < mListOfBandMarkerInfo.size(); i++)
+        {
+            mListOfBandMarkerInfo.get(i);
+
+            if(mListOfBandMarkerInfo.get(i).getMarkerId().equals(marker.getId()))
+            {
+                arguments.putString("BandID", mListOfBandMarkerInfo.get(i).getBandId());
+                arguments.putString("BandName", mListOfBandMarkerInfo.get(i).getBandName());
+                arguments.putString("BandGenres", mListOfBandMarkerInfo.get(i).getBandGenres());
+                arguments.putString("BandNumberOfPositions", mListOfBandMarkerInfo.get(i).getNumberOfPositions());
+            }
+        }
+
+        fragment.setArguments(arguments);
+
+        // Creates a new fragment transaction to display the details of the selected
+        // gig. Some custom animation has been added also.
+        FragmentTransaction fragmentTransaction = getActivity().getFragmentManager()
+                .beginTransaction();
+        fragmentTransaction.setCustomAnimations(R.animator.enter_from_right, R.animator.enter_from_left);
+        fragmentTransaction.replace(R.id.frame, fragment, "MusicianUserBandDetailsFragment")
+                .addToBackStack(null).commit();
     }
 }

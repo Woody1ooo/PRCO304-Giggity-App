@@ -106,7 +106,7 @@ public class MusicianUserRequestsAdapter extends ArrayAdapter<BandRequest>
         // Set list view fields to display the correct information
         mUserNameTextView.setText("Name: " + bandRequest.getUserName());
         mUserNameTextView.setTypeface(null, Typeface.BOLD);
-        mUserInstrumentsTextView.setText("Instruments: " + bandRequest.getPositionInstruments());
+        mUserInstrumentsTextView.setText("Position Applied For: " + bandRequest.getPositionInstruments());
         mBandRequestStatusTextView.setText(bandRequest.getRequestStatus());
 
         // Depending on the status the colour is updated

@@ -156,6 +156,11 @@ public class VenueUserMainActivity extends AppCompatActivity
             fragmentTransaction.commit();
         }
 
+        else if(id == R.id.nav_gig_requests)
+        {
+
+        }
+
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;

@@ -105,7 +105,6 @@ public class MusicianUserMainActivity extends AppCompatActivity
                 , "MusicianUserHomeFragment");
         fragmentTransaction.commit();
 
-
         // At the database reference "Users/%logged in user id%/hasCompletedSetup", a check is made
         // to see if the value is true or false.
         // If the user hasn't completed the account setup yet (i.e. hasCompletedSetup = false)
@@ -219,8 +218,8 @@ public class MusicianUserMainActivity extends AppCompatActivity
             MusicianUserHomeFragment fragment = new MusicianUserHomeFragment();
             FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
             fragmentTransaction.replace(R.id.frame, fragment
-                    , "MusicianUserHomeFragment")
-            .addToBackStack(null).commit();
+                    , "MusicianUserHomeFragment");
+            fragmentTransaction.commit();
         }
 
         else if (id == R.id.nav_profile)
@@ -229,8 +228,8 @@ public class MusicianUserMainActivity extends AppCompatActivity
             MusicianUserProfileFragment fragment = new MusicianUserProfileFragment();
             FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
             fragmentTransaction.replace(R.id.frame, fragment
-                    , "MusicianUserProfileFragment")
-            .addToBackStack(null).commit();
+                    , "MusicianUserProfileFragment");
+            fragmentTransaction.commit();
         }
 
         else if (id == R.id.nav_gig_finder)
@@ -239,8 +238,8 @@ public class MusicianUserMainActivity extends AppCompatActivity
             MusicianUserGigFinderFragment fragment = new MusicianUserGigFinderFragment();
             FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
             fragmentTransaction.replace(R.id.frame, fragment
-                    , "MusicianUserGigFinderFragment")
-            .addToBackStack(null).commit();
+                    , "MusicianUserGigFinderFragment");
+            fragmentTransaction.commit();
         }
 
         else if (id == R.id.nav_band_finder)
@@ -249,8 +248,8 @@ public class MusicianUserMainActivity extends AppCompatActivity
             MusicianUserBandFinderFragment fragment = new MusicianUserBandFinderFragment();
             FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
             fragmentTransaction.replace(R.id.frame, fragment
-                    , "MusicianUserBandFinderFragment")
-            .addToBackStack(null).commit();
+                    , "MusicianUserBandFinderFragment");
+            fragmentTransaction.commit();
         }
 
         else if (id == R.id.nav_band_creator)
@@ -259,8 +258,8 @@ public class MusicianUserMainActivity extends AppCompatActivity
             MusicianUserBandCreatorFragment fragment = new MusicianUserBandCreatorFragment();
             FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
             fragmentTransaction.replace(R.id.frame, fragment
-                    , "MusicianUserBandCreatorFragment")
-            .addToBackStack(null).commit();
+                    , "MusicianUserBandCreatorFragment");
+            fragmentTransaction.commit();
         }
 
         else if (id == R.id.nav_requests_musician)
@@ -269,8 +268,8 @@ public class MusicianUserMainActivity extends AppCompatActivity
             MusicianUserBandRequestsNotInBandFragment fragment = new MusicianUserBandRequestsNotInBandFragment();
             FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
             fragmentTransaction.replace(R.id.frame, fragment
-                    , "MusicianUserBandRequestsNotInBandFragment")
-            .addToBackStack(null).commit();
+                    , "MusicianUserBandRequestsNotInBandFragment");
+            fragmentTransaction.commit();
         }
 
         else if (id == R.id.nav_requests_band)
@@ -279,8 +278,18 @@ public class MusicianUserMainActivity extends AppCompatActivity
             MusicianUserBandRequestsInBandFragment fragment = new MusicianUserBandRequestsInBandFragment();
             FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
             fragmentTransaction.replace(R.id.frame, fragment
-                    , "MusicianUserBandRequestsInBandFragment")
-                    .addToBackStack(null).commit();
+                    , "MusicianUserBandRequestsInBandFragment");
+            fragmentTransaction.commit();
+        }
+
+        else if (id == R.id.nav_band_members)
+        {
+            setTitle("Band Members");
+            MusicianUserBandMembersFragment fragment = new MusicianUserBandMembersFragment();
+            FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.frame, fragment
+                    , "MusicianUserBandMembersFragment");
+            fragmentTransaction.commit();
         }
 
         else if (id == R.id.nav_settings)
@@ -289,8 +298,8 @@ public class MusicianUserMainActivity extends AppCompatActivity
             SettingsFragment fragment = new SettingsFragment();
             FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
             fragmentTransaction.replace(R.id.frame, fragment
-                    , "SettingsFragment")
-            .addToBackStack(null).commit();
+                    , "SettingsFragment");
+            fragmentTransaction.commit();
         }
 
         else if (id == R.id.nav_band_manager)
@@ -299,8 +308,8 @@ public class MusicianUserMainActivity extends AppCompatActivity
             MusicianUserBandManagementFragment fragment = new MusicianUserBandManagementFragment();
             FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
             fragmentTransaction.replace(R.id.frame, fragment
-                    , "MusicianUserBandManagementFragment")
-            .addToBackStack(null).commit();
+                    , "MusicianUserBandManagementFragment");
+            fragmentTransaction.commit();
         }
 
         else if (id == R.id.nav_logout)

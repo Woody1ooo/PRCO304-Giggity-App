@@ -4,6 +4,8 @@ import android.os.Bundle;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -41,6 +43,7 @@ public class MusicianUserBandRequestsInBandFragment extends Fragment
     private ArrayList<BandRequest> mListOfFilteredUserRequestsReceived = new ArrayList<>();
     private DataSnapshot mDataSnapshot;
     private String mUserIdKey;
+    private String mBandId;
 
     public MusicianUserBandRequestsInBandFragment()
     {
@@ -106,6 +109,7 @@ public class MusicianUserBandRequestsInBandFragment extends Fragment
                 Bundle arguments = new Bundle();
                 arguments.putString("UserID", selectedRequest.getUserID());
                 arguments.putString("UserName", selectedRequest.getUserName());
+                arguments.putString("BandID", selectedRequest.getBandID());
                 fragment.setArguments(arguments);
 
                 // Creates a new fragment transaction to display the details of the selected
@@ -142,7 +146,7 @@ public class MusicianUserBandRequestsInBandFragment extends Fragment
         }
         */
 
-        String bandId = mDataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/bandID").getValue().toString();
+        mBandId = mDataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/bandID").getValue().toString();
 
         // This iterates through the band requests that users have sent and adds them to a list (mListOfUserRequestsSent)
         Iterable<DataSnapshot> receivedRequestChildren = mDataSnapshot.child("MusicianSentBandRequests/").getChildren();
@@ -162,7 +166,7 @@ public class MusicianUserBandRequestsInBandFragment extends Fragment
 
         for (int i = 0; i < mListOfUserRequestsReceived.size(); i++)
         {
-            if(mListOfUserRequestsReceived.get(i).getBandID().equals(bandId))
+            if(mListOfUserRequestsReceived.get(i).getBandID().equals(mBandId))
             {
                 mListOfFilteredUserRequestsReceived.add(mListOfUserRequestsReceived.get(i));
             }
