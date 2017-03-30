@@ -376,7 +376,7 @@ public class MusicianUserBandRequestsInBandDetailsFragment extends Fragment impl
             {
                 mDatabase.child("MusicianSentBandRequests/" + mUserId + "/" + mBandId + "/requestStatus").setValue("Accepted");
                 mDatabase.child("Users/" + mUserId + "/isInBand").setValue(true);
-                mDatabase.child("Users/" + mUserId + "/bandId").setValue(mBandId);
+                mDatabase.child("Users/" + mUserId + "/bandID").setValue(mBandId);
                 mDatabase.child("Bands/" + mBandId + "/" + mBandPosition + "Member").setValue(mUserId);
 
                 // A dialog is then shown to alert the user that the changes have been made
