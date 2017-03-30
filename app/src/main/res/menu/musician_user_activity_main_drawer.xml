@@ -43,7 +43,7 @@
                                 android:icon="@drawable/ic_group_add_black_24dp"
                                 android:title="Band Creator"/>
                             <item
-                                android:id="@+id/nav_requests"
+                                android:id="@+id/nav_requests_musician"
                                 android:icon="@drawable/ic_swap_vert_black_24dp"
                                 android:title="Band Requests"/>
                             <item
@@ -54,6 +54,11 @@
                                 android:id="@+id/nav_band_members"
                                 android:icon="@drawable/ic_group_black_24dp"
                                 android:title="Band Members"/>
+                            <item
+                                android:id="@+id/nav_requests_band"
+                                android:icon="@drawable/ic_swap_vert_black_24dp"
+                                android:title="Band Requests"/>
+
 
                         </group>
                     </menu>

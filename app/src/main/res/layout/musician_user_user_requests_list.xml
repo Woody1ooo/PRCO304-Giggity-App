@@ -8,17 +8,17 @@
         android:layout_height="fill_parent"
         android:orientation="vertical">
         <TextView
-            android:id="@+id/requestBandName"
+            android:id="@+id/requestUserName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingTop="5dp"
             android:layout_marginBottom="5dp"/>
         <ImageView
-            android:id="@+id/requestBandImage"
+            android:id="@+id/requestUserImage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
         <TextView
-            android:id="@+id/requestPositionInstruments"
+            android:id="@+id/requestUserInstruments"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingTop="5dp"/>

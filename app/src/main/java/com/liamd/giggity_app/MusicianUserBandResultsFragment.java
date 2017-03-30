@@ -474,7 +474,7 @@ public class MusicianUserBandResultsFragment extends Fragment implements OnMapRe
 
             catch(NullPointerException e)
             {
-                if(!mFilteredBandsToRemove.contains(listIndex))
+                if(!mFilteredBandsToRemove.contains(listIndex) && i + 1 == splitUserChosenGenresTrimmed.size())
                 {
                     mFilteredBandsToRemove.add(listIndex);
                     break;

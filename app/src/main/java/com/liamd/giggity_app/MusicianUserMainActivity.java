@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.app.FragmentTransaction;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -86,6 +87,8 @@ public class MusicianUserMainActivity extends AppCompatActivity
         // Hides the manager item by default
         Menu menu = navigationView.getMenu();
         menu.findItem(R.id.nav_band_manager).setVisible(false);
+        menu.findItem(R.id.nav_band_members).setVisible(false);
+        menu.findItem(R.id.nav_requests_band).setVisible(false);
 
         // Initialise visual components
         setTitle("Musician User Home");
@@ -120,9 +123,11 @@ public class MusicianUserMainActivity extends AppCompatActivity
                         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
                         Menu menu = navigationView.getMenu();
                         menu.findItem(R.id.nav_band_manager).setVisible(true);
+                        menu.findItem(R.id.nav_band_members).setVisible(true);
                         menu.findItem(R.id.nav_band_creator).setVisible(false);
                         menu.findItem(R.id.nav_band_finder).setVisible(false);
-                        menu.findItem(R.id.nav_requests).setVisible(false);
+                        menu.findItem(R.id.nav_requests_musician).setVisible(false);
+                        menu.findItem(R.id.nav_requests_band).setVisible(true);
                     }
                 }
 
@@ -214,8 +219,8 @@ public class MusicianUserMainActivity extends AppCompatActivity
             MusicianUserHomeFragment fragment = new MusicianUserHomeFragment();
             FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
             fragmentTransaction.replace(R.id.frame, fragment
-                    , "MusicianUserHomeFragment");
-            fragmentTransaction.commit();
+                    , "MusicianUserHomeFragment")
+            .addToBackStack(null).commit();
         }
 
         else if (id == R.id.nav_profile)
@@ -224,8 +229,8 @@ public class MusicianUserMainActivity extends AppCompatActivity
             MusicianUserProfileFragment fragment = new MusicianUserProfileFragment();
             FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
             fragmentTransaction.replace(R.id.frame, fragment
-                    , "MusicianUserProfileFragment");
-            fragmentTransaction.commit();
+                    , "MusicianUserProfileFragment")
+            .addToBackStack(null).commit();
         }
 
         else if (id == R.id.nav_gig_finder)
@@ -234,8 +239,8 @@ public class MusicianUserMainActivity extends AppCompatActivity
             MusicianUserGigFinderFragment fragment = new MusicianUserGigFinderFragment();
             FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
             fragmentTransaction.replace(R.id.frame, fragment
-                    , "MusicianUserGigFinderFragment");
-            fragmentTransaction.commit();
+                    , "MusicianUserGigFinderFragment")
+            .addToBackStack(null).commit();
         }
 
         else if (id == R.id.nav_band_finder)
@@ -244,8 +249,8 @@ public class MusicianUserMainActivity extends AppCompatActivity
             MusicianUserBandFinderFragment fragment = new MusicianUserBandFinderFragment();
             FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
             fragmentTransaction.replace(R.id.frame, fragment
-                    , "MusicianUserBandFinderFragment");
-            fragmentTransaction.commit();
+                    , "MusicianUserBandFinderFragment")
+            .addToBackStack(null).commit();
         }
 
         else if (id == R.id.nav_band_creator)
@@ -254,18 +259,28 @@ public class MusicianUserMainActivity extends AppCompatActivity
             MusicianUserBandCreatorFragment fragment = new MusicianUserBandCreatorFragment();
             FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
             fragmentTransaction.replace(R.id.frame, fragment
-                    , "MusicianUserBandCreatorFragment");
-            fragmentTransaction.commit();
+                    , "MusicianUserBandCreatorFragment")
+            .addToBackStack(null).commit();
         }
 
-        else if (id == R.id.nav_requests)
+        else if (id == R.id.nav_requests_musician)
         {
             setTitle("Band Requests");
-            MusicianUserBandRequestsFragment fragment = new MusicianUserBandRequestsFragment();
+            MusicianUserBandRequestsNotInBandFragment fragment = new MusicianUserBandRequestsNotInBandFragment();
             FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
             fragmentTransaction.replace(R.id.frame, fragment
-                    , "MusicianUserBandRequestsFragment");
-            fragmentTransaction.commit();
+                    , "MusicianUserBandRequestsNotInBandFragment")
+            .addToBackStack(null).commit();
+        }
+
+        else if (id == R.id.nav_requests_band)
+        {
+            setTitle("Band Requests");
+            MusicianUserBandRequestsInBandFragment fragment = new MusicianUserBandRequestsInBandFragment();
+            FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.frame, fragment
+                    , "MusicianUserBandRequestsInBandFragment")
+                    .addToBackStack(null).commit();
         }
 
         else if (id == R.id.nav_settings)
@@ -274,8 +289,8 @@ public class MusicianUserMainActivity extends AppCompatActivity
             SettingsFragment fragment = new SettingsFragment();
             FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
             fragmentTransaction.replace(R.id.frame, fragment
-                    , "SettingsFragment");
-            fragmentTransaction.commit();
+                    , "SettingsFragment")
+            .addToBackStack(null).commit();
         }
 
         else if (id == R.id.nav_band_manager)
@@ -284,8 +299,8 @@ public class MusicianUserMainActivity extends AppCompatActivity
             MusicianUserBandManagementFragment fragment = new MusicianUserBandManagementFragment();
             FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
             fragmentTransaction.replace(R.id.frame, fragment
-                    , "MusicianUserBandManagementFragment");
-            fragmentTransaction.commit();
+                    , "MusicianUserBandManagementFragment")
+            .addToBackStack(null).commit();
         }
 
         else if (id == R.id.nav_logout)

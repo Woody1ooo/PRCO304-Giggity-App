@@ -22,7 +22,7 @@ import java.util.ArrayList;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MusicianUserBandRequestsFragment extends Fragment
+public class MusicianUserBandRequestsNotInBandFragment extends Fragment
 {
     // Declare Firebase specific variables
     private FirebaseAuth mAuth;
@@ -39,7 +39,7 @@ public class MusicianUserBandRequestsFragment extends Fragment
     private ArrayList<BandRequest> mListOfBandRequestsReceived = new ArrayList<>();
     private DataSnapshot mDataSnapshot;
 
-    public MusicianUserBandRequestsFragment()
+    public MusicianUserBandRequestsNotInBandFragment()
     {
         // Required empty public constructor
     }
@@ -49,7 +49,7 @@ public class MusicianUserBandRequestsFragment extends Fragment
                              Bundle savedInstanceState)
     {
         // Inflate the layout for this fragment
-        View fragmentView = inflater.inflate(R.layout.musician_user_fragment_band_requests, container, false);
+        View fragmentView = inflater.inflate(R.layout.musician_user_fragment_band_requests_not_in_band, container, false);
 
         // This initialises the tabs used to hold the different views
         TabHost tabs = (TabHost) fragmentView.findViewById(R.id.tabhost);
