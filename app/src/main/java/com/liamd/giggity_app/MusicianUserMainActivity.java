@@ -1,12 +1,15 @@
 package com.liamd.giggity_app;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.support.v4.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -102,8 +105,8 @@ public class MusicianUserMainActivity extends AppCompatActivity
         MusicianUserHomeFragment fragment = new MusicianUserHomeFragment();
         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.frame, fragment
-                , "MusicianUserHomeFragment");
-        fragmentTransaction.commit();
+                , "MusicianUserHomeFragment")
+                .commit();
 
         // At the database reference "Users/%logged in user id%/hasCompletedSetup", a check is made
         // to see if the value is true or false.
@@ -212,8 +215,11 @@ public class MusicianUserMainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
+        // Each time a navigation item is selected this clears the users previous path as they are now entering a different section
         if (id == R.id.nav_home)
         {
+            ClearBackStack(this);
+
             setTitle("Home");
             MusicianUserHomeFragment fragment = new MusicianUserHomeFragment();
             FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
@@ -224,92 +230,119 @@ public class MusicianUserMainActivity extends AppCompatActivity
 
         else if (id == R.id.nav_profile)
         {
+            ClearBackStack(this);
+
             setTitle("My Musician Profile");
             MusicianUserProfileFragment fragment = new MusicianUserProfileFragment();
             FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
             fragmentTransaction.replace(R.id.frame, fragment
-                    , "MusicianUserProfileFragment");
-            fragmentTransaction.commit();
+                    , "MusicianUserProfileFragment")
+                    .addToBackStack(null)
+                    .commit();
         }
 
         else if (id == R.id.nav_gig_finder)
         {
+            ClearBackStack(this);
+
             setTitle("Gig Finder");
             MusicianUserGigFinderFragment fragment = new MusicianUserGigFinderFragment();
             FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
             fragmentTransaction.replace(R.id.frame, fragment
-                    , "MusicianUserGigFinderFragment");
-            fragmentTransaction.commit();
+                    , "MusicianUserGigFinderFragment")
+                    .addToBackStack(null)
+                    .commit();
         }
 
         else if (id == R.id.nav_band_finder)
         {
+            ClearBackStack(this);
+
             setTitle("Band Finder");
             MusicianUserBandFinderFragment fragment = new MusicianUserBandFinderFragment();
             FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
             fragmentTransaction.replace(R.id.frame, fragment
-                    , "MusicianUserBandFinderFragment");
-            fragmentTransaction.commit();
+                    , "MusicianUserBandFinderFragment")
+                    .addToBackStack(null)
+                    .commit();
         }
 
         else if (id == R.id.nav_band_creator)
         {
+            ClearBackStack(this);
+
             setTitle("Band Creator");
             MusicianUserBandCreatorFragment fragment = new MusicianUserBandCreatorFragment();
             FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
             fragmentTransaction.replace(R.id.frame, fragment
-                    , "MusicianUserBandCreatorFragment");
-            fragmentTransaction.commit();
+                    , "MusicianUserBandCreatorFragment")
+                    .addToBackStack(null)
+                    .commit();
         }
 
         else if (id == R.id.nav_requests_musician)
         {
+            ClearBackStack(this);
+
             setTitle("Band Requests");
             MusicianUserBandRequestsNotInBandFragment fragment = new MusicianUserBandRequestsNotInBandFragment();
             FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
             fragmentTransaction.replace(R.id.frame, fragment
-                    , "MusicianUserBandRequestsNotInBandFragment");
-            fragmentTransaction.commit();
+                    , "MusicianUserBandRequestsNotInBandFragment")
+                    .addToBackStack(null)
+                    .commit();
         }
 
         else if (id == R.id.nav_requests_band)
         {
+            ClearBackStack(this);
+
             setTitle("Band Requests");
             MusicianUserBandRequestsInBandFragment fragment = new MusicianUserBandRequestsInBandFragment();
             FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
             fragmentTransaction.replace(R.id.frame, fragment
-                    , "MusicianUserBandRequestsInBandFragment");
-            fragmentTransaction.commit();
+                    , "MusicianUserBandRequestsInBandFragment")
+                    .addToBackStack(null)
+                    .commit();
         }
 
         else if (id == R.id.nav_band_members)
         {
+            ClearBackStack(this);
+
             setTitle("Band Members");
             MusicianUserBandMembersFragment fragment = new MusicianUserBandMembersFragment();
             FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
             fragmentTransaction.replace(R.id.frame, fragment
-                    , "MusicianUserBandMembersFragment");
-            fragmentTransaction.commit();
+                    , "MusicianUserBandMembersFragment")
+                    .addToBackStack(null)
+                    .commit();
         }
 
         else if (id == R.id.nav_settings)
         {
+            ClearBackStack(this);
+
             setTitle("Settings");
             SettingsFragment fragment = new SettingsFragment();
             FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
             fragmentTransaction.replace(R.id.frame, fragment
-                    , "SettingsFragment");
-            fragmentTransaction.commit();
+                    , "SettingsFragment")
+                    .addToBackStack(null)
+                    .commit();
         }
 
         else if (id == R.id.nav_band_manager)
         {
+            ClearBackStack(this);
+
             setTitle("Band Manager");
             MusicianUserBandManagementFragment fragment = new MusicianUserBandManagementFragment();
             FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
             fragmentTransaction.replace(R.id.frame, fragment
-                    , "MusicianUserBandManagementFragment");
-            fragmentTransaction.commit();
+                    , "MusicianUserBandManagementFragment")
+                    .addToBackStack(null)
+                    .commit();
         }
 
         else if (id == R.id.nav_logout)
@@ -370,4 +403,21 @@ public class MusicianUserMainActivity extends AppCompatActivity
         returnToLoginActivity.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         startActivity(returnToLoginActivity);
     }
+
+    // This clears the back stack of fragments and adds a home fragment
+    private static void ClearBackStack(Activity activity)
+    {
+        FragmentManager fragmentManager = activity.getFragmentManager();
+        for(int i = 0; i < fragmentManager.getBackStackEntryCount(); ++i)
+        {
+            fragmentManager.popBackStack();
+        }
+
+        MusicianUserHomeFragment fragment = new MusicianUserHomeFragment();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.frame, fragment
+                , "MusicianUserHomeFragment");
+        fragmentTransaction.commit();
+    }
+
 }
