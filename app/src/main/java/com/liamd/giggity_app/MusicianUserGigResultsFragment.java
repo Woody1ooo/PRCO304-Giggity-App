@@ -451,7 +451,7 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
 
         GetGigLocation();
 
-        // Using the custom VenueGigsAdapter, the list of users gigs can be displayed
+        // Using the custom VenueUserGigsAdapter, the list of users gigs can be displayed
         adapter = new MusicianUserGigsAdapter(getActivity(), R.layout.musician_user_gig_list, mListOfGigs);
 
         mGigsListView.setAdapter(adapter);

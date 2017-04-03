@@ -77,7 +77,9 @@ public class MusicianUserBandManagementFragment extends Fragment implements YouT
     private TextView mLocationChosenTextView;
     private Button mLaunchLocationFinderButton;
     private TextView mHelpTextView;
+    private Button checkUrlButton;
     private Button mUpdateButton;
+    private Button mDeleteButton;
     private ProgressDialog mProgressDialog;
     private TextView mPositionOneTitle;
     private MultiSelectSpinner mPositionOneSpinner;
@@ -145,7 +147,9 @@ public class MusicianUserBandManagementFragment extends Fragment implements YouT
         mLocationChosenTextView = (TextView) fragmentView.findViewById(R.id.bandLocationDetailsTextView);
         mLaunchLocationFinderButton = (Button) fragmentView.findViewById(R.id.placeFinderButton);
         mHelpTextView = (TextView) fragmentView.findViewById(R.id.locationHelpTextView);
+        checkUrlButton = (Button) fragmentView.findViewById(R.id.checkUrlButton);
         mUpdateButton = (Button) fragmentView.findViewById(R.id.updateButton);
+        mDeleteButton = (Button) fragmentView.findViewById(R.id.deleteButton);
         mProgressDialog = new ProgressDialog(getActivity());
         mPositionOneTitle = (TextView) fragmentView.findViewById(R.id.positionOneTextView);
         mPositionOneSpinner = (MultiSelectSpinner) fragmentView.findViewById(R.id.bandPositionOneSpinner);
@@ -365,7 +369,6 @@ public class MusicianUserBandManagementFragment extends Fragment implements YouT
                     LoadYoutubePlayer();
                 }
 
-
                 PopulateFields();
 
                 // This method loads the profile picture from the chosen login method
@@ -436,6 +439,28 @@ public class MusicianUserBandManagementFragment extends Fragment implements YouT
             public void onClick(View view)
             {
                 UpdateBand();
+            }
+        });
+
+        mDeleteButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                DeleteBand();
+            }
+        });
+
+        checkUrlButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                if (!TextUtils.isEmpty(youtubeUrlEditText.getText()))
+                {
+                    parsedYouTubeURL = ParseURL(youtubeUrlEditText.getText());
+                    LoadYoutubePlayer();
+                }
             }
         });
 
@@ -1026,8 +1051,15 @@ public class MusicianUserBandManagementFragment extends Fragment implements YouT
 
                             mDatabase.child("Bands/" + mBandID).setValue(bandToInsert);
                             mDatabase.child("Bands/" + mBandID + "/bandCreator").setValue(mAuth.getCurrentUser().getUid());
+                            mDatabase.child("Bands/" + mBandID + "/positionOneMember").setValue(mBandFromDatabase.getPositionOneMember());
                             mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/isInBand").setValue(true);
                             mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/bandID").setValue(mBandID);
+
+
+                            if(!youtubeUrlEditText.getText().equals(null))
+                            {
+                                mDatabase.child("Bands/" + mBandID + "/youtubeUrl").setValue(youtubeUrlEditText.getText().toString());
+                            }
 
                             // A dialog is then shown to alert the user that the changes have been made
                             final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -1075,8 +1107,15 @@ public class MusicianUserBandManagementFragment extends Fragment implements YouT
 
                             mDatabase.child("Bands/" + mBandID).setValue(bandToInsert);
                             mDatabase.child("Bands/" + mBandID + "/bandCreator").setValue(mAuth.getCurrentUser().getUid());
+                            mDatabase.child("Bands/" + mBandID + "/positionOneMember").setValue(mBandFromDatabase.getPositionOneMember());
+                            mDatabase.child("Bands/" + mBandID + "/positionTwoMember").setValue(mBandFromDatabase.getPositionTwoMember());
                             mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/isInBand").setValue(true);
                             mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/bandID").setValue(mBandID);
+
+                            if(!youtubeUrlEditText.getText().equals(null))
+                            {
+                                mDatabase.child("Bands/" + mBandID + "/youtubeUrl").setValue(youtubeUrlEditText.getText().toString());
+                            }
 
                             // A dialog is then shown to alert the user that the changes have been made
                             final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -1126,8 +1165,16 @@ public class MusicianUserBandManagementFragment extends Fragment implements YouT
 
                             mDatabase.child("Bands/" + mBandID).setValue(bandToInsert);
                             mDatabase.child("Bands/" + mBandID + "/bandCreator").setValue(mAuth.getCurrentUser().getUid());
+                            mDatabase.child("Bands/" + mBandID + "/positionOneMember").setValue(mBandFromDatabase.getPositionOneMember());
+                            mDatabase.child("Bands/" + mBandID + "/positionTwoMember").setValue(mBandFromDatabase.getPositionTwoMember());
+                            mDatabase.child("Bands/" + mBandID + "/positionThreeMember").setValue(mBandFromDatabase.getPositionThreeMember());
                             mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/isInBand").setValue(true);
                             mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/bandID").setValue(mBandID);
+
+                            if(!youtubeUrlEditText.getText().equals(null))
+                            {
+                                mDatabase.child("Bands/" + mBandID + "/youtubeUrl").setValue(youtubeUrlEditText.getText().toString());
+                            }
 
                             // A dialog is then shown to alert the user that the changes have been made
                             final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -1178,8 +1225,17 @@ public class MusicianUserBandManagementFragment extends Fragment implements YouT
 
                             mDatabase.child("Bands/" + mBandID).setValue(bandToInsert);
                             mDatabase.child("Bands/" + mBandID + "/bandCreator").setValue(mAuth.getCurrentUser().getUid());
+                            mDatabase.child("Bands/" + mBandID + "/positionOneMember").setValue(mBandFromDatabase.getPositionOneMember());
+                            mDatabase.child("Bands/" + mBandID + "/positionTwoMember").setValue(mBandFromDatabase.getPositionTwoMember());
+                            mDatabase.child("Bands/" + mBandID + "/positionThreeMember").setValue(mBandFromDatabase.getPositionThreeMember());
+                            mDatabase.child("Bands/" + mBandID + "/positionFourMember").setValue(mBandFromDatabase.getPositionFourMember());
                             mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/isInBand").setValue(true);
                             mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/bandID").setValue(mBandID);
+
+                            if(!youtubeUrlEditText.getText().equals(null))
+                            {
+                                mDatabase.child("Bands/" + mBandID + "/youtubeUrl").setValue(youtubeUrlEditText.getText().toString());
+                            }
 
                             // A dialog is then shown to alert the user that the changes have been made
                             final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -1235,8 +1291,18 @@ public class MusicianUserBandManagementFragment extends Fragment implements YouT
 
                             mDatabase.child("Bands/" + mBandID).setValue(bandToInsert);
                             mDatabase.child("Bands/" + mBandID + "/bandCreator").setValue(mAuth.getCurrentUser().getUid());
+                            mDatabase.child("Bands/" + mBandID + "/positionOneMember").setValue(mBandFromDatabase.getPositionOneMember());
+                            mDatabase.child("Bands/" + mBandID + "/positionTwoMember").setValue(mBandFromDatabase.getPositionTwoMember());
+                            mDatabase.child("Bands/" + mBandID + "/positionThreeMember").setValue(mBandFromDatabase.getPositionThreeMember());
+                            mDatabase.child("Bands/" + mBandID + "/positionFourMember").setValue(mBandFromDatabase.getPositionFourMember());
+                            mDatabase.child("Bands/" + mBandID + "/positionFiveMember").setValue(mBandFromDatabase.getPositionFiveMember());
                             mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/isInBand").setValue(true);
                             mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/bandID").setValue(mBandID);
+
+                            if(!youtubeUrlEditText.getText().equals(null))
+                            {
+                                mDatabase.child("Bands/" + mBandID + "/youtubeUrl").setValue(youtubeUrlEditText.getText().toString());
+                            }
 
                             // A dialog is then shown to alert the user that the changes have been made
                             final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -1275,6 +1341,179 @@ public class MusicianUserBandManagementFragment extends Fragment implements YouT
                 }).show();
     }
 
+    // This method
+    private void DeleteBand()
+    {
+        // This dialog is created to confirm that the user wants to delete the band
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle("Delete Band");
+        builder.setMessage("Are you sure you wish to delete this band?");
+        builder.setPositiveButton("Delete", new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i)
+            {
+                if(mNumberOfPositions.equals("1"))
+                {
+                    String mPositionOneMember = mBandFromDatabase.getPositionOneMember();
+
+                    mDatabase.child("Bands/" + mBandID).removeValue();
+
+                    if(!mPositionOneMember.equals("Vacant"))
+                    {
+                        mDatabase.child("Users/" + mPositionOneMember + "/isInBand").setValue(false);
+                        mDatabase.child("Users/" + mPositionOneMember + "/bandID").removeValue();
+                    }
+                }
+
+                else if(mNumberOfPositions.equals("2"))
+                {
+                    String mPositionOneMember = mBandFromDatabase.getPositionOneMember();
+                    String mPositionTwoMember = mBandFromDatabase.getPositionTwoMember();
+
+                    mDatabase.child("Bands/" + mBandID).removeValue();
+
+                    if(!mPositionOneMember.equals("Vacant"))
+                    {
+                        mDatabase.child("Users/" + mPositionOneMember + "/isInBand").setValue(false);
+                        mDatabase.child("Users/" + mPositionOneMember + "/bandID").removeValue();
+                    }
+
+                    else if(!mPositionTwoMember.equals("Vacant"))
+                    {
+                        mDatabase.child("Users/" + mPositionTwoMember + "/isInBand").setValue(false);
+                        mDatabase.child("Users/" + mPositionTwoMember + "/bandID").removeValue();
+                    }
+                }
+
+                else if(mNumberOfPositions.equals("3"))
+                {
+                    String mPositionOneMember = mBandFromDatabase.getPositionOneMember();
+                    String mPositionTwoMember = mBandFromDatabase.getPositionTwoMember();
+                    String mPositionThreeMember = mBandFromDatabase.getPositionThreeMember();
+
+                    mDatabase.child("Bands/" + mBandID).removeValue();
+
+                    if(!mPositionOneMember.equals("Vacant"))
+                    {
+                        mDatabase.child("Users/" + mPositionOneMember + "/isInBand").setValue(false);
+                        mDatabase.child("Users/" + mPositionOneMember + "/bandID").removeValue();
+                    }
+
+                    else if(!mPositionTwoMember.equals("Vacant"))
+                    {
+                        mDatabase.child("Users/" + mPositionTwoMember + "/isInBand").setValue(false);
+                        mDatabase.child("Users/" + mPositionTwoMember + "/bandID").removeValue();
+                    }
+
+                    else if(!mPositionThreeMember.equals("Vacant"))
+                    {
+                        mDatabase.child("Users/" + mPositionThreeMember + "/isInBand").setValue(false);
+                        mDatabase.child("Users/" + mPositionThreeMember + "/bandID").removeValue();
+                    }
+                }
+
+                else if(mNumberOfPositions.equals("4"))
+                {
+                    String mPositionOneMember = mBandFromDatabase.getPositionOneMember();
+                    String mPositionTwoMember = mBandFromDatabase.getPositionTwoMember();
+                    String mPositionThreeMember = mBandFromDatabase.getPositionThreeMember();
+                    String mPositionFourMember = mBandFromDatabase.getPositionFourMember();
+
+                    mDatabase.child("Bands/" + mBandID).removeValue();
+
+                    if(!mPositionOneMember.equals("Vacant"))
+                    {
+                        mDatabase.child("Users/" + mPositionOneMember + "/isInBand").setValue(false);
+                        mDatabase.child("Users/" + mPositionOneMember + "/bandID").removeValue();
+                    }
+
+                    else if(!mPositionTwoMember.equals("Vacant"))
+                    {
+                        mDatabase.child("Users/" + mPositionTwoMember + "/isInBand").setValue(false);
+                        mDatabase.child("Users/" + mPositionTwoMember + "/bandID").removeValue();
+                    }
+
+                    else if(!mPositionThreeMember.equals("Vacant"))
+                    {
+                        mDatabase.child("Users/" + mPositionThreeMember + "/isInBand").setValue(false);
+                        mDatabase.child("Users/" + mPositionThreeMember + "/bandID").removeValue();
+                    }
+
+                    else if(!mPositionFourMember.equals("Vacant"))
+                    {
+                        mDatabase.child("Users/" + mPositionFourMember + "/isInBand").setValue(false);
+                        mDatabase.child("Users/" + mPositionFourMember + "/bandID").removeValue();
+                    }
+                }
+
+                else if(mNumberOfPositions.equals("5"))
+                {
+                    String mPositionOneMember = mBandFromDatabase.getPositionOneMember();
+                    String mPositionTwoMember = mBandFromDatabase.getPositionTwoMember();
+                    String mPositionThreeMember = mBandFromDatabase.getPositionThreeMember();
+                    String mPositionFourMember = mBandFromDatabase.getPositionFourMember();
+                    String mPositionFiveMember = mBandFromDatabase.getPositionFiveMember();
+
+                    mDatabase.child("Bands/" + mBandID).removeValue();
+
+                    if(!mPositionOneMember.equals("Vacant"))
+                    {
+                        mDatabase.child("Users/" + mPositionOneMember + "/isInBand").setValue(false);
+                        mDatabase.child("Users/" + mPositionOneMember + "/bandID").removeValue();
+                    }
+
+                    else if(!mPositionTwoMember.equals("Vacant"))
+                    {
+                        mDatabase.child("Users/" + mPositionTwoMember + "/isInBand").setValue(false);
+                        mDatabase.child("Users/" + mPositionTwoMember + "/bandID").removeValue();
+                    }
+
+                    else if(!mPositionThreeMember.equals("Vacant"))
+                    {
+                        mDatabase.child("Users/" + mPositionThreeMember + "/isInBand").setValue(false);
+                        mDatabase.child("Users/" + mPositionThreeMember + "/bandID").removeValue();
+                    }
+
+                    else if(!mPositionFourMember.equals("Vacant"))
+                    {
+                        mDatabase.child("Users/" + mPositionFourMember + "/isInBand").setValue(false);
+                        mDatabase.child("Users/" + mPositionFourMember + "/bandID").removeValue();
+                    }
+
+                    else if(!mPositionFiveMember.equals("Vacant"))
+                    {
+                        mDatabase.child("Users/" + mPositionFiveMember + "/isInBand").setValue(false);
+                        mDatabase.child("Users/" + mPositionFiveMember + "/bandID").removeValue();
+                    }
+                }
+
+                // A dialog is then shown to alert the user that the changes have been made
+                final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setTitle("Confirmation");
+                builder.setMessage("Band Deleted!");
+                builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i)
+                    {
+                        ReturnToHome();
+                    }
+                });
+                builder.setCancelable(false);
+                builder.show();
+            }
+        })
+            .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener()
+            {
+                public void onClick (DialogInterface dialog,int which)
+                {
+                    // close the dialog
+                }
+            }).
+            show();
+    }
+
     // If the youtube initialisation is successful load the URL from the text box if there is one
     @Override
     public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer youTubePlayer, boolean wasRestored)
@@ -1306,9 +1545,17 @@ public class MusicianUserBandManagementFragment extends Fragment implements YouT
             return matcher.group();
         }
 
+        // If the URL doesn't match this it means the url is probably a share link which is shortened
+        // This block will determine this if it's the case
         else
         {
-            return null;
+            String URL;
+            String[] parsedURL;
+
+            URL = youtubeURL.toString();
+            parsedURL = URL.split("/");
+
+            return parsedURL[3];
         }
     }
 
@@ -1327,10 +1574,12 @@ public class MusicianUserBandManagementFragment extends Fragment implements YouT
 
     private void ReturnToHome()
     {
-        // The user is then taken to the home fragment
-        getActivity().setTitle("Home");
-        final FragmentTransaction ft = getFragmentManager().beginTransaction();
-        ft.replace(R.id.frame, new MusicianUserHomeFragment(), "MusicianUserHomeFragment");
-        ft.commit();
+        getActivity().finish();
+        getActivity().overridePendingTransition(0,0);
+
+        Intent intent = new Intent(getActivity(), MusicianUserMainActivity.class);
+        startActivity(intent);
+
+        getFragmentManager().popBackStackImmediate();
     }
 }

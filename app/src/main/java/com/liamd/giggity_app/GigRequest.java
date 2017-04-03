@@ -9,17 +9,19 @@ public class GigRequest
     private String bandID;
     private String gigID;
     private String requestStatus;
+    private String venueID;
 
     public GigRequest()
     {
 
     }
 
-    public GigRequest(String bandID, String gigID, String requestStatus)
+    public GigRequest(String bandID, String gigID, String requestStatus, String venueID)
     {
         this.bandID = bandID;
         this.gigID = gigID;
         this.requestStatus = requestStatus;
+        this.venueID = venueID;
     }
 
     public String getBandID()
@@ -50,5 +52,15 @@ public class GigRequest
     public void setRequestStatus(String requestStatus)
     {
         this.requestStatus = requestStatus;
+    }
+
+    public String getVenueID()
+    {
+        return venueID;
+    }
+
+    public void setVenueID(String venueID)
+    {
+        this.venueID = venueID;
     }
 }

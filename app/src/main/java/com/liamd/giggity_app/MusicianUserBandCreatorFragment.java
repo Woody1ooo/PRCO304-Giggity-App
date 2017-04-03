@@ -9,11 +9,13 @@ import android.os.Bundle;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.support.v4.content.res.TypedArrayUtils;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -55,6 +57,7 @@ public class MusicianUserBandCreatorFragment extends Fragment implements YouTube
     private TextView mLocationChosenTextView;
     private Button mLaunchLocationFinderButton;
     private TextView mHelpTextView;
+    private Button checkUrlButton;
     private Button mCreateButton;
     private ProgressDialog mProgressDialog;
     private TextView mPositionOneTitle;
@@ -67,11 +70,14 @@ public class MusicianUserBandCreatorFragment extends Fragment implements YouTube
     private MultiSelectSpinner mPositionFourSpinner;
     private TextView mPositionFiveTitle;
     private MultiSelectSpinner mPositionFiveSpinner;
+    private Spinner mUserChosenPositionSpinner;
     private EditText youtubeUrlEditText;
 
     // Declare general variables
     private List<String> mGenreList;
     private List<String> mInstrumentList;
+    private ArrayList<String> mUserPositionList;
+    private ArrayAdapter<String> mUserPositionAdapter;
     private int PLACE_PICKER_REQUEST = 0;
     private String mBandID;
     private String mBandName;
@@ -113,6 +119,7 @@ public class MusicianUserBandCreatorFragment extends Fragment implements YouTube
         mLocationChosenTextView = (TextView) fragmentView.findViewById(R.id.bandLocationDetailsTextView);
         mLaunchLocationFinderButton = (Button) fragmentView.findViewById(R.id.placeFinderButton);
         mHelpTextView = (TextView) fragmentView.findViewById(R.id.locationHelpTextView);
+        checkUrlButton = (Button) fragmentView.findViewById(R.id.checkUrlButton);
         mCreateButton = (Button) fragmentView.findViewById(R.id.createButton);
         mProgressDialog = new ProgressDialog(getActivity());
         mPositionOneTitle = (TextView) fragmentView.findViewById(R.id.positionOneTextView);
@@ -125,6 +132,7 @@ public class MusicianUserBandCreatorFragment extends Fragment implements YouTube
         mPositionFourSpinner = (MultiSelectSpinner) fragmentView.findViewById(R.id.bandPositionFourSpinner);
         mPositionFiveTitle = (TextView) fragmentView.findViewById(R.id.positionFiveTextView);
         mPositionFiveSpinner = (MultiSelectSpinner) fragmentView.findViewById(R.id.bandPositionFiveSpinner);
+        mUserChosenPositionSpinner = (Spinner) fragmentView.findViewById(R.id.userPositionSpinner);
         youtubeUrlEditText = (EditText) fragmentView.findViewById(R.id.youtubeUrlEditText);
 
         // Initially hide all the position spinners/text views until the number chosen is selected from the spinner
@@ -164,6 +172,19 @@ public class MusicianUserBandCreatorFragment extends Fragment implements YouTube
         mInstrumentList.add("Drums");
         mInstrumentList.add("Keyboards");
         mInstrumentList.add("Piano");
+
+        // This list items are added here to prepare for obtaining the users chosen position
+        mUserPositionList = new ArrayList<>();
+        mUserPositionList.add("Position One");
+        mUserPositionList.add("Position Two");
+        mUserPositionList.add("Position Three");
+        mUserPositionList.add("Position Four");
+        mUserPositionList.add("Position Five");
+
+        // If one position is selected then this is the element added to the spinner for the user to select
+        mUserPositionAdapter = new ArrayAdapter<>(this.getActivity(), android.R.layout.simple_spinner_dropdown_item, mUserPositionList);
+        mUserPositionAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
+        mUserChosenPositionSpinner.setAdapter(mUserPositionAdapter);
 
         // This gets the number from the band positions spinner and then displays/hides the relevant components as needed
         mPositionsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
@@ -351,19 +372,15 @@ public class MusicianUserBandCreatorFragment extends Fragment implements YouTube
             }
         });
 
-        // When the user changes their focus on the youtube text box, the youtube widget will try and load if the text box is not empty
-        youtubeUrlEditText.setOnFocusChangeListener(new View.OnFocusChangeListener()
+        checkUrlButton.setOnClickListener(new View.OnClickListener()
         {
             @Override
-            public void onFocusChange(View view, boolean hasFocus)
+            public void onClick(View view)
             {
-                if (!hasFocus)
+                if (!TextUtils.isEmpty(youtubeUrlEditText.getText()))
                 {
-                    if (!TextUtils.isEmpty(youtubeUrlEditText.getText()))
-                    {
-                        youtubeUrlEntered = ParseURL(youtubeUrlEditText.getText());
-                        LoadYoutubePlayer();
-                    }
+                    youtubeUrlEntered = ParseURL(youtubeUrlEditText.getText());
+                    LoadYoutubePlayer();
                 }
             }
         });
@@ -409,7 +426,6 @@ public class MusicianUserBandCreatorFragment extends Fragment implements YouTube
     // When called, this should do all the relevant checks to create a band object and post it to the database
     private void CreateBand()
     {
-
         // This dialog is created to confirm that the user wants to edit the chosen fields
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle("Create Band");
@@ -775,9 +791,17 @@ public class MusicianUserBandCreatorFragment extends Fragment implements YouTube
             return matcher.group();
         }
 
+        // If the URL doesn't match this it means the url is probably a share link which is shortened
+        // This block will determine this if it's the case
         else
         {
-            return null;
+            String URL;
+            String[] parsedURL;
+
+            URL = youtubeURL.toString();
+            parsedURL = URL.split("/");
+
+            return parsedURL[3];
         }
     }
 
@@ -796,10 +820,12 @@ public class MusicianUserBandCreatorFragment extends Fragment implements YouTube
 
     private void ReturnToHome()
     {
-        // The user is then taken to the home fragment
-        getActivity().setTitle("Home");
-        final FragmentTransaction ft = getFragmentManager().beginTransaction();
-        ft.replace(R.id.frame, new MusicianUserHomeFragment(), "MusicianUserHomeFragment");
-        ft.commit();
+        getActivity().finish();
+        getActivity().overridePendingTransition(0,0);
+
+        Intent intent = new Intent(getActivity(), MusicianUserMainActivity.class);
+        startActivity(intent);
+
+        getFragmentManager().popBackStackImmediate();
     }
 }

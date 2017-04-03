@@ -191,6 +191,7 @@ public class MusicianUserGigDetailsFragment extends Fragment implements OnMapRea
                 {
                     mDatabase.child("MusicianSentGigRequests/" + mBandId + "/" + mGigId).child("bandID").setValue(mBandId);
                     mDatabase.child("MusicianSentGigRequests/" + mBandId + "/" + mGigId).child("gigID").setValue(mGigId);
+                    mDatabase.child("MusicianSentGigRequests/" + mBandId + "/" + mGigId).child("venueID").setValue(mVenueId);
                     mDatabase.child("MusicianSentGigRequests/" + mBandId + "/" + mGigId).child("requestStatus").setValue("Pending");
                     ConfirmDialog();
                 }

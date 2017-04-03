@@ -56,6 +56,7 @@ public class MusicianUserMainActivity extends AppCompatActivity
 
     // Declare general variables
     private String mLoggedInUserID;
+    private String mUserEmail;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -187,6 +188,7 @@ public class MusicianUserMainActivity extends AppCompatActivity
 
         // Calls the method to populate the drawer with the user data
         NavigationDrawerUserData();
+
         return true;
     }
 
@@ -232,8 +234,8 @@ public class MusicianUserMainActivity extends AppCompatActivity
 
         else if (id == R.id.nav_profile)
         {
-            //ClearBackStack(this);
-            getFragmentManager().popBackStackImmediate();
+            ClearBackStack(this);
+            //getFragmentManager().popBackStackImmediate();
 
             setTitle("My Musician Profile");
             MusicianUserProfileFragment fragment = new MusicianUserProfileFragment();
@@ -246,8 +248,8 @@ public class MusicianUserMainActivity extends AppCompatActivity
 
         else if (id == R.id.nav_gig_finder)
         {
-            //ClearBackStack(this);
-            getFragmentManager().popBackStackImmediate();
+            ClearBackStack(this);
+            //getFragmentManager().popBackStackImmediate();
 
             setTitle("Gig Finder");
             MusicianUserGigFinderFragment fragment = new MusicianUserGigFinderFragment();
@@ -263,7 +265,7 @@ public class MusicianUserMainActivity extends AppCompatActivity
             //ClearBackStack(this);
             getFragmentManager().popBackStackImmediate();
 
-            setTitle("Gig Finder");
+            setTitle("Gig Requests");
             MusicianUserGigRequestsFragment fragment = new MusicianUserGigRequestsFragment();
             FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
             fragmentTransaction.replace(R.id.frame, fragment
@@ -384,8 +386,6 @@ public class MusicianUserMainActivity extends AppCompatActivity
     // The image view needs to be initialised here as onCreate doesn't draw the drawer
     private void NavigationDrawerUserData()
     {
-        String userEmail;
-
         profileImageView = (CircleImageView) findViewById(R.id.headerProfileImage);
         navigationProfileEmailTextView = (TextView) findViewById(R.id.userEmailTextView);
 
@@ -409,8 +409,8 @@ public class MusicianUserMainActivity extends AppCompatActivity
             }
         });
 
-        userEmail = FirebaseAuth.getInstance().getCurrentUser().getEmail();
-        navigationProfileEmailTextView.setText(userEmail);
+        mUserEmail = FirebaseAuth.getInstance().getCurrentUser().getEmail();
+        navigationProfileEmailTextView.setText(mUserEmail);
     }
 
     private void Logout()

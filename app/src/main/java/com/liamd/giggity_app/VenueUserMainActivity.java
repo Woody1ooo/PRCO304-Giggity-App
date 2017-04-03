@@ -125,7 +125,9 @@ public class VenueUserMainActivity extends AppCompatActivity
 
         if (id == R.id.nav_venue_home)
         {
-            ClearBackStack(this);
+            //ClearBackStack(this);
+
+            getFragmentManager().popBackStackImmediate();
 
             setTitle("Home");
             VenueUserHomeFragment fragment = new VenueUserHomeFragment();
@@ -138,7 +140,9 @@ public class VenueUserMainActivity extends AppCompatActivity
 
         else if (id == R.id.nav_create_gig)
         {
-            ClearBackStack(this);
+            //ClearBackStack(this);
+
+            getFragmentManager().popBackStackImmediate();
 
             setTitle("Create a Gig");
             VenueUserCreateGigFragment fragment = new VenueUserCreateGigFragment();
@@ -151,7 +155,9 @@ public class VenueUserMainActivity extends AppCompatActivity
 
         else if(id == R.id.nav_my_gigs)
         {
-            ClearBackStack(this);
+            //ClearBackStack(this);
+
+            getFragmentManager().popBackStackImmediate();
 
             setTitle("My Gigs");
             VenueUserViewGigsFragment fragment = new VenueUserViewGigsFragment();
@@ -163,6 +169,16 @@ public class VenueUserMainActivity extends AppCompatActivity
 
         else if(id == R.id.nav_gig_requests)
         {
+            //ClearBackStack(this);
+
+            getFragmentManager().popBackStackImmediate();
+
+            setTitle("Gig Requests");
+            VenueUserGigRequestsFragment fragment = new VenueUserGigRequestsFragment();
+            FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.frame, fragment, "VenueUserGigRequestsFragment")
+                    .addToBackStack(null)
+                    .commit();
 
         }
 

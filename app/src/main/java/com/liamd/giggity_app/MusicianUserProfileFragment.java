@@ -73,6 +73,7 @@ public class MusicianUserProfileFragment extends Fragment implements YouTubePlay
     private TextView chosenLocationTextView;
     private Button launchHomeFinderButton;
     private EditText youtubeUrlEditText;
+    private Button checkUrlButton;
     private Button saveButton;
     private ProgressDialog mProgressDialog;
 
@@ -128,6 +129,7 @@ public class MusicianUserProfileFragment extends Fragment implements YouTubePlay
         chosenLocationTextView = (TextView) fragmentView.findViewById(R.id.locationDetailsTextView);
         launchHomeFinderButton = (Button) fragmentView.findViewById(R.id.placeFinderButton);
         youtubeUrlEditText = (EditText) fragmentView.findViewById(R.id.youtubeUrlEditText);
+        checkUrlButton = (Button) fragmentView.findViewById(R.id.checkUrlButton);
         saveButton = (Button) fragmentView.findViewById(R.id.saveButton);
         mProgressDialog = new ProgressDialog(getContext());
 
@@ -260,19 +262,15 @@ public class MusicianUserProfileFragment extends Fragment implements YouTubePlay
             }
         });
 
-        // When the user changes their focus on the youtube text box, the youtube widget will try and load if the text box is not empty
-        youtubeUrlEditText.setOnFocusChangeListener(new View.OnFocusChangeListener()
+        checkUrlButton.setOnClickListener(new View.OnClickListener()
         {
             @Override
-            public void onFocusChange(View view, boolean hasFocus)
+            public void onClick(View view)
             {
-                if (!hasFocus)
+                if (!TextUtils.isEmpty(youtubeUrlEditText.getText()))
                 {
-                    if (!TextUtils.isEmpty(youtubeUrlEditText.getText()))
-                    {
-                        youtubeUrlEntered = ParseURL(youtubeUrlEditText.getText());
-                        LoadYoutubePlayer();
-                    }
+                    youtubeUrlEntered = ParseURL(youtubeUrlEditText.getText());
+                    LoadYoutubePlayer();
                 }
             }
         });
@@ -402,6 +400,8 @@ public class MusicianUserProfileFragment extends Fragment implements YouTubePlay
     @Override
     public void onActivityResult(int requestCode, int resultCode, final Intent data)
     {
+        mProgressDialog.hide();
+
         // When the image has been selected upload the image to the firebase URL specified by mProfileImageReference
         if (requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK && null != data)
         {
@@ -605,9 +605,19 @@ public class MusicianUserProfileFragment extends Fragment implements YouTubePlay
         if (matcher.find())
         {
             return matcher.group();
-        } else
+        }
+
+        // If the URL doesn't match this it means the url is probably a share link which is shortened
+        // This block will determine this if it's the case
+        else
         {
-            return null;
+            String URL;
+            String[] parsedURL;
+
+            URL = youtubeURL.toString();
+            parsedURL = URL.split("/");
+
+            return parsedURL[3];
         }
     }
 
@@ -704,10 +714,18 @@ public class MusicianUserProfileFragment extends Fragment implements YouTubePlay
 
     private void ReturnToHome()
     {
+        getActivity().finish();
+        getActivity().overridePendingTransition(0,0);
+
+        Intent intent = new Intent(getActivity(), MusicianUserMainActivity.class);
+        startActivity(intent);
+
+        getFragmentManager().popBackStackImmediate();
+
         // The user is then taken to the home fragment
-        getActivity().setTitle("Home");
-        final FragmentTransaction ft = getFragmentManager().beginTransaction();
-        ft.replace(R.id.frame, new MusicianUserHomeFragment(), "MusicianUserHomeFragment");
-        ft.commit();
+        //getActivity().setTitle("Home");
+        //final FragmentTransaction ft = getFragmentManager().beginTransaction();
+        //ft.replace(R.id.frame, new MusicianUserHomeFragment(), "MusicianUserHomeFragment");
+        //ft.commit();
     }
 }

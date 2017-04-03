@@ -4,7 +4,6 @@ package com.liamd.giggity_app;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.FragmentManager;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.app.Fragment;
@@ -36,7 +35,7 @@ public class VenueUserViewGigsFragment extends Fragment
     private List<Gig> mListOfUsersGigs = new ArrayList<>();
 
     private ListView mGigsListView;
-    private VenueGigsAdapter adapter;
+    private VenueUserGigsAdapter adapter;
 
     // Declare Firebase specific variables
     private FirebaseAuth mAuth;
@@ -137,8 +136,8 @@ public class VenueUserViewGigsFragment extends Fragment
 
                 else
                 {
-                    // Using the custom VenueGigsAdapter, the list of users gigs can be displayed
-                    adapter = new VenueGigsAdapter(getActivity(), R.layout.venue_user_gig_list, mListOfUsersGigs);
+                    // Using the custom VenueUserGigsAdapter, the list of users gigs can be displayed
+                    adapter = new VenueUserGigsAdapter(getActivity(), R.layout.venue_user_gig_list, mListOfUsersGigs);
                     mGigsListView.setAdapter(adapter);
                 }
             }

@@ -161,6 +161,25 @@
                 android:paddingLeft="10dp"/>
 
             <TextView
+                android:id="@+id/userChosenPositionTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:paddingLeft="10dp"
+                android:text="Your Chosen Position"
+                android:textAppearance="@style/TextAppearance.AppCompat.Menu"/>
+
+            <Spinner
+                android:id="@+id/userPositionSpinner"
+                android:layout_width="fill_parent"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="32dp"
+                android:layout_marginTop="22dp"
+                android:layout_weight="0.15"
+                android:paddingLeft="10dp"
+                android:spinnerMode="dialog"/>
+
+            <TextView
                 android:id="@+id/venueFinderHeadingTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -215,13 +234,22 @@
                 android:id="@+id/youtubeUrlEditText"
                 android:paddingLeft="10dp"/>
 
+            <Button
+                android:id="@+id/checkUrlButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@color/colorPrimaryDark"
+                android:text="Submit URL"
+                android:textColor="@color/mdtp_white"
+                android:layout_marginTop="22dp"/>
+
             <FrameLayout
                 android:id="@+id/youtubeLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
-                android:visibility="visible"
-                android:layout_marginTop="22dp"/>
+                android:visibility="visible"/>
 
             <Button
                 android:id="@+id/createButton"

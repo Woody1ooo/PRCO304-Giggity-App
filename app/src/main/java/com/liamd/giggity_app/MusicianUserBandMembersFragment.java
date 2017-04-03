@@ -153,7 +153,7 @@ public class MusicianUserBandMembersFragment extends Fragment
         mPositionFiveFireButton = (Button) fragmentView.findViewById(R.id.firePositionFiveButton);
 
         // This takes a snapshot from the database and passes it to be used to populate the visual components
-        mDatabase.addValueEventListener(new ValueEventListener()
+        mDatabase.addListenerForSingleValueEvent(new ValueEventListener()
         {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot)

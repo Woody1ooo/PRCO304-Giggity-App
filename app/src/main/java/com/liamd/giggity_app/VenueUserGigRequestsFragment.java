@@ -22,7 +22,7 @@ import java.util.ArrayList;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MusicianUserGigRequestsFragment extends Fragment
+public class VenueUserGigRequestsFragment extends Fragment
 {
     // Declare Firebase specific variables
     private FirebaseAuth mAuth;
@@ -31,29 +31,28 @@ public class MusicianUserGigRequestsFragment extends Fragment
     // Declare Visual Components
     private ListView mSentGigRequestsListView;
     private ListView mReceivedGigRequestsListView;
-    private MusicianUserGigRequestsAdapter mSentGigRequestsAdapter;
-    private MusicianUserGigRequestsAdapter mReceivedGigRequestsAdapter;
+    private VenueUserGigRequestsAdapter mSentGigRequestsAdapter;
+    private VenueUserGigRequestsAdapter mReceivedGigRequestsAdapter;
 
     // Declare General Variables
     private ArrayList<GigRequest> mListOfGigRequestsSent = new ArrayList<>();
     private ArrayList<GigRequest> mListOfGigRequestsReceived = new ArrayList<>();
     private ArrayList<GigRequest> mListOfFilteredGigRequestsReceived = new ArrayList<>();
     private DataSnapshot mDataSnapshot;
-    private String mGigIdKey;
-    private String mBandId;
+    private String mBandIdKey;
+    private String mVenueId;
 
-    public MusicianUserGigRequestsFragment()
+    public VenueUserGigRequestsFragment()
     {
         // Required empty public constructor
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
     {
         // Inflate the layout for this fragment
-        View fragmentView = inflater.inflate(R.layout.musician_user_fragment_gig_requests, container, false);
+        View fragmentView = inflater.inflate(R.layout.venue_user_fragment_gig_requests, container, false);
 
         // This initialises the tabs used to hold the different views
         TabHost tabs = (TabHost) fragmentView.findViewById(R.id.tabhost);
@@ -101,18 +100,33 @@ public class MusicianUserGigRequestsFragment extends Fragment
 
     private void PopulateListViews()
     {
-        mBandId = mDataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/bandID").getValue().toString();
+        mVenueId = mDataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/venueID").getValue().toString();
 
         // This iterates through the band requests that users have sent and adds them to a list (mListOfUserRequestsSent)
-        Iterable<DataSnapshot> sentRequestChildren = mDataSnapshot.child("MusicianSentGigRequests/" + mBandId).getChildren();
-        for (DataSnapshot child : sentRequestChildren)
+        Iterable<DataSnapshot> receivedRequestChildren = mDataSnapshot.child("MusicianSentGigRequests/").getChildren();
+        for (DataSnapshot child : receivedRequestChildren)
         {
-            GigRequest gigRequest;
-            gigRequest = child.getValue(GigRequest.class);
-            mListOfGigRequestsSent.add(gigRequest);
+            // The key is obtained from the level below to then get the children below that
+            mBandIdKey = child.getKey();
+
+            Iterable<DataSnapshot> levelDownReceivedRequestChildren = mDataSnapshot.child("MusicianSentGigRequests/" + mBandIdKey).getChildren();
+            for (DataSnapshot levelDownChild : levelDownReceivedRequestChildren)
+            {
+                GigRequest gigRequest;
+                gigRequest = levelDownChild.getValue(GigRequest.class);
+                mListOfGigRequestsReceived.add(gigRequest);
+
+                for (int i = 0; i < mListOfGigRequestsReceived.size(); i++)
+                {
+                    if(mListOfGigRequestsReceived.get(i).getVenueID().equals(mVenueId))
+                    {
+                        mListOfFilteredGigRequestsReceived.add(mListOfGigRequestsReceived.get(i));
+                    }
+                }
+            }
         }
 
-        mSentGigRequestsAdapter = new MusicianUserGigRequestsAdapter(getActivity(), R.layout.musician_user_gig_requests_list, mListOfGigRequestsSent, mDataSnapshot);
-        mSentGigRequestsListView.setAdapter(mSentGigRequestsAdapter);
+        mReceivedGigRequestsAdapter = new VenueUserGigRequestsAdapter(getActivity(), R.layout.venue_user_gig_requests_list, mListOfFilteredGigRequestsReceived , mDataSnapshot);
+        mReceivedGigRequestsListView.setAdapter(mReceivedGigRequestsAdapter);
     }
 }

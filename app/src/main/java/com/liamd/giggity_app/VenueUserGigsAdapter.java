@@ -15,7 +15,7 @@ import java.util.List;
  * Created by liamd on 27/02/2017.
  */
 
-public class VenueGigsAdapter extends ArrayAdapter<Gig>
+public class VenueUserGigsAdapter extends ArrayAdapter<Gig>
 {
     // Declare visual components
     private TextView mGigName;
@@ -24,7 +24,7 @@ public class VenueGigsAdapter extends ArrayAdapter<Gig>
     // Declare various variables required
     private int resource;
 
-    public VenueGigsAdapter(Context context, int resource, List<Gig> items)
+    public VenueUserGigsAdapter(Context context, int resource, List<Gig> items)
     {
         super(context, resource, items);
         this.resource = resource;

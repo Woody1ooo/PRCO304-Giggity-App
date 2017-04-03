@@ -324,7 +324,7 @@ public class MusicianUserBandResultsFragment extends Fragment implements OnMapRe
     {
         GetBandLocation();
 
-        // Using the custom VenueGigsAdapter, the list of users gigs can be displayed
+        // Using the custom VenueUserGigsAdapter, the list of users gigs can be displayed
         adapter = new MusicianUserBandsAdapter(getActivity(), R.layout.musician_user_band_list, mListOfBands);
 
         mBandsListView.setAdapter(adapter);
