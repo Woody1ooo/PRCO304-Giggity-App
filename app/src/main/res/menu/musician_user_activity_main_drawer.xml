@@ -28,6 +28,10 @@
                                 android:id="@+id/nav_my_gigs"
                                 android:icon="@drawable/ic_event_black_24dp"
                                 android:title="My Gigs"/>
+                            <item
+                                android:id="@+id/nav_requests_gig"
+                                android:icon="@drawable/ic_swap_vert_black_24dp"
+                                android:title="Gig Requests"/>
                         </group>
                     </menu>
                 </item>

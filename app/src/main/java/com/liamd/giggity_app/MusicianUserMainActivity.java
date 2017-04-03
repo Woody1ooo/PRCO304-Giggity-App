@@ -218,7 +218,9 @@ public class MusicianUserMainActivity extends AppCompatActivity
         // Each time a navigation item is selected this clears the users previous path as they are now entering a different section
         if (id == R.id.nav_home)
         {
-            ClearBackStack(this);
+            //ClearBackStack(this);
+
+            getFragmentManager().popBackStackImmediate();
 
             setTitle("Home");
             MusicianUserHomeFragment fragment = new MusicianUserHomeFragment();
@@ -230,7 +232,8 @@ public class MusicianUserMainActivity extends AppCompatActivity
 
         else if (id == R.id.nav_profile)
         {
-            ClearBackStack(this);
+            //ClearBackStack(this);
+            getFragmentManager().popBackStackImmediate();
 
             setTitle("My Musician Profile");
             MusicianUserProfileFragment fragment = new MusicianUserProfileFragment();
@@ -243,7 +246,8 @@ public class MusicianUserMainActivity extends AppCompatActivity
 
         else if (id == R.id.nav_gig_finder)
         {
-            ClearBackStack(this);
+            //ClearBackStack(this);
+            getFragmentManager().popBackStackImmediate();
 
             setTitle("Gig Finder");
             MusicianUserGigFinderFragment fragment = new MusicianUserGigFinderFragment();
@@ -254,9 +258,24 @@ public class MusicianUserMainActivity extends AppCompatActivity
                     .commit();
         }
 
+        else if (id == R.id.nav_requests_gig)
+        {
+            //ClearBackStack(this);
+            getFragmentManager().popBackStackImmediate();
+
+            setTitle("Gig Finder");
+            MusicianUserGigRequestsFragment fragment = new MusicianUserGigRequestsFragment();
+            FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.frame, fragment
+                    , "MusicianUserGigRequestsFragment")
+                    .addToBackStack(null)
+                    .commit();
+        }
+
         else if (id == R.id.nav_band_finder)
         {
-            ClearBackStack(this);
+            //ClearBackStack(this);
+            getFragmentManager().popBackStackImmediate();
 
             setTitle("Band Finder");
             MusicianUserBandFinderFragment fragment = new MusicianUserBandFinderFragment();
@@ -269,7 +288,8 @@ public class MusicianUserMainActivity extends AppCompatActivity
 
         else if (id == R.id.nav_band_creator)
         {
-            ClearBackStack(this);
+            //ClearBackStack(this);
+            getFragmentManager().popBackStackImmediate();
 
             setTitle("Band Creator");
             MusicianUserBandCreatorFragment fragment = new MusicianUserBandCreatorFragment();
@@ -282,7 +302,8 @@ public class MusicianUserMainActivity extends AppCompatActivity
 
         else if (id == R.id.nav_requests_musician)
         {
-            ClearBackStack(this);
+            //ClearBackStack(this);
+            getFragmentManager().popBackStackImmediate();
 
             setTitle("Band Requests");
             MusicianUserBandRequestsNotInBandFragment fragment = new MusicianUserBandRequestsNotInBandFragment();
@@ -295,7 +316,8 @@ public class MusicianUserMainActivity extends AppCompatActivity
 
         else if (id == R.id.nav_requests_band)
         {
-            ClearBackStack(this);
+            //ClearBackStack(this);
+            getFragmentManager().popBackStackImmediate();
 
             setTitle("Band Requests");
             MusicianUserBandRequestsInBandFragment fragment = new MusicianUserBandRequestsInBandFragment();
@@ -308,7 +330,8 @@ public class MusicianUserMainActivity extends AppCompatActivity
 
         else if (id == R.id.nav_band_members)
         {
-            ClearBackStack(this);
+            //ClearBackStack(this);
+            getFragmentManager().popBackStackImmediate();
 
             setTitle("Band Members");
             MusicianUserBandMembersFragment fragment = new MusicianUserBandMembersFragment();
@@ -321,7 +344,8 @@ public class MusicianUserMainActivity extends AppCompatActivity
 
         else if (id == R.id.nav_settings)
         {
-            ClearBackStack(this);
+            //ClearBackStack(this);
+            getFragmentManager().popBackStackImmediate();
 
             setTitle("Settings");
             SettingsFragment fragment = new SettingsFragment();
@@ -334,7 +358,8 @@ public class MusicianUserMainActivity extends AppCompatActivity
 
         else if (id == R.id.nav_band_manager)
         {
-            ClearBackStack(this);
+            //ClearBackStack(this);
+            getFragmentManager().popBackStackImmediate();
 
             setTitle("Band Manager");
             MusicianUserBandManagementFragment fragment = new MusicianUserBandManagementFragment();

@@ -1,12 +1,11 @@
 package com.liamd.giggity_app;
 
+import android.app.Activity;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.FragmentTransaction;
-import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -15,13 +14,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.facebook.login.LoginManager;
-import com.google.android.gms.ads.formats.NativeAd;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.squareup.picasso.Picasso;
@@ -71,7 +67,7 @@ public class VenueUserMainActivity extends AppCompatActivity
         // Load Home fragment by default
         setTitle("Home");
         VenueUserHomeFragment fragment = new VenueUserHomeFragment();
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.frame, fragment
                 , "VenueUserHomeFragment");
         fragmentTransaction.commit();
@@ -129,31 +125,40 @@ public class VenueUserMainActivity extends AppCompatActivity
 
         if (id == R.id.nav_venue_home)
         {
+            ClearBackStack(this);
+
             setTitle("Home");
             VenueUserHomeFragment fragment = new VenueUserHomeFragment();
-            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+            FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
             fragmentTransaction.replace(R.id.frame, fragment
-                    , "VenueUserHomeFragment");
-            fragmentTransaction.commit();
+                    , "VenueUserHomeFragment")
+                    .addToBackStack(null)
+                    .commit();
         }
 
         else if (id == R.id.nav_create_gig)
         {
+            ClearBackStack(this);
+
             setTitle("Create a Gig");
             VenueUserCreateGigFragment fragment = new VenueUserCreateGigFragment();
-            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+            FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
             fragmentTransaction.replace(R.id.frame, fragment
-                    , "MusicianUserHomeFragment");
-            fragmentTransaction.commit();
+                    , "MusicianUserHomeFragment")
+                    .addToBackStack(null)
+                    .commit();
         }
 
         else if(id == R.id.nav_my_gigs)
         {
+            ClearBackStack(this);
+
             setTitle("My Gigs");
             VenueUserViewGigsFragment fragment = new VenueUserViewGigsFragment();
-            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-            fragmentTransaction.replace(R.id.frame, fragment, "VenueUserViewGigsFragment");
-            fragmentTransaction.commit();
+            FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.frame, fragment, "VenueUserViewGigsFragment")
+                    .addToBackStack(null)
+                    .commit();
         }
 
         else if(id == R.id.nav_gig_requests)
@@ -197,5 +202,21 @@ public class VenueUserMainActivity extends AppCompatActivity
         Intent returnToLoginActivity= new Intent(VenueUserMainActivity.this, LoginActivity.class);
         returnToLoginActivity.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         startActivity(returnToLoginActivity);
+    }
+
+    // This clears the back stack of fragments and adds a home fragment
+    private static void ClearBackStack(Activity activity)
+    {
+        FragmentManager fragmentManager = activity.getFragmentManager();
+        for(int i = 0; i < fragmentManager.getBackStackEntryCount(); ++i)
+        {
+            fragmentManager.popBackStack();
+        }
+
+        VenueUserHomeFragment fragment = new VenueUserHomeFragment();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.frame, fragment
+                , "VenueUserHomeFragment");
+        fragmentTransaction.commit();
     }
 }

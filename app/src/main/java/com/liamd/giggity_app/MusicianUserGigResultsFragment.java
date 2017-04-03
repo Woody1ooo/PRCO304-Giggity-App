@@ -65,7 +65,7 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
 
     // Declare Visual Components
     private ListView mGigsListView;
-    private MusicianGigsAdapter adapter;
+    private MusicianUserGigsAdapter adapter;
 
     // Declare variables to be stored to pass to the next fragment
     private String mGigId;
@@ -425,7 +425,7 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
             // Once a match has been found the data can be extracted and passed as a bundle argument
             if(mListOfGigMarkerInfo.get(i).getMarkerId().equals(marker.getId()))
             {
-                arguments.putString("GigId", mListOfGigMarkerInfo.get(i).getGigId());
+                arguments.putString("GigID", mListOfGigMarkerInfo.get(i).getGigId());
                 arguments.putString("GigTitle", mListOfGigMarkerInfo.get(i).getGigName());
                 arguments.putString("GigStartDate", mListOfGigMarkerInfo.get(i).getGigStartDate().toString());
                 arguments.putString("GigEndDate", mListOfGigMarkerInfo.get(i).getGigEndDate().toString());
@@ -452,7 +452,7 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
         GetGigLocation();
 
         // Using the custom VenueGigsAdapter, the list of users gigs can be displayed
-        adapter = new MusicianGigsAdapter(getActivity(), R.layout.musician_user_gig_list, mListOfGigs);
+        adapter = new MusicianUserGigsAdapter(getActivity(), R.layout.musician_user_gig_list, mListOfGigs);
 
         mGigsListView.setAdapter(adapter);
     }

@@ -172,7 +172,7 @@ public class MusicianUserBandRequestsInBandFragment extends Fragment
             }
         }
 
-        //mSentUserRequestsAdapter = new MusicianBandRequestsAdapter(getActivity(), R.layout.musician_user_user_requests_list, mListOfUserRequestsSent);
+        //mSentUserRequestsAdapter = new MusicianUserBandRequestsAdapter(getActivity(), R.layout.musician_user_user_requests_list, mListOfUserRequestsSent);
         mReceivedUserRequestsAdapter = new MusicianUserRequestsAdapter(getActivity(), R.layout.musician_user_user_requests_list, mListOfUserRequestsReceived);
 
         //mSentBandRequestsListView.setAdapter(mSentBandRequestsAdapter);

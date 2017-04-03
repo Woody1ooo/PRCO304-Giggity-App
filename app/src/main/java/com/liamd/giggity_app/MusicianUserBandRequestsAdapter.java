@@ -23,7 +23,7 @@ import java.util.List;
  * Created by liamd on 28/03/2017.
  */
 
-public class MusicianBandRequestsAdapter extends ArrayAdapter<BandRequest>
+public class MusicianUserBandRequestsAdapter extends ArrayAdapter<BandRequest>
 {
     // Declare visual components
     private TextView mBandNameTextView;
@@ -36,7 +36,7 @@ public class MusicianBandRequestsAdapter extends ArrayAdapter<BandRequest>
     // Declare various variables required
     private int resource;
 
-    public MusicianBandRequestsAdapter(Context context, int resource, List<BandRequest> items)
+    public MusicianUserBandRequestsAdapter(Context context, int resource, List<BandRequest> items)
     {
         super(context, resource, items);
         this.resource = resource;

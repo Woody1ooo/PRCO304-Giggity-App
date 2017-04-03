@@ -57,7 +57,7 @@ public class MusicianUserBandResultsFragment extends Fragment implements OnMapRe
 
     // Declare Visual Components
     private ListView mBandsListView;
-    private MusicianBandsAdapter adapter;
+    private MusicianUserBandsAdapter adapter;
 
     // Declare variables to be stored to pass to the next fragment
     private String mBandId;
@@ -325,7 +325,7 @@ public class MusicianUserBandResultsFragment extends Fragment implements OnMapRe
         GetBandLocation();
 
         // Using the custom VenueGigsAdapter, the list of users gigs can be displayed
-        adapter = new MusicianBandsAdapter(getActivity(), R.layout.musician_user_band_list, mListOfBands);
+        adapter = new MusicianUserBandsAdapter(getActivity(), R.layout.musician_user_band_list, mListOfBands);
 
         mBandsListView.setAdapter(adapter);
     }

@@ -31,8 +31,8 @@ public class MusicianUserBandRequestsNotInBandFragment extends Fragment
     // Declare Visual Components
     private ListView mSentBandRequestsListView;
     private ListView mReceivedBandRequestsListView;
-    private MusicianBandRequestsAdapter mSentBandRequestsAdapter;
-    private MusicianBandRequestsAdapter mReceivedBandRequestsAdapter;
+    private MusicianUserBandRequestsAdapter mSentBandRequestsAdapter;
+    private MusicianUserBandRequestsAdapter mReceivedBandRequestsAdapter;
 
     // Declare General Variables
     private ArrayList<BandRequest> mListOfBandRequestsSent = new ArrayList<>();
@@ -117,8 +117,8 @@ public class MusicianUserBandRequestsNotInBandFragment extends Fragment
         }
         */
 
-        mSentBandRequestsAdapter = new MusicianBandRequestsAdapter(getActivity(), R.layout.musician_user_band_requests_list, mListOfBandRequestsSent);
-        //mReceivedBandRequestsAdapter = new MusicianBandRequestsAdapter(getActivity(), R.layout.musician_user_band_requests_list, mReceivedBandRequestsListView);
+        mSentBandRequestsAdapter = new MusicianUserBandRequestsAdapter(getActivity(), R.layout.musician_user_band_requests_list, mListOfBandRequestsSent);
+        //mReceivedBandRequestsAdapter = new MusicianUserBandRequestsAdapter(getActivity(), R.layout.musician_user_band_requests_list, mReceivedBandRequestsListView);
 
         mSentBandRequestsListView.setAdapter(mSentBandRequestsAdapter);
         //mReceivedBandRequestsListView.setAdapter(mReceivedBandRequestsAdapter);

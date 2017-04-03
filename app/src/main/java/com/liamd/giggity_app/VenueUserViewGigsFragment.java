@@ -1,10 +1,14 @@
 package com.liamd.giggity_app;
 
 
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.FragmentManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -101,9 +105,42 @@ public class VenueUserViewGigsFragment extends Fragment
                 // This sorts the list of gigs by date
                 Collections.sort(mListOfUsersGigs, new CustomComparator());
 
-                // Using the custom VenueGigsAdapter, the list of users gigs can be displayed
-                adapter = new VenueGigsAdapter(getActivity(), R.layout.venue_user_gig_list, mListOfUsersGigs);
-                mGigsListView.setAdapter(adapter);
+                if(mListOfUsersGigs.isEmpty())
+                {
+                    final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    builder.setIcon(R.drawable.ic_info_outline_black_24dp);
+                    builder.setTitle("No Gigs!");
+                    builder.setMessage("You haven't created any gigs yet! Would you like to create one?");
+                    builder.setPositiveButton("Yes", new DialogInterface.OnClickListener()
+                    {
+                        public void onClick(DialogInterface dialog, int which)
+                        {
+                            getActivity().setTitle("Create a Gig");
+                            VenueUserCreateGigFragment fragment = new VenueUserCreateGigFragment();
+                            FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+                            fragmentTransaction.replace(R.id.frame, fragment, "VenueUserCreateGigFragment")
+                                    .addToBackStack(null)
+                                    .commit();
+                        }
+                    });
+                    builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i)
+                        {
+                            ClearBackStack(getActivity());
+                        }
+                    });
+                    builder.setCancelable(false);
+                    builder.show();
+                }
+
+                else
+                {
+                    // Using the custom VenueGigsAdapter, the list of users gigs can be displayed
+                    adapter = new VenueGigsAdapter(getActivity(), R.layout.venue_user_gig_list, mListOfUsersGigs);
+                    mGigsListView.setAdapter(adapter);
+                }
             }
 
             @Override
@@ -134,10 +171,10 @@ public class VenueUserViewGigsFragment extends Fragment
 
                 // Creates a new fragment transaction to display the details of the selected
                 // gig. Some custom animation has been added also.
-                FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager()
+                FragmentTransaction fragmentTransaction = getActivity().getFragmentManager()
                         .beginTransaction();
-                fragmentTransaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left);
-                fragmentTransaction.replace(R.id.frame, fragment, "VenueUserGigDetailsFragment")
+                fragmentTransaction.setCustomAnimations(R.animator.enter_from_right, R.animator.enter_from_right);
+                fragmentTransaction.replace(R.id.frame, fragment, "VenueUserViewGigDetailsFragment")
                         .addToBackStack(null).commit();
 
                 // These must be cleared to prevent duplication as the database is called again
@@ -150,5 +187,22 @@ public class VenueUserViewGigsFragment extends Fragment
         });
 
         return fragmentView;
+    }
+
+    // This clears the back stack of fragments and adds a home fragment
+    private static void ClearBackStack(Activity activity)
+    {
+        FragmentManager fragmentManager = activity.getFragmentManager();
+        for(int i = 0; i < fragmentManager.getBackStackEntryCount(); ++i)
+        {
+            fragmentManager.popBackStack();
+        }
+
+        activity.setTitle("Home");
+        VenueUserHomeFragment fragment = new VenueUserHomeFragment();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.frame, fragment
+                , "VenueUserHomeFragment");
+        fragmentTransaction.commit();
     }
 }

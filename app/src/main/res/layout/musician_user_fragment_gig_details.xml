@@ -16,12 +16,14 @@
             android:orientation="vertical">
 
             <TextView
-                android:text="Gig Name"
+                android:id="@+id/textView18"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/textView18"
+                android:layout_marginLeft="10dp"
                 android:paddingTop="20dp"
-                android:layout_marginLeft="10dp"/>
+                android:text="Gig Name"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="16sp"/>
 
             <TextView
                 android:id="@+id/gigNameTextView"
@@ -31,12 +33,37 @@
                 android:paddingTop="20dp"/>
 
             <TextView
-                android:text="Gig Start Date"
+                android:id="@+id/textView21"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/textView19"
+                android:layout_marginLeft="10dp"
                 android:paddingTop="20dp"
-                android:layout_marginLeft="10dp"/>
+                android:text="Venue"
+                android:textColor="@color/colorAccent"
+                android:textSize="16sp"/>
+
+            <TextView
+                android:id="@+id/venueTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:paddingTop="20dp"/>
+
+            <com.google.android.gms.maps.MapView
+                android:id="@+id/venueMapView"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_marginTop="10dp"/>
+
+            <TextView
+                android:id="@+id/textView19"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:paddingTop="20dp"
+                android:text="Gig Start Date"
+                android:textColor="@color/colorAccent"
+                android:textSize="16sp"/>
 
             <TextView
                 android:id="@+id/startDateTextView"
@@ -46,34 +73,31 @@
                 android:paddingTop="20dp"/>
 
             <TextView
-                android:text="Gig End Date"
+                android:id="@+id/textView20"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/textView20"
+                android:layout_marginLeft="10dp"
                 android:paddingTop="20dp"
-                android:layout_marginLeft="10dp"/>
+                android:text="Gig End Date"
+                android:textColor="@color/colorAccent"
+                android:textSize="16sp"/>
 
             <TextView
                 android:id="@+id/finishDateTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
-                android:paddingTop="20dp"/>
-
-            <TextView
-                android:text="Venue"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/textView21"
                 android:paddingTop="20dp"
-                android:layout_marginLeft="10dp"/>
+                android:layout_marginBottom="10dp"/>
 
-            <TextView
-                android:id="@+id/venueTextView"
+            <Button
+                android:id="@+id/applyButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:paddingTop="20dp"/>
+                android:background="@color/colorPrimary"
+                android:text="Apply"
+                android:textColor="@color/mdtp_white"/>
+
         </LinearLayout>
     </ScrollView>
 </FrameLayout>
