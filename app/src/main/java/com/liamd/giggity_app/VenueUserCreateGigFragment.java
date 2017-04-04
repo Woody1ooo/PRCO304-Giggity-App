@@ -461,6 +461,7 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
                                 mDatabase.child("Gigs/" + gigId).setValue(gigToInsert);
 
                                 mDatabase.child("Gigs/" + gigId).child("genres").setValue(mGenresSpinner.getSelectedItemsAsString());
+                                mDatabase.child("Gigs/" + gigId).child("bookedAct").setValue("Vacant");
 
                                 // A dialog is then shown to alert the user that the changes have been made
                                 final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -509,6 +510,7 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
                                     mDatabase.child("Gigs/" + gigId).setValue(gigToInsert);
 
                                     mDatabase.child("Gigs/" + gigId).child("genres").setValue(mGenresSpinner.getSelectedItemsAsString());
+                                    mDatabase.child("Gigs/" + gigId).child("bookedAct").setValue("Vacant");
 
                                     // A dialog is then shown to alert the user that the changes have been made
                                     final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());

@@ -2,6 +2,7 @@
              xmlns:tools="http://schemas.android.com/tools"
              android:layout_width="match_parent"
              android:layout_height="match_parent"
+             xmlns:app="http://schemas.android.com/apk/res-auto"
              tools:context="com.liamd.giggity_app.VenueUserViewGigDetailsFragment">
 
     <!-- TODO: Update blank fragment layout -->
@@ -9,160 +10,234 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-    <TextView
-        android:text="Gig Name"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingTop="20dp"
-        android:paddingLeft="10dp"
-        android:id="@+id/textView11"
-        android:textSize="16sp"
-        android:textColor="@color/cast_expanded_controller_background_color"/>
-
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:inputType="textPersonName"
-        android:paddingLeft="10dp"
-        android:ems="10"
-        android:id="@+id/gigNameEditText"/>
-
-        <TextView
-            android:text="Start Date"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="20dp"
-            android:paddingLeft="10dp"
-            android:id="@+id/textView13"
-            android:textSize="16sp"
-            android:textColor="@color/cast_expanded_controller_background_color"/>
+            android:orientation="vertical">
 
-        <TextView
-            android:text="No date selected!"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="20dp"
-            android:paddingLeft="10dp"
-            android:id="@+id/StartDateSelectedLabel"/>
+            <TextView
+                android:id="@+id/textView11"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="10dp"
+                android:paddingTop="20dp"
+                android:text="Gig Name"
+                android:textColor="@color/cast_expanded_controller_background_color"
+                android:textSize="16sp"/>
 
-        <Button
-            android:text="Update start date"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/UpdateStartDatePickerButton"
-            android:layout_marginTop="20dp"
-            android:paddingRight="10dp"
-            android:paddingLeft="10dp"
-            android:background="@color/colorPrimaryDark"
-            android:textColor="@color/cardview_light_background"
-            android:layout_gravity="center"
-            android:textSize="14sp"/>
+            <EditText
+                android:id="@+id/gigNameEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="textPersonName"
+                android:paddingLeft="10dp"/>
 
-        <TextView
-            android:text="Finish Date"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="20dp"
-            android:paddingLeft="10dp"
-            android:id="@+id/textView16"
-            android:textSize="16sp"
-            android:textColor="@color/cast_expanded_controller_background_color"/>
+            <TextView
+                android:id="@+id/artistHeadingTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:paddingTop="20dp"
+                android:text="Artist Performing"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="16sp"/>
 
-        <TextView
-            android:text="No date selected! (ignore if this is the same as the start date)"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="20dp"
-            android:paddingLeft="10dp"
-            android:id="@+id/FinishDateSelectedLabel"/>
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/artistProfileImageView"
+                app:civ_border_color="#FF000000"
+                app:civ_border_width="2dp"
+                app:srcCompat="@mipmap/ic_launcher"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"/>
 
-        <Button
-            android:text="Update finish date"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/UpdateFinishDatePickerButton"
-            android:layout_marginTop="20dp"
-            android:paddingRight="10dp"
-            android:paddingLeft="10dp"
-            android:background="@color/colorPrimaryDark"
-            android:textColor="@color/cardview_light_background"
-            android:layout_gravity="center"
-            android:textSize="14sp"/>
+            <TextView
+                android:id="@+id/artistNameTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="20dp"
+                android:text="No Artist Chosen!"
+                android:textAlignment="center"
+                android:textStyle="bold"/>
 
-        <TextView
-            android:text="Start Time"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="20dp"
-            android:paddingLeft="10dp"
-            android:id="@+id/textView14"
-            android:textSize="16sp"
-            android:textColor="@color/cast_expanded_controller_background_color"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
 
-        <TextView
-            android:text="No time selected!"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="20dp"
-            android:paddingLeft="10dp"
-            android:id="@+id/StartTimeSelectedLabel"/>
+                <Button
+                    android:id="@+id/hireActButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:layout_weight="1"
+                    android:background="@color/colorPrimary"
+                    android:text="Hire"
+                    android:textColor="@color/common_google_signin_btn_text_dark_pressed"/>
 
-        <Button
-            android:text="Update start time"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/UpdateStartTimePickerButton"
-            android:layout_marginTop="20dp"
-            android:paddingRight="10dp"
-            android:paddingLeft="10dp"
-            android:background="@color/colorPrimaryDark"
-            android:textColor="@color/cardview_light_background"
-            android:layout_gravity="center"
-            android:textSize="14sp"/>
+                <Button
+                    android:id="@+id/removeActButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:layout_weight="1"
+                    android:background="@color/common_google_signin_btn_text_dark_focused"
+                    android:text="Remove"
+                    android:textColor="@color/common_google_signin_btn_text_dark_pressed"/>
+            </LinearLayout>
 
-        <TextView
-            android:text="Finish Time"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="20dp"
-            android:paddingLeft="10dp"
-            android:id="@+id/textView15"
-            android:textSize="16sp"
-            android:textColor="@color/cast_expanded_controller_background_color"/>
+            <TextView
+                android:id="@+id/textView18"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="10dp"
+                android:paddingTop="20dp"
+                android:text="Genres"
+                android:textColor="@color/cast_expanded_controller_background_color"
+                android:textSize="16sp"/>
 
-        <TextView
-            android:text="No time selected!"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="20dp"
-            android:paddingLeft="10dp"
-            android:id="@+id/FinishTimeSelectedLabel"/>
+            <com.liamd.giggity_app.MultiSelectSpinner
+                android:id="@+id/genreSpinner"
+                android:layout_width="fill_parent"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="32dp"
+                android:layout_marginTop="22dp"
+                android:layout_weight="0.15"
+                android:paddingLeft="10dp"/>
 
-        <Button
-            android:text="Update finish time"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/UpdateFinishTimePickerButton"
-            android:layout_marginTop="20dp"
-            android:paddingRight="10dp"
-            android:paddingLeft="10dp"
-            android:background="@color/colorPrimaryDark"
-            android:textColor="@color/cardview_light_background"
-            android:layout_gravity="center"
-            android:textSize="14sp"
-            android:layout_marginBottom="20dp"/>
-        <Button
-            android:text="Update Gig"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/UpdateGigButton"
-            android:background="@color/colorPrimary"
-            android:textColor="@color/cardview_light_background"/>
-    </LinearLayout>
+            <TextView
+                android:id="@+id/textView13"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="10dp"
+                android:paddingTop="20dp"
+                android:text="Start Date"
+                android:textColor="@color/cast_expanded_controller_background_color"
+                android:textSize="16sp"/>
+
+            <TextView
+                android:id="@+id/StartDateSelectedLabel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="10dp"
+                android:paddingTop="20dp"
+                android:text="No date selected!"/>
+
+            <Button
+                android:id="@+id/UpdateStartDatePickerButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="20dp"
+                android:background="@color/colorPrimaryDark"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:text="Update start date"
+                android:textColor="@color/cardview_light_background"
+                android:textSize="14sp"/>
+
+            <TextView
+                android:id="@+id/textView16"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="10dp"
+                android:paddingTop="20dp"
+                android:text="Finish Date"
+                android:textColor="@color/cast_expanded_controller_background_color"
+                android:textSize="16sp"/>
+
+            <TextView
+                android:id="@+id/FinishDateSelectedLabel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="10dp"
+                android:paddingTop="20dp"
+                android:text="No date selected! (ignore if this is the same as the start date)"/>
+
+            <Button
+                android:id="@+id/UpdateFinishDatePickerButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="20dp"
+                android:background="@color/colorPrimaryDark"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:text="Update finish date"
+                android:textColor="@color/cardview_light_background"
+                android:textSize="14sp"/>
+
+            <TextView
+                android:id="@+id/textView14"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="10dp"
+                android:paddingTop="20dp"
+                android:text="Start Time"
+                android:textColor="@color/cast_expanded_controller_background_color"
+                android:textSize="16sp"/>
+
+            <TextView
+                android:id="@+id/StartTimeSelectedLabel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="10dp"
+                android:paddingTop="20dp"
+                android:text="No time selected!"/>
+
+            <Button
+                android:id="@+id/UpdateStartTimePickerButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="20dp"
+                android:background="@color/colorPrimaryDark"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:text="Update start time"
+                android:textColor="@color/cardview_light_background"
+                android:textSize="14sp"/>
+
+            <TextView
+                android:id="@+id/textView15"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="10dp"
+                android:paddingTop="20dp"
+                android:text="Finish Time"
+                android:textColor="@color/cast_expanded_controller_background_color"
+                android:textSize="16sp"/>
+
+            <TextView
+                android:id="@+id/FinishTimeSelectedLabel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="10dp"
+                android:paddingTop="20dp"
+                android:text="No time selected!"/>
+
+            <Button
+                android:id="@+id/UpdateFinishTimePickerButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginBottom="20dp"
+                android:layout_marginTop="20dp"
+                android:background="@color/colorPrimaryDark"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:text="Update finish time"
+                android:textColor="@color/cardview_light_background"
+                android:textSize="14sp"/>
+
+            <Button
+                android:id="@+id/UpdateGigButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/colorPrimary"
+                android:text="Update Gig"
+                android:textColor="@color/cardview_light_background"/>
+        </LinearLayout>
     </ScrollView>
 </FrameLayout>

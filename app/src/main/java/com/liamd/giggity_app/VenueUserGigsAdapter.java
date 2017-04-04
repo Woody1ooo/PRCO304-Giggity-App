@@ -2,13 +2,23 @@ package com.liamd.giggity_app;
 
 import android.content.Context;
 import android.graphics.Typeface;
+import android.provider.ContactsContract;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.firebase.ui.storage.images.FirebaseImageLoader;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -18,16 +28,33 @@ import java.util.List;
 public class VenueUserGigsAdapter extends ArrayAdapter<Gig>
 {
     // Declare visual components
-    private TextView mGigName;
-    private TextView mGigDate;
+    private TextView mGigNameTextView;
+    private TextView mGigActTextView;
+    private ImageView mGigActImageView;
+    private TextView mGigStartDateTextView;
+    private TextView mGigFinishDateTextView;
 
     // Declare various variables required
     private int resource;
+    private Date mEventStartDate;
+    private Date mEventFinishDate;
+    private DataSnapshot mDataSnapshot;
+    private String mBandId;
+    private String mBandName;
 
-    public VenueUserGigsAdapter(Context context, int resource, List<Gig> items)
+    // Declare firebase variables
+    private FirebaseStorage mStorage;
+    private StorageReference mProfileImageReference;
+
+    public VenueUserGigsAdapter(Context context, int resource, List<Gig> items, DataSnapshot snapshot)
     {
         super(context, resource, items);
         this.resource = resource;
+        this.mDataSnapshot = snapshot;
+
+        // Creates a reference to the storage element of firebase
+        mStorage = FirebaseStorage.getInstance();
+        mProfileImageReference = mStorage.getReference();
     }
 
     @Override
@@ -52,14 +79,48 @@ public class VenueUserGigsAdapter extends ArrayAdapter<Gig>
         }
 
         // Initialise visual components
-        mGigName = (TextView)gigsListView.findViewById(R.id.gigName);
-        mGigDate = (TextView)gigsListView.findViewById(R.id.gigDate);
+        mGigNameTextView = (TextView)gigsListView.findViewById(R.id.gigNameTextView);
+        mGigActTextView = (TextView)gigsListView.findViewById(R.id.gigActTextView);
+        mGigActImageView = (ImageView)gigsListView.findViewById(R.id.gigActImageView);
+        mGigStartDateTextView = (TextView)gigsListView.findViewById(R.id.gigStartDateTextView);
+        mGigFinishDateTextView = (TextView)gigsListView.findViewById(R.id.gigFinishDateTextView);
 
-        mGigName.setText(gig.getTitle());
-        mGigName.setTypeface(null, Typeface.BOLD);
+        mGigNameTextView.setText(gig.getTitle());
+        mGigNameTextView.setTypeface(null, Typeface.BOLD);
 
-        mGigDate.setText(gig.getStartDate().toString());
+        if(!mDataSnapshot.child("Gigs/" + gig.getGigId() + "/bookedAct").getValue().equals("Vacant"))
+        {
+            mBandId = mDataSnapshot.child("Gigs/" + gig.getGigId() + "/bookedAct").getValue().toString();
+            mBandName = mDataSnapshot.child("Bands/" + mBandId + "/name").getValue().toString();
 
+            mGigActTextView.setText(mBandName);
+
+            Glide.with(getContext()).using(new FirebaseImageLoader()).load
+                    (mProfileImageReference.child("BandProfileImages/" +  mBandId +  "/profileImage"))
+                    .diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).into(mGigActImageView);
+        }
+
+        else
+        {
+            mGigActTextView.setText("No act currently booked!");
+        }
+
+        mEventStartDate = gig.getStartDate();
+        mEventFinishDate = gig.getEndDate();
+
+        // This takes the start and end dates and reformats them to look more visually appealing
+        String formattedStartDateSectionOne = mEventStartDate.toString().split(" ")[0];
+        String formattedStartDateSectionTwo = mEventStartDate.toString().split(" ")[1];
+        String formattedStartDateSectionThree = mEventStartDate.toString().split(" ")[2];
+        String formattedStartDateSectionFour = mEventStartDate.toString().split(" ")[3];
+
+        String formattedFinishDateSectionOne = mEventFinishDate.toString().split(" ")[0];
+        String formattedFinishDateSectionTwo = mEventFinishDate.toString().split(" ")[1];
+        String formattedFinishDateSectionThree = mEventFinishDate.toString().split(" ")[2];
+        String formattedFinishDateSectionFour = mEventFinishDate.toString().split(" ")[3];
+
+        mGigStartDateTextView.setText("Start Date/Time: " + formattedStartDateSectionOne + " " + formattedStartDateSectionTwo + " " + formattedStartDateSectionThree + " " + formattedStartDateSectionFour);
+        mGigFinishDateTextView.setText("Finish Date/Time: " + formattedFinishDateSectionOne + " " + formattedFinishDateSectionTwo + " " + formattedFinishDateSectionThree + " " + formattedFinishDateSectionFour);
         return gigsListView;
     }
 }

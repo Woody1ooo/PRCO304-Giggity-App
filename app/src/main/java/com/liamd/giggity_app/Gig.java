@@ -14,6 +14,7 @@ public class Gig
     private Date endDate;
     private String gigId;
     private double gigDistance;
+    private Band bandBooked;
 
     public Gig()
     {
@@ -107,5 +108,15 @@ public class Gig
     public void setGigDistance(double gigDistance)
     {
         this.gigDistance = gigDistance;
+    }
+
+    public Band getBandBooked()
+    {
+        return bandBooked;
+    }
+
+    public void setBandBooked(Band bandBooked)
+    {
+        this.bandBooked = bandBooked;
     }
 }

@@ -1,20 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
               android:orientation="horizontal"
               android:layout_width="match_parent"
               android:layout_height="match_parent">
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:weightSum="1">
+
         <TextView
-            android:id="@+id/gigName"
+            android:id="@+id/gigNameTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="5dp"/>
+        <TextView
+            android:id="@+id/gigActTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingTop="5dp"/>
 
+        <ImageView
+            android:id="@+id/gigActImageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.04"
+            android:scaleType="fitXY"
+            />
+
         <TextView
-            android:id="@+id/gigDate"
+            android:id="@+id/gigStartDateTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="5dp"/>
+        <TextView
+            android:id="@+id/gigFinishDateTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingTop="5dp"/>

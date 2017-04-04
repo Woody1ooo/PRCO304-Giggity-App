@@ -40,7 +40,9 @@ public class VenueUserViewGigsFragment extends Fragment
     // Declare Firebase specific variables
     private FirebaseAuth mAuth;
     private DatabaseReference mDatabase;
+    private DataSnapshot mSnapshot;
 
+    // Declare general variables
     private String mVenueId;
 
 
@@ -73,6 +75,8 @@ public class VenueUserViewGigsFragment extends Fragment
                 // This checks the database to find the user's venueID
                 mVenueId = dataSnapshot.child("Users/" +
                         mAuth.getCurrentUser().getUid() + "/venueID").getValue().toString();
+
+                mSnapshot = dataSnapshot;
 
                 // Each gig is then iterated through and added to an
                 // array list of gigs (mListOfVenueGigs)
@@ -137,7 +141,7 @@ public class VenueUserViewGigsFragment extends Fragment
                 else
                 {
                     // Using the custom VenueUserGigsAdapter, the list of users gigs can be displayed
-                    adapter = new VenueUserGigsAdapter(getActivity(), R.layout.venue_user_gig_list, mListOfUsersGigs);
+                    adapter = new VenueUserGigsAdapter(getActivity(), R.layout.venue_user_gig_list, mListOfUsersGigs, mSnapshot);
                     mGigsListView.setAdapter(adapter);
                 }
             }
