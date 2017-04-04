@@ -366,7 +366,11 @@ public class MusicianUserBandManagementFragment extends Fragment implements YouT
                     youtubeUrlEditText.setText(youtubeUrlEntered);
 
                     parsedYouTubeURL = ParseURL(youtubeUrlEditText.getText());
-                    LoadYoutubePlayer();
+
+                    if(parsedYouTubeURL != null)
+                    {
+                        LoadYoutubePlayer();
+                    }
                 }
 
                 PopulateFields();
@@ -459,7 +463,16 @@ public class MusicianUserBandManagementFragment extends Fragment implements YouT
                 if (!TextUtils.isEmpty(youtubeUrlEditText.getText()))
                 {
                     parsedYouTubeURL = ParseURL(youtubeUrlEditText.getText());
-                    LoadYoutubePlayer();
+
+                    if(parsedYouTubeURL != null)
+                    {
+                        LoadYoutubePlayer();
+                    }
+
+                    else
+                    {
+                        Toast.makeText(getActivity(), "Youtube URL invalid!", Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
         });
@@ -1555,7 +1568,15 @@ public class MusicianUserBandManagementFragment extends Fragment implements YouT
             URL = youtubeURL.toString();
             parsedURL = URL.split("/");
 
-            return parsedURL[3];
+            if(parsedURL.length >= 3)
+            {
+                return parsedURL[3];
+            }
+
+            else
+            {
+                return null;
+            }
         }
     }
 

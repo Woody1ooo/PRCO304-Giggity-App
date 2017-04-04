@@ -76,8 +76,6 @@ public class MusicianUserBandCreatorFragment extends Fragment implements YouTube
     // Declare general variables
     private List<String> mGenreList;
     private List<String> mInstrumentList;
-    private ArrayList<String> mUserPositionList;
-    private ArrayAdapter<String> mUserPositionAdapter;
     private int PLACE_PICKER_REQUEST = 0;
     private String mBandID;
     private String mBandName;
@@ -90,6 +88,7 @@ public class MusicianUserBandCreatorFragment extends Fragment implements YouTube
     private String mPositionFourValue;
     private String mPositionFiveValue;
     private String youtubeUrlEntered;
+    private String mUserChosenPosition;
 
     // Declare Firebase specific variables
     private FirebaseAuth mAuth;
@@ -173,25 +172,16 @@ public class MusicianUserBandCreatorFragment extends Fragment implements YouTube
         mInstrumentList.add("Keyboards");
         mInstrumentList.add("Piano");
 
-        // This list items are added here to prepare for obtaining the users chosen position
-        mUserPositionList = new ArrayList<>();
-        mUserPositionList.add("Position One");
-        mUserPositionList.add("Position Two");
-        mUserPositionList.add("Position Three");
-        mUserPositionList.add("Position Four");
-        mUserPositionList.add("Position Five");
-
-        // If one position is selected then this is the element added to the spinner for the user to select
-        mUserPositionAdapter = new ArrayAdapter<>(this.getActivity(), android.R.layout.simple_spinner_dropdown_item, mUserPositionList);
-        mUserPositionAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
-        mUserChosenPositionSpinner.setAdapter(mUserPositionAdapter);
-
         // This gets the number from the band positions spinner and then displays/hides the relevant components as needed
         mPositionsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
         {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id)
             {
+                // This list is created here to prepare for obtaining the users chosen position
+                ArrayList<String> mUserPositionList;
+                ArrayAdapter<String> mUserPositionAdapter;
+
                 if(mPositionsSpinner.getItemAtPosition(position).equals("0"))
                 {
                     mPositionOneTitle.setVisibility(View.GONE);
@@ -204,6 +194,13 @@ public class MusicianUserBandCreatorFragment extends Fragment implements YouTube
                     mPositionFourSpinner.setVisibility(View.GONE);
                     mPositionFiveTitle.setVisibility(View.GONE);
                     mPositionFiveSpinner.setVisibility(View.GONE);
+
+                    mUserPositionList = new ArrayList<>();
+
+                    // If one position is selected then this is the element added to the spinner for the user to select
+                    mUserPositionAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_dropdown_item, mUserPositionList);
+                    mUserPositionAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
+                    mUserChosenPositionSpinner.setAdapter(mUserPositionAdapter);
                 }
 
                 else if(mPositionsSpinner.getItemAtPosition(position).equals("1"))
@@ -222,6 +219,14 @@ public class MusicianUserBandCreatorFragment extends Fragment implements YouTube
                     mPositionFourSpinner.setVisibility(View.GONE);
                     mPositionFiveTitle.setVisibility(View.GONE);
                     mPositionFiveSpinner.setVisibility(View.GONE);
+
+                    mUserPositionList = new ArrayList<>();
+                    mUserPositionList.add("Position One");
+
+                    // If one position is selected then this is the element added to the spinner for the user to select
+                    mUserPositionAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_dropdown_item, mUserPositionList);
+                    mUserPositionAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
+                    mUserChosenPositionSpinner.setAdapter(mUserPositionAdapter);
                 }
 
                 else if(mPositionsSpinner.getItemAtPosition(position).equals("2"))
@@ -241,6 +246,15 @@ public class MusicianUserBandCreatorFragment extends Fragment implements YouTube
                     mPositionFourSpinner.setVisibility(View.GONE);
                     mPositionFiveTitle.setVisibility(View.GONE);
                     mPositionFiveSpinner.setVisibility(View.GONE);
+
+                    mUserPositionList = new ArrayList<>();
+                    mUserPositionList.add("Position One");
+                    mUserPositionList.add("Position Two");
+
+                    // If one position is selected then this is the element added to the spinner for the user to select
+                    mUserPositionAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_dropdown_item, mUserPositionList);
+                    mUserPositionAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
+                    mUserChosenPositionSpinner.setAdapter(mUserPositionAdapter);
                 }
 
                 else if(mPositionsSpinner.getItemAtPosition(position).equals("3"))
@@ -261,6 +275,16 @@ public class MusicianUserBandCreatorFragment extends Fragment implements YouTube
                     mPositionFourSpinner.setVisibility(View.GONE);
                     mPositionFiveTitle.setVisibility(View.GONE);
                     mPositionFiveSpinner.setVisibility(View.GONE);
+
+                    mUserPositionList = new ArrayList<>();
+                    mUserPositionList.add("Position One");
+                    mUserPositionList.add("Position Two");
+                    mUserPositionList.add("Position Three");
+
+                    // If one position is selected then this is the element added to the spinner for the user to select
+                    mUserPositionAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_dropdown_item, mUserPositionList);
+                    mUserPositionAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
+                    mUserChosenPositionSpinner.setAdapter(mUserPositionAdapter);
                 }
 
                 else if(mPositionsSpinner.getItemAtPosition(position).equals("4"))
@@ -282,6 +306,17 @@ public class MusicianUserBandCreatorFragment extends Fragment implements YouTube
                     // Hide the others
                     mPositionFiveTitle.setVisibility(View.GONE);
                     mPositionFiveSpinner.setVisibility(View.GONE);
+
+                    mUserPositionList = new ArrayList<>();
+                    mUserPositionList.add("Position One");
+                    mUserPositionList.add("Position Two");
+                    mUserPositionList.add("Position Three");
+                    mUserPositionList.add("Position Four");
+
+                    // If one position is selected then this is the element added to the spinner for the user to select
+                    mUserPositionAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_dropdown_item, mUserPositionList);
+                    mUserPositionAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
+                    mUserChosenPositionSpinner.setAdapter(mUserPositionAdapter);
                 }
 
                 else if(mPositionsSpinner.getItemAtPosition(position).equals("5"))
@@ -302,6 +337,18 @@ public class MusicianUserBandCreatorFragment extends Fragment implements YouTube
                     mPositionFiveTitle.setVisibility(View.VISIBLE);
                     mPositionFiveSpinner.setVisibility(View.VISIBLE);
                     mPositionFiveSpinner.setItems(mInstrumentList);
+
+                    mUserPositionList = new ArrayList<>();
+                    mUserPositionList.add("Position One");
+                    mUserPositionList.add("Position Two");
+                    mUserPositionList.add("Position Three");
+                    mUserPositionList.add("Position Four");
+                    mUserPositionList.add("Position Five");
+
+                    // If one position is selected then this is the element added to the spinner for the user to select
+                    mUserPositionAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_dropdown_item, mUserPositionList);
+                    mUserPositionAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
+                    mUserChosenPositionSpinner.setAdapter(mUserPositionAdapter);
                 }
             }
 
@@ -385,6 +432,21 @@ public class MusicianUserBandCreatorFragment extends Fragment implements YouTube
             }
         });
 
+        mUserChosenPositionSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
+        {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id)
+            {
+                mUserChosenPosition = mUserChosenPositionSpinner.getItemAtPosition(position).toString();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView)
+            {
+
+            }
+        });
+
         return fragmentView;
     }
 
@@ -441,7 +503,7 @@ public class MusicianUserBandCreatorFragment extends Fragment implements YouTube
                 mNumberOfPositions = mPositionsSpinner.getSelectedItem().toString();
 
                 // This checks to ensure that the main fields are filled in
-                if (mBandName != null && mGenres != null && !mNumberOfPositions.equals("0") && mBandLocationLatLng != null)
+                if (mBandName != null && mGenres != null && !mNumberOfPositions.equals("0") && mBandLocationLatLng != null && mUserChosenPosition != null)
                 {
                     // This checks which items are visible
                     if (mPositionOneSpinner.getVisibility() == View.VISIBLE &&
@@ -467,6 +529,7 @@ public class MusicianUserBandCreatorFragment extends Fragment implements YouTube
                             mDatabase.child("Bands/" + mBandID).setValue(bandToInsert);
                             mDatabase.child("Bands/" + mBandID + "/bandCreator").setValue(mAuth.getCurrentUser().getUid());
                             mDatabase.child("Bands/" + mBandID + "/positionOneMember").setValue("Vacant");
+                            mDatabase.child("Bands/" + mBandID + "/positionOneMember").setValue(mAuth.getCurrentUser().getUid());
 
                             if(!youtubeUrlEditText.getText().equals(null))
                             {
@@ -524,6 +587,16 @@ public class MusicianUserBandCreatorFragment extends Fragment implements YouTube
                             mDatabase.child("Bands/" + mBandID + "/bandCreator").setValue(mAuth.getCurrentUser().getUid());
                             mDatabase.child("Bands/" + mBandID + "/positionOneMember").setValue("Vacant");
                             mDatabase.child("Bands/" + mBandID + "/positionTwoMember").setValue("Vacant");
+
+                            if(mUserChosenPosition.equals("Position One"))
+                            {
+                                mDatabase.child("Bands/" + mBandID + "/positionOneMember").setValue(mAuth.getCurrentUser().getUid());
+                            }
+
+                            else if(mUserChosenPosition.equals("Position Two"))
+                            {
+                                mDatabase.child("Bands/" + mBandID + "/positionTwoMember").setValue(mAuth.getCurrentUser().getUid());
+                            }
 
                             if(!youtubeUrlEditText.getText().equals(null))
                             {
@@ -584,6 +657,21 @@ public class MusicianUserBandCreatorFragment extends Fragment implements YouTube
                             mDatabase.child("Bands/" + mBandID + "/positionOneMember").setValue("Vacant");
                             mDatabase.child("Bands/" + mBandID + "/positionTwoMember").setValue("Vacant");
                             mDatabase.child("Bands/" + mBandID + "/positionThreeMember").setValue("Vacant");
+
+                            if(mUserChosenPosition.equals("Position One"))
+                            {
+                                mDatabase.child("Bands/" + mBandID + "/positionOneMember").setValue(mAuth.getCurrentUser().getUid());
+                            }
+
+                            else if(mUserChosenPosition.equals("Position Two"))
+                            {
+                                mDatabase.child("Bands/" + mBandID + "/positionTwoMember").setValue(mAuth.getCurrentUser().getUid());
+                            }
+
+                            else if(mUserChosenPosition.equals("Position Three"))
+                            {
+                                mDatabase.child("Bands/" + mBandID + "/positionThreeMember").setValue(mAuth.getCurrentUser().getUid());
+                            }
 
                             if(!youtubeUrlEditText.getText().equals(null))
                             {
@@ -646,6 +734,26 @@ public class MusicianUserBandCreatorFragment extends Fragment implements YouTube
                             mDatabase.child("Bands/" + mBandID + "/positionTwoMember").setValue("Vacant");
                             mDatabase.child("Bands/" + mBandID + "/positionThreeMember").setValue("Vacant");
                             mDatabase.child("Bands/" + mBandID + "/positionFourMember").setValue("Vacant");
+
+                            if(mUserChosenPosition.equals("Position One"))
+                            {
+                                mDatabase.child("Bands/" + mBandID + "/positionOneMember").setValue(mAuth.getCurrentUser().getUid());
+                            }
+
+                            else if(mUserChosenPosition.equals("Position Two"))
+                            {
+                                mDatabase.child("Bands/" + mBandID + "/positionTwoMember").setValue(mAuth.getCurrentUser().getUid());
+                            }
+
+                            else if(mUserChosenPosition.equals("Position Three"))
+                            {
+                                mDatabase.child("Bands/" + mBandID + "/positionThreeMember").setValue(mAuth.getCurrentUser().getUid());
+                            }
+
+                            else if(mUserChosenPosition.equals("Position Four"))
+                            {
+                                mDatabase.child("Bands/" + mBandID + "/positionFourMember").setValue(mAuth.getCurrentUser().getUid());
+                            }
 
                             if(!youtubeUrlEditText.getText().equals(null))
                             {
@@ -714,6 +822,31 @@ public class MusicianUserBandCreatorFragment extends Fragment implements YouTube
                             mDatabase.child("Bands/" + mBandID + "/positionThreeMember").setValue("Vacant");
                             mDatabase.child("Bands/" + mBandID + "/positionFourMember").setValue("Vacant");
                             mDatabase.child("Bands/" + mBandID + "/positionFiveMember").setValue("Vacant");
+
+                            if(mUserChosenPosition.equals("Position One"))
+                            {
+                                mDatabase.child("Bands/" + mBandID + "/positionOneMember").setValue(mAuth.getCurrentUser().getUid());
+                            }
+
+                            else if(mUserChosenPosition.equals("Position Two"))
+                            {
+                                mDatabase.child("Bands/" + mBandID + "/positionTwoMember").setValue(mAuth.getCurrentUser().getUid());
+                            }
+
+                            else if(mUserChosenPosition.equals("Position Three"))
+                            {
+                                mDatabase.child("Bands/" + mBandID + "/positionThreeMember").setValue(mAuth.getCurrentUser().getUid());
+                            }
+
+                            else if(mUserChosenPosition.equals("Position Four"))
+                            {
+                                mDatabase.child("Bands/" + mBandID + "/positionFourMember").setValue(mAuth.getCurrentUser().getUid());
+                            }
+
+                            else if(mUserChosenPosition.equals("Position Five"))
+                            {
+                                mDatabase.child("Bands/" + mBandID + "/positionFiveMember").setValue(mAuth.getCurrentUser().getUid());
+                            }
 
                             if(!youtubeUrlEditText.getText().equals(null))
                             {
