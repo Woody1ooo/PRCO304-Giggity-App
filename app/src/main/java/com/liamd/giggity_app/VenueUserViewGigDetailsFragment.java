@@ -317,6 +317,25 @@ public class VenueUserViewGigDetailsFragment extends Fragment implements DatePic
             }
         });
 
+        mHireButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                // The user is then taken to the my gigs fragment
+                Bundle arguments = new Bundle();
+                arguments.putString("GigId", mGigID);
+
+                VenueUserBandFinderFragment fragment = new VenueUserBandFinderFragment();
+                fragment.setArguments(arguments);
+
+                getActivity().setTitle("Band Finder");
+                final FragmentTransaction ft = getFragmentManager().beginTransaction();
+                ft.replace(R.id.frame, fragment, "VenueUserBandFinderFragment")
+                        .addToBackStack(null).commit();
+            }
+        });
+
         return fragmentView;
     }
 

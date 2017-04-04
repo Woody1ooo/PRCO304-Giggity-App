@@ -18,7 +18,6 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.*;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -38,7 +37,7 @@ import static com.google.android.gms.maps.model.BitmapDescriptorFactory.HUE_AZUR
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MusicianUserBandResultsFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnInfoWindowClickListener
+public class VenueUserBandResultsFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnInfoWindowClickListener
 {
     // Declare Map/Location specific
     private MapView mMapView;
@@ -46,7 +45,6 @@ public class MusicianUserBandResultsFragment extends Fragment implements OnMapRe
     private Double mLatitude;
     private Double mLongitude;
     private static com.google.android.gms.maps.model.LatLng mLocation;
-    private Boolean mLocationType;
 
     // Declare Firebase specific variables
     private FirebaseAuth mAuth;
@@ -57,13 +55,13 @@ public class MusicianUserBandResultsFragment extends Fragment implements OnMapRe
 
     // Declare Visual Components
     private ListView mBandsListView;
-    private MusicianUserBandsAdapter adapter;
+    private VenueUserBandsAdapter adapter;
 
     // Declare variables to be stored to pass to the next fragment
     private String mBandId;
     private String mBandName;
     private String mBandGenres;
-    private String mNumberOfPositions;
+    private String mGigId;
     private double mBandDistance;
 
     // Declare general variables
@@ -73,16 +71,15 @@ public class MusicianUserBandResultsFragment extends Fragment implements OnMapRe
     private Marker mMarker;
     private int mBandDistanceSelected;
     private String mGenresSelected;
-    private String mInstrumentsSelected;
 
     // Location variables
     private double mDistance;
     private Location mBandLocation;
     private double mBandLocationLat;
     private double mBandLocationLng;
-    private Location mUserLocation;
+    private Location mVenueLocation;
 
-    public MusicianUserBandResultsFragment()
+    public VenueUserBandResultsFragment()
     {
         // Required empty public constructor
     }
@@ -92,7 +89,7 @@ public class MusicianUserBandResultsFragment extends Fragment implements OnMapRe
                              Bundle savedInstanceState)
     {
         // Inflate the layout for this fragment
-        View fragmentView = inflater.inflate(R.layout.musician_user_fragment_band_results, container, false);
+        View fragmentView = inflater.inflate(R.layout.venue_user_fragment_band_results, container, false);
 
         // This initialises the tabs used to hold the different views
         TabHost tabs = (TabHost) fragmentView.findViewById(R.id.tabhost);
@@ -119,32 +116,20 @@ public class MusicianUserBandResultsFragment extends Fragment implements OnMapRe
         mStorage = FirebaseStorage.getInstance();
         mProfileImageReference = mStorage.getReference();
 
-        // Initialise variables
-        mLocationType = getArguments().getBoolean("CurrentLocation");
-
         // Initialise other variables required
         mBandLocation = new Location("");
-        mUserLocation = new Location("");
+        mVenueLocation = new Location("");
 
         // Clears the various lists when this fragment is returned to
         mListOfBands.clear();
         mFilteredBandsToRemove.clear();
 
-        // Determine the type of search the user has carried out based on the boolean above
-        if(mLocationType == true)
-        {
-            mLatitude = getArguments().getDouble("CurrentLocationLatitude");
-            mLongitude = getArguments().getDouble("CurrentLocationLongitude");
-        }
-
-        else
-        {
-            mLatitude = getArguments().getDouble("HomeLocationLatitude");
-            mLongitude = getArguments().getDouble("HomeLocationLongitude");
-        }
+        // Get the lat lng values from the previous fragment
+        mLatitude = getArguments().getDouble("VenueLocationLatitude");
+        mLongitude = getArguments().getDouble("VenueLocationLongitude");
 
         // This creates a location for the current user
-        mLocation = new LatLng(mLatitude, mLongitude);
+        mLocation = new com.google.android.gms.maps.model.LatLng(mLatitude, mLongitude);
 
         // This gets the distance value the user has selected
         mBandDistanceSelected = getArguments().getInt("DistanceSelected");
@@ -152,8 +137,8 @@ public class MusicianUserBandResultsFragment extends Fragment implements OnMapRe
         // This gets the genres the user has selected
         mGenresSelected = getArguments().getString("Genres");
 
-        // This gets the instruments the user has selected
-        mInstrumentsSelected = getArguments().getString("Instruments");
+        // This gets the gig id from the previous fragment
+        mGigId = getArguments().getString("GigId");
 
         // Initialise the map
         mMapView = (MapView) fragmentView.findViewById(R.id.googleMap);
@@ -166,7 +151,6 @@ public class MusicianUserBandResultsFragment extends Fragment implements OnMapRe
 
         return fragmentView;
     }
-
 
     // When the map is ready, call the SetupMap method
     @Override
@@ -233,21 +217,20 @@ public class MusicianUserBandResultsFragment extends Fragment implements OnMapRe
             mBandId = mListOfBands.get(i).getBandID();
             mBandName = mListOfBands.get(i).getName();
             mBandGenres = mListOfBands.get(i).getGenres();
-            mNumberOfPositions = mListOfBands.get(i).getNumberOfPositions();
             mBandDistance = mListOfBands.get(i).getBandDistance();
 
             // To expose the methods required for marker placement, the bandLocation
             // variable is then converted back into the standard Google Maps
             // LatLng object (convertedBandLocation)
             final com.google.android.gms.maps.model.LatLng convertedBandLocation = new com.google.android.gms.maps.model.LatLng(bandLocation.getLatitude(),
-                            bandLocation.getLongitude());
+                    bandLocation.getLongitude());
 
             // The marker is then added to the map
             mMarker = mGoogleMap.addMarker(new MarkerOptions().position(convertedBandLocation));
 
             // A new BandMarkerInfo object is created to store the information about the marker.
             // This needs to be done because a standard marker can only hold a title and snippet
-            BandMarkerInfo marker = new BandMarkerInfo(mMarker.getId(), mBandId, mBandName, mBandGenres, mNumberOfPositions, mBandDistance);
+            BandMarkerInfo marker = new BandMarkerInfo(mMarker.getId(), mBandId, mBandName, mBandGenres, mBandDistance, mBandLocation, mVenueLocation);
             mListOfBandMarkerInfo.add(marker);
 
             mGoogleMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter()
@@ -268,7 +251,6 @@ public class MusicianUserBandResultsFragment extends Fragment implements OnMapRe
                     // (note gig id is a hidden text view)
                     TextView mBandNameTextView = (TextView) v.findViewById(R.id.bandNameTextView);
                     TextView mBandDistanceTextView = (TextView) v.findViewById(R.id.bandDistanceTextView);
-                    TextView mNumberOfPositions = (TextView) v.findViewById(R.id.bandPositionsTextView);
                     TextView mBandGenres = (TextView) v.findViewById(R.id.genresTextView);
 
                     // The marker info list is then iterated through
@@ -280,7 +262,6 @@ public class MusicianUserBandResultsFragment extends Fragment implements OnMapRe
                         {
                             mBandNameTextView.setText(mListOfBandMarkerInfo.get(i).getBandName());
                             mBandDistanceTextView.setText(mListOfBandMarkerInfo.get(i).getBandDistance() +"km");
-                            mNumberOfPositions.setText("Total Positions: " + mListOfBandMarkerInfo.get(i).getNumberOfPositions());
                             mBandGenres.setText(mListOfBandMarkerInfo.get(i).getBandGenres());
                         }
                     }
@@ -288,7 +269,6 @@ public class MusicianUserBandResultsFragment extends Fragment implements OnMapRe
                 }
             });
         }
-
 
         // When a list item is selected, the same fragment opens as when a pin info window is clicked
         mBandsListView.setOnItemClickListener(new AdapterView.OnItemClickListener()
@@ -298,13 +278,18 @@ public class MusicianUserBandResultsFragment extends Fragment implements OnMapRe
             {
                 Band selectedBand = (Band) mBandsListView.getItemAtPosition(position);
 
-                MusicianUserBandDetailsFragment fragment = new MusicianUserBandDetailsFragment();
+                VenueUserBandDetailsFragment fragment = new VenueUserBandDetailsFragment();
 
                 Bundle arguments = new Bundle();
                 arguments.putString("BandID", selectedBand.getBandID());
                 arguments.putString("BandName", selectedBand.getName());
                 arguments.putString("BandGenres", selectedBand.getGenres());
-                arguments.putString("BandNumberOfPositions", selectedBand.getNumberOfPositions());
+                arguments.putDouble("BandDistance", mDistance);
+                arguments.putDouble("BandLocationLat", mBandLocationLat);
+                arguments.putDouble("BandLocationLng", mBandLocationLng);
+                arguments.putDouble("VenueLocationLat", mVenueLocation.getLatitude());
+                arguments.putDouble("VenueLocationLng", mVenueLocation.getLongitude());
+                arguments.putString("GigId", mGigId);
                 fragment.setArguments(arguments);
 
                 // Creates a new fragment transaction to display the details of the selected
@@ -312,7 +297,7 @@ public class MusicianUserBandResultsFragment extends Fragment implements OnMapRe
                 FragmentTransaction fragmentTransaction = getActivity().getFragmentManager()
                         .beginTransaction();
                 fragmentTransaction.setCustomAnimations(R.animator.enter_from_right, R.animator.enter_from_left);
-                fragmentTransaction.replace(R.id.frame, fragment, "MusicianUserBandDetailsFragment")
+                fragmentTransaction.replace(R.id.frame, fragment, "VenueUserBandDetailsFragment")
                         .addToBackStack(null).commit();
             }
         });
@@ -323,7 +308,7 @@ public class MusicianUserBandResultsFragment extends Fragment implements OnMapRe
         GetBandLocation();
 
         // Using the custom VenueUserGigsAdapter, the list of users gigs can be displayed
-        adapter = new MusicianUserBandsAdapter(getActivity(), R.layout.musician_user_band_list, mListOfBands);
+        adapter = new VenueUserBandsAdapter(getActivity(), R.layout.venue_user_band_list, mListOfBands);
 
         mBandsListView.setAdapter(adapter);
     }
@@ -341,11 +326,11 @@ public class MusicianUserBandResultsFragment extends Fragment implements OnMapRe
             mBandLocation.setLongitude(mBandLocationLng);
 
             // Then set the data as parameters for the user location object
-            mUserLocation.setLatitude(mLocation.latitude);
-            mUserLocation.setLongitude(mLocation.longitude);
+            mVenueLocation.setLatitude(mLocation.latitude);
+            mVenueLocation.setLongitude(mLocation.longitude);
 
             // Calculate the distance between the provided location and the gig
-            mDistance = CalculateDistance(mBandLocation, mUserLocation);
+            mDistance = CalculateDistance(mBandLocation, mVenueLocation);
 
             mListOfBands.get(i).setBandDistance(mDistance);
 
@@ -392,16 +377,6 @@ public class MusicianUserBandResultsFragment extends Fragment implements OnMapRe
             splitUserChosenGenresTrimmed.add(splitUserChosenGenres.get(i).trim());
         }
 
-        List<String> splitUserChosenInstruments;
-        splitUserChosenInstruments = Arrays.asList(mInstrumentsSelected.split(","));
-        ArrayList<String> splitUserChosenInstrumentsTrimmed = new ArrayList<>();
-
-        // This loops through the split instruments chosen by the user and trims the spaces
-        for(int i = 0; i < splitUserChosenInstruments.size(); i++)
-        {
-            splitUserChosenInstrumentsTrimmed.add(splitUserChosenInstruments.get(i).trim());
-        }
-
         // This initially checks that the band is within the distance selected by the user
         if (mListOfBands.get(listIndex).getBandDistance() > mBandDistanceSelected)
         {
@@ -435,122 +410,12 @@ public class MusicianUserBandResultsFragment extends Fragment implements OnMapRe
                 }
             }
         }
-
-        // This then loops through the trimmed array list checking if the genres the band has matches those submitted by the user
-        for(int i = 0; i < splitUserChosenInstrumentsTrimmed.size(); i++)
-        {
-            try
-            {
-                // If it finds a match break out of the loop and carry on
-                if (mListOfBands.get(listIndex).getPositionOne().contains(splitUserChosenInstrumentsTrimmed.get(i))
-                        || mListOfBands.get(listIndex).getPositionTwo().contains(splitUserChosenInstrumentsTrimmed.get(i))
-                        || mListOfBands.get(listIndex).getPositionThree().contains(splitUserChosenInstrumentsTrimmed.get(i))
-                        || mListOfBands.get(listIndex).getPositionFour().contains(splitUserChosenInstrumentsTrimmed.get(i))
-                        || mListOfBands.get(listIndex).getPositionFive().contains(splitUserChosenInstrumentsTrimmed.get(i)))
-                {
-                    break;
-                }
-
-                // Otherwise once every element has been looped through add this element to the list to be removed
-                else
-                {
-                    if(i + 1 == splitUserChosenInstrumentsTrimmed.size())
-                    {
-                        if(!mFilteredBandsToRemove.contains(listIndex))
-                        {
-                            mFilteredBandsToRemove.add(listIndex);
-                            break;
-                        }
-
-                        else
-                        {
-                            break;
-                        }
-                    }
-                }
-            }
-
-            catch(NullPointerException e)
-            {
-                if(!mFilteredBandsToRemove.contains(listIndex) && i + 1 == splitUserChosenGenresTrimmed.size())
-                {
-                    mFilteredBandsToRemove.add(listIndex);
-                    break;
-                }
-            }
-        }
-
-        // These blocks then check the number of positions and whether any are vacant
-        if (mListOfBands.get(listIndex).getNumberOfPositions().equals("1"))
-        {
-            if (!mListOfBands.get(listIndex).getPositionOneMember().equals("Vacant"))
-            {
-                if(!mFilteredBandsToRemove.contains(listIndex))
-                {
-                    mFilteredBandsToRemove.add(listIndex);
-                }
-            }
-        }
-
-        else if(mListOfBands.get(listIndex).getNumberOfPositions().equals("2"))
-        {
-            if (!mListOfBands.get(listIndex).getPositionOneMember().equals("Vacant")
-                    && !mListOfBands.get(listIndex).getPositionTwoMember().equals("Vacant"))
-            {
-                if(!mFilteredBandsToRemove.contains(listIndex))
-                {
-                    mFilteredBandsToRemove.add(listIndex);
-                }
-            }
-        }
-
-        else if(mListOfBands.get(listIndex).getNumberOfPositions().equals("3"))
-        {
-            if (!mListOfBands.get(listIndex).getPositionOneMember().equals("Vacant")
-                    && !mListOfBands.get(listIndex).getPositionTwoMember().equals("Vacant")
-                    && !mListOfBands.get(listIndex).getPositionThreeMember().equals("Vacant"))
-            {
-                if(!mFilteredBandsToRemove.contains(listIndex))
-                {
-                    mFilteredBandsToRemove.add(listIndex);
-                }
-            }
-        }
-
-        else if(mListOfBands.get(listIndex).getNumberOfPositions().equals("4"))
-        {
-            if (!mListOfBands.get(listIndex).getPositionOneMember().equals("Vacant")
-                    && !mListOfBands.get(listIndex).getPositionTwoMember().equals("Vacant")
-                    && !mListOfBands.get(listIndex).getPositionThreeMember().equals("Vacant")
-                    && !mListOfBands.get(listIndex).getPositionFourMember().equals("Vacant"))
-            {
-                if(!mFilteredBandsToRemove.contains(listIndex))
-                {
-                    mFilteredBandsToRemove.add(listIndex);
-                }
-            }
-        }
-
-        else if(mListOfBands.get(listIndex).getNumberOfPositions().equals("5"))
-        {
-            if (!mListOfBands.get(listIndex).getPositionOneMember().equals("Vacant")
-                    && !mListOfBands.get(listIndex).getPositionTwoMember().equals("Vacant")
-                    && !mListOfBands.get(listIndex).getPositionThreeMember().equals("Vacant")
-                    && !mListOfBands.get(listIndex).getPositionFourMember().equals("Vacant")
-                    && !mListOfBands.get(listIndex).getPositionFiveMember().equals("Vacant"))
-            {
-                if(!mFilteredBandsToRemove.contains(listIndex))
-                {
-                    mFilteredBandsToRemove.add(listIndex);
-                }
-            }
-        }
     }
 
     @Override
     public void onInfoWindowClick(Marker marker)
     {
-        MusicianUserBandDetailsFragment fragment = new MusicianUserBandDetailsFragment();
+        VenueUserBandDetailsFragment fragment = new VenueUserBandDetailsFragment();
         Bundle arguments = new Bundle();
 
         for(int i = 0; i < mListOfBandMarkerInfo.size(); i++)
@@ -562,7 +427,12 @@ public class MusicianUserBandResultsFragment extends Fragment implements OnMapRe
                 arguments.putString("BandID", mListOfBandMarkerInfo.get(i).getBandId());
                 arguments.putString("BandName", mListOfBandMarkerInfo.get(i).getBandName());
                 arguments.putString("BandGenres", mListOfBandMarkerInfo.get(i).getBandGenres());
-                arguments.putString("BandNumberOfPositions", mListOfBandMarkerInfo.get(i).getNumberOfPositions());
+                arguments.putDouble("BandDistance", mListOfBandMarkerInfo.get(i).getBandDistance());
+                arguments.putDouble("BandLocationLat", mListOfBandMarkerInfo.get(i).getBandLocation().getLatitude());
+                arguments.putDouble("BandLocationLng", mListOfBandMarkerInfo.get(i).getBandLocation().getLongitude());
+                arguments.putDouble("VenueLocationLat", mListOfBandMarkerInfo.get(i).getVenueLocation().getLatitude());
+                arguments.putDouble("VenueLocationLng", mListOfBandMarkerInfo.get(i).getVenueLocation().getLongitude());
+                arguments.putString("GigId", mGigId);
             }
         }
 
@@ -573,7 +443,8 @@ public class MusicianUserBandResultsFragment extends Fragment implements OnMapRe
         FragmentTransaction fragmentTransaction = getActivity().getFragmentManager()
                 .beginTransaction();
         fragmentTransaction.setCustomAnimations(R.animator.enter_from_right, R.animator.enter_from_left);
-        fragmentTransaction.replace(R.id.frame, fragment, "MusicianUserBandDetailsFragment")
+        fragmentTransaction.replace(R.id.frame, fragment, "VenueUserBandDetailsFragment")
                 .addToBackStack(null).commit();
+
     }
 }

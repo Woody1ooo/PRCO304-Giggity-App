@@ -1,0 +1,114 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:tools="http://schemas.android.com/tools"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             xmlns:app="http://schemas.android.com/apk/res-auto"
+             tools:context="com.liamd.giggity_app.VenueUserBandDetailsFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/bandImageView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:civ_border_width="2dp"
+                app:civ_border_color="#FF000000"
+                android:layout_marginTop="15dp"
+                app:srcCompat="@drawable/com_facebook_profile_picture_blank_portrait"
+                android:layout_weight="1"
+                android:layout_gravity="center_horizontal"
+                android:foregroundGravity="center_horizontal"/>
+
+            <TextView
+                android:id="@+id/textView18"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:paddingTop="20dp"
+                android:text="Band Name"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="16sp"/>
+
+            <TextView
+                android:id="@+id/bandNameTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:paddingTop="20dp"/>
+
+            <TextView
+                android:id="@+id/textView19"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:paddingTop="20dp"
+                android:text="Band Genres"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="16sp"/>
+
+            <TextView
+                android:id="@+id/bandGenresTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:paddingTop="20dp"/>
+
+            <TextView
+                android:id="@+id/youtubeHeadingTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:paddingTop="20dp"
+                android:text="YouTube Showcase"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="16sp"/>
+
+            <FrameLayout
+                android:id="@+id/youtube_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:visibility="visible"
+                android:layout_marginTop="20dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:paddingTop="20dp"
+                android:text="Band Location"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="16sp"/>
+
+            <TextView
+                android:id="@+id/bandDistanceTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:paddingTop="20dp"
+                android:textSize="14sp"/>
+
+            <com.google.android.gms.maps.MapView
+                android:id="@+id/bandMapView"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_marginTop="10dp"/>
+
+            <Button
+                android:id="@+id/inviteButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/colorPrimary"
+                android:text="Invite"
+                android:textColor="@color/mdtp_white"/>
+        </LinearLayout>
+    </ScrollView>
+</FrameLayout>
