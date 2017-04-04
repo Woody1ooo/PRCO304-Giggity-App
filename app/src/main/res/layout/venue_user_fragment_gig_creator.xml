@@ -52,6 +52,25 @@
             android:ems="10"
             android:id="@+id/VenueNameEditText"/>
 
+        <TextView
+            android:text="Genres"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="20dp"
+            android:paddingLeft="10dp"
+            android:id="@+id/textView18"
+            android:textSize="16sp"
+            android:textColor="@color/cast_expanded_controller_background_color"/>
+
+        <com.liamd.giggity_app.MultiSelectSpinner
+            android:id="@+id/genreSpinner"
+            android:layout_width="fill_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.15"
+            android:layout_marginBottom="32dp"
+            android:layout_marginTop="22dp"
+            android:paddingLeft="10dp"/>
+
             <TextView
                 android:text="Start Date"
                 android:layout_width="match_parent"

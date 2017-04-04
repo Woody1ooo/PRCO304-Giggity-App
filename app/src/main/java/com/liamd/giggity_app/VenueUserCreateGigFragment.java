@@ -28,6 +28,7 @@ import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -41,6 +42,7 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
     // Declare visual components
     private EditText mGigNameEditText;
     private EditText mVenueNameEditText;
+    private MultiSelectSpinner mGenresSpinner;
     private Button mSelectStartDateButton;
     private Button mSelectFinishDateButton;
     private TextView mStartDateSelectedTextView;
@@ -58,6 +60,7 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
     // Declare general variables required
     private List<Gig> mListOfVenueGigs = new ArrayList<>();
     private List<Date> mListOfGigDates = new ArrayList<>();
+    private List<String> mGenreList;
     private String mVenueId;
     private String mVenueName;
     private Date mStartDate;
@@ -93,6 +96,8 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
         mVenueNameEditText = (EditText) fragmentView.findViewById(R.id.VenueNameEditText);
         mGigNameEditText = (EditText) fragmentView.findViewById(R.id.gigNameEditText);
 
+        mGenresSpinner = (MultiSelectSpinner) fragmentView.findViewById(R.id.genreSpinner);
+
         mSelectStartDateButton = (Button) fragmentView.findViewById(R.id.LaunchStartDatePickerButton);
         mSelectFinishDateButton = (Button) fragmentView.findViewById(R.id.LaunchFinishDatePickerButton);
 
@@ -106,6 +111,20 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
         mFinishTimeSelectedTextView = (TextView) fragmentView.findViewById(R.id.FinishTimeSelectedLabel);
 
         mCreateGigButton = (Button) fragmentView.findViewById(R.id.createGigButton);
+
+        // Add items to the genre list, and set the spinner to use these
+        mGenreList = new ArrayList<>();
+        mGenreList.add("Classic Rock");
+        mGenreList.add("Alternative Rock");
+        mGenreList.add("Blues");
+        mGenreList.add("Indie");
+        mGenreList.add("Metal");
+        mGenreList.add("Pop");
+        mGenreList.add("Classical");
+        mGenreList.add("Jazz");
+        mGenreList.add("Acoustic");
+
+        mGenresSpinner.setItems(mGenreList);
 
         // Creates a reference to Firebase
         mAuth = FirebaseAuth.getInstance();
@@ -129,6 +148,10 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
                 // This is then used as the text for a non-editable edit text field
                 mVenueNameEditText.setText(mVenueName);
                 mVenueNameEditText.setEnabled(false);
+
+                // This method populates the genre spinner with the genres the user
+                // selected when setting up their account
+                mGenresSpinner.setSelection(PopulateUserGenreData(dataSnapshot));
 
                 // Each gig is then iterated through and added to an
                 // array list of gigs (mListOfVenueGigs)
@@ -384,79 +407,47 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
                     Toast.makeText(getActivity(),
                             "Please ensure you have given a value for all the required fields!",
                             Toast.LENGTH_SHORT).show();
-                } else
+                }
+                else
                 {
-                    try
+                    if(mGenresSpinner.getSelectedItem() == "")
                     {
-                        // This creates a date object and populates it with the start date data.
-                        // The seconds and milliseconds are hardcoded as I believe this level of
-                        // specificity is not required.
-                        mStartDate = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss.SSS").parse(mStartDay + "/" +
-                                mStartMonth + "/" + mStartYear + " " +
-                                mStartHour + ":" + mStartMinute + ":" + "00" + "." + "000");
-                    } catch (ParseException e)
-                    {
-                        e.printStackTrace();
-
+                        Toast.makeText(getActivity(),
+                                "Please ensure you have given a value for all the required fields!",
+                                Toast.LENGTH_SHORT).show();
                     }
 
-                    try
+                    else
                     {
-                        // If the finish date has been left blank, then we can assume that
-                        // the gig finishes on the same day as the start. We therefore just
-                        // take the date information from the start date, but append the finish
-                        // times as defined by the user.
-                        if (mFinishDateSelectedTextView.getText().equals
-                                ("No date selected! (ignore if this is the same as the start date)"))
+                        try
                         {
-                            mFinishDate = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss.SSS").parse(mStartDay + "/" +
+                            // This creates a date object and populates it with the start date data.
+                            // The seconds and milliseconds are hardcoded as I believe this level of
+                            // specificity is not required.
+                            mStartDate = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss.SSS").parse(mStartDay + "/" +
                                     mStartMonth + "/" + mStartYear + " " +
-                                    mFinishHour + ":" + mFinishMinute + ":" + "00" + "." + "000");
+                                    mStartHour + ":" + mStartMinute + ":" + "00" + "." + "000");
+                        } catch (ParseException e)
+                        {
+                            e.printStackTrace();
 
-                            // A gig object is then created and populated with
-                            // the data generated across this page
-                            Gig gigToInsert = new Gig(
-                                    mFinishDate,
-                                    mStartDate,
-                                    mGigNameEditText.getText().toString(),
-                                    mVenueId);
-
-                            // This is then inserted into the database using a push
-                            // command to generate a new random identifier
-                            mDatabase.child("Gigs/").push().setValue(gigToInsert);
-
-                            // A dialog is then shown to alert the user that the changes have been made
-                            final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                            builder.setTitle("Confirmation");
-                            builder.setMessage("Gig Created!");
-                            builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
-                            {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i)
-                                {
-                                    // The user is then taken to the my gigs fragment
-                                    ReturnToMyGigs();
-                                }
-                            });
-                            builder.setCancelable(false);
-                            builder.show();
                         }
 
-                        else
+                        try
                         {
-                            // This code is called when the user selects a specific finish date.
-                            mFinishDate = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss.SSS").parse(mFinishDay + "/" +
-                                    mFinishMonth + "/" + mFinishYear + " " +
-                                    mFinishHour + ":" + mFinishMinute + ":" + "00" + "." + "000");
+                            // If the finish date has been left blank, then we can assume that
+                            // the gig finishes on the same day as the start. We therefore just
+                            // take the date information from the start date, but append the finish
+                            // times as defined by the user.
+                            if (mFinishDateSelectedTextView.getText().equals
+                                    ("No date selected! (ignore if this is the same as the start date)"))
+                            {
+                                String gigId = mDatabase.push().getKey();
 
-                            if (mStartDate.after(mFinishDate))
-                            {
-                                Toast.makeText(getActivity(),
-                                        "Please ensure that the start date and " +
-                                                "times are before the finish date and times!",
-                                        Toast.LENGTH_SHORT).show();
-                            } else
-                            {
+                                mFinishDate = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss.SSS").parse(mStartDay + "/" +
+                                        mStartMonth + "/" + mStartYear + " " +
+                                        mFinishHour + ":" + mFinishMinute + ":" + "00" + "." + "000");
+
                                 // A gig object is then created and populated with
                                 // the data generated across this page
                                 Gig gigToInsert = new Gig(
@@ -467,7 +458,9 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
 
                                 // This is then inserted into the database using a push
                                 // command to generate a new random identifier
-                                mDatabase.child("Gigs/").push().setValue(gigToInsert);
+                                mDatabase.child("Gigs/" + gigId).setValue(gigToInsert);
+
+                                mDatabase.child("Gigs/" + gigId).child("genres").setValue(mGenresSpinner.getSelectedItemsAsString());
 
                                 // A dialog is then shown to alert the user that the changes have been made
                                 final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -485,10 +478,59 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
                                 builder.setCancelable(false);
                                 builder.show();
                             }
+
+                            else
+                            {
+                                String gigId = mDatabase.push().getKey();
+
+                                // This code is called when the user selects a specific finish date.
+                                mFinishDate = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss.SSS").parse(mFinishDay + "/" +
+                                        mFinishMonth + "/" + mFinishYear + " " +
+                                        mFinishHour + ":" + mFinishMinute + ":" + "00" + "." + "000");
+
+                                if (mStartDate.after(mFinishDate))
+                                {
+                                    Toast.makeText(getActivity(),
+                                            "Please ensure that the start date and " +
+                                                    "times are before the finish date and times!",
+                                            Toast.LENGTH_SHORT).show();
+                                } else
+                                {
+                                    // A gig object is then created and populated with
+                                    // the data generated across this page
+                                    Gig gigToInsert = new Gig(
+                                            mFinishDate,
+                                            mStartDate,
+                                            mGigNameEditText.getText().toString(),
+                                            mVenueId);
+
+                                    // This is then inserted into the database using a push
+                                    // command to generate a new random identifier
+                                    mDatabase.child("Gigs/" + gigId).setValue(gigToInsert);
+
+                                    mDatabase.child("Gigs/" + gigId).child("genres").setValue(mGenresSpinner.getSelectedItemsAsString());
+
+                                    // A dialog is then shown to alert the user that the changes have been made
+                                    final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                                    builder.setTitle("Confirmation");
+                                    builder.setMessage("Gig Created!");
+                                    builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                                    {
+                                        @Override
+                                        public void onClick(DialogInterface dialogInterface, int i)
+                                        {
+                                            // The user is then taken to the my gigs fragment
+                                            ReturnToMyGigs();
+                                        }
+                                    });
+                                    builder.setCancelable(false);
+                                    builder.show();
+                                }
+                            }
+                        } catch (ParseException e)
+                        {
+                            e.printStackTrace();
                         }
-                    } catch (ParseException e)
-                    {
-                        e.printStackTrace();
                     }
                 }
             }
@@ -502,6 +544,37 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
             }
         });
         builder.show();
+    }
+
+    // This method takes a snapshot of the database as a parameter and returns a
+    // list of trimmed strings to populate the list of genres that the user selected
+    // when they created their account
+    private ArrayList<String> PopulateUserGenreData(DataSnapshot dataSnapshot)
+    {
+        // This takes the list of genres from the database that the user has selected
+        // and adds them to a string
+        String userPulledGenres = dataSnapshot.child("Venues/" + mVenueId + "/genre").getValue().toString();
+
+        // This then splits this string into an array of strings, each separated by
+        // a comma
+        List<String> splitUserPulledGenres = Arrays.asList(userPulledGenres.split(","));
+
+        // For the select list to understand this, they need any leading or trailing
+        // spaces to be removed
+        ArrayList<String> splitUserPulledGenresFormatted = new ArrayList<>();
+
+        // The string array is then iterated through and added to a separate string
+        // array and passed to the spinner.
+        for (int i = 0; i < splitUserPulledGenres.size(); i++)
+        {
+            String formattedGenreStringToAdd;
+
+            formattedGenreStringToAdd = splitUserPulledGenres.get(i).trim();
+
+            splitUserPulledGenresFormatted.add(formattedGenreStringToAdd);
+        }
+
+        return splitUserPulledGenresFormatted;
     }
 
     // Android seems to think this method is required even
