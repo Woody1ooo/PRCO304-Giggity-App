@@ -1120,8 +1120,27 @@ public class MusicianUserBandManagementFragment extends Fragment implements YouT
 
                             mDatabase.child("Bands/" + mBandID).setValue(bandToInsert);
                             mDatabase.child("Bands/" + mBandID + "/bandCreator").setValue(mAuth.getCurrentUser().getUid());
-                            mDatabase.child("Bands/" + mBandID + "/positionOneMember").setValue(mBandFromDatabase.getPositionOneMember());
-                            mDatabase.child("Bands/" + mBandID + "/positionTwoMember").setValue(mBandFromDatabase.getPositionTwoMember());
+
+                            if(mBandFromDatabase.getPositionOneMember() != null)
+                            {
+                                mDatabase.child("Bands/" + mBandID + "/positionOneMember").setValue(mBandFromDatabase.getPositionOneMember());
+                            }
+
+                            else
+                            {
+                                mDatabase.child("Bands/" + mBandID + "/positionOneMember").setValue("Vacant");
+                            }
+
+                            if(mBandFromDatabase.getPositionTwoMember() != null)
+                            {
+                                mDatabase.child("Bands/" + mBandID + "/positionTwoMember").setValue(mBandFromDatabase.getPositionTwoMember());
+                            }
+
+                            else
+                            {
+                                mDatabase.child("Bands/" + mBandID + "/positionTwoMember").setValue("Vacant");
+                            }
+
                             mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/isInBand").setValue(true);
                             mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/bandID").setValue(mBandID);
 
@@ -1178,9 +1197,37 @@ public class MusicianUserBandManagementFragment extends Fragment implements YouT
 
                             mDatabase.child("Bands/" + mBandID).setValue(bandToInsert);
                             mDatabase.child("Bands/" + mBandID + "/bandCreator").setValue(mAuth.getCurrentUser().getUid());
-                            mDatabase.child("Bands/" + mBandID + "/positionOneMember").setValue(mBandFromDatabase.getPositionOneMember());
-                            mDatabase.child("Bands/" + mBandID + "/positionTwoMember").setValue(mBandFromDatabase.getPositionTwoMember());
-                            mDatabase.child("Bands/" + mBandID + "/positionThreeMember").setValue(mBandFromDatabase.getPositionThreeMember());
+
+                            if(mBandFromDatabase.getPositionOneMember() != null)
+                            {
+                                mDatabase.child("Bands/" + mBandID + "/positionOneMember").setValue(mBandFromDatabase.getPositionOneMember());
+                            }
+
+                            else
+                            {
+                                mDatabase.child("Bands/" + mBandID + "/positionOneMember").setValue("Vacant");
+                            }
+
+                            if(mBandFromDatabase.getPositionTwoMember() != null)
+                            {
+                                mDatabase.child("Bands/" + mBandID + "/positionTwoMember").setValue(mBandFromDatabase.getPositionTwoMember());
+                            }
+
+                            else
+                            {
+                                mDatabase.child("Bands/" + mBandID + "/positionTwoMember").setValue("Vacant");
+                            }
+
+                            if(mBandFromDatabase.getPositionThreeMember() != null)
+                            {
+                                mDatabase.child("Bands/" + mBandID + "/positionThreeMember").setValue(mBandFromDatabase.getPositionThreeMember());
+                            }
+
+                            else
+                            {
+                                mDatabase.child("Bands/" + mBandID + "/positionThreeMember").setValue("Vacant");
+                            }
+
                             mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/isInBand").setValue(true);
                             mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/bandID").setValue(mBandID);
 
@@ -1238,10 +1285,47 @@ public class MusicianUserBandManagementFragment extends Fragment implements YouT
 
                             mDatabase.child("Bands/" + mBandID).setValue(bandToInsert);
                             mDatabase.child("Bands/" + mBandID + "/bandCreator").setValue(mAuth.getCurrentUser().getUid());
-                            mDatabase.child("Bands/" + mBandID + "/positionOneMember").setValue(mBandFromDatabase.getPositionOneMember());
-                            mDatabase.child("Bands/" + mBandID + "/positionTwoMember").setValue(mBandFromDatabase.getPositionTwoMember());
-                            mDatabase.child("Bands/" + mBandID + "/positionThreeMember").setValue(mBandFromDatabase.getPositionThreeMember());
-                            mDatabase.child("Bands/" + mBandID + "/positionFourMember").setValue(mBandFromDatabase.getPositionFourMember());
+
+                            if(mBandFromDatabase.getPositionOneMember() != null)
+                            {
+                                mDatabase.child("Bands/" + mBandID + "/positionOneMember").setValue(mBandFromDatabase.getPositionOneMember());
+                            }
+
+                            else
+                            {
+                                mDatabase.child("Bands/" + mBandID + "/positionOneMember").setValue("Vacant");
+                            }
+
+                            if(mBandFromDatabase.getPositionTwoMember() != null)
+                            {
+                                mDatabase.child("Bands/" + mBandID + "/positionTwoMember").setValue(mBandFromDatabase.getPositionTwoMember());
+                            }
+
+                            else
+                            {
+                                mDatabase.child("Bands/" + mBandID + "/positionTwoMember").setValue("Vacant");
+                            }
+
+                            if(mBandFromDatabase.getPositionThreeMember() != null)
+                            {
+                                mDatabase.child("Bands/" + mBandID + "/positionThreeMember").setValue(mBandFromDatabase.getPositionThreeMember());
+                            }
+
+                            else
+                            {
+                                mDatabase.child("Bands/" + mBandID + "/positionThreeMember").setValue("Vacant");
+                            }
+
+                            if(mBandFromDatabase.getPositionFourMember() != null)
+                            {
+                                mDatabase.child("Bands/" + mBandID + "/positionFourMember").setValue(mBandFromDatabase.getPositionFourMember());
+                            }
+
+                            else
+                            {
+                                mDatabase.child("Bands/" + mBandID + "/positionFourMember").setValue("Vacant");
+                            }
+
                             mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/isInBand").setValue(true);
                             mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/bandID").setValue(mBandID);
 
@@ -1304,11 +1388,57 @@ public class MusicianUserBandManagementFragment extends Fragment implements YouT
 
                             mDatabase.child("Bands/" + mBandID).setValue(bandToInsert);
                             mDatabase.child("Bands/" + mBandID + "/bandCreator").setValue(mAuth.getCurrentUser().getUid());
-                            mDatabase.child("Bands/" + mBandID + "/positionOneMember").setValue(mBandFromDatabase.getPositionOneMember());
-                            mDatabase.child("Bands/" + mBandID + "/positionTwoMember").setValue(mBandFromDatabase.getPositionTwoMember());
-                            mDatabase.child("Bands/" + mBandID + "/positionThreeMember").setValue(mBandFromDatabase.getPositionThreeMember());
-                            mDatabase.child("Bands/" + mBandID + "/positionFourMember").setValue(mBandFromDatabase.getPositionFourMember());
-                            mDatabase.child("Bands/" + mBandID + "/positionFiveMember").setValue(mBandFromDatabase.getPositionFiveMember());
+
+                            if(mBandFromDatabase.getPositionOneMember() != null)
+                            {
+                                mDatabase.child("Bands/" + mBandID + "/positionOneMember").setValue(mBandFromDatabase.getPositionOneMember());
+                            }
+
+                            else
+                            {
+                                mDatabase.child("Bands/" + mBandID + "/positionOneMember").setValue("Vacant");
+                            }
+
+                            if(mBandFromDatabase.getPositionTwoMember() != null)
+                            {
+                                mDatabase.child("Bands/" + mBandID + "/positionTwoMember").setValue(mBandFromDatabase.getPositionTwoMember());
+                            }
+
+                            else
+                            {
+                                mDatabase.child("Bands/" + mBandID + "/positionTwoMember").setValue("Vacant");
+                            }
+
+                            if(mBandFromDatabase.getPositionThreeMember() != null)
+                            {
+                                mDatabase.child("Bands/" + mBandID + "/positionThreeMember").setValue(mBandFromDatabase.getPositionThreeMember());
+                            }
+
+                            else
+                            {
+                                mDatabase.child("Bands/" + mBandID + "/positionThreeMember").setValue("Vacant");
+                            }
+
+                            if(mBandFromDatabase.getPositionFourMember() != null)
+                            {
+                                mDatabase.child("Bands/" + mBandID + "/positionFourMember").setValue(mBandFromDatabase.getPositionFourMember());
+                            }
+
+                            else
+                            {
+                                mDatabase.child("Bands/" + mBandID + "/positionFourMember").setValue("Vacant");
+                            }
+
+                            if(mBandFromDatabase.getPositionFiveMember() != null)
+                            {
+                                mDatabase.child("Bands/" + mBandID + "/positionFiveMember").setValue(mBandFromDatabase.getPositionFiveMember());
+                            }
+
+                            else
+                            {
+                                mDatabase.child("Bands/" + mBandID + "/positionFiveMember").setValue("Vacant");
+                            }
+
                             mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/isInBand").setValue(true);
                             mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/bandID").setValue(mBandID);
 
