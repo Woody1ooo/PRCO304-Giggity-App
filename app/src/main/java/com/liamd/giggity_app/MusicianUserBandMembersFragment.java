@@ -175,7 +175,7 @@ public class MusicianUserBandMembersFragment extends Fragment
             public void onClick(View view)
             {
                 mButtonClicked = "positionOne";
-                Hire(mButtonClicked);
+                Hire(mButtonClicked, mPositionOneInstrumentTextView.getText().toString());
             }
         });
 
@@ -195,7 +195,7 @@ public class MusicianUserBandMembersFragment extends Fragment
             public void onClick(View view)
             {
                 mButtonClicked = "positionTwo";
-                Hire(mButtonClicked);
+                Hire(mButtonClicked, mPositionTwoInstrumentTextView.getText().toString());
             }
         });
 
@@ -215,7 +215,7 @@ public class MusicianUserBandMembersFragment extends Fragment
             public void onClick(View view)
             {
                 mButtonClicked = "positionThree";
-                Hire(mButtonClicked);
+                Hire(mButtonClicked, mPositionThreeInstrumentTextView.getText().toString());
             }
         });
 
@@ -235,7 +235,7 @@ public class MusicianUserBandMembersFragment extends Fragment
             public void onClick(View view)
             {
                 mButtonClicked = "positionFour";
-                Hire(mButtonClicked);
+                Hire(mButtonClicked, mPositionFourInstrumentTextView.getText().toString());
             }
         });
 
@@ -255,7 +255,7 @@ public class MusicianUserBandMembersFragment extends Fragment
             public void onClick(View view)
             {
                 mButtonClicked = "positionFive";
-                Hire(mButtonClicked);
+                Hire(mButtonClicked, mPositionFiveInstrumentTextView.getText().toString());
             }
         });
 
@@ -765,9 +765,22 @@ public class MusicianUserBandMembersFragment extends Fragment
         });
     }
 
-    private void Hire(String positionSelected)
+    private void Hire(String positionSelected, String positionInstruments)
     {
+        // The user is then taken to the my gigs fragment
+        Bundle arguments = new Bundle();
+        arguments.putString("BandId", mBandId);
+        arguments.putString("BandPosition", positionSelected);
+        arguments.putString("PositionInstruments", positionInstruments);
+        arguments.putString("BandGenres", mSnapshot.child("Bands/" + mBandId + "/genres").getValue().toString());
+        MusicianUserMusicianFinder fragment = new MusicianUserMusicianFinder();
+        fragment.setArguments(arguments);
 
+        getActivity().setTitle("Musician Finder");
+        final FragmentTransaction ft = getFragmentManager().beginTransaction();
+        ft.setCustomAnimations(R.animator.enter_from_right, R.animator.enter_from_left);
+        ft.replace(R.id.frame, fragment, "MusicianUserMusicianFinder")
+                .addToBackStack(null).commit();
     }
 
     // Upon confirmation this replaces the position removed with Vacant, sets the users isInBand value to false and removes the bandID field from their profile

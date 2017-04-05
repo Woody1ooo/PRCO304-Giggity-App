@@ -17,6 +17,7 @@ public class User
     private String instruments;
     private LatLng homeLocation;
     private String homeAddress;
+    private double musicianDistance;
 
     public User()
     {
@@ -105,5 +106,65 @@ public class User
     public void setHasCompletedSetup(Boolean hasLoggedIn)
     {
         this.hasCompletedSetup = hasLoggedIn;
+    }
+
+    public String getAccountType()
+    {
+        return accountType;
+    }
+
+    public void setAccountType(String accountType)
+    {
+        this.accountType = accountType;
+    }
+
+    public String getGenres()
+    {
+        return genres;
+    }
+
+    public void setGenres(String genres)
+    {
+        this.genres = genres;
+    }
+
+    public String getInstruments()
+    {
+        return instruments;
+    }
+
+    public void setInstruments(String instruments)
+    {
+        this.instruments = instruments;
+    }
+
+    public LatLng getHomeLocation()
+    {
+        return homeLocation;
+    }
+
+    public void setHomeLocation(LatLng homeLocation)
+    {
+        this.homeLocation = homeLocation;
+    }
+
+    public String getHomeAddress()
+    {
+        return homeAddress;
+    }
+
+    public void setHomeAddress(String homeAddress)
+    {
+        this.homeAddress = homeAddress;
+    }
+
+    public double getMusicianDistance()
+    {
+        return musicianDistance;
+    }
+
+    public void setMusicianDistance(double musicianDistance)
+    {
+        this.musicianDistance = musicianDistance;
     }
 }

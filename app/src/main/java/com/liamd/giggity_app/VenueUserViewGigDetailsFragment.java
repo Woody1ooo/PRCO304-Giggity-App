@@ -331,6 +331,7 @@ public class VenueUserViewGigDetailsFragment extends Fragment implements DatePic
 
                 getActivity().setTitle("Band Finder");
                 final FragmentTransaction ft = getFragmentManager().beginTransaction();
+                ft.setCustomAnimations(R.animator.enter_from_right, R.animator.enter_from_left);
                 ft.replace(R.id.frame, fragment, "VenueUserBandFinderFragment")
                         .addToBackStack(null).commit();
             }

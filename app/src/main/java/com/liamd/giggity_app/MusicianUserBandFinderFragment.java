@@ -44,7 +44,6 @@ import static android.content.Context.LOCATION_SERVICE;
  */
 public class MusicianUserBandFinderFragment extends Fragment implements LocationListener
 {
-
     // Declare visual components
     private SeekBar mDistanceSeekbar;
     private TextView mDistanceTextView;
