@@ -104,7 +104,7 @@ public class MusicianUserGigRequestsFragment extends Fragment
         mBandId = mDataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/bandID").getValue().toString();
 
         // This iterates through the band requests that users have sent and adds them to a list (mListOfUserRequestsSent)
-        Iterable<DataSnapshot> sentRequestChildren = mDataSnapshot.child("MusicianSentGigRequests/" + mBandId).getChildren();
+        Iterable<DataSnapshot> sentRequestChildren = mDataSnapshot.child("BandSentGigRequests/" + mBandId).getChildren();
         for (DataSnapshot child : sentRequestChildren)
         {
             GigRequest gigRequest;

@@ -107,7 +107,7 @@ public class VenueUserGigRequestsFragment extends Fragment
         mVenueId = mDataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/venueID").getValue().toString();
 
         // This iterates through the gig requests that users have sent and adds them to a list (mListOfGigRequestsReceived)
-        Iterable<DataSnapshot> receivedRequestChildren = mDataSnapshot.child("MusicianSentGigRequests/").getChildren();
+        Iterable<DataSnapshot> receivedRequestChildren = mDataSnapshot.child("BandSentGigRequests/").getChildren();
         for (DataSnapshot child : receivedRequestChildren)
         {
             // The key is obtained from the level below to then get the children below that
@@ -115,7 +115,7 @@ public class VenueUserGigRequestsFragment extends Fragment
 
             mPassedThrough = false;
 
-            Iterable<DataSnapshot> levelDownReceivedRequestChildren = mDataSnapshot.child("MusicianSentGigRequests/" + mBandIdKey).getChildren();
+            Iterable<DataSnapshot> levelDownReceivedRequestChildren = mDataSnapshot.child("BandSentGigRequests/" + mBandIdKey).getChildren();
             for (DataSnapshot levelDownChild : levelDownReceivedRequestChildren)
             {
                 if(!mPassedThrough)

@@ -182,17 +182,17 @@ public class MusicianUserGigDetailsFragment extends Fragment implements OnMapRea
             public void onClick(DialogInterface dialogInterface, int i)
             {
                 // If the user has already submitted a request for this gig then inform them and cancel the request
-                if(mSnapshot.child("MusicianSentGigRequests/" + mBandId + "/" + mGigId).exists())
+                if(mSnapshot.child("BandSentGigRequests/" + mBandId + "/" + mGigId).exists())
                 {
                     RequestExistsDialog();
                 }
 
                 else
                 {
-                    mDatabase.child("MusicianSentGigRequests/" + mBandId + "/" + mGigId).child("bandID").setValue(mBandId);
-                    mDatabase.child("MusicianSentGigRequests/" + mBandId + "/" + mGigId).child("gigID").setValue(mGigId);
-                    mDatabase.child("MusicianSentGigRequests/" + mBandId + "/" + mGigId).child("venueID").setValue(mVenueId);
-                    mDatabase.child("MusicianSentGigRequests/" + mBandId + "/" + mGigId).child("requestStatus").setValue("Pending");
+                    mDatabase.child("BandSentGigRequests/" + mBandId + "/" + mGigId).child("bandID").setValue(mBandId);
+                    mDatabase.child("BandSentGigRequests/" + mBandId + "/" + mGigId).child("gigID").setValue(mGigId);
+                    mDatabase.child("BandSentGigRequests/" + mBandId + "/" + mGigId).child("venueID").setValue(mVenueId);
+                    mDatabase.child("BandSentGigRequests/" + mBandId + "/" + mGigId).child("requestStatus").setValue("Pending");
                     ConfirmDialog();
                 }
             }
