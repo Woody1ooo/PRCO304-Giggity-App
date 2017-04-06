@@ -47,11 +47,8 @@ public class MusicianUserMusicianResultsFragment extends Fragment implements OnM
     private static com.google.android.gms.maps.model.LatLng mLocation;
 
     // Declare Firebase specific variables
-    private FirebaseAuth mAuth;
     private DatabaseReference mDatabase;
     private DataSnapshot mUserDataSnapshot;
-    private FirebaseStorage mStorage;
-    private StorageReference mProfileImageReference;
 
     // Declare Visual Components
     private ListView mMusiciansListView;
@@ -71,6 +68,7 @@ public class MusicianUserMusicianResultsFragment extends Fragment implements OnM
     private String mUserName;
     private String mUserGenres;
     private String mUserInstruments;
+    private String mBandId;
 
     // Location variables
     private double mDistance;
@@ -107,15 +105,8 @@ public class MusicianUserMusicianResultsFragment extends Fragment implements OnM
         tabSpec.setIndicator("Map");
         tabs.addTab(tabSpec);
 
-        // Creates a reference to Firebase
-        mAuth = FirebaseAuth.getInstance();
-
         // Creates a reference to the Firebase database
         mDatabase = FirebaseDatabase.getInstance().getReference();
-
-        // Creates a reference to the storage element of firebase
-        mStorage = FirebaseStorage.getInstance();
-        mProfileImageReference = mStorage.getReference();
 
         // Initialise other variables required
         mBandLocation = new Location("");
@@ -139,6 +130,9 @@ public class MusicianUserMusicianResultsFragment extends Fragment implements OnM
 
         // This gets the instruments the user has selected
         mInstrumentsSelected = getArguments().getString("Instruments");
+
+        // This gets the id of the band searching for members
+        mBandId = getArguments().getString("BandId");
 
         // Initialise the map
         mMapView = (MapView) fragmentView.findViewById(R.id.googleMap);
@@ -285,13 +279,17 @@ public class MusicianUserMusicianResultsFragment extends Fragment implements OnM
             {
                 User selectedUser = (User) mMusiciansListView.getItemAtPosition(position);
 
-                //MusicianUserBandDetailsFragment fragment = new MusicianUserBandDetailsFragment();
+                MusicianUserMusicianDetailsFragment fragment = new MusicianUserMusicianDetailsFragment();
 
-                /*Bundle arguments = new Bundle();
-                arguments.putString("BandID", selectedBand.getBandID());
-                arguments.putString("BandName", selectedBand.getName());
-                arguments.putString("BandGenres", selectedBand.getGenres());
-                arguments.putString("BandNumberOfPositions", selectedBand.getNumberOfPositions());
+                Bundle arguments = new Bundle();
+                arguments.putString("UserID", selectedUser.getUserID());
+                arguments.putString("UserName", selectedUser.getFirstName() + " " + selectedUser.getLastName());
+                arguments.putString("UserGenres", selectedUser.getGenres());
+                arguments.putString("UserInstruments", selectedUser.getInstruments());
+                arguments.putString("BandId", mBandId);
+                arguments.putDouble("Distance", mDistance);
+                arguments.putDouble("Lat", mMusicianLocationLat);
+                arguments.putDouble("Lng", mMusicianLocationLng);
                 fragment.setArguments(arguments);
 
                 // Creates a new fragment transaction to display the details of the selected
@@ -299,9 +297,8 @@ public class MusicianUserMusicianResultsFragment extends Fragment implements OnM
                 FragmentTransaction fragmentTransaction = getActivity().getFragmentManager()
                         .beginTransaction();
                 fragmentTransaction.setCustomAnimations(R.animator.enter_from_right, R.animator.enter_from_left);
-                fragmentTransaction.replace(R.id.frame, fragment, "MusicianUserBandDetailsFragment")
+                fragmentTransaction.replace(R.id.frame, fragment, "MusicianUserMusicianDetailsFragment")
                         .addToBackStack(null).commit();
-                        */
             }
         });
     }
@@ -481,7 +478,8 @@ public class MusicianUserMusicianResultsFragment extends Fragment implements OnM
                 arguments.putString("BandID", mListOfBandMarkerInfo.get(i).getBandId());
                 arguments.putString("BandName", mListOfBandMarkerInfo.get(i).getBandName());
                 arguments.putString("BandGenres", mListOfBandMarkerInfo.get(i).getBandGenres());
-                arguments.putString("BandNumberOfPositions", mListOfBandMarkerInfo.get(i).getNumberOfPositions());
+                arguments.putString("BandNumberOfPositions", mListOfBandMarkerInfo.get(i).getNumberOfPositions())
+                ;
             }
         }
 
