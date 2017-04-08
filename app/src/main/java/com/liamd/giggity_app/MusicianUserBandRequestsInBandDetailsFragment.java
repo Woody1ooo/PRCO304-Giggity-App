@@ -379,6 +379,9 @@ public class MusicianUserBandRequestsInBandDetailsFragment extends Fragment impl
                 mDatabase.child("Users/" + mUserId + "/bandID").setValue(mBandId);
                 mDatabase.child("Bands/" + mBandId + "/" + mBandPosition + "Member").setValue(mUserId);
 
+                // This posts a notification to the database to be picked up by the user who submitted the request
+                mDatabase.child("Notifications/MusicianSentBandRequestsAccepted/" + mUserId + "/" + mBandId).child("requestStatus").setValue("Accepted");
+
                 // A dialog is then shown to alert the user that the changes have been made
                 final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                 builder.setTitle("Confirmation");
@@ -419,6 +422,9 @@ public class MusicianUserBandRequestsInBandDetailsFragment extends Fragment impl
             public void onClick(DialogInterface dialogInterface, int i)
             {
                 mDatabase.child("MusicianSentBandRequests/" + mUserId + "/" + mBandId + "/requestStatus").setValue("Denied");
+
+                // This posts a notification to the database to be picked up by the user who submitted the request
+                mDatabase.child("Notifications/MusicianSentBandRequestsDenied/" + mUserId + "/" + mBandId).child("requestStatus").setValue("Denied");
 
                 // A dialog is then shown to alert the user that the changes have been made
                 final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());

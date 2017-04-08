@@ -7,7 +7,7 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
 
     <application
         android:allowBackup="true"
@@ -61,6 +61,16 @@
             <meta-data
                 android:name="com.google.android.geo.API_KEY"
                 android:value="AIzaSyD2ABHw_mi2wKzmWVOeOl_qkuW9OSVWDoQ"/>
+
+        <service android:name="NotificationService" android:exported="false">
+        </service>
+
+        <receiver android:name="BootReceiver">
+            <intent-filter>
+                <action android:name="com.liamd.giggity_app"/>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

@@ -101,18 +101,21 @@ public class MusicianUserGigRequestsFragment extends Fragment
 
     private void PopulateListViews()
     {
-        mBandId = mDataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/bandID").getValue().toString();
-
-        // This iterates through the band requests that users have sent and adds them to a list (mListOfUserRequestsSent)
-        Iterable<DataSnapshot> sentRequestChildren = mDataSnapshot.child("BandSentGigRequests/" + mBandId).getChildren();
-        for (DataSnapshot child : sentRequestChildren)
+        if(mDataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/bandID").exists())
         {
-            GigRequest gigRequest;
-            gigRequest = child.getValue(GigRequest.class);
-            mListOfGigRequestsSent.add(gigRequest);
-        }
+            mBandId = mDataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/bandID").getValue().toString();
 
-        mSentGigRequestsAdapter = new MusicianUserGigRequestsAdapter(getActivity(), R.layout.musician_user_gig_requests_list, mListOfGigRequestsSent, mDataSnapshot);
-        mSentGigRequestsListView.setAdapter(mSentGigRequestsAdapter);
+            // This iterates through the band requests that users have sent and adds them to a list (mListOfUserRequestsSent)
+            Iterable<DataSnapshot> sentRequestChildren = mDataSnapshot.child("BandSentGigRequests/" + mBandId).getChildren();
+            for (DataSnapshot child : sentRequestChildren)
+            {
+                GigRequest gigRequest;
+                gigRequest = child.getValue(GigRequest.class);
+                mListOfGigRequestsSent.add(gigRequest);
+            }
+
+            mSentGigRequestsAdapter = new MusicianUserGigRequestsAdapter(getActivity(), R.layout.musician_user_gig_requests_list, mListOfGigRequestsSent, mDataSnapshot);
+            mSentGigRequestsListView.setAdapter(mSentGigRequestsAdapter);
+        }
     }
 }

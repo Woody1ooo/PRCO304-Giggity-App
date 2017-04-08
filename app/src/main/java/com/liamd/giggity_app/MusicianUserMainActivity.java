@@ -66,6 +66,9 @@ public class MusicianUserMainActivity extends AppCompatActivity
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        // When the app is loaded this service is started
+        startService(new Intent(this, NotificationService.class));
+
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         final ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);

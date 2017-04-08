@@ -839,6 +839,8 @@ public class MusicianUserBandDetailsFragment extends Fragment implements YouTube
                         mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("userName").setValue(
                                 mDataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/firstName").getValue() + " " + mDataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/lastName").getValue());
                         mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("userID").setValue(mAuth.getCurrentUser().getUid());
+
+                        mDatabase.child("Notifications/MusicianSentBandRequestsPending/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("requestStatus").setValue("Pending");
                         ConfirmDialog();
                     }
                 }
@@ -860,6 +862,8 @@ public class MusicianUserBandDetailsFragment extends Fragment implements YouTube
                         mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("userName").setValue(
                                 mDataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/firstName").getValue() + " " + mDataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/lastName").getValue());
                         mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("userID").setValue(mAuth.getCurrentUser().getUid());
+
+                        mDatabase.child("Notifications/MusicianSentBandRequestsPending/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("requestStatus").setValue("Pending");
                         ConfirmDialog();
                     }
                 }
@@ -881,6 +885,8 @@ public class MusicianUserBandDetailsFragment extends Fragment implements YouTube
                         mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("userName").setValue(
                                 mDataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/firstName").getValue() + " " + mDataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/lastName").getValue());
                         mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("userID").setValue(mAuth.getCurrentUser().getUid());
+
+                        mDatabase.child("Notifications/MusicianSentBandRequestsPending/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("requestStatus").setValue("Pending");
                         ConfirmDialog();
                     }
                 }
@@ -902,6 +908,8 @@ public class MusicianUserBandDetailsFragment extends Fragment implements YouTube
                         mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("userName").setValue(
                                 mDataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/firstName").getValue() + " " + mDataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/lastName").getValue());
                         mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("userID").setValue(mAuth.getCurrentUser().getUid());
+
+                        mDatabase.child("Notifications/MusicianSentBandRequestsPending/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("requestStatus").setValue("Pending");
                         ConfirmDialog();
                     }
                 }
@@ -923,6 +931,8 @@ public class MusicianUserBandDetailsFragment extends Fragment implements YouTube
                         mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("userName").setValue(
                                 mDataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/firstName").getValue() + " " + mDataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/lastName").getValue());
                         mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("userID").setValue(mAuth.getCurrentUser().getUid());
+
+                        mDatabase.child("Notifications/MusicianSentBandRequestsPending/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("requestStatus").setValue("Pending");
                         ConfirmDialog();
                     }
                 }

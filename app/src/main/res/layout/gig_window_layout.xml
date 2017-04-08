@@ -3,10 +3,12 @@
               android:layout_width="wrap_content"
               android:layout_height="wrap_content"
               android:orientation="vertical">
+
     <TextView
         android:id="@+id/venueNameTextView"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:textSize="18sp"/>
 
     <TextView
         android:id="@+id/gigNameTextView"
