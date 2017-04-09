@@ -507,12 +507,12 @@ public class VenueUserViewGigDetailsFragment extends Fragment implements DatePic
             mFinishTimeSelectedTextView.setText(mParsedFinishDate.getHours() + ":" + mFormattedEndDateMinutes);
         }
 
-        if(mParsedStartDate.getMinutes() > 10)
+        if(mParsedStartDate.getMinutes() >= 10)
         {
             mStartTimeSelectedTextView.setText(mParsedStartDate.getHours() + ":" + mParsedStartDate.getMinutes());
         }
 
-        if(mParsedFinishDate.getMinutes() > 10)
+        if(mParsedFinishDate.getMinutes() >= 10)
         {
             mFinishTimeSelectedTextView.setText(mParsedFinishDate.getHours() + ":" + mParsedFinishDate.getMinutes());
         }

@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
@@ -590,10 +591,11 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
 
     private void ReturnToMyGigs()
     {
-        // The user is then taken to the my gigs fragment
-        getActivity().setTitle("My Gigs");
-        final FragmentTransaction ft = getFragmentManager().beginTransaction();
-        ft.replace(R.id.frame, new VenueUserViewGigsFragment(), "VenueUserViewGigsFragment");
-        ft.commit();
+        getActivity().finish();
+        getActivity().overridePendingTransition(0,0);
+
+        Intent intent = new Intent(getActivity(), VenueUserMainActivity.class);
+        startActivity(intent);
+        getFragmentManager().popBackStackImmediate();
     }
 }

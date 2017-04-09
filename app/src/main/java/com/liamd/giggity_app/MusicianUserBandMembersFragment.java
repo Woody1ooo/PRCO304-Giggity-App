@@ -796,24 +796,47 @@ public class MusicianUserBandMembersFragment extends Fragment
             public void onClick(DialogInterface dialogInterface, int i)
             {
                 String userIdToRemove = mSnapshot.child("Bands/" + mBandId + "/" + positionSelected + "Member").getValue().toString();
-                mDatabase.child("Bands/" + mBandId + "/" + positionSelected + "Member").setValue("Vacant");
-                mDatabase.child("Users/" + userIdToRemove + "/isInBand").setValue(false);
-                mDatabase.child("Users/" + userIdToRemove + "/bandID").removeValue();
 
-                // A dialog is then shown to alert the user that the changes have been made
-                final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setTitle("Confirmation");
-                builder.setMessage("Member Fired!");
-                builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                // If the user id of the member is the same as the currently logged in user it means that they are trying to fire themselves
+                // which doesn't make sense. Therefore prevent them from doing this and advise them to go to my profile instead
+                if(userIdToRemove.equals(mAuth.getCurrentUser().getUid()))
                 {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i)
+                    // A dialog is then shown to alert the user that the changes have been made
+                    final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    builder.setTitle("Alert");
+                    builder.setMessage("You cannot fire yourself from a band! If you wish to leave the band this can be done through 'My Musician Profile'.");
+                    builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
                     {
-                        RefreshFragment();
-                    }
-                });
-                builder.setCancelable(false);
-                builder.show();
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i)
+                        {
+                        }
+                    });
+                    builder.show();
+                }
+
+                else
+                {
+                    mDatabase.child("Bands/" + mBandId + "/" + positionSelected + "Member").setValue("Vacant");
+                    mDatabase.child("Users/" + userIdToRemove + "/isInBand").setValue(false);
+                    mDatabase.child("Users/" + userIdToRemove + "/bandID").removeValue();
+
+                    // A dialog is then shown to alert the user that the changes have been made
+                    final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    builder.setTitle("Confirmation");
+                    builder.setMessage("Member Fired!");
+                    builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i)
+                        {
+                            RefreshFragment();
+                        }
+                    });
+                    builder.setCancelable(false);
+                    builder.show();
+                }
+
             }
         });
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener()

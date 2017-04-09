@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.view.LayoutInflater;
@@ -840,7 +841,7 @@ public class MusicianUserBandDetailsFragment extends Fragment implements YouTube
                                 mDataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/firstName").getValue() + " " + mDataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/lastName").getValue());
                         mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("userID").setValue(mAuth.getCurrentUser().getUid());
 
-                        mDatabase.child("Notifications/MusicianSentBandRequestsPending/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("requestStatus").setValue("Pending");
+                        mDatabase.child("Notifications/MusicianSentBandRequestsPending/" + mBandId + "/" + mAuth.getCurrentUser().getUid()).child("requestStatus").setValue("Pending");
                         ConfirmDialog();
                     }
                 }
@@ -863,7 +864,7 @@ public class MusicianUserBandDetailsFragment extends Fragment implements YouTube
                                 mDataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/firstName").getValue() + " " + mDataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/lastName").getValue());
                         mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("userID").setValue(mAuth.getCurrentUser().getUid());
 
-                        mDatabase.child("Notifications/MusicianSentBandRequestsPending/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("requestStatus").setValue("Pending");
+                        mDatabase.child("Notifications/MusicianSentBandRequestsPending/" + mBandId + "/" + mAuth.getCurrentUser().getUid()).child("requestStatus").setValue("Pending");
                         ConfirmDialog();
                     }
                 }
@@ -886,7 +887,7 @@ public class MusicianUserBandDetailsFragment extends Fragment implements YouTube
                                 mDataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/firstName").getValue() + " " + mDataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/lastName").getValue());
                         mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("userID").setValue(mAuth.getCurrentUser().getUid());
 
-                        mDatabase.child("Notifications/MusicianSentBandRequestsPending/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("requestStatus").setValue("Pending");
+                        mDatabase.child("Notifications/MusicianSentBandRequestsPending/" + mBandId + "/" + mAuth.getCurrentUser().getUid()).child("requestStatus").setValue("Pending");
                         ConfirmDialog();
                     }
                 }
@@ -909,7 +910,7 @@ public class MusicianUserBandDetailsFragment extends Fragment implements YouTube
                                 mDataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/firstName").getValue() + " " + mDataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/lastName").getValue());
                         mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("userID").setValue(mAuth.getCurrentUser().getUid());
 
-                        mDatabase.child("Notifications/MusicianSentBandRequestsPending/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("requestStatus").setValue("Pending");
+                        mDatabase.child("Notifications/MusicianSentBandRequestsPending/" + mBandId + "/" + mAuth.getCurrentUser().getUid()).child("requestStatus").setValue("Pending");
                         ConfirmDialog();
                     }
                 }
@@ -932,7 +933,7 @@ public class MusicianUserBandDetailsFragment extends Fragment implements YouTube
                                 mDataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/firstName").getValue() + " " + mDataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/lastName").getValue());
                         mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("userID").setValue(mAuth.getCurrentUser().getUid());
 
-                        mDatabase.child("Notifications/MusicianSentBandRequestsPending/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("requestStatus").setValue("Pending");
+                        mDatabase.child("Notifications/MusicianSentBandRequestsPending/" + mBandId + "/" + mAuth.getCurrentUser().getUid()).child("requestStatus").setValue("Pending");
                         ConfirmDialog();
                     }
                 }
@@ -987,10 +988,12 @@ public class MusicianUserBandDetailsFragment extends Fragment implements YouTube
 
     private void ReturnToHome()
     {
-        // The user is then taken to the home fragment
-        getActivity().setTitle("Home");
-        final FragmentTransaction ft = getFragmentManager().beginTransaction();
-        ft.replace(R.id.frame, new MusicianUserHomeFragment(), "MusicianUserHomeFragment");
-        ft.commit();
+        getActivity().finish();
+        getActivity().overridePendingTransition(0,0);
+
+        Intent intent = new Intent(getActivity(), MusicianUserMainActivity.class);
+        startActivity(intent);
+
+        getFragmentManager().popBackStackImmediate();
     }
 }

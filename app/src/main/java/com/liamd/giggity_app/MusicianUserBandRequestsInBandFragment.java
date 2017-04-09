@@ -45,6 +45,8 @@ public class MusicianUserBandRequestsInBandFragment extends Fragment
     private String mUserIdKey;
     private String mBandId;
 
+    private Boolean mPassedThrough;
+
     public MusicianUserBandRequestsInBandFragment()
     {
         // Required empty public constructor
@@ -148,6 +150,8 @@ public class MusicianUserBandRequestsInBandFragment extends Fragment
 
         mBandId = mDataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/bandID").getValue().toString();
 
+        mPassedThrough = false;
+
         // This iterates through the band requests that users have sent and adds them to a list (mListOfUserRequestsSent)
         Iterable<DataSnapshot> receivedRequestChildren = mDataSnapshot.child("MusicianSentBandRequests/").getChildren();
         for (DataSnapshot child : receivedRequestChildren)
@@ -155,12 +159,18 @@ public class MusicianUserBandRequestsInBandFragment extends Fragment
             // The key is obtained from the level below to then get the children below that
             mUserIdKey = child.getKey();
 
+            mPassedThrough = false;
+
             Iterable<DataSnapshot> levelDownReceivedRequestChildren = mDataSnapshot.child("MusicianSentBandRequests/" + mUserIdKey).getChildren();
             for (DataSnapshot levelDownChild : levelDownReceivedRequestChildren)
             {
-                BandRequest bandRequest;
-                bandRequest = levelDownChild.getValue(BandRequest.class);
-                mListOfUserRequestsReceived.add(bandRequest);
+                if (!mPassedThrough)
+                {
+                    BandRequest bandRequest;
+                    bandRequest = levelDownChild.getValue(BandRequest.class);
+                    mListOfUserRequestsReceived.add(bandRequest);
+                }
+                mPassedThrough = true;
             }
         }
 
