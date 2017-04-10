@@ -62,6 +62,7 @@ public class MusicianUserMusicianResultsFragment extends Fragment implements OnM
     private int mMusicianDistanceSelected;
     private String mGenresSelected;
     private String mInstrumentsSelected;
+    private String mPositionInstruments;
 
     // User variables
     private String mUserId;
@@ -69,6 +70,7 @@ public class MusicianUserMusicianResultsFragment extends Fragment implements OnM
     private String mUserGenres;
     private String mUserInstruments;
     private String mBandId;
+    private String mBandPosition;
 
     // Location variables
     private double mDistance;
@@ -130,9 +132,13 @@ public class MusicianUserMusicianResultsFragment extends Fragment implements OnM
 
         // This gets the instruments the user has selected
         mInstrumentsSelected = getArguments().getString("Instruments");
+        mPositionInstruments = getArguments().getString("Instruments");
 
         // This gets the id of the band searching for members
         mBandId = getArguments().getString("BandId");
+
+        // This gets the position that the band is searching for a musician for
+        mBandPosition = getArguments().getString("BandPosition");
 
         // Initialise the map
         mMapView = (MapView) fragmentView.findViewById(R.id.googleMap);
@@ -286,7 +292,9 @@ public class MusicianUserMusicianResultsFragment extends Fragment implements OnM
                 arguments.putString("UserName", selectedUser.getFirstName() + " " + selectedUser.getLastName());
                 arguments.putString("UserGenres", selectedUser.getGenres());
                 arguments.putString("UserInstruments", selectedUser.getInstruments());
+                arguments.putString("PositionInstruments", mPositionInstruments);
                 arguments.putString("BandId", mBandId);
+                arguments.putString("BandPosition", mBandPosition);
                 arguments.putDouble("Distance", mDistance);
                 arguments.putDouble("Lat", mMusicianLocationLat);
                 arguments.putDouble("Lng", mMusicianLocationLng);

@@ -121,31 +121,34 @@ public class MusicianUserMainActivity extends AppCompatActivity
             @Override
             public void onDataChange(DataSnapshot dataSnapshot)
             {
-                // Check if the node exists then determine whether they are in a band already to show/hide items
-                if(dataSnapshot.child(mAuth.getCurrentUser().getUid() + "/isInBand").exists())
+                if(mAuth.getCurrentUser() != null)
                 {
-                    if(dataSnapshot.child(mAuth.getCurrentUser().getUid() + "/isInBand").getValue().equals(true))
+                    // Check if the node exists then determine whether they are in a band already to show/hide items
+                    if(dataSnapshot.child(mAuth.getCurrentUser().getUid() + "/isInBand").exists())
                     {
-                        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-                        Menu menu = navigationView.getMenu();
-                        menu.findItem(R.id.nav_band_manager).setVisible(true);
-                        menu.findItem(R.id.nav_band_members).setVisible(true);
-                        menu.findItem(R.id.nav_band_creator).setVisible(false);
-                        menu.findItem(R.id.nav_band_finder).setVisible(false);
-                        menu.findItem(R.id.nav_requests_musician).setVisible(false);
-                        menu.findItem(R.id.nav_requests_band).setVisible(true);
-                    }
+                        if(dataSnapshot.child(mAuth.getCurrentUser().getUid() + "/isInBand").getValue().equals(true))
+                        {
+                            NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+                            Menu menu = navigationView.getMenu();
+                            menu.findItem(R.id.nav_band_manager).setVisible(true);
+                            menu.findItem(R.id.nav_band_members).setVisible(true);
+                            menu.findItem(R.id.nav_band_creator).setVisible(false);
+                            menu.findItem(R.id.nav_band_finder).setVisible(false);
+                            menu.findItem(R.id.nav_requests_musician).setVisible(false);
+                            menu.findItem(R.id.nav_requests_band).setVisible(true);
+                        }
 
-                    else
-                    {
-                        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-                        Menu menu = navigationView.getMenu();
-                        menu.findItem(R.id.nav_band_manager).setVisible(false);
-                        menu.findItem(R.id.nav_band_members).setVisible(false);
-                        menu.findItem(R.id.nav_band_creator).setVisible(true);
-                        menu.findItem(R.id.nav_band_finder).setVisible(true);
-                        menu.findItem(R.id.nav_requests_musician).setVisible(true);
-                        menu.findItem(R.id.nav_requests_band).setVisible(false);
+                        else
+                        {
+                            NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+                            Menu menu = navigationView.getMenu();
+                            menu.findItem(R.id.nav_band_manager).setVisible(false);
+                            menu.findItem(R.id.nav_band_members).setVisible(false);
+                            menu.findItem(R.id.nav_band_creator).setVisible(true);
+                            menu.findItem(R.id.nav_band_finder).setVisible(true);
+                            menu.findItem(R.id.nav_requests_musician).setVisible(true);
+                            menu.findItem(R.id.nav_requests_band).setVisible(false);
+                        }
                     }
                 }
 

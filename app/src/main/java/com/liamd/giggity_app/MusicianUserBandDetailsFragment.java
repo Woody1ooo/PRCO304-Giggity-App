@@ -91,6 +91,7 @@ public class MusicianUserBandDetailsFragment extends Fragment implements YouTube
     private String mYoutubeURL;
     private String mParsedYoutubeURL;
     private String mPositionAppliedFor;
+    private String mUserInstruments;
 
     public MusicianUserBandDetailsFragment()
     {
@@ -388,6 +389,9 @@ public class MusicianUserBandDetailsFragment extends Fragment implements YouTube
             {
                 mDataSnapshot = dataSnapshot;
                 PopulateFields();
+
+                // Get the user's instruments
+                mUserInstruments = dataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/instruments").getValue().toString();
 
                 // If the band ahas a youtube url stored against their profile parse this to load into the video player
                 if (dataSnapshot.child("Bands/" + mBandId + "/youtubeUrl").exists())
@@ -840,6 +844,8 @@ public class MusicianUserBandDetailsFragment extends Fragment implements YouTube
                         mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("userName").setValue(
                                 mDataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/firstName").getValue() + " " + mDataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/lastName").getValue());
                         mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("userID").setValue(mAuth.getCurrentUser().getUid());
+                        mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("userInstruments").setValue(mUserInstruments);
+
 
                         mDatabase.child("Notifications/MusicianSentBandRequestsPending/" + mBandId + "/" + mAuth.getCurrentUser().getUid()).child("requestStatus").setValue("Pending");
                         ConfirmDialog();
@@ -863,6 +869,7 @@ public class MusicianUserBandDetailsFragment extends Fragment implements YouTube
                         mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("userName").setValue(
                                 mDataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/firstName").getValue() + " " + mDataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/lastName").getValue());
                         mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("userID").setValue(mAuth.getCurrentUser().getUid());
+                        mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("userInstruments").setValue(mUserInstruments);
 
                         mDatabase.child("Notifications/MusicianSentBandRequestsPending/" + mBandId + "/" + mAuth.getCurrentUser().getUid()).child("requestStatus").setValue("Pending");
                         ConfirmDialog();
@@ -886,6 +893,7 @@ public class MusicianUserBandDetailsFragment extends Fragment implements YouTube
                         mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("userName").setValue(
                                 mDataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/firstName").getValue() + " " + mDataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/lastName").getValue());
                         mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("userID").setValue(mAuth.getCurrentUser().getUid());
+                        mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("userInstruments").setValue(mUserInstruments);
 
                         mDatabase.child("Notifications/MusicianSentBandRequestsPending/" + mBandId + "/" + mAuth.getCurrentUser().getUid()).child("requestStatus").setValue("Pending");
                         ConfirmDialog();
@@ -909,6 +917,7 @@ public class MusicianUserBandDetailsFragment extends Fragment implements YouTube
                         mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("userName").setValue(
                                 mDataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/firstName").getValue() + " " + mDataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/lastName").getValue());
                         mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("userID").setValue(mAuth.getCurrentUser().getUid());
+                        mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("userInstruments").setValue(mUserInstruments);
 
                         mDatabase.child("Notifications/MusicianSentBandRequestsPending/" + mBandId + "/" + mAuth.getCurrentUser().getUid()).child("requestStatus").setValue("Pending");
                         ConfirmDialog();
@@ -932,6 +941,7 @@ public class MusicianUserBandDetailsFragment extends Fragment implements YouTube
                         mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("userName").setValue(
                                 mDataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/firstName").getValue() + " " + mDataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/lastName").getValue());
                         mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("userID").setValue(mAuth.getCurrentUser().getUid());
+                        mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("userInstruments").setValue(mUserInstruments);
 
                         mDatabase.child("Notifications/MusicianSentBandRequestsPending/" + mBandId + "/" + mAuth.getCurrentUser().getUid()).child("requestStatus").setValue("Pending");
                         ConfirmDialog();

@@ -128,7 +128,7 @@ public class MusicianUserBandRequestsInBandFragment extends Fragment
                 mListOfUserRequestsSent.clear();
                 mListOfUserRequestsReceived.clear();
                 mListOfFilteredUserRequestsReceived.clear();
-                //mSentUserRequestsAdapter.clear();
+                mSentUserRequestsAdapter.clear();
                 mReceivedUserRequestsAdapter.clear();
             }
         });
@@ -138,17 +138,16 @@ public class MusicianUserBandRequestsInBandFragment extends Fragment
 
     private void PopulateListViews()
     {
-        // This iterates through the band requests the user has sent and adds them to a list (mListOfBandRequestsSent)
-        /*Iterable<DataSnapshot> sentRequestChildren = mDataSnapshot.getChildren();
+        mBandId = mDataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/bandID").getValue().toString();
+
+        // This iterates through the user requests the band has sent and adds them to a list (mListOfUserRequestsSent)
+        Iterable<DataSnapshot> sentRequestChildren = mDataSnapshot.child("BandSentMusicianRequests/" + mBandId).getChildren();
         for (DataSnapshot child : sentRequestChildren)
         {
             BandRequest bandRequest;
             bandRequest = child.getValue(BandRequest.class);
             mListOfUserRequestsSent.add(bandRequest);
         }
-        */
-
-        mBandId = mDataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/bandID").getValue().toString();
 
         mPassedThrough = false;
 
@@ -182,10 +181,10 @@ public class MusicianUserBandRequestsInBandFragment extends Fragment
             }
         }
 
-        //mSentUserRequestsAdapter = new MusicianUserBandRequestsAdapter(getActivity(), R.layout.musician_user_user_requests_list, mListOfUserRequestsSent);
+        mSentUserRequestsAdapter = new MusicianUserRequestsAdapter(getActivity(), R.layout.musician_user_user_requests_list, mListOfUserRequestsSent);
         mReceivedUserRequestsAdapter = new MusicianUserRequestsAdapter(getActivity(), R.layout.musician_user_user_requests_list, mListOfUserRequestsReceived);
 
-        //mSentBandRequestsListView.setAdapter(mSentBandRequestsAdapter);
+        mSentUserRequestsListView.setAdapter(mSentUserRequestsAdapter);
         mReceivedUserRequestsListView.setAdapter(mReceivedUserRequestsAdapter);
     }
 }

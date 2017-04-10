@@ -8,7 +8,6 @@ import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
-import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -773,13 +772,13 @@ public class MusicianUserBandMembersFragment extends Fragment
         arguments.putString("BandPosition", positionSelected);
         arguments.putString("PositionInstruments", positionInstruments);
         arguments.putString("BandGenres", mSnapshot.child("Bands/" + mBandId + "/genres").getValue().toString());
-        MusicianUserMusicianFinder fragment = new MusicianUserMusicianFinder();
+        MusicianUserMusicianFinderFragment fragment = new MusicianUserMusicianFinderFragment();
         fragment.setArguments(arguments);
 
         getActivity().setTitle("Musician Finder");
         final FragmentTransaction ft = getFragmentManager().beginTransaction();
         ft.setCustomAnimations(R.animator.enter_from_right, R.animator.enter_from_left);
-        ft.replace(R.id.frame, fragment, "MusicianUserMusicianFinder")
+        ft.replace(R.id.frame, fragment, "MusicianUserMusicianFinderFragment")
                 .addToBackStack(null).commit();
     }
 

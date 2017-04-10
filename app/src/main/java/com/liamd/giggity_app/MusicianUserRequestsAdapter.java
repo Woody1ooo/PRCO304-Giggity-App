@@ -33,6 +33,7 @@ public class MusicianUserRequestsAdapter extends ArrayAdapter<BandRequest>
     // Declare visual components
     private TextView mUserNameTextView;
     private TextView mUserInstrumentsTextView;
+    private TextView mPositionInstrumentsTextView;
     private TextView mBandRequestStatusTextView;
     private ImageView mProfileImage;
 
@@ -95,6 +96,7 @@ public class MusicianUserRequestsAdapter extends ArrayAdapter<BandRequest>
         // Initialise visual components
         mUserNameTextView = (TextView) bandRequestListView.findViewById(R.id.requestUserName);
         mUserInstrumentsTextView = (TextView) bandRequestListView.findViewById(R.id.requestUserInstruments);
+        mPositionInstrumentsTextView = (TextView) bandRequestListView.findViewById(R.id.positionInstruments);
         mBandRequestStatusTextView = (TextView) bandRequestListView.findViewById(R.id.requestStatus);
         mProfileImage = (ImageView) bandRequestListView.findViewById(R.id.requestUserImage);
         userId = bandRequest.getUserID();
@@ -106,7 +108,8 @@ public class MusicianUserRequestsAdapter extends ArrayAdapter<BandRequest>
         // Set list view fields to display the correct information
         mUserNameTextView.setText("Name: " + bandRequest.getUserName());
         mUserNameTextView.setTypeface(null, Typeface.BOLD);
-        mUserInstrumentsTextView.setText("Position Applied For: " + bandRequest.getPositionInstruments());
+        mUserInstrumentsTextView.setText("Position: " + bandRequest.getPositionInstruments());
+        mPositionInstrumentsTextView.setText("User's Instruments: " + bandRequest.getUserInstruments());
         mBandRequestStatusTextView.setText(bandRequest.getRequestStatus());
 
         // Depending on the status the colour is updated

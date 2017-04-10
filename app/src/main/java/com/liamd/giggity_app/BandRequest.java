@@ -10,6 +10,7 @@ public class BandRequest
     private String bandName;
     private String bandPosition;
     private String positionInstruments;
+    private String userInstruments;
     private String requestStatus;
     private String userName;
     private String userID;
@@ -44,6 +45,18 @@ public class BandRequest
         this.bandPosition = bandPosition;
         this.positionInstruments = positionInstruments;
         this.requestStatus = requestStatus;
+        this.userID = userID;
+    }
+
+    public BandRequest(String bandID, String bandName, String bandPosition, String positionInstruments, String userInstruments, String requestStatus, String userName, String userID)
+    {
+        this.bandID = bandID;
+        this.bandName = bandName;
+        this.bandPosition = bandPosition;
+        this.positionInstruments = positionInstruments;
+        this.userInstruments = userInstruments;
+        this.requestStatus = requestStatus;
+        this.userName = userName;
         this.userID = userID;
     }
 
@@ -115,5 +128,15 @@ public class BandRequest
     public void setUserID(String userID)
     {
         this.userID = userID;
+    }
+
+    public String getUserInstruments()
+    {
+        return userInstruments;
+    }
+
+    public void setUserInstruments(String userInstruments)
+    {
+        this.userInstruments = userInstruments;
     }
 }

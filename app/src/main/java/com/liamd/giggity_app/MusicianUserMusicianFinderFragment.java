@@ -26,7 +26,7 @@ import java.util.List;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MusicianUserMusicianFinder extends Fragment
+public class MusicianUserMusicianFinderFragment extends Fragment
 {
     // Declare visual components
     private SeekBar mDistanceSeekbar;
@@ -49,7 +49,7 @@ public class MusicianUserMusicianFinder extends Fragment
     private String mPositionInstruments;
     private String mBandGenres;
 
-    public MusicianUserMusicianFinder()
+    public MusicianUserMusicianFinderFragment()
     {
         // Required empty public constructor
     }

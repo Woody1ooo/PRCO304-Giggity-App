@@ -84,6 +84,7 @@ public class MusicianUserMusicianDetailsFragment extends Fragment implements OnM
     private String mUserGenres;
     private String mUserInstruments;
     private String mBandId;
+    private String mBandPosition;
     private double mDistance;
     private double mMusicianLocationLat;
     private double mMusicianLocationLng;
@@ -127,6 +128,7 @@ public class MusicianUserMusicianDetailsFragment extends Fragment implements OnM
         mUserGenres = getArguments().getString("UserGenres");
         mUserInstruments = getArguments().getString("UserInstruments");
         mBandId = getArguments().getString("BandId");
+        mBandPosition = getArguments().getString("BandPosition");
         mDistance = getArguments().getDouble("Distance");
         mMusicianLocationLat = getArguments().getDouble("Lat");
         mMusicianLocationLng = getArguments().getDouble("Lng");
@@ -221,7 +223,7 @@ public class MusicianUserMusicianDetailsFragment extends Fragment implements OnM
 
         // If the user already has a youtube url stored against their profile append this to the text box and parse this
         // to load the video player
-        if(mSnapshot.child("Bands/" + mBandId + "/youtubeUrl/").exists())
+        if(mSnapshot.child("Users/" + mUserId + "/youtubeUrl/").exists())
         {
             if (!mSnapshot.child("Users/" + mUserId + "/youtubeUrl/").getValue().equals(""))
             {
@@ -318,9 +320,13 @@ public class MusicianUserMusicianDetailsFragment extends Fragment implements OnM
 
                 else
                 {
-                    mDatabase.child("BandSentMusicianRequests/" + mBandId + "/" + mUserId).child("BandID").setValue(mBandId);
-                    mDatabase.child("BandSentMusicianRequests/" + mBandId + "/" + mUserId).child("UserID").setValue(mUserId);
+                    mDatabase.child("BandSentMusicianRequests/" + mBandId + "/" + mUserId).child("bandID").setValue(mBandId);
+                    mDatabase.child("BandSentMusicianRequests/" + mBandId + "/" + mUserId).child("userID").setValue(mUserId);
                     mDatabase.child("BandSentMusicianRequests/" + mBandId + "/" + mUserId).child("requestStatus").setValue("Pending");
+                    mDatabase.child("BandSentMusicianRequests/" + mBandId + "/" + mUserId).child("bandPosition").setValue(mBandPosition);
+                    mDatabase.child("BandSentMusicianRequests/" + mBandId + "/" + mUserId).child("userName").setValue(mUserName);
+                    mDatabase.child("BandSentMusicianRequests/" + mBandId + "/" + mUserId).child("userInstruments").setValue(mUserInstruments);
+                    mDatabase.child("BandSentMusicianRequests/" + mBandId + "/" + mUserId).child("positionInstruments").setValue(getArguments().getString("PositionInstruments"));
                     ConfirmDialog();
                 }
             }
