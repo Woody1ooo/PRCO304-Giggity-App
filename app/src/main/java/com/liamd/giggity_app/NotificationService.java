@@ -130,6 +130,40 @@ public class NotificationService extends Service
 
                         }
                     });
+
+                    mDatabase.child("Notifications/MusicianSentBandRequestsRejected/" + mAuth.getCurrentUser().getUid()).addChildEventListener(new ChildEventListener()
+                    {
+                        @Override
+                        public void onChildAdded(DataSnapshot dataSnapshot, String s)
+                        {
+                            SendNotification("Unfortunately your request to join a band has been rejected!", "Click here to view details", 3);
+                            mDatabase.child("Notifications/MusicianSentBandRequestsRejected/" + mAuth.getCurrentUser().getUid()).removeValue();
+                        }
+
+                        @Override
+                        public void onChildChanged(DataSnapshot dataSnapshot, String s)
+                        {
+
+                        }
+
+                        @Override
+                        public void onChildRemoved(DataSnapshot dataSnapshot)
+                        {
+
+                        }
+
+                        @Override
+                        public void onChildMoved(DataSnapshot dataSnapshot, String s)
+                        {
+
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError)
+                        {
+
+                        }
+                    });
                 }
 
                 @Override

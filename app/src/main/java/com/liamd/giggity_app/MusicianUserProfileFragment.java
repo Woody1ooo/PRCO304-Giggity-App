@@ -70,6 +70,9 @@ public class MusicianUserProfileFragment extends Fragment implements YouTubePlay
     private EditText emailEditText;
     private MultiSelectSpinner genreSpinner;
     private MultiSelectSpinner instrumentSpinner;
+    private TextView bandHeadingTextView;
+    private TextView bandNameTextView;
+    private Button leaveBandButton;
     private TextView chosenLocationTextView;
     private Button launchHomeFinderButton;
     private EditText youtubeUrlEditText;
@@ -89,6 +92,9 @@ public class MusicianUserProfileFragment extends Fragment implements YouTubePlay
     private List<String> mGenreList;
     private List<String> mInstrumentList;
     private String youtubeUrlEntered;
+    private String mBandId;
+    private String mBandName;
+    private String mBandPosition;
 
     // Declare musician user data variables required
 
@@ -126,12 +132,20 @@ public class MusicianUserProfileFragment extends Fragment implements YouTubePlay
         emailEditText = (EditText) fragmentView.findViewById(R.id.emailEditText);
         genreSpinner = (MultiSelectSpinner) fragmentView.findViewById(R.id.genreSpinner);
         instrumentSpinner = (MultiSelectSpinner) fragmentView.findViewById(R.id.instrumentSpinner);
+        bandHeadingTextView = (TextView) fragmentView.findViewById(R.id.bandHeadingTextView);
+        bandNameTextView = (TextView) fragmentView.findViewById(R.id.bandNameTextView);
+        leaveBandButton = (Button) fragmentView.findViewById(R.id.leaveBandButton);
         chosenLocationTextView = (TextView) fragmentView.findViewById(R.id.locationDetailsTextView);
         launchHomeFinderButton = (Button) fragmentView.findViewById(R.id.placeFinderButton);
         youtubeUrlEditText = (EditText) fragmentView.findViewById(R.id.youtubeUrlEditText);
         checkUrlButton = (Button) fragmentView.findViewById(R.id.checkUrlButton);
         saveButton = (Button) fragmentView.findViewById(R.id.saveButton);
         mProgressDialog = new ProgressDialog(getContext());
+
+        // By default hide the band components
+        bandHeadingTextView.setVisibility(View.GONE);
+        bandNameTextView.setVisibility(View.GONE);
+        leaveBandButton.setVisibility(View.GONE);
 
         // Add items to the genre list, and set the spinner to use these
         mGenreList = new ArrayList<>();
@@ -199,7 +213,7 @@ public class MusicianUserProfileFragment extends Fragment implements YouTubePlay
         });
 
         // Pull the existing information from the database to populate the various fields
-        mDatabase.child("Users/").addListenerForSingleValueEvent(new ValueEventListener()
+        mDatabase.addListenerForSingleValueEvent(new ValueEventListener()
         {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot)
@@ -208,13 +222,71 @@ public class MusicianUserProfileFragment extends Fragment implements YouTubePlay
                 String userStoredLat;
                 String userStoredLng;
 
-                String firstName = dataSnapshot.child(mAuth.getCurrentUser().getUid() + "/firstName").getValue().toString();
+                if (dataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/bandID").exists())
+                {
+                    bandHeadingTextView.setVisibility(View.VISIBLE);
+                    bandNameTextView.setVisibility(View.VISIBLE);
+                    leaveBandButton.setVisibility(View.VISIBLE);
+
+                    mBandId = dataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/bandID").getValue().toString();
+                    mBandName = dataSnapshot.child("Bands/" + mBandId + "/name").getValue().toString();
+
+                    if(dataSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString().equals(mAuth.getCurrentUser().getUid()))
+                    {
+                        mBandPosition = "positionOne";
+                    }
+
+                    else if(dataSnapshot.child("Bands/" + mBandId + "/positionTwoMember").exists())
+                    {
+                        if(dataSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString().equals(mAuth.getCurrentUser().getUid()))
+                        {
+                            mBandPosition = "positionTwo";
+                        }
+                    }
+
+                    else if(dataSnapshot.child("Bands/" + mBandId + "/positionThreeMember").exists())
+                    {
+                        if(dataSnapshot.child("Bands/" + mBandId + "/positionThreeMember").getValue().toString().equals(mAuth.getCurrentUser().getUid()))
+                        {
+                            mBandPosition = "positionThree";
+                        }
+                    }
+
+                    else if(dataSnapshot.child("Bands/" + mBandId + "/positionFourMember").exists())
+                    {
+                        if(dataSnapshot.child("Bands/" + mBandId + "/positionFourMember").getValue().toString().equals(mAuth.getCurrentUser().getUid()))
+                        {
+                            mBandPosition = "positionFour";
+                        }
+                    }
+
+                    else if(dataSnapshot.child("Bands/" + mBandId + "/positionFiveMember").exists())
+                    {
+                        if(dataSnapshot.child("Bands/" + mBandId + "/positionFiveMember").getValue().toString().equals(mAuth.getCurrentUser().getUid()))
+                        {
+                            mBandPosition = "positionFive";
+                        }
+                    }
+
+                    bandNameTextView.setText(mBandName);
+
+                    leaveBandButton.setOnClickListener(new View.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(View view)
+                        {
+                            LeaveBand(mBandId, mBandPosition);
+                        }
+                    });
+                }
+
+                String firstName = dataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/firstName").getValue().toString();
                 firstNameEditText.setText(firstName);
 
-                String lastName = dataSnapshot.child(mAuth.getCurrentUser().getUid() + "/lastName").getValue().toString();
+                String lastName = dataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/lastName").getValue().toString();
                 lastNameEditText.setText(lastName);
 
-                String email = dataSnapshot.child(mAuth.getCurrentUser().getUid() + "/email").getValue().toString();
+                String email = dataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/email").getValue().toString();
                 emailEditText.setText(email);
 
                 // This method populates the genre spinner with the genres the user
@@ -225,12 +297,12 @@ public class MusicianUserProfileFragment extends Fragment implements YouTubePlay
                 // selected when setting up their account
                 instrumentSpinner.setSelection(PopulateUserInstrumentData(dataSnapshot));
 
-                String location = dataSnapshot.child(mAuth.getCurrentUser().getUid() + "/homeAddress").getValue().toString();
+                String location = dataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/homeAddress").getValue().toString();
                 chosenLocationTextView.setText(location);
 
-                userStoredLat = dataSnapshot.child(mAuth.getCurrentUser().getUid()
+                userStoredLat = dataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid()
                         + "/homeLocation/latitude").getValue().toString();
-                userStoredLng = dataSnapshot.child(mAuth.getCurrentUser().getUid()
+                userStoredLng = dataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid()
                         + "/homeLocation/longitude").getValue().toString();
 
                 String latLng = userStoredLat + "," + userStoredLng;
@@ -245,9 +317,9 @@ public class MusicianUserProfileFragment extends Fragment implements YouTubePlay
 
                 // If the user already has a youtube url stored against their profile append this to the text box and parse this
                 // to load the video player
-                if (dataSnapshot.child(mAuth.getCurrentUser().getUid() + "/youtubeUrl/").exists())
+                if (dataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/youtubeUrl/").exists())
                 {
-                    urlStored = dataSnapshot.child(mAuth.getCurrentUser().getUid() + "/youtubeUrl").getValue().toString();
+                    urlStored = dataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/youtubeUrl").getValue().toString();
                     youtubeUrlEditText.setText(urlStored);
 
                     youtubeUrlEntered = ParseURL(youtubeUrlEditText.getText());
@@ -537,7 +609,7 @@ public class MusicianUserProfileFragment extends Fragment implements YouTubePlay
     {
         // This takes the list of genres from the database that the user has selected
         // and adds them to a string
-        String userPulledGenres = dataSnapshot.child(mAuth.getCurrentUser().getUid()
+        String userPulledGenres = dataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid()
                 + "/genres").getValue().toString();
 
         // This then splits this string into an array of strings, each separated by
@@ -569,7 +641,7 @@ public class MusicianUserProfileFragment extends Fragment implements YouTubePlay
     {
         // This takes the list of instruments from the database that the user has selected
         // and adds them to a string
-        String userPulledInstruments = dataSnapshot.child(mAuth.getCurrentUser().getUid()
+        String userPulledInstruments = dataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid()
                 + "/instruments").getValue().toString();
 
         // This then splits this string into an array of strings, each separated by
@@ -712,6 +784,54 @@ public class MusicianUserProfileFragment extends Fragment implements YouTubePlay
         builder.show();
     }
 
+    // This method allows the user to leave the band
+    private void LeaveBand(final String bandId, final String bandPosition)
+    {
+        // This dialog is created to confirm that the user wants to leave the band
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle("Leave Band?");
+        builder.setMessage("Are you sure you wish to leave your band?");
+        builder.setPositiveButton("Confirm", new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i)
+            {
+                // This removes and resets any band related data from the database
+                mDatabase.child("Bands/" + bandId + "/" + bandPosition + "Member").setValue("Vacant");
+                mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/isInBand").setValue(false);
+                mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/bandID").removeValue();
+
+                // A dialog is then shown to alert the user that the changes have been made
+                final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setTitle("Confirmation");
+                builder.setMessage("You have left your band!");
+                builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i)
+                    {
+                        // This then hides the visual components associated with bands
+                        bandHeadingTextView.setVisibility(View.GONE);
+                        bandNameTextView.setVisibility(View.GONE);
+                        leaveBandButton.setVisibility(View.GONE);
+                    }
+                });
+                builder.setCancelable(false);
+                builder.show();
+            }
+        });
+
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i)
+            {
+
+            }
+        });
+        builder.show();
+    }
+
     private void ReturnToHome()
     {
         getActivity().finish();
@@ -721,11 +841,5 @@ public class MusicianUserProfileFragment extends Fragment implements YouTubePlay
         startActivity(intent);
 
         getFragmentManager().popBackStackImmediate();
-
-        // The user is then taken to the home fragment
-        //getActivity().setTitle("Home");
-        //final FragmentTransaction ft = getFragmentManager().beginTransaction();
-        //ft.replace(R.id.frame, new MusicianUserHomeFragment(), "MusicianUserHomeFragment");
-        //ft.commit();
     }
 }

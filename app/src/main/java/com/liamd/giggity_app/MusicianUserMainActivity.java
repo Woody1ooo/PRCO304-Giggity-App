@@ -116,15 +116,15 @@ public class MusicianUserMainActivity extends AppCompatActivity
         // to see if the value is true or false.
         // If the user hasn't completed the account setup yet (i.e. hasCompletedSetup = false)
         // load the setup activity on startup
-        mDatabase.child("Users").child(mLoggedInUserID).addListenerForSingleValueEvent(new ValueEventListener()
+        mDatabase.child("Users").addValueEventListener(new ValueEventListener()
         {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot)
             {
                 // Check if the node exists then determine whether they are in a band already to show/hide items
-                if(dataSnapshot.child("/isInBand").exists())
+                if(dataSnapshot.child(mAuth.getCurrentUser().getUid() + "/isInBand").exists())
                 {
-                    if(dataSnapshot.child("/isInBand").getValue().equals(true))
+                    if(dataSnapshot.child(mAuth.getCurrentUser().getUid() + "/isInBand").getValue().equals(true))
                     {
                         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
                         Menu menu = navigationView.getMenu();
@@ -135,12 +135,24 @@ public class MusicianUserMainActivity extends AppCompatActivity
                         menu.findItem(R.id.nav_requests_musician).setVisible(false);
                         menu.findItem(R.id.nav_requests_band).setVisible(true);
                     }
+
+                    else
+                    {
+                        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+                        Menu menu = navigationView.getMenu();
+                        menu.findItem(R.id.nav_band_manager).setVisible(false);
+                        menu.findItem(R.id.nav_band_members).setVisible(false);
+                        menu.findItem(R.id.nav_band_creator).setVisible(true);
+                        menu.findItem(R.id.nav_band_finder).setVisible(true);
+                        menu.findItem(R.id.nav_requests_musician).setVisible(true);
+                        menu.findItem(R.id.nav_requests_band).setVisible(false);
+                    }
                 }
 
                 // First check if the user needs to complete the pre setup
                 // If not, then the pre setup activity is launched
                 // When the user returns to this point, it should skip to the else statement
-                if(dataSnapshot.child("/hasCompletedSetup").getValue() == null)
+                if(dataSnapshot.child(mAuth.getCurrentUser().getUid() + "/hasCompletedSetup").getValue() == null)
                 {
                     Intent startPreSetupActivity = new Intent(MusicianUserMainActivity.this, PreSetupActivity.class);
                     startActivity(startPreSetupActivity);
@@ -151,7 +163,7 @@ public class MusicianUserMainActivity extends AppCompatActivity
                 // then no intents need to be fired as this activity has already been created
                 else
                 {
-                    if (dataSnapshot.child("/accountType").getValue().equals("Venue"))
+                    if (dataSnapshot.child(mAuth.getCurrentUser().getUid() + "/accountType").getValue().equals("Venue"))
                     {
                         finish();
                         Intent startVenueUserMainActivity= new Intent(MusicianUserMainActivity.this, VenueUserMainActivity.class);
@@ -447,5 +459,4 @@ public class MusicianUserMainActivity extends AppCompatActivity
                 , "MusicianUserHomeFragment");
         fragmentTransaction.commit();
     }
-
 }

@@ -151,6 +151,33 @@
                 android:paddingLeft="10dp"/>
 
             <TextView
+                android:text="Band"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/bandHeadingTextView"
+                android:layout_weight="1"
+                android:textAppearance="@style/TextAppearance.AppCompat.Menu"
+                android:layout_marginTop="22dp"
+                android:paddingLeft="10dp"/>
+
+            <TextView
+                android:id="@+id/bandNameTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="21dp"
+                android:paddingLeft="10dp"
+                android:text="No Current Band!"/>
+
+            <Button
+                android:id="@+id/leaveBandButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:background="@color/colorPrimaryDark"
+                android:text="Leave Band"
+                android:textColor="@color/cardview_light_background"/>
+
+            <TextView
                 android:text="Find Your Location"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

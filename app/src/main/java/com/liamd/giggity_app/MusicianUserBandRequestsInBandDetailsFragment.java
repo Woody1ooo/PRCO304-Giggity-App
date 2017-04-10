@@ -424,7 +424,7 @@ public class MusicianUserBandRequestsInBandDetailsFragment extends Fragment impl
                 mDatabase.child("MusicianSentBandRequests/" + mUserId + "/" + mBandId + "/requestStatus").setValue("Denied");
 
                 // This posts a notification to the database to be picked up by the user who submitted the request
-                mDatabase.child("Notifications/MusicianSentBandRequestsDenied/" + mUserId + "/" + mBandId).child("requestStatus").setValue("Denied");
+                mDatabase.child("Notifications/MusicianSentBandRequestsRejected/" + mUserId + "/" + mBandId).child("requestStatus").setValue("Rejected");
 
                 // A dialog is then shown to alert the user that the changes have been made
                 final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
