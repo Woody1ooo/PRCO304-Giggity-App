@@ -18,6 +18,7 @@ public class User
     private LatLng homeLocation;
     private String homeAddress;
     private double musicianDistance;
+    private boolean isInBand;
 
     public User()
     {
@@ -166,5 +167,15 @@ public class User
     public void setMusicianDistance(double musicianDistance)
     {
         this.musicianDistance = musicianDistance;
+    }
+
+    public boolean isInBand()
+    {
+        return isInBand;
+    }
+
+    public void setIsInBand(boolean isInBand)
+    {
+        isInBand = isInBand;
     }
 }

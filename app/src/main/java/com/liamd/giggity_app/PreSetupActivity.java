@@ -290,31 +290,20 @@ public class PreSetupActivity extends AppCompatActivity
                                 if(mMusicianUserAddress != null && mMusicianUserLatLng != null &&
                                         !mInstrumentListToString.equals("") && !mGenreListToString.equals(""))
                                 {
-                                    mDatabase.child("Users/" + mAuth.getCurrentUser().getUid()
-                                            + "/accountType").setValue("Musician");
-
-                                    mDatabase.child("Users/" + mAuth.getCurrentUser().getUid()
-                                            + "/firstName").setValue(mFirstNameEditText.getText().toString());
-
-                                    mDatabase.child("Users/" + mAuth.getCurrentUser().getUid()
-                                            + "/lastName").setValue(mLastNameEditText.getText().toString());
-
-                                    mDatabase.child("Users/" + mAuth.getCurrentUser().getUid()
-                                            + "/homeAddress").setValue(mMusicianUserAddress);
-
-                                    mDatabase.child("Users/" + mAuth.getCurrentUser().getUid()
-                                            + "/homeLocation").setValue(mPlaceToStoreLatLng);
-
-                                    mDatabase.child("Users/" + mAuth.getCurrentUser().getUid()
-                                             + "/instruments").setValue(mInstrumentListToString);
-
-                                    mDatabase.child("Users/" + mAuth.getCurrentUser().getUid()
-                                             + "/genres").setValue(mGenreListToString);
-
-                                    // The hasCompletedSetup field is changed to
-                                    // true in the database for the currently logged in user
-                                    mDatabase.child("Users/" + mAuth.getCurrentUser().getUid()
-                                            + "/hasCompletedSetup").setValue(true);
+                                    User userToInsert = new User();
+                                    userToInsert.setAccountType("Musician");
+                                    userToInsert.setHasCompletedSetup(true);
+                                    userToInsert.setFirstName(mFirstNameEditText.getText().toString());
+                                    userToInsert.setLastName(mLastNameEditText.getText().toString());
+                                    userToInsert.setHomeAddress(mMusicianUserAddress);
+                                    userToInsert.setHomeLocation(mPlaceToStoreLatLng);
+                                    userToInsert.setInstruments(mInstrumentListToString);
+                                    userToInsert.setGenres(mGenreListToString);
+                                    userToInsert.setEmail(mAuth.getCurrentUser().getEmail());
+                                    userToInsert.setUserID(mAuth.getCurrentUser().getUid());
+                                    userToInsert.setMusicianDistance(0);
+                                    userToInsert.setIsInBand(false);
+                                    mDatabase.child("Users/" + mAuth.getCurrentUser().getUid()).setValue(userToInsert);
 
                                     // A dialog is then shown to alert the user that the changes have been made
                                     final AlertDialog.Builder builder = new AlertDialog.Builder(PreSetupActivity.this);

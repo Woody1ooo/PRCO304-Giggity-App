@@ -56,114 +56,117 @@ public class NotificationService extends Service
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot)
                 {
-                    if(dataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/bandID").exists())
+                    if(mAuth.getCurrentUser() != null)
                     {
-                        mBandId = dataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/bandID").getValue().toString();
+                        if(dataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/bandID").exists())
+                        {
+                            mBandId = dataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/bandID").getValue().toString();
+                        }
+
+                        // If there are any notifications at this node fire them for the relevant user's device
+                        mDatabase.child("Notifications/MusicianSentBandRequestsPending/" + mBandId).addChildEventListener(new ChildEventListener()
+                        {
+                            @Override
+                            public void onChildAdded(DataSnapshot dataSnapshot, String s)
+                            {
+                                // If there are any notifications these sent and then deleted after
+                                SendNotification("A user has requested to join your band!", "Click here to view details", 1);
+                                mDatabase.child("Notifications/MusicianSentBandRequestsPending/" + mBandId).removeValue();
+                            }
+
+                            @Override
+                            public void onChildChanged(DataSnapshot dataSnapshot, String s)
+                            {
+
+                            }
+
+                            @Override
+                            public void onChildRemoved(DataSnapshot dataSnapshot)
+                            {
+
+                            }
+
+                            @Override
+                            public void onChildMoved(DataSnapshot dataSnapshot, String s)
+                            {
+
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError)
+                            {
+
+                            }
+                        });
+
+                        mDatabase.child("Notifications/MusicianSentBandRequestsAccepted/" + mAuth.getCurrentUser().getUid()).addChildEventListener(new ChildEventListener()
+                        {
+                            @Override
+                            public void onChildAdded(DataSnapshot dataSnapshot, String s)
+                            {
+                                SendNotification("Your request to join a band has been accepted!", "Click here to view details", 2);
+                                mDatabase.child("Notifications/MusicianSentBandRequestsAccepted/" + mAuth.getCurrentUser().getUid()).removeValue();
+                            }
+
+                            @Override
+                            public void onChildChanged(DataSnapshot dataSnapshot, String s)
+                            {
+
+                            }
+
+                            @Override
+                            public void onChildRemoved(DataSnapshot dataSnapshot)
+                            {
+
+                            }
+
+                            @Override
+                            public void onChildMoved(DataSnapshot dataSnapshot, String s)
+                            {
+
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError)
+                            {
+
+                            }
+                        });
+
+                        mDatabase.child("Notifications/MusicianSentBandRequestsRejected/" + mAuth.getCurrentUser().getUid()).addChildEventListener(new ChildEventListener()
+                        {
+                            @Override
+                            public void onChildAdded(DataSnapshot dataSnapshot, String s)
+                            {
+                                SendNotification("Unfortunately your request to join a band has been rejected!", "Click here to view details", 3);
+                                mDatabase.child("Notifications/MusicianSentBandRequestsRejected/" + mAuth.getCurrentUser().getUid()).removeValue();
+                            }
+
+                            @Override
+                            public void onChildChanged(DataSnapshot dataSnapshot, String s)
+                            {
+
+                            }
+
+                            @Override
+                            public void onChildRemoved(DataSnapshot dataSnapshot)
+                            {
+
+                            }
+
+                            @Override
+                            public void onChildMoved(DataSnapshot dataSnapshot, String s)
+                            {
+
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError)
+                            {
+
+                            }
+                        });
                     }
-
-                    // If there are any notifications at this node fire them for the relevant user's device
-                    mDatabase.child("Notifications/MusicianSentBandRequestsPending/" + mBandId).addChildEventListener(new ChildEventListener()
-                    {
-                        @Override
-                        public void onChildAdded(DataSnapshot dataSnapshot, String s)
-                        {
-                            // If there are any notifications these sent and then deleted after
-                            SendNotification("A user has requested to join your band!", "Click here to view details", 1);
-                            mDatabase.child("Notifications/MusicianSentBandRequestsPending/" + mBandId).removeValue();
-                        }
-
-                        @Override
-                        public void onChildChanged(DataSnapshot dataSnapshot, String s)
-                        {
-
-                        }
-
-                        @Override
-                        public void onChildRemoved(DataSnapshot dataSnapshot)
-                        {
-
-                        }
-
-                        @Override
-                        public void onChildMoved(DataSnapshot dataSnapshot, String s)
-                        {
-
-                        }
-
-                        @Override
-                        public void onCancelled(DatabaseError databaseError)
-                        {
-
-                        }
-                    });
-
-                    mDatabase.child("Notifications/MusicianSentBandRequestsAccepted/" + mAuth.getCurrentUser().getUid()).addChildEventListener(new ChildEventListener()
-                    {
-                        @Override
-                        public void onChildAdded(DataSnapshot dataSnapshot, String s)
-                        {
-                            SendNotification("Your request to join a band has been accepted!", "Click here to view details", 2);
-                            mDatabase.child("Notifications/MusicianSentBandRequestsAccepted/" + mAuth.getCurrentUser().getUid()).removeValue();
-                        }
-
-                        @Override
-                        public void onChildChanged(DataSnapshot dataSnapshot, String s)
-                        {
-
-                        }
-
-                        @Override
-                        public void onChildRemoved(DataSnapshot dataSnapshot)
-                        {
-
-                        }
-
-                        @Override
-                        public void onChildMoved(DataSnapshot dataSnapshot, String s)
-                        {
-
-                        }
-
-                        @Override
-                        public void onCancelled(DatabaseError databaseError)
-                        {
-
-                        }
-                    });
-
-                    mDatabase.child("Notifications/MusicianSentBandRequestsRejected/" + mAuth.getCurrentUser().getUid()).addChildEventListener(new ChildEventListener()
-                    {
-                        @Override
-                        public void onChildAdded(DataSnapshot dataSnapshot, String s)
-                        {
-                            SendNotification("Unfortunately your request to join a band has been rejected!", "Click here to view details", 3);
-                            mDatabase.child("Notifications/MusicianSentBandRequestsRejected/" + mAuth.getCurrentUser().getUid()).removeValue();
-                        }
-
-                        @Override
-                        public void onChildChanged(DataSnapshot dataSnapshot, String s)
-                        {
-
-                        }
-
-                        @Override
-                        public void onChildRemoved(DataSnapshot dataSnapshot)
-                        {
-
-                        }
-
-                        @Override
-                        public void onChildMoved(DataSnapshot dataSnapshot, String s)
-                        {
-
-                        }
-
-                        @Override
-                        public void onCancelled(DatabaseError databaseError)
-                        {
-
-                        }
-                    });
                 }
 
                 @Override

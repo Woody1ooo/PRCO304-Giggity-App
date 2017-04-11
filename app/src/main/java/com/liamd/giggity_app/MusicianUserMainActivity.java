@@ -55,7 +55,6 @@ public class MusicianUserMainActivity extends AppCompatActivity
     private StorageReference mProfileImageReference;
 
     // Declare general variables
-    private String mLoggedInUserID;
     private String mUserEmail;
 
     @Override
@@ -100,10 +99,6 @@ public class MusicianUserMainActivity extends AppCompatActivity
         // Initialise visual components
         setTitle("Musician User Home");
 
-        // Gets the currently logged in user and assigns the value to mLoggedInUserID
-        FirebaseUser user = mAuth.getCurrentUser();
-        mLoggedInUserID = user.getUid();
-
         // Load Home fragment by default
         setTitle("Home");
         MusicianUserHomeFragment fragment = new MusicianUserHomeFragment();
@@ -116,7 +111,7 @@ public class MusicianUserMainActivity extends AppCompatActivity
         // to see if the value is true or false.
         // If the user hasn't completed the account setup yet (i.e. hasCompletedSetup = false)
         // load the setup activity on startup
-        mDatabase.child("Users").addValueEventListener(new ValueEventListener()
+        mDatabase.child("Users/").addValueEventListener(new ValueEventListener()
         {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot)
@@ -150,27 +145,27 @@ public class MusicianUserMainActivity extends AppCompatActivity
                             menu.findItem(R.id.nav_requests_band).setVisible(false);
                         }
                     }
-                }
 
-                // First check if the user needs to complete the pre setup
-                // If not, then the pre setup activity is launched
-                // When the user returns to this point, it should skip to the else statement
-                if(dataSnapshot.child(mAuth.getCurrentUser().getUid() + "/hasCompletedSetup").getValue() == null)
-                {
-                    Intent startPreSetupActivity = new Intent(MusicianUserMainActivity.this, PreSetupActivity.class);
-                    startActivity(startPreSetupActivity);
-                    finish();
-                }
-
-                // This checks the account type that the user has. If the account is a musician account
-                // then no intents need to be fired as this activity has already been created
-                else
-                {
-                    if (dataSnapshot.child(mAuth.getCurrentUser().getUid() + "/accountType").getValue().equals("Venue"))
+                    // First check if the user needs to complete the pre setup
+                    // If not, then the pre setup activity is launched
+                    // When the user returns to this point, it should skip to the else statement
+                    if(dataSnapshot.child(mAuth.getCurrentUser().getUid() + "/hasCompletedSetup").getValue() == null)
                     {
+                        Intent startPreSetupActivity = new Intent(MusicianUserMainActivity.this, PreSetupActivity.class);
+                        startActivity(startPreSetupActivity);
                         finish();
-                        Intent startVenueUserMainActivity= new Intent(MusicianUserMainActivity.this, VenueUserMainActivity.class);
-                        startActivity(startVenueUserMainActivity);
+                    }
+
+                    // This checks the account type that the user has. If the account is a musician account
+                    // then no intents need to be fired as this activity has already been created
+                    else
+                    {
+                        if (dataSnapshot.child(mAuth.getCurrentUser().getUid() + "/accountType").getValue().equals("Venue"))
+                        {
+                            finish();
+                            Intent startVenueUserMainActivity= new Intent(MusicianUserMainActivity.this, VenueUserMainActivity.class);
+                            startActivity(startVenueUserMainActivity);
+                        }
                     }
                 }
             }
