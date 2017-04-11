@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
@@ -123,6 +124,7 @@ public class MusicianUserBandRequestsInBandReceivedDetailsFragment extends Fragm
         mStorage = FirebaseStorage.getInstance();
         mProfileImageReference = mStorage.getReference();
 
+        // Get variables from the previous fragment
         mUserId = getArguments().getString("UserID");
         mNameTextView.setText(getArguments().getString("UserName"));
         mBandId = getArguments().getString("BandID");
@@ -391,7 +393,7 @@ public class MusicianUserBandRequestsInBandReceivedDetailsFragment extends Fragm
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i)
                     {
-                        ReturnToRequests();
+                        ReturnToHome();
                     }
                 });
                 builder.setCancelable(false);
@@ -421,7 +423,7 @@ public class MusicianUserBandRequestsInBandReceivedDetailsFragment extends Fragm
             @Override
             public void onClick(DialogInterface dialogInterface, int i)
             {
-                mDatabase.child("MusicianSentBandRequests/" + mUserId + "/" + mBandId + "/requestStatus").setValue("Denied");
+                mDatabase.child("MusicianSentBandRequests/" + mUserId + "/" + mBandId + "/requestStatus").setValue("Rejected");
 
                 // This posts a notification to the database to be picked up by the user who submitted the request
                 mDatabase.child("Notifications/MusicianSentBandRequestsRejected/" + mUserId + "/" + mBandId).child("requestStatus").setValue("Rejected");
@@ -457,9 +459,17 @@ public class MusicianUserBandRequestsInBandReceivedDetailsFragment extends Fragm
     private void ReturnToRequests()
     {
         // The user is then taken to the home fragment
-        getActivity().setTitle("Band Requests");
-        final FragmentTransaction ft = getFragmentManager().beginTransaction();
-        ft.replace(R.id.frame, new MusicianUserBandRequestsInBandFragment(), "MusicianUserBandRequestsInBandFragment");
-        ft.commit();
+        getFragmentManager().popBackStack();
+    }
+
+    private void ReturnToHome()
+    {
+        getActivity().finish();
+        getActivity().overridePendingTransition(0,0);
+
+        Intent intent = new Intent(getActivity(), MusicianUserMainActivity.class);
+        startActivity(intent);
+
+        getFragmentManager().popBackStackImmediate();
     }
 }

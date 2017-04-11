@@ -39,7 +39,11 @@ public class MusicianUserBandRequestsNotInBandFragment extends Fragment
     // Declare General Variables
     private ArrayList<BandRequest> mListOfBandRequestsSent = new ArrayList<>();
     private ArrayList<BandRequest> mListOfBandRequestsReceived = new ArrayList<>();
-    private DataSnapshot mDataSnapshot;
+    private ArrayList<BandRequest> mListOfFilteredBandRequestsReceived = new ArrayList<>();
+    private DataSnapshot mMusicianSentDataSnapshot;
+    private DataSnapshot mBandSentDataSnapshot;
+    private Boolean mPassedThrough;
+    private String mBandIdKey;
 
     public MusicianUserBandRequestsNotInBandFragment()
     {
@@ -78,12 +82,13 @@ public class MusicianUserBandRequestsNotInBandFragment extends Fragment
         mSentBandRequestsListView = (ListView) fragmentView.findViewById(R.id.sentBandRequestsListView);
         mReceivedBandRequestsListView = (ListView) fragmentView.findViewById(R.id.receivedBandRequestsListView);
 
-        mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid()).addListenerForSingleValueEvent(new ValueEventListener()
+        mDatabase.addListenerForSingleValueEvent(new ValueEventListener()
         {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot)
             {
-                mDataSnapshot = dataSnapshot;
+                mMusicianSentDataSnapshot = dataSnapshot.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid());
+                mBandSentDataSnapshot = dataSnapshot.child("BandSentMusicianRequests/");
                 PopulateListViews();
             }
 
@@ -133,9 +138,40 @@ public class MusicianUserBandRequestsNotInBandFragment extends Fragment
                 fragmentTransaction.replace(R.id.frame, fragment, "MusicianUserBandRequestsNotInBandSentDetailsFragment")
                         .addToBackStack(null).commit();
 
-                // This clears the list to prevent duplicates when the fragment is returned to
+                // This clears the lists to prevent duplicates when the fragment is returned to
                 mListOfBandRequestsSent.clear();
+                mListOfBandRequestsReceived.clear();
+                mListOfFilteredBandRequestsReceived.clear();
+            }
+        });
 
+        mReceivedBandRequestsListView.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id)
+            {
+                final BandRequest selectedBandRequest = (BandRequest) mReceivedBandRequestsListView.getItemAtPosition(position);
+                MusicianUserBandRequestsNotInBandReceivedDetailsFragment fragment = new MusicianUserBandRequestsNotInBandReceivedDetailsFragment();
+                final Bundle arguments = new Bundle();
+
+                arguments.putString("BandName", selectedBandRequest.getBandName());
+                arguments.putString("BandID", selectedBandRequest.getBandID());
+                arguments.putString("PositionInstruments", selectedBandRequest.getPositionInstruments());
+
+                fragment.setArguments(arguments);
+
+                // Creates a new fragment transaction to display the details of the selected
+                // request. Some custom animation has been added also.
+                FragmentTransaction fragmentTransaction = getActivity().getFragmentManager()
+                        .beginTransaction();
+                fragmentTransaction.setCustomAnimations(R.animator.enter_from_right, R.animator.enter_from_left);
+                fragmentTransaction.replace(R.id.frame, fragment, "MusicianUserBandRequestsNotInBandReceivedDetailsFragment")
+                        .addToBackStack(null).commit();
+
+                // This clears the lists to prevent duplicates when the fragment is returned to
+                mListOfBandRequestsSent.clear();
+                mListOfBandRequestsReceived.clear();
+                mListOfFilteredBandRequestsReceived.clear();
             }
         });
 
@@ -151,7 +187,7 @@ public class MusicianUserBandRequestsNotInBandFragment extends Fragment
     private void PopulateListViews()
     {
         // This iterates through the band requests the user has sent and adds them to a list (mListOfBandRequestsSent)
-        Iterable<DataSnapshot> sentRequestChildren = mDataSnapshot.getChildren();
+        Iterable<DataSnapshot> sentRequestChildren = mMusicianSentDataSnapshot.getChildren();
         for (DataSnapshot child : sentRequestChildren)
         {
             BandRequest bandRequest;
@@ -159,22 +195,44 @@ public class MusicianUserBandRequestsNotInBandFragment extends Fragment
             mListOfBandRequestsSent.add(bandRequest);
         }
 
-        // This iterates through the band requests the user has sent and adds them to a list (mListOfBandRequestsSent)
+        mPassedThrough = false;
+
+        // This iterates through the band requests the user has received and adds them to a list (mListOfBandRequestsReceived)
         // This has been commented as this feature hasn't yet been enabled
-        /*Iterable<DataSnapshot> receivedRequestChildren = dataSnapshot.child("MusicianUserReceivedBandRequests/" + mAuth.getCurrentUser().getUid()).getChildren();
+        Iterable<DataSnapshot> receivedRequestChildren = mBandSentDataSnapshot.getChildren();
         for (DataSnapshot child : receivedRequestChildren)
         {
-            BandRequest bandRequest;
-            bandRequest = child.getValue(BandRequest.class);
-            mListOfBandRequestsReceived.add(bandRequest);
+            mBandIdKey = child.getKey();
+
+            mPassedThrough = false;
+
+            Iterable<DataSnapshot> levelDownReceivedRequestChildren = mBandSentDataSnapshot.child(mBandIdKey).getChildren();
+            for (DataSnapshot levelDownChild : levelDownReceivedRequestChildren)
+            {
+                if (!mPassedThrough)
+                {
+                    BandRequest bandRequest;
+                    bandRequest = levelDownChild.getValue(BandRequest.class);
+                    mListOfBandRequestsReceived.add(bandRequest);
+                }
+                mPassedThrough = true;
+            }
         }
-        */
+
+        for (int i = 0; i < mListOfBandRequestsReceived.size(); i++)
+        {
+            if(mListOfBandRequestsReceived.get(i).getUserID().equals(mAuth.getCurrentUser().getUid()))
+            {
+                mListOfFilteredBandRequestsReceived.add(mListOfBandRequestsReceived.get(i));
+            }
+        }
+
 
         mSentBandRequestsAdapter = new MusicianUserBandRequestsAdapter(getActivity(), R.layout.musician_user_band_requests_list, mListOfBandRequestsSent);
-        //mReceivedBandRequestsAdapter = new MusicianUserBandRequestsAdapter(getActivity(), R.layout.musician_user_band_requests_list, mReceivedBandRequestsListView);
+        mReceivedBandRequestsAdapter = new MusicianUserBandRequestsAdapter(getActivity(), R.layout.musician_user_band_requests_list, mListOfFilteredBandRequestsReceived);
 
         mSentBandRequestsListView.setAdapter(mSentBandRequestsAdapter);
-        //mReceivedBandRequestsListView.setAdapter(mReceivedBandRequestsAdapter);
+        mReceivedBandRequestsListView.setAdapter(mReceivedBandRequestsAdapter);
     }
 
 }

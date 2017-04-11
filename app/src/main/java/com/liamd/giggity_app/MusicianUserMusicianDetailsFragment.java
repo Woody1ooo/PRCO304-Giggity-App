@@ -326,6 +326,7 @@ public class MusicianUserMusicianDetailsFragment extends Fragment implements OnM
                     mDatabase.child("BandSentMusicianRequests/" + mBandId + "/" + mUserId).child("bandPosition").setValue(mBandPosition);
                     mDatabase.child("BandSentMusicianRequests/" + mBandId + "/" + mUserId).child("userName").setValue(mUserName);
                     mDatabase.child("BandSentMusicianRequests/" + mBandId + "/" + mUserId).child("userInstruments").setValue(mUserInstruments);
+                    mDatabase.child("BandSentMusicianRequests/" + mBandId + "/" + mUserId).child("bandName").setValue(mSnapshot.child("Bands/" + mBandId + "/name").getValue().toString());
                     mDatabase.child("BandSentMusicianRequests/" + mBandId + "/" + mUserId).child("positionInstruments").setValue(getArguments().getString("PositionInstruments"));
                     ConfirmDialog();
                 }
