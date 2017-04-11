@@ -174,8 +174,8 @@ public class User
         return isInBand;
     }
 
-    public void setIsInBand(boolean isInBand)
+    public void setInBand(boolean inBand)
     {
-        isInBand = isInBand;
+        isInBand = inBand;
     }
 }

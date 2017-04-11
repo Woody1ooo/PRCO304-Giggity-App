@@ -55,7 +55,7 @@ import static com.google.android.gms.maps.model.BitmapDescriptorFactory.HUE_AZUR
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MusicianUserBandRequestsInBandDetailsFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnInfoWindowClickListener, YouTubePlayer.OnInitializedListener
+public class MusicianUserBandRequestsInBandReceivedDetailsFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnInfoWindowClickListener, YouTubePlayer.OnInitializedListener
 {
     // Declare visual components
     private CircleImageView mProfileImageView;
@@ -91,7 +91,7 @@ public class MusicianUserBandRequestsInBandDetailsFragment extends Fragment impl
     private double mBandLocationLng;
     private Location mUserLocation;
 
-    public MusicianUserBandRequestsInBandDetailsFragment()
+    public MusicianUserBandRequestsInBandReceivedDetailsFragment()
     {
         // Required empty public constructor
     }
@@ -101,7 +101,7 @@ public class MusicianUserBandRequestsInBandDetailsFragment extends Fragment impl
                              Bundle savedInstanceState)
     {
         // Inflate the layout for this fragment
-        View fragmentView = inflater.inflate(R.layout.musician_user_fragment_band_requests_in_band_details, container, false);
+        View fragmentView = inflater.inflate(R.layout.musician_user_fragment_band_requests_in_band_received_details, container, false);
 
         mProfileImageView = (CircleImageView) fragmentView.findViewById(R.id.profileImage);
         mNameTextView = (TextView) fragmentView.findViewById(R.id.nameTextView);
@@ -375,7 +375,7 @@ public class MusicianUserBandRequestsInBandDetailsFragment extends Fragment impl
             public void onClick(DialogInterface dialogInterface, int i)
             {
                 mDatabase.child("MusicianSentBandRequests/" + mUserId + "/" + mBandId + "/requestStatus").setValue("Accepted");
-                mDatabase.child("Users/" + mUserId + "/isInBand").setValue(true);
+                mDatabase.child("Users/" + mUserId + "/inBand").setValue(true);
                 mDatabase.child("Users/" + mUserId + "/bandID").setValue(mBandId);
                 mDatabase.child("Bands/" + mBandId + "/" + mBandPosition + "Member").setValue(mUserId);
 

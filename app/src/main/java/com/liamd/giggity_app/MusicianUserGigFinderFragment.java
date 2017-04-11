@@ -127,7 +127,7 @@ public class MusicianUserGigFinderFragment extends Fragment implements LocationL
 
                 // This checks the database to see if the user is currently a member of a band.
                 // If not inform them that they can't apply for gig opportunities.
-                if(dataSnapshot.child(mAuth.getCurrentUser().getUid() + "/isInBand").getValue().equals(false))
+                if(dataSnapshot.child(mAuth.getCurrentUser().getUid() + "/inBand").getValue().equals(false))
                 {
                     // A dialog is then shown to alert the user that the changes have been made
                     final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());

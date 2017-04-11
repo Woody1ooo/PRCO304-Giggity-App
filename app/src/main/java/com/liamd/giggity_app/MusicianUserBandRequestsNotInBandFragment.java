@@ -1,11 +1,13 @@
 package com.liamd.giggity_app;
 
 
+import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TabHost;
 
@@ -92,7 +94,58 @@ public class MusicianUserBandRequestsNotInBandFragment extends Fragment
             }
         });
 
+        mSentBandRequestsListView.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id)
+            {
+                final BandRequest selectedBandRequest = (BandRequest) mSentBandRequestsListView.getItemAtPosition(position);
+                MusicianUserBandRequestsNotInBandSentDetailsFragment fragment = new MusicianUserBandRequestsNotInBandSentDetailsFragment();
+                final Bundle arguments = new Bundle();
+
+                mDatabase.child("Bands/" + selectedBandRequest.getBandID() + "/genres").addListenerForSingleValueEvent(new ValueEventListener()
+                {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot)
+                    {
+                        arguments.putString("BandGenres", GetGenreData(dataSnapshot));
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError)
+                    {
+
+                    }
+                });
+
+                arguments.putString("BandName", selectedBandRequest.getBandName());
+                arguments.putString("BandID", selectedBandRequest.getBandID());
+                arguments.putString("PositionInstruments", selectedBandRequest.getPositionInstruments());
+                arguments.putString("RequestStatus", selectedBandRequest.getRequestStatus());
+
+                fragment.setArguments(arguments);
+
+                // Creates a new fragment transaction to display the details of the selected
+                // request. Some custom animation has been added also.
+                FragmentTransaction fragmentTransaction = getActivity().getFragmentManager()
+                        .beginTransaction();
+                fragmentTransaction.setCustomAnimations(R.animator.enter_from_right, R.animator.enter_from_left);
+                fragmentTransaction.replace(R.id.frame, fragment, "MusicianUserBandRequestsNotInBandSentDetailsFragment")
+                        .addToBackStack(null).commit();
+
+                // This clears the list to prevent duplicates when the fragment is returned to
+                mListOfBandRequestsSent.clear();
+
+            }
+        });
+
         return fragmentView;
+    }
+
+    // This method retrieves the genre data from the database
+    private String GetGenreData(DataSnapshot snapshot)
+    {
+        return snapshot.getValue().toString();
     }
 
     private void PopulateListViews()

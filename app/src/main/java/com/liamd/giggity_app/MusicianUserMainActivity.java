@@ -119,9 +119,9 @@ public class MusicianUserMainActivity extends AppCompatActivity
                 if(mAuth.getCurrentUser() != null)
                 {
                     // Check if the node exists then determine whether they are in a band already to show/hide items
-                    if(dataSnapshot.child(mAuth.getCurrentUser().getUid() + "/isInBand").exists())
+                    if(dataSnapshot.child(mAuth.getCurrentUser().getUid() + "/inBand").exists())
                     {
-                        if(dataSnapshot.child(mAuth.getCurrentUser().getUid() + "/isInBand").getValue().equals(true))
+                        if(dataSnapshot.child(mAuth.getCurrentUser().getUid() + "/inBand").getValue().equals(true))
                         {
                             NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
                             Menu menu = navigationView.getMenu();

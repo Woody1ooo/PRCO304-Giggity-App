@@ -798,7 +798,7 @@ public class MusicianUserProfileFragment extends Fragment implements YouTubePlay
             {
                 // This removes and resets any band related data from the database
                 mDatabase.child("Bands/" + bandId + "/" + bandPosition + "Member").setValue("Vacant");
-                mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/isInBand").setValue(false);
+                mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/inBand").setValue(false);
                 mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/bandID").removeValue();
 
                 // A dialog is then shown to alert the user that the changes have been made

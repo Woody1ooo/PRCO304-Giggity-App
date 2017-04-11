@@ -4,8 +4,6 @@ import android.os.Bundle;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -107,7 +105,7 @@ public class MusicianUserBandRequestsInBandFragment extends Fragment
             {
                 // This returns the selected request from the list view
                 BandRequest selectedRequest = (BandRequest) mReceivedUserRequestsListView.getItemAtPosition(position);
-                MusicianUserBandRequestsInBandDetailsFragment fragment = new MusicianUserBandRequestsInBandDetailsFragment();
+                MusicianUserBandRequestsInBandReceivedDetailsFragment fragment = new MusicianUserBandRequestsInBandReceivedDetailsFragment();
                 Bundle arguments = new Bundle();
                 arguments.putString("UserID", selectedRequest.getUserID());
                 arguments.putString("UserName", selectedRequest.getUserName());
@@ -119,7 +117,7 @@ public class MusicianUserBandRequestsInBandFragment extends Fragment
                 FragmentTransaction fragmentTransaction = getActivity().getFragmentManager()
                         .beginTransaction();
                 fragmentTransaction.setCustomAnimations(R.animator.enter_from_right, R.animator.enter_from_left);
-                fragmentTransaction.replace(R.id.frame, fragment, "MusicianUserBandRequestsInBandDetailsFragment")
+                fragmentTransaction.replace(R.id.frame, fragment, "MusicianUserBandRequestsInBandReceivedDetailsFragment")
                         .addToBackStack(null).commit();
 
                 // These must be cleared to prevent duplication as the database is called again

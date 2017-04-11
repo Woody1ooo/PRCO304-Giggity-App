@@ -69,9 +69,12 @@ public class NotificationService extends Service
                             @Override
                             public void onChildAdded(DataSnapshot dataSnapshot, String s)
                             {
-                                // If there are any notifications these sent and then deleted after
-                                SendNotification("A user has requested to join your band!", "Click here to view details", 1);
-                                mDatabase.child("Notifications/MusicianSentBandRequestsPending/" + mBandId).removeValue();
+                                if(mBandId != null)
+                                {
+                                    // If there are any notifications these sent and then deleted after
+                                    SendNotification("A user has requested to join your band!", "Click here to view details", 1);
+                                    mDatabase.child("Notifications/MusicianSentBandRequestsPending/" + mBandId).removeValue();
+                                }
                             }
 
                             @Override

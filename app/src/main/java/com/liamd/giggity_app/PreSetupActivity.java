@@ -302,7 +302,7 @@ public class PreSetupActivity extends AppCompatActivity
                                     userToInsert.setEmail(mAuth.getCurrentUser().getEmail());
                                     userToInsert.setUserID(mAuth.getCurrentUser().getUid());
                                     userToInsert.setMusicianDistance(0);
-                                    userToInsert.setIsInBand(false);
+                                    userToInsert.setInBand(false);
                                     mDatabase.child("Users/" + mAuth.getCurrentUser().getUid()).setValue(userToInsert);
 
                                     // A dialog is then shown to alert the user that the changes have been made

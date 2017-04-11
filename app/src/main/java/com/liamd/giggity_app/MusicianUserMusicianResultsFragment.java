@@ -301,7 +301,7 @@ public class MusicianUserMusicianResultsFragment extends Fragment implements OnM
                 fragment.setArguments(arguments);
 
                 // Creates a new fragment transaction to display the details of the selected
-                // gig. Some custom animation has been added also.
+                // user. Some custom animation has been added also.
                 FragmentTransaction fragmentTransaction = getActivity().getFragmentManager()
                         .beginTransaction();
                 fragmentTransaction.setCustomAnimations(R.animator.enter_from_right, R.animator.enter_from_left);
@@ -402,6 +402,14 @@ public class MusicianUserMusicianResultsFragment extends Fragment implements OnM
             mFilteredMusiciansToRemove.add(listIndex);
         }
 
+        if(mListOfMusicians.get(listIndex).isInBand())
+        {
+            if(!mFilteredMusiciansToRemove.contains(listIndex))
+            {
+                mFilteredMusiciansToRemove.add(listIndex);
+            }
+        }
+
         // This then loops through the trimmed array list checking if the genres the band has matches those submitted by the user
         for(int i = 0; i < splitUserChosenGenresTrimmed.size(); i++)
         {
@@ -474,7 +482,7 @@ public class MusicianUserMusicianResultsFragment extends Fragment implements OnM
     @Override
     public void onInfoWindowClick(Marker marker)
     {
-        /*MusicianUserBandDetailsFragment fragment = new MusicianUserBandDetailsFragment();
+        MusicianUserMusicianDetailsFragment fragment = new MusicianUserMusicianDetailsFragment();
         Bundle arguments = new Bundle();
 
         for(int i = 0; i < mListOfMusicianMarkerInfo.size(); i++)
@@ -483,23 +491,29 @@ public class MusicianUserMusicianResultsFragment extends Fragment implements OnM
 
             if(mListOfMusicianMarkerInfo.get(i).getMarkerId().equals(marker.getId()))
             {
-                arguments.putString("BandID", mListOfBandMarkerInfo.get(i).getBandId());
-                arguments.putString("BandName", mListOfBandMarkerInfo.get(i).getBandName());
-                arguments.putString("BandGenres", mListOfBandMarkerInfo.get(i).getBandGenres());
-                arguments.putString("BandNumberOfPositions", mListOfBandMarkerInfo.get(i).getNumberOfPositions())
-                ;
+                arguments.putString("UserID", mListOfMusicianMarkerInfo.get(i).getUserId());
+                arguments.putString("UserName", mListOfMusicianMarkerInfo.get(i).getUserName());
+                arguments.putString("UserGenres", mListOfMusicianMarkerInfo.get(i).getUserGenres());
+                arguments.putString("UserInstruments", mListOfMusicianMarkerInfo.get(i).getUserInstruments());
+                arguments.putString("PositionInstruments", mPositionInstruments);
+                arguments.putString("BandId", mBandId);
+                arguments.putString("BandPosition", mBandPosition);
+                arguments.putDouble("Distance", mListOfMusicianMarkerInfo.get(i).getUserDistance());
+                arguments.putDouble("Lat", mListOfMusicianMarkerInfo.get(i).getUserLocation().getLatitude());
+                arguments.putDouble("Lng", mListOfMusicianMarkerInfo.get(i).getUserLocation().getLongitude());
+                fragment.setArguments(arguments);
             }
         }
 
         fragment.setArguments(arguments);
 
         // Creates a new fragment transaction to display the details of the selected
-        // gig. Some custom animation has been added also.
+        // user. Some custom animation has been added also.
         FragmentTransaction fragmentTransaction = getActivity().getFragmentManager()
                 .beginTransaction();
         fragmentTransaction.setCustomAnimations(R.animator.enter_from_right, R.animator.enter_from_left);
-        fragmentTransaction.replace(R.id.frame, fragment, "MusicianUserBandDetailsFragment")
+        fragmentTransaction.replace(R.id.frame, fragment, "MusicianUserMusicianDetailsFragment")
                 .addToBackStack(null).commit();
-                */
+
     }
 }

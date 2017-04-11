@@ -782,7 +782,7 @@ public class MusicianUserBandMembersFragment extends Fragment
                 .addToBackStack(null).commit();
     }
 
-    // Upon confirmation this replaces the position removed with Vacant, sets the users isInBand value to false and removes the bandID field from their profile
+    // Upon confirmation this replaces the position removed with Vacant, sets the users inBand value to false and removes the bandID field from their profile
     // Once this is complete the fragment is refreshed
     private void Fire(final String positionSelected)
     {
@@ -817,7 +817,7 @@ public class MusicianUserBandMembersFragment extends Fragment
                 else
                 {
                     mDatabase.child("Bands/" + mBandId + "/" + positionSelected + "Member").setValue("Vacant");
-                    mDatabase.child("Users/" + userIdToRemove + "/isInBand").setValue(false);
+                    mDatabase.child("Users/" + userIdToRemove + "/inBand").setValue(false);
                     mDatabase.child("Users/" + userIdToRemove + "/bandID").removeValue();
 
                     // A dialog is then shown to alert the user that the changes have been made

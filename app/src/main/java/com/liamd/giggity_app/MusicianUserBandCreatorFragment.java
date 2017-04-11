@@ -537,7 +537,7 @@ public class MusicianUserBandCreatorFragment extends Fragment implements YouTube
                                 mDatabase.child("Bands/" + mBandID + "/youtubeUrl").setValue(youtubeUrlEditText.getText().toString());
                             }
 
-                            mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/isInBand").setValue(true);
+                            mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/inBand").setValue(true);
                             mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/bandID").setValue(mBandID);
 
                                     // A dialog is then shown to alert the user that the changes have been made
@@ -604,7 +604,7 @@ public class MusicianUserBandCreatorFragment extends Fragment implements YouTube
                                 mDatabase.child("Bands/" + mBandID + "/youtubeUrl").setValue(youtubeUrlEditText.getText().toString());
                             }
 
-                            mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/isInBand").setValue(true);
+                            mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/inBand").setValue(true);
                             mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/bandID").setValue(mBandID);
 
                             // A dialog is then shown to alert the user that the changes have been made
@@ -679,7 +679,7 @@ public class MusicianUserBandCreatorFragment extends Fragment implements YouTube
                                 mDatabase.child("Bands/" + mBandID + "/youtubeUrl").setValue(youtubeUrlEditText.getText().toString());
                             }
 
-                            mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/isInBand").setValue(true);
+                            mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/inBand").setValue(true);
                             mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/bandID").setValue(mBandID);
 
                             // A dialog is then shown to alert the user that the changes have been made
@@ -761,7 +761,7 @@ public class MusicianUserBandCreatorFragment extends Fragment implements YouTube
                                 mDatabase.child("Bands/" + mBandID + "/youtubeUrl").setValue(youtubeUrlEditText.getText().toString());
 
                             }
-                            mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/isInBand").setValue(true);
+                            mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/inBand").setValue(true);
                             mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/bandID").setValue(mBandID);
 
                             // A dialog is then shown to alert the user that the changes have been made
@@ -854,7 +854,7 @@ public class MusicianUserBandCreatorFragment extends Fragment implements YouTube
                                 mDatabase.child("Bands/" + mBandID + "/youtubeUrl").setValue(youtubeUrlEditText.getText().toString());
                             }
 
-                            mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/isInBand").setValue(true);
+                            mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/inBand").setValue(true);
                             mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/bandID").setValue(mBandID);
 
                             // A dialog is then shown to alert the user that the changes have been made
