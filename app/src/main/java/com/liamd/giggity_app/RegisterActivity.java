@@ -128,7 +128,7 @@ public class RegisterActivity extends AppCompatActivity
                                                 // This is then inserted into the database using the UID
                                                 // as the key.
                                                 mDatabase.child("Users").child(mAuth.getCurrentUser().getUid()).setValue(newUser);
-                                                mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/isInBand").setValue(false);
+                                                mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/inBand").setValue(false);
                                             }
                                         }
 

@@ -62,6 +62,8 @@ public class MusicianUserGigFinderFragment extends Fragment implements LocationL
     private LocationManager mLocationManager;
     private Location location;
 
+    private boolean mIsInBand = true;
+
     // The minimum distance to change Updates in meters
     private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 10; // 10 meters
 
@@ -116,7 +118,7 @@ public class MusicianUserGigFinderFragment extends Fragment implements LocationL
         // This method gets the users current/last known location
         GetUserCurrentLocation();
 
-        mDatabase.child("Users").addListenerForSingleValueEvent(new ValueEventListener()
+        mDatabase.child("Users/").addListenerForSingleValueEvent(new ValueEventListener()
         {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot)
@@ -129,23 +131,27 @@ public class MusicianUserGigFinderFragment extends Fragment implements LocationL
                 // If not inform them that they can't apply for gig opportunities.
                 if(dataSnapshot.child(mAuth.getCurrentUser().getUid() + "/inBand").getValue().equals(false))
                 {
-                    // A dialog is then shown to alert the user that the changes have been made
-                    final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                    builder.setTitle("Notice");
-                    builder.setIcon(R.drawable.ic_info_outline_black_24dp);
-                    builder.setMessage("Please note that as you are not currently a member of a band or a solo artist, you cannot apply for any gig opportunities." +
-                            " You are however still able to browse.");
-                    builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                    if(getActivity() != null)
                     {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i)
+                        // A dialog is then shown to alert the user that the changes have been made
+                        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                        builder.setTitle("Notice");
+                        builder.setIcon(R.drawable.ic_info_outline_black_24dp);
+                        builder.setMessage("Please note that as you are not currently a member of a band or a solo artist, you cannot apply for any gig opportunities." +
+                                " You are however still able to browse.");
+                        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
                         {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i)
+                            {
 
-                        }
-                    });
-                    builder.show();
+                            }
+                        });
+                        builder.show();
+
+                        mIsInBand = false;
+                    }
                 }
-
 
                 // This method gets the value from the database of the users set home location
                 // and assigns its value to mHomeLocation
@@ -399,6 +405,7 @@ public class MusicianUserGigFinderFragment extends Fragment implements LocationL
         }
 
         arguments.putInt("DistanceSelected", mDistanceSelected);
+        arguments.putBoolean("IsInBand", mIsInBand);
         fragment.setArguments(arguments);
 
         // Creates a new fragment transaction to display the details of the selected

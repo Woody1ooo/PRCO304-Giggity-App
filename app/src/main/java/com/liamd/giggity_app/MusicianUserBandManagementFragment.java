@@ -1065,7 +1065,7 @@ public class MusicianUserBandManagementFragment extends Fragment implements YouT
                             mDatabase.child("Bands/" + mBandID).setValue(bandToInsert);
                             mDatabase.child("Bands/" + mBandID + "/bandCreator").setValue(mAuth.getCurrentUser().getUid());
                             mDatabase.child("Bands/" + mBandID + "/positionOneMember").setValue(mBandFromDatabase.getPositionOneMember());
-                            mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/isInBand").setValue(true);
+                            mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/inBand").setValue(true);
                             mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/bandID").setValue(mBandID);
 
 
@@ -1141,7 +1141,7 @@ public class MusicianUserBandManagementFragment extends Fragment implements YouT
                                 mDatabase.child("Bands/" + mBandID + "/positionTwoMember").setValue("Vacant");
                             }
 
-                            mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/isInBand").setValue(true);
+                            mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/inBand").setValue(true);
                             mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/bandID").setValue(mBandID);
 
                             if(!youtubeUrlEditText.getText().equals(null))
@@ -1228,7 +1228,7 @@ public class MusicianUserBandManagementFragment extends Fragment implements YouT
                                 mDatabase.child("Bands/" + mBandID + "/positionThreeMember").setValue("Vacant");
                             }
 
-                            mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/isInBand").setValue(true);
+                            mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/inBand").setValue(true);
                             mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/bandID").setValue(mBandID);
 
                             if(!youtubeUrlEditText.getText().equals(null))
@@ -1326,7 +1326,7 @@ public class MusicianUserBandManagementFragment extends Fragment implements YouT
                                 mDatabase.child("Bands/" + mBandID + "/positionFourMember").setValue("Vacant");
                             }
 
-                            mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/isInBand").setValue(true);
+                            mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/inBand").setValue(true);
                             mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/bandID").setValue(mBandID);
 
                             if(!youtubeUrlEditText.getText().equals(null))
@@ -1439,7 +1439,7 @@ public class MusicianUserBandManagementFragment extends Fragment implements YouT
                                 mDatabase.child("Bands/" + mBandID + "/positionFiveMember").setValue("Vacant");
                             }
 
-                            mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/isInBand").setValue(true);
+                            mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/inBand").setValue(true);
                             mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/bandID").setValue(mBandID);
 
                             if(!youtubeUrlEditText.getText().equals(null))
@@ -1504,7 +1504,7 @@ public class MusicianUserBandManagementFragment extends Fragment implements YouT
 
                     if(!mPositionOneMember.equals("Vacant"))
                     {
-                        mDatabase.child("Users/" + mPositionOneMember + "/isInBand").setValue(false);
+                        mDatabase.child("Users/" + mPositionOneMember + "/inBand").setValue(false);
                         mDatabase.child("Users/" + mPositionOneMember + "/bandID").removeValue();
                     }
                 }
@@ -1518,13 +1518,13 @@ public class MusicianUserBandManagementFragment extends Fragment implements YouT
 
                     if(!mPositionOneMember.equals("Vacant"))
                     {
-                        mDatabase.child("Users/" + mPositionOneMember + "/isInBand").setValue(false);
+                        mDatabase.child("Users/" + mPositionOneMember + "/inBand").setValue(false);
                         mDatabase.child("Users/" + mPositionOneMember + "/bandID").removeValue();
                     }
 
                     else if(!mPositionTwoMember.equals("Vacant"))
                     {
-                        mDatabase.child("Users/" + mPositionTwoMember + "/isInBand").setValue(false);
+                        mDatabase.child("Users/" + mPositionTwoMember + "/inBand").setValue(false);
                         mDatabase.child("Users/" + mPositionTwoMember + "/bandID").removeValue();
                     }
                 }
@@ -1539,19 +1539,19 @@ public class MusicianUserBandManagementFragment extends Fragment implements YouT
 
                     if(!mPositionOneMember.equals("Vacant"))
                     {
-                        mDatabase.child("Users/" + mPositionOneMember + "/isInBand").setValue(false);
+                        mDatabase.child("Users/" + mPositionOneMember + "/inBand").setValue(false);
                         mDatabase.child("Users/" + mPositionOneMember + "/bandID").removeValue();
                     }
 
                     else if(!mPositionTwoMember.equals("Vacant"))
                     {
-                        mDatabase.child("Users/" + mPositionTwoMember + "/isInBand").setValue(false);
+                        mDatabase.child("Users/" + mPositionTwoMember + "/inBand").setValue(false);
                         mDatabase.child("Users/" + mPositionTwoMember + "/bandID").removeValue();
                     }
 
                     else if(!mPositionThreeMember.equals("Vacant"))
                     {
-                        mDatabase.child("Users/" + mPositionThreeMember + "/isInBand").setValue(false);
+                        mDatabase.child("Users/" + mPositionThreeMember + "/inBand").setValue(false);
                         mDatabase.child("Users/" + mPositionThreeMember + "/bandID").removeValue();
                     }
                 }
@@ -1567,25 +1567,25 @@ public class MusicianUserBandManagementFragment extends Fragment implements YouT
 
                     if(!mPositionOneMember.equals("Vacant"))
                     {
-                        mDatabase.child("Users/" + mPositionOneMember + "/isInBand").setValue(false);
+                        mDatabase.child("Users/" + mPositionOneMember + "/inBand").setValue(false);
                         mDatabase.child("Users/" + mPositionOneMember + "/bandID").removeValue();
                     }
 
                     else if(!mPositionTwoMember.equals("Vacant"))
                     {
-                        mDatabase.child("Users/" + mPositionTwoMember + "/isInBand").setValue(false);
+                        mDatabase.child("Users/" + mPositionTwoMember + "/inBand").setValue(false);
                         mDatabase.child("Users/" + mPositionTwoMember + "/bandID").removeValue();
                     }
 
                     else if(!mPositionThreeMember.equals("Vacant"))
                     {
-                        mDatabase.child("Users/" + mPositionThreeMember + "/isInBand").setValue(false);
+                        mDatabase.child("Users/" + mPositionThreeMember + "/inBand").setValue(false);
                         mDatabase.child("Users/" + mPositionThreeMember + "/bandID").removeValue();
                     }
 
                     else if(!mPositionFourMember.equals("Vacant"))
                     {
-                        mDatabase.child("Users/" + mPositionFourMember + "/isInBand").setValue(false);
+                        mDatabase.child("Users/" + mPositionFourMember + "/inBand").setValue(false);
                         mDatabase.child("Users/" + mPositionFourMember + "/bandID").removeValue();
                     }
                 }
@@ -1602,31 +1602,31 @@ public class MusicianUserBandManagementFragment extends Fragment implements YouT
 
                     if(!mPositionOneMember.equals("Vacant"))
                     {
-                        mDatabase.child("Users/" + mPositionOneMember + "/isInBand").setValue(false);
+                        mDatabase.child("Users/" + mPositionOneMember + "/inBand").setValue(false);
                         mDatabase.child("Users/" + mPositionOneMember + "/bandID").removeValue();
                     }
 
                     else if(!mPositionTwoMember.equals("Vacant"))
                     {
-                        mDatabase.child("Users/" + mPositionTwoMember + "/isInBand").setValue(false);
+                        mDatabase.child("Users/" + mPositionTwoMember + "/inBand").setValue(false);
                         mDatabase.child("Users/" + mPositionTwoMember + "/bandID").removeValue();
                     }
 
                     else if(!mPositionThreeMember.equals("Vacant"))
                     {
-                        mDatabase.child("Users/" + mPositionThreeMember + "/isInBand").setValue(false);
+                        mDatabase.child("Users/" + mPositionThreeMember + "/inBand").setValue(false);
                         mDatabase.child("Users/" + mPositionThreeMember + "/bandID").removeValue();
                     }
 
                     else if(!mPositionFourMember.equals("Vacant"))
                     {
-                        mDatabase.child("Users/" + mPositionFourMember + "/isInBand").setValue(false);
+                        mDatabase.child("Users/" + mPositionFourMember + "/inBand").setValue(false);
                         mDatabase.child("Users/" + mPositionFourMember + "/bandID").removeValue();
                     }
 
                     else if(!mPositionFiveMember.equals("Vacant"))
                     {
-                        mDatabase.child("Users/" + mPositionFiveMember + "/isInBand").setValue(false);
+                        mDatabase.child("Users/" + mPositionFiveMember + "/inBand").setValue(false);
                         mDatabase.child("Users/" + mPositionFiveMember + "/bandID").removeValue();
                     }
                 }

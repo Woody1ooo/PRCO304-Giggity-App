@@ -131,6 +131,42 @@ public class MusicianUserBandRequestsInBandFragment extends Fragment
             }
         });
 
+        mSentUserRequestsListView.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id)
+            {
+                // This returns the selected request from the list view
+                BandRequest selectedRequest = (BandRequest) mSentUserRequestsListView.getItemAtPosition(position);
+                MusicianUserBandRequestsInBandSentDetailsFragment fragment = new MusicianUserBandRequestsInBandSentDetailsFragment();
+                Bundle arguments = new Bundle();
+                arguments.putString("UserID", selectedRequest.getUserID());
+                arguments.putString("UserName", selectedRequest.getUserName());
+                arguments.putString("BandID", selectedRequest.getBandID());
+                arguments.putString("PositionOffered", selectedRequest.getPositionInstruments());
+                arguments.putString("UserInstruments", selectedRequest.getUserInstruments());
+                arguments.putString("RequestStatus", selectedRequest.getRequestStatus());
+                fragment.setArguments(arguments);
+
+                // Creates a new fragment transaction to display the details of the selected
+                // gig. Some custom animation has been added also.
+                FragmentTransaction fragmentTransaction = getActivity().getFragmentManager()
+                        .beginTransaction();
+                fragmentTransaction.setCustomAnimations(R.animator.enter_from_right, R.animator.enter_from_left);
+                fragmentTransaction.replace(R.id.frame, fragment, "MusicianUserBandRequestsInBandSentDetailsFragment")
+                        .addToBackStack(null).commit();
+
+                // These must be cleared to prevent duplication as the database is called again
+                // when the fragment is returned to. This is required to update any changes made
+                // to the gigs by the user
+                mListOfUserRequestsSent.clear();
+                mListOfUserRequestsReceived.clear();
+                mListOfFilteredUserRequestsReceived.clear();
+                mSentUserRequestsAdapter.clear();
+                mReceivedUserRequestsAdapter.clear();
+            }
+        });
+
         return fragmentView;
     }
 

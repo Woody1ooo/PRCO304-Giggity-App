@@ -64,7 +64,7 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
     private Marker mMarker;
     private Boolean multipleGigs = false;
     private int mGigDistanceSelected;
-    private Boolean isInBand = false;
+    private Boolean mIsInBand = false;
 
     // Declare Visual Components
     private ListView mGigsListView;
@@ -120,6 +120,7 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
 
         // Initialise variables
         mLocationType = getArguments().getBoolean("CurrentLocation");
+        mIsInBand = getArguments().getBoolean("IsInBand");
 
         // Initialise other variables required
         mGigLocation = new Location("");
@@ -212,24 +213,6 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
                 // Once the two snapshots have been taken, the gig markers are added
                 // to the map using AddGigMarkers, taking the two snapshots as parameters
                 AddGigMarkers(mGigDataSnapshot, mVenueDataSnapshot);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError)
-            {
-
-            }
-        });
-
-        mDatabase.child("Users/" + mAuth.getCurrentUser().getUid()).addListenerForSingleValueEvent(new ValueEventListener()
-        {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot)
-            {
-                if(dataSnapshot.child("/isInBand").getValue().equals("true"))
-                {
-                    isInBand = true;
-                }
             }
 
             @Override
@@ -408,7 +391,7 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id)
             {
-                if(isInBand)
+                if(mIsInBand)
                 {
                     Gig selectedGig = (Gig) mGigsListView.getItemAtPosition(position);
 
@@ -472,7 +455,7 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
     @Override
     public void onInfoWindowClick(Marker marker)
     {
-        if(isInBand)
+        if(mIsInBand)
         {
             MusicianUserGigDetailsFragment fragment = new MusicianUserGigDetailsFragment();
             Bundle arguments = new Bundle();
