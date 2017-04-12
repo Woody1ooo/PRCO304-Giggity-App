@@ -3,6 +3,7 @@ package com.liamd.giggity_app;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.graphics.Typeface;
 import android.location.Location;
 import android.os.Bundle;
 import android.app.Fragment;
@@ -319,11 +320,24 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
                                 // and the text fields are updated to reflect this.
                                 if (mListOfGigMarkerInfo.get(i).getMarkerId().equals(markerSelected.getId()))
                                 {
+                                    // This takes the start and end dates and reformats them to look more visually appealing
+                                    String formattedStartDateSectionOne = mListOfGigMarkerInfo.get(i).getGigStartDate().toString().split(" ")[0];
+                                    String formattedStartDateSectionTwo = mListOfGigMarkerInfo.get(i).getGigStartDate().toString().split(" ")[1];
+                                    String formattedStartDateSectionThree = mListOfGigMarkerInfo.get(i).getGigStartDate().toString().split(" ")[2];
+                                    String formattedStartDateSectionFour = mListOfGigMarkerInfo.get(i).getGigStartDate().toString().split(" ")[3];
+
+                                    String formattedFinishDateSectionOne = mListOfGigMarkerInfo.get(i).getGigEndDate().toString().split(" ")[0];
+                                    String formattedFinishDateSectionTwo = mListOfGigMarkerInfo.get(i).getGigEndDate().toString().split(" ")[1];
+                                    String formattedFinishDateSectionThree = mListOfGigMarkerInfo.get(i).getGigEndDate().toString().split(" ")[2];
+                                    String formattedFinishDateSectionFour = mListOfGigMarkerInfo.get(i).getGigEndDate().toString().split(" ")[3];
+
                                     mGigIdTextView.setText(mListOfGigMarkerInfo.get(i).getGigId());
                                     mGigNameTextView.setText(mListOfGigMarkerInfo.get(i).getGigName());
-                                    mGigStartDateTextView.setText(mListOfGigMarkerInfo.get(i).getGigStartDate().toString());
-                                    mGigFinishDateTextView.setText(mListOfGigMarkerInfo.get(i).getGigEndDate().toString());
+                                    mGigNameTextView.setTypeface(null, Typeface.BOLD);
+                                    mGigStartDateTextView.setText("Start Date/Time: " + formattedStartDateSectionOne + " " + formattedStartDateSectionTwo + " " + formattedStartDateSectionThree + " " + formattedStartDateSectionFour);
+                                    mGigFinishDateTextView.setText("Finish Date/Time: " + formattedFinishDateSectionOne + " " + formattedFinishDateSectionTwo + " " + formattedFinishDateSectionThree + " " + formattedFinishDateSectionFour);
                                     mVenueNameTextView.setText(mListOfGigMarkerInfo.get(i).getVenueName());
+
                                 }
 
                                 // Loop through the marker info to see if any existing markers have the same venue ID

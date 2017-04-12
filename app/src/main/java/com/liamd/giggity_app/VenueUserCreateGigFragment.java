@@ -1,14 +1,22 @@
 package com.liamd.giggity_app;
 
 
+import android.*;
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.TimePickerDialog;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
-import android.app.FragmentTransaction;
+import android.provider.CalendarContract;
+import android.support.v4.app.ActivityCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,6 +41,9 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
+
+import me.everything.providers.android.calendar.CalendarProvider;
 
 
 /**
@@ -80,6 +91,10 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
     private int mFinishMinute;
 
     private Boolean isStartDate;
+
+    private final static int MY_PERMISSIONS_REQUEST_WRITE_CALENDAR = 1;
+    private boolean hasPermission = true;
+    private String mGigId;
 
     public VenueUserCreateGigFragment()
     {
@@ -240,9 +255,9 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
         // When the calender is clicked, we iterate through the list of gigObjects populated above
         // to find any gigs for the current venue. If there are any, these days are hidden from the
         // calendar to prevent double bookings
-        for(int i = 0; i < mListOfVenueGigs.size(); i++)
+        for (int i = 0; i < mListOfVenueGigs.size(); i++)
         {
-            if(mListOfVenueGigs.get(i).getVenueID().equals(mVenueId))
+            if (mListOfVenueGigs.get(i).getVenueID().equals(mVenueId))
             {
                 // These are then added to a separate list of just dates
                 mListOfGigDates.add(mListOfVenueGigs.get(i).getStartDate());
@@ -258,7 +273,7 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
         // e.g. 117 rather than 2017
         // This calendar object list then contains all the dates that are
         // already taken and thus should be disabled
-        for(int j = 0; j < mListOfGigDates.size(); j++)
+        for (int j = 0; j < mListOfGigDates.size(); j++)
         {
             Calendar cal = Calendar.getInstance();
             cal.set(mListOfGigDates.get(j).getYear() + 1900, mListOfGigDates.get(j).getMonth(), mListOfGigDates.get(j).getDate());
@@ -319,7 +334,7 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
                 // these global variables so they can be accessed by the CreateGig() method
                 mStartHour = selectedHour;
                 mStartMinute = selectedMinute;
-                mStartTimeSelectedTextView.setText( selectedHour + ":" + selectedMinute);
+                mStartTimeSelectedTextView.setText(selectedHour + ":" + selectedMinute);
             }
             // The 'false' value here determines whether the clock is 12 or 24 hours.
             // Currently this is 12 hour only, but this isn't final
@@ -342,7 +357,7 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
             {
                 mFinishHour = selectedHour;
                 mFinishMinute = selectedMinute;
-                mFinishTimeSelectedTextView.setText( selectedHour + ":" + selectedMinute);
+                mFinishTimeSelectedTextView.setText(selectedHour + ":" + selectedMinute);
             }
         }, mHour, mMinute, false);
         mTimePicker.setTitle("Select Time");
@@ -367,7 +382,7 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
         // if the isStartDate boolean is true, this means the
         // the start date button was selected, therefore the
         // relevant variables are populated
-        if(isStartDate)
+        if (isStartDate)
         {
             mStartYear = year;
             mStartMonth = monthOfYear + 1;
@@ -408,17 +423,14 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
                     Toast.makeText(getActivity(),
                             "Please ensure you have given a value for all the required fields!",
                             Toast.LENGTH_SHORT).show();
-                }
-                else
+                } else
                 {
-                    if(mGenresSpinner.getSelectedItem() == "")
+                    if (mGenresSpinner.getSelectedItem() == "")
                     {
                         Toast.makeText(getActivity(),
                                 "Please ensure you have given a value for all the required fields!",
                                 Toast.LENGTH_SHORT).show();
-                    }
-
-                    else
+                    } else
                     {
                         try
                         {
@@ -443,7 +455,7 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
                             if (mFinishDateSelectedTextView.getText().equals
                                     ("No date selected! (ignore if this is the same as the start date)"))
                             {
-                                String gigId = mDatabase.push().getKey();
+                                mGigId = mDatabase.push().getKey();
 
                                 mFinishDate = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss.SSS").parse(mStartDay + "/" +
                                         mStartMonth + "/" + mStartYear + " " +
@@ -459,22 +471,96 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
 
                                 // This is then inserted into the database using a push
                                 // command to generate a new random identifier
-                                mDatabase.child("Gigs/" + gigId).setValue(gigToInsert);
+                                mDatabase.child("Gigs/" + mGigId).setValue(gigToInsert);
 
-                                mDatabase.child("Gigs/" + gigId).child("genres").setValue(mGenresSpinner.getSelectedItemsAsString());
-                                mDatabase.child("Gigs/" + gigId).child("bookedAct").setValue("Vacant");
+                                mDatabase.child("Gigs/" + mGigId).child("genres").setValue(mGenresSpinner.getSelectedItemsAsString());
+                                mDatabase.child("Gigs/" + mGigId).child("bookedAct").setValue("Vacant");
 
                                 // A dialog is then shown to alert the user that the changes have been made
                                 final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                                 builder.setTitle("Confirmation");
-                                builder.setMessage("Gig Created!");
+                                builder.setIcon(R.drawable.ic_event_available_black_24dp);
+                                builder.setMessage("Gig Created! Would you like to add this to your device calendar?");
                                 builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
                                 {
                                     @Override
                                     public void onClick(DialogInterface dialogInterface, int i)
                                     {
-                                        // The user is then taken to the my gigs fragment
-                                        ReturnToMyGigs();
+                                        // First check that the user has granted permission to write to the calendar
+                                        if (ActivityCompat.checkSelfPermission(getActivity().getApplicationContext(), Manifest.permission.WRITE_CALENDAR) != PackageManager.PERMISSION_GRANTED)
+                                        {
+                                            requestPermissions(new String[]{Manifest.permission.WRITE_CALENDAR}, MY_PERMISSIONS_REQUEST_WRITE_CALENDAR);
+                                        }
+
+                                        if(hasPermission)
+                                        {
+                                            // This 3rd party library then provides a list of all the calendar providers that the user has
+                                            CalendarProvider provider = new CalendarProvider(getActivity());
+                                            List<me.everything.providers.android.calendar.Calendar> calendars = provider.getCalendars().getList();
+
+                                            // This then creates and inserts the event with the details into the calendar with the first element of the providers list
+                                            ContentResolver cr = getActivity().getContentResolver();
+                                            ContentValues values = new ContentValues();
+                                            TimeZone timeZone = TimeZone.getDefault();
+                                            values.put(CalendarContract.Events.DTSTART, mStartDate.getTime());
+                                            values.put(CalendarContract.Events.DTEND, mFinishDate.getTime());
+                                            values.put(CalendarContract.Events.EVENT_TIMEZONE, timeZone.getID());
+                                            values.put(CalendarContract.Events.TITLE, mGigNameEditText.getText().toString());
+                                            values.put(CalendarContract.Events.CALENDAR_ID, calendars.get(0).id);
+                                            values.put(CalendarContract.Events.EVENT_LOCATION, mVenueName);
+                                            Uri uri = cr.insert(CalendarContract.Events.CONTENT_URI, values);
+
+                                            // The event id is then extracted
+                                            final String eventID = uri.getLastPathSegment();
+
+                                            if(eventID != null)
+                                            {
+                                                // A dialog is then shown to alert the user that the changes have been made
+                                                final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                                                builder.setTitle("Confirmation");
+                                                builder.setIcon(R.drawable.ic_event_available_black_24dp);
+                                                builder.setMessage("Calendar Event Added!");
+                                                builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                                                {
+                                                    @Override
+                                                    public void onClick(DialogInterface dialogInterface, int i)
+                                                    {
+                                                        // This value is then stored in the database so edits can be made to the event
+                                                        mDatabase.child("Gigs/" + mGigId + "/calendarEventId").setValue(eventID);
+                                                        ReturnToHome();
+                                                    }
+                                                });
+                                                builder.setCancelable(false);
+                                                builder.show();
+                                            }
+
+                                            else
+                                            {
+                                                // A dialog is then shown to alert the user that the changes have been made
+                                                final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                                                builder.setTitle("Error");
+                                                builder.setIcon(R.drawable.ic_event_available_black_24dp);
+                                                builder.setMessage("Calendar Event Could Not Be Added!");
+                                                builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                                                {
+                                                    @Override
+                                                    public void onClick(DialogInterface dialogInterface, int i)
+                                                    {
+                                                        ReturnToHome();
+                                                    }
+                                                });
+                                                builder.setCancelable(false);
+                                                builder.show();
+                                            }
+                                        }
+                                    }
+                                });
+                                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener()
+                                {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i)
+                                    {
+                                        ReturnToHome();
                                     }
                                 });
                                 builder.setCancelable(false);
@@ -483,7 +569,7 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
 
                             else
                             {
-                                String gigId = mDatabase.push().getKey();
+                                mGigId = mDatabase.push().getKey();
 
                                 // This code is called when the user selects a specific finish date.
                                 mFinishDate = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss.SSS").parse(mFinishDay + "/" +
@@ -496,7 +582,9 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
                                             "Please ensure that the start date and " +
                                                     "times are before the finish date and times!",
                                             Toast.LENGTH_SHORT).show();
-                                } else
+                                }
+
+                                else
                                 {
                                     // A gig object is then created and populated with
                                     // the data generated across this page
@@ -508,22 +596,93 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
 
                                     // This is then inserted into the database using a push
                                     // command to generate a new random identifier
-                                    mDatabase.child("Gigs/" + gigId).setValue(gigToInsert);
+                                    mDatabase.child("Gigs/" + mGigId).setValue(gigToInsert);
 
-                                    mDatabase.child("Gigs/" + gigId).child("genres").setValue(mGenresSpinner.getSelectedItemsAsString());
-                                    mDatabase.child("Gigs/" + gigId).child("bookedAct").setValue("Vacant");
+                                    mDatabase.child("Gigs/" + mGigId).child("genres").setValue(mGenresSpinner.getSelectedItemsAsString());
+                                    mDatabase.child("Gigs/" + mGigId).child("bookedAct").setValue("Vacant");
 
                                     // A dialog is then shown to alert the user that the changes have been made
                                     final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                                     builder.setTitle("Confirmation");
-                                    builder.setMessage("Gig Created!");
+                                    builder.setMessage("Gig Created! Would you like to add this to your device calendar?");
+                                    builder.setIcon(R.drawable.ic_event_available_black_24dp);
                                     builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
                                     {
                                         @Override
                                         public void onClick(DialogInterface dialogInterface, int i)
                                         {
-                                            // The user is then taken to the my gigs fragment
-                                            ReturnToMyGigs();
+                                            if (ActivityCompat.checkSelfPermission(getActivity().getApplicationContext(), Manifest.permission.WRITE_CALENDAR) != PackageManager.PERMISSION_GRANTED)
+                                            {
+                                                requestPermissions(new String[]{Manifest.permission.WRITE_CALENDAR}, MY_PERMISSIONS_REQUEST_WRITE_CALENDAR);
+                                            }
+
+                                            if(hasPermission)
+                                            {
+                                                CalendarProvider provider = new CalendarProvider(getActivity());
+                                                List<me.everything.providers.android.calendar.Calendar> calendars = provider.getCalendars().getList();
+
+                                                // Insert Event
+                                                ContentResolver cr = getActivity().getContentResolver();
+                                                ContentValues values = new ContentValues();
+                                                TimeZone timeZone = TimeZone.getDefault();
+                                                values.put(CalendarContract.Events.DTSTART, mStartDate.getTime());
+                                                values.put(CalendarContract.Events.DTEND, mFinishDate.getTime());
+                                                values.put(CalendarContract.Events.EVENT_TIMEZONE, timeZone.getID());
+                                                values.put(CalendarContract.Events.TITLE, mGigNameEditText.getText().toString());
+                                                values.put(CalendarContract.Events.CALENDAR_ID, calendars.get(0).id);
+                                                values.put(CalendarContract.Events.EVENT_LOCATION, mVenueName);
+                                                Uri uri = cr.insert(CalendarContract.Events.CONTENT_URI, values);
+
+                                                // get the event ID that is the last element in the Uri
+                                                final String eventID = uri.getLastPathSegment();
+
+                                                if(eventID != null)
+                                                {
+                                                    // A dialog is then shown to alert the user that the changes have been made
+                                                    final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                                                    builder.setTitle("Confirmation");
+                                                    builder.setIcon(R.drawable.ic_event_available_black_24dp);
+                                                    builder.setMessage("Calendar Event Added!");
+                                                    builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                                                    {
+                                                        @Override
+                                                        public void onClick(DialogInterface dialogInterface, int i)
+                                                        {
+                                                            mDatabase.child("Gigs/" + mGigId + "/calendarEventId").setValue(eventID);
+                                                            ReturnToHome();
+                                                        }
+                                                    });
+                                                    builder.setCancelable(false);
+                                                    builder.show();
+                                                }
+
+                                                else
+                                                {
+                                                    // A dialog is then shown to alert the user that the changes have been made
+                                                    final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                                                    builder.setTitle("Error");
+                                                    builder.setIcon(R.drawable.ic_event_available_black_24dp);
+                                                    builder.setMessage("Calendar Event Could Not Be Added!");
+                                                    builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                                                    {
+                                                        @Override
+                                                        public void onClick(DialogInterface dialogInterface, int i)
+                                                        {
+                                                            ReturnToHome();
+                                                        }
+                                                    });
+                                                    builder.setCancelable(false);
+                                                    builder.show();
+                                                }
+                                            }
+                                        }
+                                    });
+                                    builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener()
+                                    {
+                                        @Override
+                                        public void onClick(DialogInterface dialogInterface, int i)
+                                        {
+                                            ReturnToHome();
                                         }
                                     });
                                     builder.setCancelable(false);
@@ -547,6 +706,30 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
             }
         });
         builder.show();
+    }
+
+    // This method processes the result of the permission request
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults)
+    {
+        if (requestCode == MY_PERMISSIONS_REQUEST_WRITE_CALENDAR)
+
+            // If the permission has been accepted call the update profile picture method to access the storage
+            if (permissions.length == 1 &&
+                    permissions[0].equals(Manifest.permission.WRITE_CALENDAR) &&
+                    grantResults[0] == PackageManager.PERMISSION_GRANTED)
+            {
+                hasPermission = true;
+            }
+
+            // If the permission has been denied then display a message to that effect
+            else
+            {
+                Toast.makeText(getActivity(), "If you wish to change your profile image," +
+                        " please ensure you have given permission to access your storage.", Toast.LENGTH_SHORT).show();
+
+                hasPermission = false;
+            }
     }
 
     // This method takes a snapshot of the database as a parameter and returns a
@@ -589,7 +772,7 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
 
     }
 
-    private void ReturnToMyGigs()
+    private void ReturnToHome()
     {
         getActivity().finish();
         getActivity().overridePendingTransition(0,0);

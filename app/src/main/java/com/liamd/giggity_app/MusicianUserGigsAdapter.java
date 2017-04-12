@@ -16,6 +16,8 @@ import com.google.android.gms.location.places.PlacePhotoMetadataBuffer;
 import com.google.android.gms.location.places.PlacePhotoMetadataResult;
 import com.google.android.gms.location.places.PlacePhotoResult;
 import com.google.android.gms.location.places.Places;
+
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -28,11 +30,14 @@ public class MusicianUserGigsAdapter extends ArrayAdapter<Gig>
     private TextView mVenueNameTextView;
     private TextView mDistanceTextView;
     private TextView mGigNameTextView;
-    private TextView mGigDateTextView;
+    private TextView mGigStartDateTextView;
+    private TextView mGigEndDateTextView;
     private ImageView mVenueImageView;
 
     // Declare general variables
     private String mVenueName;
+    private Date mEventStartDate;
+    private Date mEventFinishDate;
 
     private GoogleApiClient mGoogleApiClient;
 
@@ -72,7 +77,8 @@ public class MusicianUserGigsAdapter extends ArrayAdapter<Gig>
         mVenueNameTextView = (TextView) gigsListView.findViewById(R.id.venueName);
         mDistanceTextView = (TextView) gigsListView.findViewById(R.id.distance);
         mGigNameTextView = (TextView) gigsListView.findViewById(R.id.gigName);
-        mGigDateTextView = (TextView) gigsListView.findViewById(R.id.gigDate);
+        mGigStartDateTextView = (TextView) gigsListView.findViewById(R.id.gigStartDate);
+        mGigEndDateTextView = (TextView) gigsListView.findViewById(R.id.gigEndDate);
         mVenueImageView = (ImageView) gigsListView.findViewById(R.id.venueImage);
 
         //placePhotosAsync();
@@ -81,14 +87,30 @@ public class MusicianUserGigsAdapter extends ArrayAdapter<Gig>
         mVenueName = MusicianUserGigResultsFragment.getVenueSnapshot().child(gig.getVenueID() + "/name").getValue().toString();
 
         // Set list view fields to display the correct information
-        mVenueNameTextView.setText(mVenueName);
-        mVenueNameTextView.setTypeface(null, Typeface.BOLD);
-        mDistanceTextView.setText(gig.getGigDistance() + "km");
         mGigNameTextView.setText(gig.getTitle());
-        mGigDateTextView.setText(gig.getStartDate().toString());
+        mGigNameTextView.setTypeface(null, Typeface.BOLD);
+        mVenueNameTextView.setText(mVenueName);
+        mDistanceTextView.setText(gig.getGigDistance() + "km");
 
         // This calls the method to load the photos, though it doesn't work at the moment...
         placePhotosAsync();
+
+        mEventStartDate = gig.getStartDate();
+        mEventFinishDate = gig.getEndDate();
+
+        // This takes the start and end dates and reformats them to look more visually appealing
+        String formattedStartDateSectionOne = mEventStartDate.toString().split(" ")[0];
+        String formattedStartDateSectionTwo = mEventStartDate.toString().split(" ")[1];
+        String formattedStartDateSectionThree = mEventStartDate.toString().split(" ")[2];
+        String formattedStartDateSectionFour = mEventStartDate.toString().split(" ")[3];
+
+        String formattedFinishDateSectionOne = mEventFinishDate.toString().split(" ")[0];
+        String formattedFinishDateSectionTwo = mEventFinishDate.toString().split(" ")[1];
+        String formattedFinishDateSectionThree = mEventFinishDate.toString().split(" ")[2];
+        String formattedFinishDateSectionFour = mEventFinishDate.toString().split(" ")[3];
+
+        mGigStartDateTextView.setText("Start Date/Time: " + formattedStartDateSectionOne + " " + formattedStartDateSectionTwo + " " + formattedStartDateSectionThree + " " + formattedStartDateSectionFour);
+        mGigEndDateTextView.setText("Finish Date/Time: " + formattedFinishDateSectionOne + " " + formattedFinishDateSectionTwo + " " + formattedFinishDateSectionThree + " " + formattedFinishDateSectionFour);
 
         return gigsListView;
     }
