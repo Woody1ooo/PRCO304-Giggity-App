@@ -4,11 +4,15 @@ package com.liamd.giggity_app;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.TimePickerDialog;
+import android.content.ContentResolver;
+import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.provider.CalendarContract;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -66,6 +70,7 @@ public class VenueUserViewGigDetailsFragment extends Fragment implements DatePic
     private TextView mStartTimeSelectedTextView;
     private TextView mFinishTimeSelectedTextView;
     private Button mUpdateGigButton;
+    private Button mDeleteGigButton;
 
     // Declare Firebase specific variables
     private DatabaseReference mDatabase;
@@ -110,6 +115,7 @@ public class VenueUserViewGigDetailsFragment extends Fragment implements DatePic
     private String mGigGenres;
     private List<String> mGenreList;
     private String mBandId;
+    private String mCalendarEventId;
 
     // These variables determine which elements of the gig have been edited
     private Boolean isStartDateEdited = false;
@@ -156,6 +162,7 @@ public class VenueUserViewGigDetailsFragment extends Fragment implements DatePic
         mFinishTimeSelectedTextView = (TextView) fragmentView.findViewById(R.id.FinishTimeSelectedLabel);
 
         mUpdateGigButton = (Button) fragmentView.findViewById(R.id.UpdateGigButton);
+        mDeleteGigButton = (Button) fragmentView.findViewById(R.id.DeleteGigButton);
 
         // Add items to the genre list, and set the spinner to use these
         mGenreList = new ArrayList<>();
@@ -187,6 +194,13 @@ public class VenueUserViewGigDetailsFragment extends Fragment implements DatePic
             @Override
             public void onDataChange(DataSnapshot dataSnapshot)
             {
+                // Check if the gig has a calendar event associated with it
+                if(dataSnapshot.child("Gigs/" + mGigID + "/calendarEventId").exists())
+                {
+                    // If so assign the value to this variable
+                    mCalendarEventId = dataSnapshot.child("Gigs/" + mGigID + "/calendarEventId").getValue().toString();
+                }
+
                 // Obtain the details of the artist hired assuming there is one
                 // If there isn't display the hire button
                 if(dataSnapshot.child("Gigs/" + mGigID + "/bookedAct").getValue().equals("Vacant"))
@@ -306,6 +320,15 @@ public class VenueUserViewGigDetailsFragment extends Fragment implements DatePic
                         // Once all the other fields have been completed, this method to create
                         // the gig can be called on button click
                         UpdateGig();
+                    }
+                });
+
+                mDeleteGigButton.setOnClickListener(new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View view)
+                    {
+                        DeleteGig();
                     }
                 });
             }
@@ -726,6 +749,17 @@ public class VenueUserViewGigDetailsFragment extends Fragment implements DatePic
                         mDatabase.child("Gigs/" + mGigID + "/" + "venueID").setValue(mVenueId);
                         mDatabase.child("Gigs/" + mGigID + "/" + "genres").setValue(mGenreSpinner.getSelectedItemsAsString());
 
+                        // If the event has a calendar event update the relevant fields
+                        if(mCalendarEventId != null)
+                        {
+                            ContentValues values = new ContentValues();
+
+                            // Set the user's chosen title against the event
+                            values.put(CalendarContract.Events.TITLE, mGigNameEditText.getText().toString());
+                            Uri updateUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, Long.parseLong(mCalendarEventId));
+                            getActivity().getContentResolver().update(updateUri, values, null, null);
+                        }
+
                         ConfirmationDialog();
                     }
 
@@ -758,6 +792,17 @@ public class VenueUserViewGigDetailsFragment extends Fragment implements DatePic
                                 mDatabase.child("Gigs/" + mGigID + "/" + "startDate").setValue(newStartDate);
                                 mDatabase.child("Gigs/" + mGigID + "/" + "endDate").setValue(newEndDate);
                                 mDatabase.child("Gigs/" + mGigID + "/" + "genres").setValue(mGenreSpinner.getSelectedItemsAsString());
+
+                                // If the event has a calendar event update the relevant fields
+                                if(mCalendarEventId != null)
+                                {
+                                    ContentValues values = new ContentValues();
+                                    values.put(CalendarContract.Events.TITLE, mGigNameEditText.getText().toString());
+                                    values.put(CalendarContract.Events.DTSTART, newStartDate.getTime());
+                                    values.put(CalendarContract.Events.DTEND, newEndDate.getTime());
+                                    Uri updateUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, Long.parseLong(mCalendarEventId));
+                                    getActivity().getContentResolver().update(updateUri, values, null, null);
+                                }
 
                                 ConfirmationDialog();
                             }
@@ -798,6 +843,16 @@ public class VenueUserViewGigDetailsFragment extends Fragment implements DatePic
                                 mDatabase.child("Gigs/" + mGigID + "/" + "venueID").setValue(mVenueId);
                                 mDatabase.child("Gigs/" + mGigID + "/" + "genres").setValue(mGenreSpinner.getSelectedItemsAsString());
 
+                                // If the event has a calendar event update the relevant fields
+                                if(mCalendarEventId != null)
+                                {
+                                    ContentValues values = new ContentValues();
+                                    values.put(CalendarContract.Events.TITLE, mGigNameEditText.getText().toString());
+                                    values.put(CalendarContract.Events.DTSTART, newStartDate.getTime());
+                                    Uri updateUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, Long.parseLong(mCalendarEventId));
+                                    getActivity().getContentResolver().update(updateUri, values, null, null);
+                                }
+
                                 ConfirmationDialog();
                             }
 
@@ -835,6 +890,16 @@ public class VenueUserViewGigDetailsFragment extends Fragment implements DatePic
                                 mDatabase.child("Gigs/" + mGigID + "/" + "endDate").setValue(newEndDate);
                                 mDatabase.child("Gigs/" + mGigID + "/" + "venueID").setValue(mVenueId);
                                 mDatabase.child("Gigs/" + mGigID + "/" + "genres").setValue(mGenreSpinner.getSelectedItemsAsString());
+
+                                // If the event has a calendar event update the relevant fields
+                                if(mCalendarEventId != null)
+                                {
+                                    ContentValues values = new ContentValues();
+                                    values.put(CalendarContract.Events.TITLE, mGigNameEditText.getText().toString());
+                                    values.put(CalendarContract.Events.DTSTART, newEndDate.getTime());
+                                    Uri updateUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, Long.parseLong(mCalendarEventId));
+                                    getActivity().getContentResolver().update(updateUri, values, null, null);
+                                }
 
                                 ConfirmationDialog();
                             }
@@ -884,6 +949,17 @@ public class VenueUserViewGigDetailsFragment extends Fragment implements DatePic
                                 mDatabase.child("Gigs/" + mGigID + "/" + "venueID").setValue(mVenueId);
                                 mDatabase.child("Gigs/" + mGigID + "/" + "genres").setValue(mGenreSpinner.getSelectedItemsAsString());
 
+                                // If the event has a calendar event update the relevant fields
+                                if(mCalendarEventId != null)
+                                {
+                                    ContentValues values = new ContentValues();
+                                    values.put(CalendarContract.Events.TITLE, mGigNameEditText.getText().toString());
+                                    values.put(CalendarContract.Events.DTSTART, newStartDateWithExistingTime.getTime());
+                                    values.put(CalendarContract.Events.DTEND, newFinishDateWithExistingTime.getTime());
+                                    Uri updateUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, Long.parseLong(mCalendarEventId));
+                                    getActivity().getContentResolver().update(updateUri, values, null, null);
+                                }
+
                                 ConfirmationDialog();
                             }
                             else
@@ -928,6 +1004,17 @@ public class VenueUserViewGigDetailsFragment extends Fragment implements DatePic
                                 mDatabase.child("Gigs/" + mGigID + "/" + "endDate").setValue(newFinishTimeWithExistingDate);
                                 mDatabase.child("Gigs/" + mGigID + "/" + "venueID").setValue(mVenueId);
                                 mDatabase.child("Gigs/" + mGigID + "/" + "genres").setValue(mGenreSpinner.getSelectedItemsAsString());
+
+                                // If the event has a calendar event update the relevant fields
+                                if(mCalendarEventId != null)
+                                {
+                                    ContentValues values = new ContentValues();
+                                    values.put(CalendarContract.Events.TITLE, mGigNameEditText.getText().toString());
+                                    values.put(CalendarContract.Events.DTSTART, newStartTimeWithExistingDate.getTime());
+                                    values.put(CalendarContract.Events.DTEND, newFinishTimeWithExistingDate.getTime());
+                                    Uri updateUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, Long.parseLong(mCalendarEventId));
+                                    getActivity().getContentResolver().update(updateUri, values, null, null);
+                                }
 
                                 ConfirmationDialog();
                             }
@@ -974,6 +1061,17 @@ public class VenueUserViewGigDetailsFragment extends Fragment implements DatePic
                                 mDatabase.child("Gigs/" + mGigID + "/" + "endDate").setValue(newFinishDateWithExistingTime);
                                 mDatabase.child("Gigs/" + mGigID + "/" + "venueID").setValue(mVenueId);
                                 mDatabase.child("Gigs/" + mGigID + "/" + "genres").setValue(mGenreSpinner.getSelectedItemsAsString());
+
+                                // If the event has a calendar event update the relevant fields
+                                if(mCalendarEventId != null)
+                                {
+                                    ContentValues values = new ContentValues();
+                                    values.put(CalendarContract.Events.TITLE, mGigNameEditText.getText().toString());
+                                    values.put(CalendarContract.Events.DTSTART, newStartTimeWithExistingDate.getTime());
+                                    values.put(CalendarContract.Events.DTEND, newFinishDateWithExistingTime.getTime());
+                                    Uri updateUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, Long.parseLong(mCalendarEventId));
+                                    getActivity().getContentResolver().update(updateUri, values, null, null);
+                                }
 
                                 ConfirmationDialog();
                             }
@@ -1022,6 +1120,17 @@ public class VenueUserViewGigDetailsFragment extends Fragment implements DatePic
                                 mDatabase.child("Gigs/" + mGigID + "/" + "venueID").setValue(mVenueId);
                                 mDatabase.child("Gigs/" + mGigID + "/" + "genres").setValue(mGenreSpinner.getSelectedItemsAsString());
 
+                                // If the event has a calendar event update the relevant fields
+                                if(mCalendarEventId != null)
+                                {
+                                    ContentValues values = new ContentValues();
+                                    values.put(CalendarContract.Events.TITLE, mGigNameEditText.getText().toString());
+                                    values.put(CalendarContract.Events.DTSTART, newStartDateWithExistingTime.getTime());
+                                    values.put(CalendarContract.Events.DTEND, newFinishTimeWithExistingDate.getTime());
+                                    Uri updateUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, Long.parseLong(mCalendarEventId));
+                                    getActivity().getContentResolver().update(updateUri, values, null, null);
+                                }
+
                                 ConfirmationDialog();
                             }
 
@@ -1058,6 +1167,16 @@ public class VenueUserViewGigDetailsFragment extends Fragment implements DatePic
                                 mDatabase.child("Gigs/" + mGigID + "/" + "endDate").setValue(newFinishTimeWithExistingDate);
                                 mDatabase.child("Gigs/" + mGigID + "/" + "venueID").setValue(mVenueId);
                                 mDatabase.child("Gigs/" + mGigID + "/" + "genres").setValue(mGenreSpinner.getSelectedItemsAsString());
+
+                                // If the event has a calendar event update the relevant fields
+                                if(mCalendarEventId != null)
+                                {
+                                    ContentValues values = new ContentValues();
+                                    values.put(CalendarContract.Events.TITLE, mGigNameEditText.getText().toString());
+                                    values.put(CalendarContract.Events.DTEND, newFinishTimeWithExistingDate.getTime());
+                                    Uri updateUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, Long.parseLong(mCalendarEventId));
+                                    getActivity().getContentResolver().update(updateUri, values, null, null);
+                                }
 
                                 ConfirmationDialog();
                             }
@@ -1096,6 +1215,16 @@ public class VenueUserViewGigDetailsFragment extends Fragment implements DatePic
                                 mDatabase.child("Gigs/" + mGigID + "/" + "venueID").setValue(mVenueId);
                                 mDatabase.child("Gigs/" + mGigID + "/" + "genres").setValue(mGenreSpinner.getSelectedItemsAsString());
 
+                                // If the event has a calendar event update the relevant fields
+                                if(mCalendarEventId != null)
+                                {
+                                    ContentValues values = new ContentValues();
+                                    values.put(CalendarContract.Events.TITLE, mGigNameEditText.getText().toString());
+                                    values.put(CalendarContract.Events.DTEND, newStartTimeWithExistingDate.getTime());
+                                    Uri updateUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, Long.parseLong(mCalendarEventId));
+                                    getActivity().getContentResolver().update(updateUri, values, null, null);
+                                }
+
                                 ConfirmationDialog();
                             }
                             else
@@ -1131,6 +1260,16 @@ public class VenueUserViewGigDetailsFragment extends Fragment implements DatePic
                                 mDatabase.child("Gigs/" + mGigID + "/" + "endDate").setValue(newFinishDateWithExistingTime);
                                 mDatabase.child("Gigs/" + mGigID + "/" + "venueID").setValue(mVenueId);
                                 mDatabase.child("Gigs/" + mGigID + "/" + "genres").setValue(mGenreSpinner.getSelectedItemsAsString());
+
+                                // If the event has a calendar event update the relevant fields
+                                if(mCalendarEventId != null)
+                                {
+                                    ContentValues values = new ContentValues();
+                                    values.put(CalendarContract.Events.TITLE, mGigNameEditText.getText().toString());
+                                    values.put(CalendarContract.Events.DTEND, newFinishDateWithExistingTime.getTime());
+                                    Uri updateUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, Long.parseLong(mCalendarEventId));
+                                    getActivity().getContentResolver().update(updateUri, values, null, null);
+                                }
 
                                 ConfirmationDialog();
                             }
@@ -1168,6 +1307,16 @@ public class VenueUserViewGigDetailsFragment extends Fragment implements DatePic
                                 mDatabase.child("Gigs/" + mGigID + "/" + "startDate").setValue(newStartDateWithExistingTime);
                                 mDatabase.child("Gigs/" + mGigID + "/" + "venueID").setValue(mVenueId);
                                 mDatabase.child("Gigs/" + mGigID + "/" + "genres").setValue(mGenreSpinner.getSelectedItemsAsString());
+
+                                // If the event has a calendar event update the relevant fields
+                                if(mCalendarEventId != null)
+                                {
+                                    ContentValues values = new ContentValues();
+                                    values.put(CalendarContract.Events.TITLE, mGigNameEditText.getText().toString());
+                                    values.put(CalendarContract.Events.DTSTART, newStartDateWithExistingTime.getTime());
+                                    Uri updateUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, Long.parseLong(mCalendarEventId));
+                                    getActivity().getContentResolver().update(updateUri, values, null, null);
+                                }
 
                                 ConfirmationDialog();
                             }
@@ -1231,10 +1380,57 @@ public class VenueUserViewGigDetailsFragment extends Fragment implements DatePic
     @Override
     public void onTimeSet(TimePicker timePicker, int i, int i1)
     {
-
-
     }
 
+    // This method allows the user to delete gigs from the database and from the google calendar
+    private void DeleteGig()
+    {
+        // A dialog is shown to alert the user that they are about to delete a gig
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle("Delete Gig");
+        builder.setMessage("Are you sure you want to delete this gig?");
+        builder.setIcon(R.drawable.ic_event_available_black_24dp);
+        builder.setPositiveButton("Confirm", new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i)
+            {
+                mDatabase.child("Gigs/" + mGigID).removeValue();
+
+                // If the event has a calendar event ensure it's deleted from the calendar
+                if(mCalendarEventId != null)
+                {
+                    Uri deleteUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, Long.parseLong(mCalendarEventId));
+                    getActivity().getContentResolver().delete(deleteUri, null, null);
+                }
+
+                // A dialog is then shown to alert the user that the changes have been made
+                final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setTitle("Confirmation");
+                builder.setMessage("Gig Deleted!");
+                builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i)
+                    {
+                        // The user is then taken to the my gigs fragment
+                        ReturnToMyGigs();
+                    }
+                });
+                builder.setCancelable(false);
+                builder.show();
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i)
+            {
+
+            }
+        });
+        builder.show();
+    }
     private void ConfirmationDialog()
     {
         // A dialog is then shown to alert the user that the changes have been made

@@ -230,14 +230,31 @@
                 android:text="Update finish time"
                 android:textColor="@color/cardview_light_background"
                 android:textSize="14sp"/>
-
-            <Button
-                android:id="@+id/UpdateGigButton"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/colorPrimary"
-                android:text="Update Gig"
-                android:textColor="@color/cardview_light_background"/>
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/UpdateGigButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:layout_weight="1"
+                    android:background="@color/colorPrimary"
+                    android:text="Update"
+                    android:textColor="@color/common_google_signin_btn_text_dark_pressed"/>
+
+                <Button
+                    android:id="@+id/DeleteGigButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:layout_weight="1"
+                    android:background="@color/common_google_signin_btn_text_dark_focused"
+                    android:text="Delete"
+                    android:textColor="@color/common_google_signin_btn_text_dark_pressed"/>
+            </LinearLayout>
         </LinearLayout>
     </ScrollView>
 </FrameLayout>

@@ -108,7 +108,7 @@ public class VenueUserViewGigsFragment extends Fragment
                 // This sorts the list of gigs by date
                 Collections.sort(mListOfUsersGigs, new CustomComparator());
 
-                if(mListOfUsersGigs.isEmpty())
+                if(mListOfUsersGigs.isEmpty() && getActivity() != null)
                 {
                     final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                     builder.setIcon(R.drawable.ic_info_outline_black_24dp);
@@ -140,9 +140,12 @@ public class VenueUserViewGigsFragment extends Fragment
 
                 else
                 {
-                    // Using the custom VenueUserGigsAdapter, the list of users gigs can be displayed
-                    adapter = new VenueUserGigsAdapter(getActivity(), R.layout.venue_user_gig_list, mListOfUsersGigs, mSnapshot);
-                    mGigsListView.setAdapter(adapter);
+                    if(getActivity() != null)
+                    {
+                        // Using the custom VenueUserGigsAdapter, the list of users gigs can be displayed
+                        adapter = new VenueUserGigsAdapter(getActivity(), R.layout.venue_user_gig_list, mListOfUsersGigs, mSnapshot);
+                        mGigsListView.setAdapter(adapter);
+                    }
                 }
             }
 
