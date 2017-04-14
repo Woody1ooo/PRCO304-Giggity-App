@@ -1,5 +1,7 @@
 package com.liamd.giggity_app;
 
+import java.util.Date;
+
 /**
  * Created by liamd on 02/04/2017.
  */
@@ -7,9 +9,14 @@ package com.liamd.giggity_app;
 public class GigRequest
 {
     private String bandID;
+    private String bandName;
     private String gigID;
+    private String gigName;
     private String requestStatus;
     private String venueID;
+    private String venueName;
+    private Date startDate;
+    private Date endDate;
 
     public GigRequest()
     {
@@ -62,5 +69,55 @@ public class GigRequest
     public void setVenueID(String venueID)
     {
         this.venueID = venueID;
+    }
+
+    public String getBandName()
+    {
+        return bandName;
+    }
+
+    public void setBandName(String bandName)
+    {
+        this.bandName = bandName;
+    }
+
+    public String getVenueName()
+    {
+        return venueName;
+    }
+
+    public void setVenueName(String venueName)
+    {
+        this.venueName = venueName;
+    }
+
+    public Date getStartDate()
+    {
+        return startDate;
+    }
+
+    public void setStartDate(Date startDate)
+    {
+        this.startDate = startDate;
+    }
+
+    public Date getEndDate()
+    {
+        return endDate;
+    }
+
+    public void setEndDate(Date endDate)
+    {
+        this.endDate = endDate;
+    }
+
+    public String getGigName()
+    {
+        return gigName;
+    }
+
+    public void setGigName(String gigName)
+    {
+        this.gigName = gigName;
     }
 }

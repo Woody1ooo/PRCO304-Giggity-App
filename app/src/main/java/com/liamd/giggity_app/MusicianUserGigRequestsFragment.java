@@ -6,6 +6,7 @@ import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TabHost;
 
@@ -91,6 +92,15 @@ public class MusicianUserGigRequestsFragment extends Fragment
 
             @Override
             public void onCancelled(DatabaseError databaseError)
+            {
+
+            }
+        });
+
+        mSentGigRequestsListView.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id)
             {
 
             }

@@ -4,6 +4,7 @@ package com.liamd.giggity_app;
 import android.app.AlertDialog;
 import android.app.FragmentTransaction;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.view.LayoutInflater;
@@ -190,6 +191,11 @@ public class MusicianUserGigDetailsFragment extends Fragment implements OnMapRea
                 else
                 {
                     mDatabase.child("BandSentGigRequests/" + mBandId + "/" + mGigId).child("bandID").setValue(mBandId);
+                    mDatabase.child("BandSentGigRequests/" + mBandId + "/" + mGigId).child("bandName").setValue(mSnapshot.child("Bands/" + mBandId + "/name").getValue().toString());
+                    mDatabase.child("BandSentGigRequests/" + mBandId + "/" + mGigId).child("venueName").setValue(mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString());
+                    mDatabase.child("BandSentGigRequests/" + mBandId + "/" + mGigId).child("gigStartDate").setValue(mSnapshot.child("Gigs/" + mGigId + "/startDate").getValue());
+                    mDatabase.child("BandSentGigRequests/" + mBandId + "/" + mGigId).child("gigEndDate").setValue(mSnapshot.child("Gigs/" + mGigId + "/endDate").getValue());
+                    mDatabase.child("BandSentGigRequests/" + mBandId + "/" + mGigId).child("gigName").setValue(mSnapshot.child("Gigs/" + mGigId + "/title").getValue());
                     mDatabase.child("BandSentGigRequests/" + mBandId + "/" + mGigId).child("gigID").setValue(mGigId);
                     mDatabase.child("BandSentGigRequests/" + mBandId + "/" + mGigId).child("venueID").setValue(mVenueId);
                     mDatabase.child("BandSentGigRequests/" + mBandId + "/" + mGigId).child("requestStatus").setValue("Pending");
@@ -246,10 +252,12 @@ public class MusicianUserGigDetailsFragment extends Fragment implements OnMapRea
 
     private void ReturnToHome()
     {
-        // The user is then taken to the home fragment
-        getActivity().setTitle("Home");
-        final FragmentTransaction ft = getFragmentManager().beginTransaction();
-        ft.replace(R.id.frame, new MusicianUserHomeFragment(), "MusicianUserHomeFragment");
-        ft.commit();
+        getActivity().finish();
+        getActivity().overridePendingTransition(0,0);
+
+        Intent intent = new Intent(getActivity(), MusicianUserMainActivity.class);
+        startActivity(intent);
+
+        getFragmentManager().popBackStackImmediate();
     }
 }
