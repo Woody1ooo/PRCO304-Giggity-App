@@ -448,6 +448,9 @@ public class MusicianUserBandCreatorFragment extends Fragment implements YouTube
             }
         });
 
+        // Set the fragment title
+        getActivity().setTitle("Band Creator");
+
         return fragmentView;
     }
 

@@ -161,6 +161,9 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
         // Initialise the list view
         mGigsListView = (ListView) fragmentView.findViewById(R.id.gigsListView);
 
+        // Set the fragment title
+        getActivity().setTitle("Gig Finder");
+
         return fragmentView;
     }
 

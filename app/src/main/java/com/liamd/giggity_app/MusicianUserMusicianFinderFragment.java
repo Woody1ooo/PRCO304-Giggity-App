@@ -36,7 +36,6 @@ public class MusicianUserMusicianFinderFragment extends Fragment
     private Button mSearchButton;
 
     // Declare Firebase specific variables
-    private FirebaseAuth mAuth;
     private DatabaseReference mDatabase;
 
     // Declare general variables
@@ -60,9 +59,6 @@ public class MusicianUserMusicianFinderFragment extends Fragment
     {
         // Inflate the layout for this fragment
         View fragmentView = inflater.inflate(R.layout.musician_user_fragment_musician_finder, container, false);
-
-        // Creates a reference to Firebase
-        mAuth = FirebaseAuth.getInstance();
 
         // Creates a reference to the Firebase database
         mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -167,6 +163,9 @@ public class MusicianUserMusicianFinderFragment extends Fragment
                 Search();
             }
         });
+
+        // Set the fragment title
+        getActivity().setTitle("Musician Finder");
 
         return fragmentView;
     }

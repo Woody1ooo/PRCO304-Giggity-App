@@ -416,6 +416,9 @@ public class MusicianUserBandDetailsFragment extends Fragment implements YouTube
             }
         });
 
+        // Set the fragment title
+        getActivity().setTitle("Band Finder");
+
         return fragmentView;
     }
 

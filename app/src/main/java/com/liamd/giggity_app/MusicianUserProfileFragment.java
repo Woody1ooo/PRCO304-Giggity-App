@@ -380,6 +380,9 @@ public class MusicianUserProfileFragment extends Fragment implements YouTubePlay
             }
         });
 
+        // Set the fragment title
+        getActivity().setTitle("My Musician Profile");
+
         return fragmentView;
     }
 
@@ -440,6 +443,7 @@ public class MusicianUserProfileFragment extends Fragment implements YouTubePlay
         // they have chosen
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle("Delete Profile Picture");
+        builder.setIcon(R.drawable.ic_info_outline_black_24dp);
         builder.setMessage("Are you sure you wish to delete your profile picture?");
         builder.setPositiveButton("Delete", new DialogInterface.OnClickListener()
         {
@@ -449,6 +453,7 @@ public class MusicianUserProfileFragment extends Fragment implements YouTubePlay
                 // Displays the progress dialog
                 mProgressDialog.setMessage("Deleting profile picture...");
                 mProgressDialog.show();
+                mProgressDialog.setCancelable(false);
                 mProfileImageReference.child("ProfileImages/" + mAuth.getCurrentUser().getUid() + "/profileImage").delete();
                 Picasso.with(getContext()).load(R.drawable.com_facebook_profile_picture_blank_portrait).resize(350, 350).into(profileImageView);
 
@@ -480,6 +485,7 @@ public class MusicianUserProfileFragment extends Fragment implements YouTubePlay
             // This dialog is created to confirm that the user wants to edit their picture
             final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             builder.setTitle("Update Profile Picture");
+            builder.setIcon(R.drawable.ic_info_outline_black_24dp);
             builder.setMessage("Are you sure you wish to use this image for your profile picture?");
             builder.setPositiveButton("Update", new DialogInterface.OnClickListener()
             {
@@ -489,6 +495,7 @@ public class MusicianUserProfileFragment extends Fragment implements YouTubePlay
                     // Displays the progress dialog
                     mProgressDialog.setMessage("Updating profile picture...");
                     mProgressDialog.show();
+                    mProgressDialog.setCancelable(false);
 
                     // This gets the data from the intent and stores it in the selectedImage variable as well as uploading it to the firebase storage
                     final Uri selectedImage = data.getData();
@@ -518,9 +525,7 @@ public class MusicianUserProfileFragment extends Fragment implements YouTubePlay
                             Glide.with(getContext()).using(new FirebaseImageLoader()).load
                                     (profileImagesRef).diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).override(350, 350).into(profileImageView);
 
-                            // This updates the image on the navigation drawer as well
-                            Glide.with(getContext()).using(new FirebaseImageLoader()).load
-                                    (profileImagesRef).diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).override(220, 220).into(mainActivityImageView);
+                            ((DrawerProfilePictureUpdater) getActivity()).UpdateDrawerProfilePicture();
 
                             mProgressDialog.hide();
                         }
@@ -721,6 +726,7 @@ public class MusicianUserProfileFragment extends Fragment implements YouTubePlay
         // This dialog is created to confirm that the user wants to edit the chosen fields
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle("Update Profile Preferences");
+        builder.setIcon(R.drawable.ic_info_outline_black_24dp);
         builder.setMessage("Are you sure you wish to update these fields?");
         builder.setPositiveButton("Update", new DialogInterface.OnClickListener()
         {
@@ -791,6 +797,7 @@ public class MusicianUserProfileFragment extends Fragment implements YouTubePlay
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle("Leave Band?");
         builder.setMessage("Are you sure you wish to leave your band?");
+        builder.setIcon(R.drawable.ic_info_outline_black_24dp);
         builder.setPositiveButton("Confirm", new DialogInterface.OnClickListener()
         {
             @Override

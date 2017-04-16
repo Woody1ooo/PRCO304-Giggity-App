@@ -40,8 +40,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 import static com.liamd.giggity_app.R.layout.musician_user_activity_main;
 
-public class MusicianUserMainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener
+public class MusicianUserMainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, DrawerProfilePictureUpdater
 {
     // Declare visual components
     private CircleImageView profileImageView;
@@ -62,11 +61,9 @@ public class MusicianUserMainActivity extends AppCompatActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(musician_user_activity_main);
+
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        // When the app is loaded this service is started
-        startService(new Intent(this, NotificationService.class));
 
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         final ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -87,25 +84,17 @@ public class MusicianUserMainActivity extends AppCompatActivity
         mStorage = FirebaseStorage.getInstance();
         mProfileImageReference = mStorage.getReference();
 
-        // Sets home as the default selected navigation item
-        navigationView.getMenu().getItem(0).setChecked(true);
+        // When the app is loaded this service is started
+        startService(new Intent(this, NotificationService.class));
 
-        // Hides the manager item by default
-        Menu menu = navigationView.getMenu();
-        menu.findItem(R.id.nav_band_manager).setVisible(false);
-        menu.findItem(R.id.nav_band_members).setVisible(false);
-        menu.findItem(R.id.nav_requests_band).setVisible(false);
-
-        // Initialise visual components
-        setTitle("Musician User Home");
-
-        // Load Home fragment by default
-        setTitle("Home");
-        MusicianUserHomeFragment fragment = new MusicianUserHomeFragment();
-        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.frame, fragment
-                , "MusicianUserHomeFragment")
-                .commit();
+        if(savedInstanceState == null)
+        {
+            // Hides the manager item by default
+            Menu menu = navigationView.getMenu();
+            menu.findItem(R.id.nav_band_manager).setVisible(false);
+            menu.findItem(R.id.nav_band_members).setVisible(false);
+            menu.findItem(R.id.nav_requests_band).setVisible(false);
+        }
 
         // At the database reference "Users/%logged in user id%/hasCompletedSetup", a check is made
         // to see if the value is true or false.
@@ -127,10 +116,10 @@ public class MusicianUserMainActivity extends AppCompatActivity
                             Menu menu = navigationView.getMenu();
                             menu.findItem(R.id.nav_band_manager).setVisible(true);
                             menu.findItem(R.id.nav_band_members).setVisible(true);
+                            menu.findItem(R.id.nav_requests_band).setVisible(true);
                             menu.findItem(R.id.nav_band_creator).setVisible(false);
                             menu.findItem(R.id.nav_band_finder).setVisible(false);
                             menu.findItem(R.id.nav_requests_musician).setVisible(false);
-                            menu.findItem(R.id.nav_requests_band).setVisible(true);
                         }
 
                         else
@@ -139,10 +128,10 @@ public class MusicianUserMainActivity extends AppCompatActivity
                             Menu menu = navigationView.getMenu();
                             menu.findItem(R.id.nav_band_manager).setVisible(false);
                             menu.findItem(R.id.nav_band_members).setVisible(false);
+                            menu.findItem(R.id.nav_requests_band).setVisible(false);
                             menu.findItem(R.id.nav_band_creator).setVisible(true);
                             menu.findItem(R.id.nav_band_finder).setVisible(true);
                             menu.findItem(R.id.nav_requests_musician).setVisible(true);
-                            menu.findItem(R.id.nav_requests_band).setVisible(false);
                         }
                     }
 
@@ -176,6 +165,22 @@ public class MusicianUserMainActivity extends AppCompatActivity
 
             }
         });
+
+        // If this is the first time the activity is opened load the home fragment by default
+        if(savedInstanceState == null)
+        {
+            // Sets home as the default selected navigation item
+            navigationView.getMenu().getItem(0).setChecked(true);
+
+            setTitle("Home");
+            MusicianUserHomeFragment fragment = new MusicianUserHomeFragment();
+            FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.frame, fragment
+                    , "MusicianUserHomeFragment");
+            fragmentTransaction.commit();
+        }
+
+
     }
 
     @Override
@@ -192,6 +197,7 @@ public class MusicianUserMainActivity extends AppCompatActivity
             super.onBackPressed();
         }
 
+        // If the back button is pressed when the home fragment is visible the navigation view and title are set to this to prevent the wrong navigation options/title from displaying
         MusicianUserHomeFragment homeFragment = (MusicianUserHomeFragment) getFragmentManager().findFragmentByTag("MusicianUserHomeFragment");
         if(homeFragment != null && homeFragment.isVisible())
         {
@@ -408,8 +414,10 @@ public class MusicianUserMainActivity extends AppCompatActivity
     // The image view needs to be initialised here as onCreate doesn't draw the drawer
     private void NavigationDrawerUserData()
     {
-        profileImageView = (CircleImageView) findViewById(R.id.headerProfileImage);
-        navigationProfileEmailTextView = (TextView) findViewById(R.id.userEmailTextView);
+        // Initialise visual components
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        profileImageView = (CircleImageView) navigationView.getHeaderView(0).findViewById(R.id.headerProfileImage);
+        navigationProfileEmailTextView = (TextView) navigationView.getHeaderView(0).findViewById(R.id.userEmailTextView);
 
         mProfileImageReference.child("ProfileImages/" + mAuth.getCurrentUser().getUid() + "/profileImage")
                 .getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>()
@@ -465,5 +473,11 @@ public class MusicianUserMainActivity extends AppCompatActivity
         fragmentTransaction.replace(R.id.frame, fragment
                 , "MusicianUserHomeFragment");
         fragmentTransaction.commit();
+    }
+
+    @Override
+    public void UpdateDrawerProfilePicture()
+    {
+        NavigationDrawerUserData();
     }
 }

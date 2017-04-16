@@ -62,8 +62,6 @@
                                 android:id="@+id/nav_requests_band"
                                 android:icon="@drawable/ic_swap_vert_black_24dp"
                                 android:title="Band Requests"/>
-
-
                         </group>
                     </menu>
                 </item>

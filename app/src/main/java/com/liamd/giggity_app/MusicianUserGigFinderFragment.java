@@ -203,6 +203,9 @@ public class MusicianUserGigFinderFragment extends Fragment implements LocationL
             }
         });
 
+        // Set the fragment title
+        getActivity().setTitle("Gig Finder");
+
         return fragmentView;
     }
 

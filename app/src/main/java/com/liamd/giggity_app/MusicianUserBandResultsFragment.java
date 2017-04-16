@@ -164,6 +164,9 @@ public class MusicianUserBandResultsFragment extends Fragment implements OnMapRe
         // Initialise the list view
         mBandsListView = (ListView) fragmentView.findViewById(R.id.bandsListView);
 
+        // Set the fragment title
+        getActivity().setTitle("Band Finder");
+
         return fragmentView;
     }
 
@@ -322,10 +325,13 @@ public class MusicianUserBandResultsFragment extends Fragment implements OnMapRe
     {
         GetBandLocation();
 
-        // Using the custom VenueUserGigsAdapter, the list of users gigs can be displayed
-        adapter = new MusicianUserBandsAdapter(getActivity(), R.layout.musician_user_band_list, mListOfBands);
+        if(getActivity() != null)
+        {
+            // Using the custom VenueUserGigsAdapter, the list of users gigs can be displayed
+            adapter = new MusicianUserBandsAdapter(getActivity(), R.layout.musician_user_band_list, mListOfBands);
 
-        mBandsListView.setAdapter(adapter);
+            mBandsListView.setAdapter(adapter);
+        }
     }
 
     private void GetBandLocation()

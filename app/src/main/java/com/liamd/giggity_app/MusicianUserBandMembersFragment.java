@@ -268,6 +268,9 @@ public class MusicianUserBandMembersFragment extends Fragment
             }
         });
 
+        // Set the fragment title
+        getActivity().setTitle("Band Members");
+
         return fragmentView;
     }
 

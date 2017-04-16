@@ -1,11 +1,7 @@
 package com.liamd.giggity_app;
 
-
-
-import android.os.Bundle;
 import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,9 +22,13 @@ public class MusicianUserHomeFragment extends Fragment
                              Bundle savedInstanceState)
     {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.musician_user_fragment_home, container, false);
+        View fragmentView = inflater.inflate(R.layout.musician_user_fragment_home, container, false);
 
 
+        // set fragment name
+        getActivity().setTitle("Home");
+
+        return fragmentView;
     }
 
 }

@@ -48,13 +48,16 @@
         <activity
             android:name=".MusicianUserMainActivity"
             android:label="@string/title_activity_main"
+            android:windowSoftInputMode="stateHidden"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
-        <activity android:name=".RegisterActivity">
+        <activity android:windowSoftInputMode="stateHidden"
+                  android:name=".RegisterActivity">
         </activity>
         <activity
             android:name=".VenueUserMainActivity"
             android:label="@string/title_activity_venue_user_main"
+            android:windowSoftInputMode="stateHidden"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
         <activity android:name=".PreSetupActivity"

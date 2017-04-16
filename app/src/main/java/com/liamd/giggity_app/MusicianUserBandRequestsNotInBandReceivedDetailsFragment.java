@@ -152,6 +152,9 @@ public class MusicianUserBandRequestsNotInBandReceivedDetailsFragment extends Fr
             }
         });
 
+        // Set the fragment title
+        getActivity().setTitle("Band Requests");
+
         return fragmentView;
     }
 

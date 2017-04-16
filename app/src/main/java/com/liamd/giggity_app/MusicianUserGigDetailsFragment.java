@@ -103,6 +103,9 @@ public class MusicianUserGigDetailsFragment extends Fragment implements OnMapRea
             }
         });
 
+        // Set the fragment title
+        getActivity().setTitle("Gig Finder");
+
         return fragmentView;
     }
 

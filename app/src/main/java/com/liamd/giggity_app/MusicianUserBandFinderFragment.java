@@ -195,6 +195,9 @@ public class MusicianUserBandFinderFragment extends Fragment implements Location
             }
         });
 
+        // Set the fragment title
+        getActivity().setTitle("Band Finder");
+
         return fragmentView;
     }
 

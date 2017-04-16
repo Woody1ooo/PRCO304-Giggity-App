@@ -148,6 +148,9 @@ public class MusicianUserMusicianDetailsFragment extends Fragment implements OnM
             }
         });
 
+        // Set the fragment title
+        getActivity().setTitle("Musician Finder");
+
         return fragmentView;
     }
 

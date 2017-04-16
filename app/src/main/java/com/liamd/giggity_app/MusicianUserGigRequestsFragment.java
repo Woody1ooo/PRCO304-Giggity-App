@@ -131,6 +131,9 @@ public class MusicianUserGigRequestsFragment extends Fragment
             }
         });
 
+        // Set the fragment title
+        getActivity().setTitle("Gig Requests");
+
         return fragmentView;
     }
 

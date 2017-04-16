@@ -477,6 +477,9 @@ public class MusicianUserBandManagementFragment extends Fragment implements YouT
             }
         });
 
+        // Set the fragment title
+        getActivity().setTitle("Band Manager");
+
         return fragmentView;
     }
 
@@ -548,9 +551,10 @@ public class MusicianUserBandManagementFragment extends Fragment implements YouT
                 // Displays the progress dialog
                 mProgressDialog.setMessage("Deleting Band Image...");
                 mProgressDialog.show();
+                mProgressDialog.setCancelable(false);
                 mBandProfileImageReference.child("BandProfileImages/" + mBandID + "/profileImage").delete();
                 Picasso.with(getContext()).load(R.drawable.com_facebook_profile_picture_blank_portrait).resize(350, 350).into(mBandImageView);
-
+                mProgressDialog.hide();
             }
         });
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener()
@@ -563,7 +567,6 @@ public class MusicianUserBandManagementFragment extends Fragment implements YouT
         });
         builder.show();
     }
-
 
     // Method to create a new instance of the place picker intent builder
     private void LaunchPlacePicker() throws GooglePlayServicesNotAvailableException, GooglePlayServicesRepairableException
@@ -613,6 +616,7 @@ public class MusicianUserBandManagementFragment extends Fragment implements YouT
                     // Displays the progress dialog
                     mProgressDialog.setMessage("Updating Band Image...");
                     mProgressDialog.show();
+                    mProgressDialog.setCancelable(false);
 
                     // This gets the data from the intent and stores it in the selectedImage variable as well as uploading it to the firebase storage
                     final Uri selectedImage = data.getData();

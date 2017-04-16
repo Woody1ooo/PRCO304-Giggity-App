@@ -167,6 +167,9 @@ public class MusicianUserBandRequestsInBandFragment extends Fragment
             }
         });
 
+        // Set the fragment title
+        getActivity().setTitle("Band Requests");
+
         return fragmentView;
     }
 

@@ -149,6 +149,9 @@ public class MusicianUserMusicianResultsFragment extends Fragment implements OnM
         // Initialise the list view
         mMusiciansListView = (ListView) fragmentView.findViewById(R.id.musiciansListView);
 
+        // Set the fragment title
+        getActivity().setTitle("Musician Finder");
+
         return fragmentView;
     }
 
