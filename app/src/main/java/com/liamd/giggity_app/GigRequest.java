@@ -15,8 +15,8 @@ public class GigRequest
     private String requestStatus;
     private String venueID;
     private String venueName;
-    private Date startDate;
-    private Date endDate;
+    private Date gigStartDate;
+    private Date gigEndDate;
 
     public GigRequest()
     {
@@ -29,6 +29,19 @@ public class GigRequest
         this.gigID = gigID;
         this.requestStatus = requestStatus;
         this.venueID = venueID;
+    }
+
+    public GigRequest(String bandID, String bandName, String gigID, String gigName, String requestStatus, String venueID, String venueName, Date startDate, Date gigEndDate)
+    {
+        this.bandID = bandID;
+        this.bandName = bandName;
+        this.gigID = gigID;
+        this.gigName = gigName;
+        this.requestStatus = requestStatus;
+        this.venueID = venueID;
+        this.venueName = venueName;
+        this.gigStartDate = startDate;
+        this.gigEndDate = gigEndDate;
     }
 
     public String getBandID()
@@ -91,24 +104,24 @@ public class GigRequest
         this.venueName = venueName;
     }
 
-    public Date getStartDate()
+    public Date getGigStartDate()
     {
-        return startDate;
+        return gigStartDate;
     }
 
-    public void setStartDate(Date startDate)
+    public void setGigStartDate(Date startDate)
     {
-        this.startDate = startDate;
+        this.gigStartDate = startDate;
     }
 
-    public Date getEndDate()
+    public Date getGigEndDate()
     {
-        return endDate;
+        return gigEndDate;
     }
 
-    public void setEndDate(Date endDate)
+    public void setGigEndDate(Date gigEndDate)
     {
-        this.endDate = endDate;
+        this.gigEndDate = gigEndDate;
     }
 
     public String getGigName()

@@ -1,6 +1,7 @@
 package com.liamd.giggity_app;
 
 
+import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.view.LayoutInflater;
@@ -97,12 +98,36 @@ public class MusicianUserGigRequestsFragment extends Fragment
             }
         });
 
+        // When a sent gig request list item is selected this can then be viewed in further detail
         mSentGigRequestsListView.setOnItemClickListener(new AdapterView.OnItemClickListener()
         {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id)
             {
+                // This returns the selected request from the list view
+                GigRequest selectedRequest = (GigRequest) mSentGigRequestsListView.getItemAtPosition(position);
+                MusicianUserGigRequestsSentDetailsFragment fragment = new MusicianUserGigRequestsSentDetailsFragment();
+                Bundle arguments = new Bundle();
+                arguments.putString("BandID", selectedRequest.getBandID());
+                arguments.putString("GigID", selectedRequest.getGigID());
+                arguments.putString("VenueID", selectedRequest.getVenueID());
+                arguments.putString("GigName", selectedRequest.getGigName());
+                arguments.putString("VenueName", selectedRequest.getVenueName());
+                arguments.putString("GigStartDate", selectedRequest.getGigStartDate().toString());
+                arguments.putString("GigEndDate", selectedRequest.getGigEndDate().toString());
+                arguments.putString("RequestStatus", selectedRequest.getRequestStatus());
 
+                fragment.setArguments(arguments);
+
+                // Creates a new fragment transaction to display the details of the selected
+                // request. Some custom animation has been added also.
+                FragmentTransaction fragmentTransaction = getActivity().getFragmentManager()
+                        .beginTransaction();
+                fragmentTransaction.setCustomAnimations(R.animator.enter_from_right, R.animator.enter_from_left);
+                fragmentTransaction.replace(R.id.frame, fragment, "MusicianUserGigRequestsSentDetailsFragment")
+                        .addToBackStack(null).commit();
+
+                mListOfGigRequestsSent.clear();
             }
         });
 
@@ -124,8 +149,11 @@ public class MusicianUserGigRequestsFragment extends Fragment
                 mListOfGigRequestsSent.add(gigRequest);
             }
 
-            mSentGigRequestsAdapter = new MusicianUserGigRequestsAdapter(getActivity(), R.layout.musician_user_gig_requests_list, mListOfGigRequestsSent, mDataSnapshot);
-            mSentGigRequestsListView.setAdapter(mSentGigRequestsAdapter);
+            if(getActivity() != null)
+            {
+                mSentGigRequestsAdapter = new MusicianUserGigRequestsAdapter(getActivity(), R.layout.musician_user_gig_requests_list, mListOfGigRequestsSent, mDataSnapshot);
+                mSentGigRequestsListView.setAdapter(mSentGigRequestsAdapter);
+            }
         }
     }
 }

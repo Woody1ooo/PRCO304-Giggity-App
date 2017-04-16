@@ -61,7 +61,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
                 android:paddingTop="20dp"
-                android:text="Gig Start Date"
+                android:text="Gig Start Date/Time"
                 android:textColor="@color/colorAccent"
                 android:textSize="16sp"/>
 
@@ -78,7 +78,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
                 android:paddingTop="20dp"
-                android:text="Gig End Date"
+                android:text="Gig Finish Date/Time"
                 android:textColor="@color/colorAccent"
                 android:textSize="16sp"/>
 

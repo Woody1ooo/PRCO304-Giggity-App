@@ -51,6 +51,8 @@ public class MusicianUserGigDetailsFragment extends Fragment implements OnMapRea
     private String mBandId;
     private String mGigId;
     private com.google.android.gms.maps.model.LatLng mVenueLocation;
+    private String mGigStartDate;
+    private String mGigEndDate;
 
     // Declare Firebase specific variables
     private FirebaseAuth mAuth;
@@ -148,8 +150,22 @@ public class MusicianUserGigDetailsFragment extends Fragment implements OnMapRea
         mGigVenueTextView.setText(mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString());
 
         mGigNameTextView.setText(getArguments().getString("GigTitle"));
-        mGigStartDateTextView.setText(getArguments().getString("GigStartDate"));
-        mGigEndDateTextView.setText(getArguments().getString("GigEndDate"));
+        mGigStartDate = getArguments().getString("GigStartDate");
+        mGigEndDate = getArguments().getString("GigEndDate");
+
+        // This takes the start and end dates and reformats them to look more visually appealing
+        String formattedStartDateSectionOne = mGigStartDate.split(" ")[0];
+        String formattedStartDateSectionTwo = mGigStartDate.split(" ")[1];
+        String formattedStartDateSectionThree = mGigStartDate.split(" ")[2];
+        String formattedStartDateSectionFour = mGigStartDate.split(" ")[3];
+
+        String formattedFinishDateSectionOne = mGigEndDate.split(" ")[0];
+        String formattedFinishDateSectionTwo = mGigEndDate.split(" ")[1];
+        String formattedFinishDateSectionThree = mGigEndDate.split(" ")[2];
+        String formattedFinishDateSectionFour = mGigEndDate.split(" ")[3];
+
+        mGigStartDateTextView.setText(formattedStartDateSectionOne + " " + formattedStartDateSectionTwo + " " + formattedStartDateSectionThree + " " + formattedStartDateSectionFour);
+        mGigEndDateTextView.setText(formattedFinishDateSectionOne + " " + formattedFinishDateSectionTwo + " " + formattedFinishDateSectionThree + " " + formattedFinishDateSectionFour);
 
         String userBaseLat = mSnapshot.child("Venues/" + mVenueId + "/venueLocation/latitude").getValue().toString();
         String userBaseLng = mSnapshot.child("Venues/" + mVenueId + "/venueLocation/longitude").getValue().toString();

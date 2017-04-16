@@ -36,7 +36,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
                 android:paddingTop="20dp"
-                android:text="Venue Name"
+                android:text="Venue"
                 android:textColor="@color/colorPrimaryDark"
                 android:textSize="16sp"/>
 
@@ -47,6 +47,12 @@
                 android:layout_marginLeft="10dp"
                 android:paddingTop="20dp"
                 />
+
+            <com.google.android.gms.maps.MapView
+                android:id="@+id/venueMapView"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_marginTop="10dp"/>
 
             <TextView
                 android:id="@+id/textview20"

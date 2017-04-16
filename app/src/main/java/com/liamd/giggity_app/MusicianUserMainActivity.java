@@ -191,6 +191,15 @@ public class MusicianUserMainActivity extends AppCompatActivity
         {
             super.onBackPressed();
         }
+
+        MusicianUserHomeFragment homeFragment = (MusicianUserHomeFragment) getFragmentManager().findFragmentByTag("MusicianUserHomeFragment");
+        if(homeFragment != null && homeFragment.isVisible())
+        {
+            final NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+            navigationView.setNavigationItemSelectedListener(this);
+            navigationView.getMenu().getItem(0).setChecked(true);
+            setTitle("Home");
+        }
     }
 
     @Override

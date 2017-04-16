@@ -36,8 +36,8 @@ public class MusicianUserGigsAdapter extends ArrayAdapter<Gig>
 
     // Declare general variables
     private String mVenueName;
-    private Date mEventStartDate;
-    private Date mEventFinishDate;
+    private Date mGigStartDate;
+    private Date mGigFinishDate;
 
     private GoogleApiClient mGoogleApiClient;
 
@@ -95,19 +95,19 @@ public class MusicianUserGigsAdapter extends ArrayAdapter<Gig>
         // This calls the method to load the photos, though it doesn't work at the moment...
         placePhotosAsync();
 
-        mEventStartDate = gig.getStartDate();
-        mEventFinishDate = gig.getEndDate();
+        mGigStartDate = gig.getStartDate();
+        mGigFinishDate = gig.getEndDate();
 
         // This takes the start and end dates and reformats them to look more visually appealing
-        String formattedStartDateSectionOne = mEventStartDate.toString().split(" ")[0];
-        String formattedStartDateSectionTwo = mEventStartDate.toString().split(" ")[1];
-        String formattedStartDateSectionThree = mEventStartDate.toString().split(" ")[2];
-        String formattedStartDateSectionFour = mEventStartDate.toString().split(" ")[3];
+        String formattedStartDateSectionOne = mGigStartDate.toString().split(" ")[0];
+        String formattedStartDateSectionTwo = mGigStartDate.toString().split(" ")[1];
+        String formattedStartDateSectionThree = mGigStartDate.toString().split(" ")[2];
+        String formattedStartDateSectionFour = mGigStartDate.toString().split(" ")[3];
 
-        String formattedFinishDateSectionOne = mEventFinishDate.toString().split(" ")[0];
-        String formattedFinishDateSectionTwo = mEventFinishDate.toString().split(" ")[1];
-        String formattedFinishDateSectionThree = mEventFinishDate.toString().split(" ")[2];
-        String formattedFinishDateSectionFour = mEventFinishDate.toString().split(" ")[3];
+        String formattedFinishDateSectionOne = mGigFinishDate.toString().split(" ")[0];
+        String formattedFinishDateSectionTwo = mGigFinishDate.toString().split(" ")[1];
+        String formattedFinishDateSectionThree = mGigFinishDate.toString().split(" ")[2];
+        String formattedFinishDateSectionFour = mGigFinishDate.toString().split(" ")[3];
 
         mGigStartDateTextView.setText("Start Date/Time: " + formattedStartDateSectionOne + " " + formattedStartDateSectionTwo + " " + formattedStartDateSectionThree + " " + formattedStartDateSectionFour);
         mGigEndDateTextView.setText("Finish Date/Time: " + formattedFinishDateSectionOne + " " + formattedFinishDateSectionTwo + " " + formattedFinishDateSectionThree + " " + formattedFinishDateSectionFour);
