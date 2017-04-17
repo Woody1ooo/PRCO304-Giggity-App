@@ -1,0 +1,121 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:tools="http://schemas.android.com/tools"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             tools:context="com.liamd.giggity_app.MusicianUserGigRequestsReceivedDetailsFragment">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/textView18"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:paddingTop="10dp"
+            android:text="Gig Name"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="16sp"/>
+
+        <TextView
+            android:id="@+id/gigNameTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:paddingTop="20dp"/>
+
+        <TextView
+            android:id="@+id/textView19"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:paddingTop="20dp"
+            android:text="Venue"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="16sp"/>
+
+        <TextView
+            android:id="@+id/venueNameTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:paddingTop="20dp"
+            />
+
+        <com.google.android.gms.maps.MapView
+            android:id="@+id/venueMapView"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_marginTop="10dp"/>
+
+        <TextView
+            android:id="@+id/textview20"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:paddingTop="20dp"
+            android:text="Gig Start Date/Time"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="16sp"/>
+
+        <TextView
+            android:id="@+id/gigStartDateTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:paddingTop="20dp"/>
+
+        <TextView
+            android:id="@+id/textview21"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:paddingTop="20dp"
+            android:text="Gig End Date/Time"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="16sp"/>
+
+        <TextView
+            android:id="@+id/gigEndDateTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:paddingTop="20dp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/acceptButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_weight="1"
+            android:background="@color/colorPrimary"
+            android:text="Accept"
+            android:textColor="@color/cardview_light_background"
+            android:layout_marginTop="20dp"/>
+
+        <Button
+            android:id="@+id/rejectButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_weight="1"
+            android:background="@color/colorPrimaryDark"
+            android:text="Reject"
+            android:textColor="@color/cardview_light_background"
+            android:layout_marginTop="20dp"/>
+    </LinearLayout>
+    </LinearLayout>
+    </ScrollView>
+</FrameLayout>

@@ -101,7 +101,7 @@ public class VenueUserGigRequestsAdapter extends ArrayAdapter<GigRequest>
             mGigStatusTextView.setTextColor(Color.parseColor("#ff6100"));
         }
 
-        else if (gigRequest.getRequestStatus().equals("Denied"))
+        else if (gigRequest.getRequestStatus().equals("Rejected"))
         {
             mGigStatusTextView.setTextColor(Color.RED);
         }

@@ -360,6 +360,15 @@ public class VenueUserViewGigDetailsFragment extends Fragment implements DatePic
             }
         });
 
+        mRemoveButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                RemoveAct();
+            }
+        });
+
         return fragmentView;
     }
 
@@ -1431,6 +1440,49 @@ public class VenueUserViewGigDetailsFragment extends Fragment implements DatePic
         });
         builder.show();
     }
+
+    // This method removes the act booked for a gig
+    private void RemoveAct()
+    {
+        // A dialog is shown to alert the user that they are about to delete a gig
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle("Remove Act");
+        builder.setMessage("Are you sure you want to remove this act from your gig?");
+        builder.setIcon(R.drawable.ic_info_outline_black_24dp);
+        builder.setPositiveButton("Confirm", new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i)
+            {
+                mDatabase.child("Gigs/" + mGigID + "/bookedAct").setValue("Vacant");
+
+                // A dialog is then shown to alert the user that the changes have been made
+                final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setTitle("Confirmation");
+                builder.setMessage("Act Removed!");
+                builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i)
+                    {
+                        // The fragment is then refreshed
+                        RefreshFragment();
+                    }
+                });
+                builder.setCancelable(false);
+                builder.show();
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i)
+            {
+
+            }
+        });
+        builder.show();
+    }
     private void ConfirmationDialog()
     {
         // A dialog is then shown to alert the user that the changes have been made
@@ -1448,6 +1500,12 @@ public class VenueUserViewGigDetailsFragment extends Fragment implements DatePic
         });
         builder.setCancelable(false);
         builder.show();
+    }
+
+    private void RefreshFragment()
+    {
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        ft.detach(this).attach(this).commit();
     }
 
     private void ReturnToMyGigs()

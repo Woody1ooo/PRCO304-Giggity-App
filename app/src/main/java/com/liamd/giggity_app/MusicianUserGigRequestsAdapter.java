@@ -86,7 +86,7 @@ public class MusicianUserGigRequestsAdapter extends ArrayAdapter<GigRequest>
         if (gigRequest.getRequestStatus().equals("Pending"))
         {
             mGigStatusTextView.setTextColor(Color.parseColor("#ff6100"));
-        } else if (gigRequest.getRequestStatus().equals("Denied"))
+        } else if (gigRequest.getRequestStatus().equals("Rejected"))
         {
             mGigStatusTextView.setTextColor(Color.RED);
         } else if (gigRequest.getRequestStatus().equals("Accepted"))

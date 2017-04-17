@@ -116,7 +116,7 @@ public class MusicianUserRequestsAdapter extends ArrayAdapter<BandRequest>
         if (bandRequest.getRequestStatus().equals("Pending"))
         {
             mBandRequestStatusTextView.setTextColor(Color.parseColor("#ff6100"));
-        } else if (bandRequest.getRequestStatus().equals("Denied"))
+        } else if (bandRequest.getRequestStatus().equals("Rejected"))
         {
             mBandRequestStatusTextView.setTextColor(Color.RED);
         } else if (bandRequest.getRequestStatus().equals("Accepted"))

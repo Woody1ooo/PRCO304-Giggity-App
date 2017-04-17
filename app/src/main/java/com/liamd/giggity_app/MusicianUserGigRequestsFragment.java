@@ -43,12 +43,13 @@ public class MusicianUserGigRequestsFragment extends Fragment
     private DataSnapshot mDataSnapshot;
     private String mGigIdKey;
     private String mBandId;
+    private String mVenueIdKey;
+    private Boolean mPassedThrough;
 
     public MusicianUserGigRequestsFragment()
     {
         // Required empty public constructor
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -128,6 +129,40 @@ public class MusicianUserGigRequestsFragment extends Fragment
                         .addToBackStack(null).commit();
 
                 mListOfGigRequestsSent.clear();
+                mListOfGigRequestsReceived.clear();
+                mListOfFilteredGigRequestsReceived.clear();
+            }
+        });
+
+        mReceivedGigRequestsListView.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id)
+            {
+                GigRequest selectedRequest = (GigRequest) mReceivedGigRequestsListView.getItemAtPosition(position);
+                MusicianUserGigRequestsReceivedDetailsFragment fragment = new MusicianUserGigRequestsReceivedDetailsFragment();
+                Bundle arguments = new Bundle();
+                arguments.putString("BandID", selectedRequest.getBandID());
+                arguments.putString("GigID", selectedRequest.getGigID());
+                arguments.putString("VenueID", selectedRequest.getVenueID());
+                arguments.putString("GigName", selectedRequest.getGigName());
+                arguments.putString("VenueName", selectedRequest.getVenueName());
+                arguments.putString("GigStartDate", selectedRequest.getGigStartDate().toString());
+                arguments.putString("GigEndDate", selectedRequest.getGigEndDate().toString());
+
+                fragment.setArguments(arguments);
+
+                // Creates a new fragment transaction to display the details of the selected
+                // request. Some custom animation has been added also.
+                FragmentTransaction fragmentTransaction = getActivity().getFragmentManager()
+                        .beginTransaction();
+                fragmentTransaction.setCustomAnimations(R.animator.enter_from_right, R.animator.enter_from_left);
+                fragmentTransaction.replace(R.id.frame, fragment, "MusicianUserGigRequestsReceivedDetailsFragment")
+                        .addToBackStack(null).commit();
+
+                mListOfGigRequestsSent.clear();
+                mListOfGigRequestsReceived.clear();
+                mListOfFilteredGigRequestsReceived.clear();
             }
         });
 
@@ -152,10 +187,56 @@ public class MusicianUserGigRequestsFragment extends Fragment
                 mListOfGigRequestsSent.add(gigRequest);
             }
 
+            mPassedThrough = false;
+
+            // This iterates through the band requests that users have sent and adds them to a list (mListOfUserRequestsSent)
+            Iterable<DataSnapshot> receivedRequestChildren = mDataSnapshot.child("VenueSentGigRequests/").getChildren();
+            for (DataSnapshot child : receivedRequestChildren)
+            {
+                // The key is obtained from the level below to then get the children below that
+                mVenueIdKey = child.getKey();
+
+                mPassedThrough = false;
+
+                // This iterates through the gig requests that the venue have sent and obtains the gig id
+                Iterable<DataSnapshot> levelDownReceivedRequestChildren = mDataSnapshot.child("VenueSentGigRequests/" + mVenueIdKey).getChildren();
+                for (DataSnapshot levelDownChild : levelDownReceivedRequestChildren)
+                {
+                    mGigIdKey = levelDownChild.getKey();
+
+                    mPassedThrough = false;
+
+                    // This then iterates through and creates a gig request object to be added to the mListOfGigRequestsReceived list
+                    Iterable<DataSnapshot> secondLevelDownSentRequestChildren = mDataSnapshot.child("VenueSentGigRequests/" + mVenueIdKey + "/" + mGigIdKey + "/").getChildren();
+                    for (DataSnapshot secondLevelDownChild : secondLevelDownSentRequestChildren)
+                    {
+                        if (!mPassedThrough)
+                        {
+                            GigRequest gigRequest;
+                            gigRequest = secondLevelDownChild.getValue(GigRequest.class);
+                            mListOfGigRequestsReceived.add(gigRequest);
+                        }
+
+                        mPassedThrough = true;
+                    }
+                }
+
+                // These are then filtered to only show those from this band
+                for (int i = 0; i < mListOfGigRequestsReceived.size(); i++)
+                {
+                    if (mListOfGigRequestsReceived.get(i).getBandID().equals(mBandId))
+                    {
+                        mListOfFilteredGigRequestsReceived.add(mListOfGigRequestsReceived.get(i));
+                    }
+                }
+            }
+
             if(getActivity() != null)
             {
                 mSentGigRequestsAdapter = new MusicianUserGigRequestsAdapter(getActivity(), R.layout.musician_user_gig_requests_list, mListOfGigRequestsSent, mDataSnapshot);
+                mReceivedGigRequestsAdapter = new MusicianUserGigRequestsAdapter(getActivity(), R.layout.musician_user_gig_requests_list, mListOfGigRequestsReceived, mDataSnapshot);
                 mSentGigRequestsListView.setAdapter(mSentGigRequestsAdapter);
+                mReceivedGigRequestsListView.setAdapter(mReceivedGigRequestsAdapter);
             }
         }
     }

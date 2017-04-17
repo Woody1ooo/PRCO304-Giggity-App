@@ -320,9 +320,15 @@ public class VenueUserBandDetailsFragment extends Fragment implements OnMapReady
                 else
                 {
                     mDatabase.child("VenueSentGigRequests/" + mVenueId + "/" + mGigId + "/" + mBandId).child("bandID").setValue(mBandId);
+                    mDatabase.child("VenueSentGigRequests/" + mVenueId + "/" + mGigId + "/" + mBandId).child("bandName").setValue(mBandName);
+                    mDatabase.child("VenueSentGigRequests/" + mVenueId + "/" + mGigId + "/" + mBandId).child("gigStartDate").setValue(mSnapshot.child("Gigs/" + mGigId + "/startDate").getValue());
+                    mDatabase.child("VenueSentGigRequests/" + mVenueId + "/" + mGigId + "/" + mBandId).child("gigEndDate").setValue(mSnapshot.child("Gigs/" + mGigId + "/endDate").getValue());
+                    mDatabase.child("VenueSentGigRequests/" + mVenueId + "/" + mGigId + "/" + mBandId).child("gigName").setValue(mSnapshot.child("Gigs/" + mGigId + "/title").getValue().toString());
                     mDatabase.child("VenueSentGigRequests/" + mVenueId + "/" + mGigId + "/" + mBandId).child("gigID").setValue(mGigId);
                     mDatabase.child("VenueSentGigRequests/" + mVenueId + "/" + mGigId + "/" + mBandId).child("venueID").setValue(mVenueId);
+                    mDatabase.child("VenueSentGigRequests/" + mVenueId + "/" + mGigId + "/" + mBandId).child("venueName").setValue(mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString());
                     mDatabase.child("VenueSentGigRequests/" + mVenueId + "/" + mGigId + "/" + mBandId).child("requestStatus").setValue("Pending");
+
                     ConfirmDialog();
                 }
             }
