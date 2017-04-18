@@ -1,15 +1,23 @@
 package com.liamd.giggity_app;
 
+import android.*;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.ContentResolver;
+import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.CalendarContract;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.app.FragmentTransaction;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -18,6 +26,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -36,7 +45,13 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.TimeZone;
+
 import de.hdodenhof.circleimageview.CircleImageView;
+import me.everything.providers.android.calendar.Calendar;
+import me.everything.providers.android.calendar.CalendarProvider;
 
 import static com.liamd.giggity_app.R.layout.musician_user_activity_main;
 
@@ -55,6 +70,10 @@ public class MusicianUserMainActivity extends AppCompatActivity implements Navig
 
     // Declare general variables
     private String mUserEmail;
+    private final static int MY_PERMISSIONS_REQUEST_WRITE_CALENDAR = 1;
+    private boolean hasPermission = true;
+    private ArrayList<UserGigInformation> mListOfUserGigInformation = new ArrayList<>();
+    private String mGigId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -166,6 +185,127 @@ public class MusicianUserMainActivity extends AppCompatActivity implements Navig
             }
         });
 
+        mDatabase.addValueEventListener(new ValueEventListener()
+        {
+            @Override
+            public void onDataChange(final DataSnapshot dataSnapshot)
+            {
+                if(dataSnapshot.child("UserGigInformation/" + mAuth.getCurrentUser().getUid()).exists())
+                {
+                    Iterable<DataSnapshot> children = dataSnapshot.child("UserGigInformation/" + mAuth.getCurrentUser().getUid()).getChildren();
+                    for (DataSnapshot child : children)
+                    {
+                        UserGigInformation userGigInformation;
+                        userGigInformation = child.getValue(UserGigInformation.class);
+                        mListOfUserGigInformation.add(userGigInformation);
+                    }
+
+                    for(int i = 0; i < mListOfUserGigInformation.size(); i++)
+                    {
+                        if(mListOfUserGigInformation.get(i).getCalendarEventID().equals("Pending"))
+                        {
+                            // This dialog is created to confirm that the user wants to edit the chosen fields
+                            final AlertDialog.Builder builder = new AlertDialog.Builder(MusicianUserMainActivity.this);
+                            builder.setTitle("Gig Request Accepted");
+                            builder.setMessage("It looks as though a member of your band has accepted a gig request! Would you like this gig to be added to your device calendar?");
+                            builder.setPositiveButton("Confirm", new DialogInterface.OnClickListener()
+                            {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i)
+                                {
+                                    if (ActivityCompat.checkSelfPermission(MusicianUserMainActivity.this, android.Manifest.permission.WRITE_CALENDAR) != PackageManager.PERMISSION_GRANTED)
+                                    {
+                                        requestPermissions(new String[]{android.Manifest.permission.WRITE_CALENDAR}, MY_PERMISSIONS_REQUEST_WRITE_CALENDAR);
+                                    }
+
+                                    if (hasPermission)
+                                    {
+                                        CalendarProvider provider = new CalendarProvider(MusicianUserMainActivity.this);
+                                        List<Calendar> calendars = provider.getCalendars().getList();
+
+                                        mGigId = mListOfUserGigInformation.get(i).getGigID();
+                                        String venueId = dataSnapshot.child("Gigs/" + mGigId + "/venueID").getValue().toString();
+
+                                        // Insert Event
+                                        ContentResolver cr = MusicianUserMainActivity.this.getContentResolver();
+                                        ContentValues values = new ContentValues();
+                                        TimeZone timeZone = TimeZone.getDefault();
+                                        values.put(CalendarContract.Events.DTSTART, Double.parseDouble(dataSnapshot.child("Gigs/" + mGigId + "/startDate/time").getValue().toString()));
+                                        values.put(CalendarContract.Events.DTEND, Double.parseDouble(dataSnapshot.child("Gigs/" + mGigId + "/endDate/time").getValue().toString()));
+                                        values.put(CalendarContract.Events.EVENT_TIMEZONE, timeZone.getID());
+                                        values.put(CalendarContract.Events.TITLE, dataSnapshot.child("Gigs/" + mGigId + "/title").getValue().toString());
+                                        values.put(CalendarContract.Events.CALENDAR_ID, calendars.get(0).id);
+                                        values.put(CalendarContract.Events.EVENT_LOCATION, dataSnapshot.child("Venues/" + venueId + "/name").getValue().toString());
+                                        Uri uri = cr.insert(CalendarContract.Events.CONTENT_URI, values);
+
+                                        // get the event ID that is the last element in the Uri
+                                        final String eventID = uri.getLastPathSegment();
+
+                                        // The database is then updated with the calendar event ID
+                                        mDatabase.child("UserGigInformation/" + mAuth.getCurrentUser().getUid() + "/" + mGigId + "/calendarEventID").setValue(eventID);
+
+                                        if (eventID != null)
+                                        {
+                                            // A dialog is then shown to alert the user that the changes have been made
+                                            final AlertDialog.Builder builder = new AlertDialog.Builder(MusicianUserMainActivity.this);
+                                            builder.setTitle("Confirmation");
+                                            builder.setIcon(R.drawable.ic_event_available_black_24dp);
+                                            builder.setMessage("Calendar Event Added!");
+                                            builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                                            {
+                                                @Override
+                                                public void onClick(DialogInterface dialogInterface, int i)
+                                                {
+
+                                                }
+                                            });
+                                            builder.show();
+                                        }
+
+                                        else
+                                        {
+                                            // A dialog is then shown to alert the user that the changes have been made
+                                            final AlertDialog.Builder builder = new AlertDialog.Builder(MusicianUserMainActivity.this);
+                                            builder.setTitle("Error");
+                                            builder.setIcon(R.drawable.ic_event_available_black_24dp);
+                                            builder.setMessage("Calendar Event Could Not Be Added!");
+                                            builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                                            {
+                                                @Override
+                                                public void onClick(DialogInterface dialogInterface, int i)
+                                                {
+                                                    mDatabase.child("UserGigInformation/" + mAuth.getCurrentUser().getUid() + "/" + mGigId + "/calendarEventID").setValue("Null");
+                                                }
+                                            });
+                                            builder.setCancelable(false);
+                                            builder.show();
+                                        }
+                                    }
+                                }
+                            });
+                            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener()
+                            {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i)
+                                {
+                                    // If this is declined the field is still updated to prevent asking the user again in future
+                                    mDatabase.child("UserGigInformation/" + mAuth.getCurrentUser().getUid() + "/" + mGigId + "/calendarEventID").setValue("Null");
+                                }
+                            });
+                            builder.show();
+                            builder.setCancelable(false);
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError)
+            {
+
+            }
+        });
+
         // If this is the first time the activity is opened load the home fragment by default
         if(savedInstanceState == null)
         {
@@ -179,8 +319,6 @@ public class MusicianUserMainActivity extends AppCompatActivity implements Navig
                     , "MusicianUserHomeFragment");
             fragmentTransaction.commit();
         }
-
-
     }
 
     @Override
@@ -284,6 +422,20 @@ public class MusicianUserMainActivity extends AppCompatActivity implements Navig
             FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
             fragmentTransaction.replace(R.id.frame, fragment
                     , "MusicianUserGigFinderFragment")
+                    .addToBackStack(null)
+                    .commit();
+        }
+
+        else if (id == R.id.nav_my_gigs)
+        {
+            ClearBackStack(this);
+            //getFragmentManager().popBackStackImmediate();
+
+            setTitle("My Gigs");
+            MusicianUserViewGigsFragment fragment = new MusicianUserViewGigsFragment();
+            FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.frame, fragment
+                    , "MusicianUserViewGigsFragment")
                     .addToBackStack(null)
                     .commit();
         }
@@ -457,6 +609,30 @@ public class MusicianUserMainActivity extends AppCompatActivity implements Navig
         Intent returnToLoginActivity= new Intent(MusicianUserMainActivity.this, LoginActivity.class);
         returnToLoginActivity.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         startActivity(returnToLoginActivity);
+    }
+
+    // This method processes the result of the permission request
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults)
+    {
+        if (requestCode == MY_PERMISSIONS_REQUEST_WRITE_CALENDAR)
+
+            // If the permission has been accepted update hasPermission to reflect this
+            if (permissions.length == 1 &&
+                    permissions[0].equals(android.Manifest.permission.WRITE_CALENDAR) &&
+                    grantResults[0] == PackageManager.PERMISSION_GRANTED)
+            {
+                hasPermission = true;
+            }
+
+            // If the permission has been denied then display a message to that effect
+            else
+            {
+                Toast.makeText(getApplicationContext(), "If you wish use this feature," +
+                        " please ensure you have given permission to access your device's calendar.", Toast.LENGTH_SHORT).show();
+
+                hasPermission = false;
+            }
     }
 
     // This clears the back stack of fragments and adds a home fragment

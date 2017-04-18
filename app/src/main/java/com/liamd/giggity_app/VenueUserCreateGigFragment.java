@@ -714,7 +714,7 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
     {
         if (requestCode == MY_PERMISSIONS_REQUEST_WRITE_CALENDAR)
 
-            // If the permission has been accepted call the update profile picture method to access the storage
+            // If the permission has been accepted update hasPermission to reflect this
             if (permissions.length == 1 &&
                     permissions[0].equals(Manifest.permission.WRITE_CALENDAR) &&
                     grantResults[0] == PackageManager.PERMISSION_GRANTED)
@@ -725,8 +725,8 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
             // If the permission has been denied then display a message to that effect
             else
             {
-                Toast.makeText(getActivity(), "If you wish to change your profile image," +
-                        " please ensure you have given permission to access your storage.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "If you wish use this feature," +
+                        " please ensure you have given permission to access your device's calendar.", Toast.LENGTH_SHORT).show();
 
                 hasPermission = false;
             }

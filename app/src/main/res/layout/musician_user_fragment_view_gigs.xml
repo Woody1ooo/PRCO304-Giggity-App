@@ -2,13 +2,14 @@
              xmlns:tools="http://schemas.android.com/tools"
              android:layout_width="match_parent"
              android:layout_height="match_parent"
-             tools:context="com.liamd.giggity_app.VenueUserViewGigsFragment">
+             tools:context="com.liamd.giggity_app.MusicianUserViewGigsFragment">
+
 
     <ListView
+        android:id="@+id/gigListView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/gigListView"
         android:layout_marginLeft="5dp"
-        android:layout_marginRight="5dp">
-    </ListView>
+        android:layout_marginRight="5dp"/>
+
 </FrameLayout>

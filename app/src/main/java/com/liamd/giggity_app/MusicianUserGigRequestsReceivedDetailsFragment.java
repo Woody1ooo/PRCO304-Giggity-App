@@ -1,16 +1,25 @@
 package com.liamd.giggity_app;
 
 
+import android.*;
+import android.Manifest;
 import android.app.AlertDialog;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.DialogInterface;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.provider.CalendarContract;
+import android.support.v4.app.ActivityCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -18,6 +27,7 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -26,6 +36,9 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.TimeZone;
+
+import me.everything.providers.android.calendar.CalendarProvider;
 
 import static com.google.android.gms.maps.model.BitmapDescriptorFactory.HUE_RED;
 
@@ -49,6 +62,7 @@ public class MusicianUserGigRequestsReceivedDetailsFragment extends Fragment imp
     // Declare firebase variables
     private DatabaseReference mDatabase;
     private DataSnapshot mSnapshot;
+    private FirebaseAuth mAuth;
 
     // Declare general variables
     private String mGigId;
@@ -57,6 +71,8 @@ public class MusicianUserGigRequestsReceivedDetailsFragment extends Fragment imp
     private String mGigStartDate;
     private String mGigEndDate;
     private com.google.android.gms.maps.model.LatLng mVenueLocation;
+    private final static int MY_PERMISSIONS_REQUEST_WRITE_CALENDAR = 1;
+    private boolean hasPermission = true;
 
     public MusicianUserGigRequestsReceivedDetailsFragment()
     {
@@ -87,6 +103,9 @@ public class MusicianUserGigRequestsReceivedDetailsFragment extends Fragment imp
 
         // Creates a reference to the Firebase database
         mDatabase = FirebaseDatabase.getInstance().getReference();
+
+        // Creates a reference to Firebase
+        mAuth = FirebaseAuth.getInstance();
 
         mAcceptRequestButton.setOnClickListener(new View.OnClickListener()
         {
@@ -123,7 +142,7 @@ public class MusicianUserGigRequestsReceivedDetailsFragment extends Fragment imp
 
     private void SetupMap()
     {
-        mDatabase.child("Venues/").addListenerForSingleValueEvent(new ValueEventListener()
+        mDatabase.addListenerForSingleValueEvent(new ValueEventListener()
         {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot)
@@ -176,8 +195,8 @@ public class MusicianUserGigRequestsReceivedDetailsFragment extends Fragment imp
         mEndDateTextView.setText(formattedFinishDateSectionOne + " " + formattedFinishDateSectionTwo + " " + formattedFinishDateSectionThree + " " + formattedFinishDateSectionFour);
 
         // This block then retrieves the lat lng from the database and assigns it to the mVenueLocation variable
-        String venueLat = mSnapshot.child(getArguments().getString("VenueID") + "/venueLocation/latitude").getValue().toString();
-        String venueLng = mSnapshot.child(getArguments().getString("VenueID") + "/venueLocation/longitude").getValue().toString();
+        String venueLat = mSnapshot.child("Venues/" + getArguments().getString("VenueID") + "/venueLocation/latitude").getValue().toString();
+        String venueLng = mSnapshot.child("Venues/" + getArguments().getString("VenueID") + "/venueLocation/longitude").getValue().toString();
 
         String latLng = venueLat + "," + venueLng;
         List<String> splitUserHomeLocation = Arrays.asList(latLng.split(","));
@@ -201,12 +220,202 @@ public class MusicianUserGigRequestsReceivedDetailsFragment extends Fragment imp
             {
                 mDatabase.child("VenueSentGigRequests/" + mVenueId + "/" + mGigId + "/" + mBandId + "/requestStatus").setValue("Accepted");
                 mDatabase.child("Gigs/" + mGigId + "/bookedAct").setValue(mBandId);
+                mDatabase.child("UserGigInformation/" + mAuth.getCurrentUser().getUid() + "/" + mGigId + "/gigID").setValue(mGigId);
+
+                // Depending on the number of positions in the band and which of those are vacant, an entry for each member is entered into the database
+                // to then be picked up when they login to find out whether they want to add it to their calendar
+                String numberOfBandPositions = mSnapshot.child("Bands/" + mBandId + "/numberOfPositions").getValue().toString();
+
+                if(numberOfBandPositions.equals("2"))
+                {
+                    if(!mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString().equals("Vacant"))
+                    {
+                        String bandMemberUserId = mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString();
+                        mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId + "/gigID").setValue(mGigId);
+                        mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId + "/calendarEventID").setValue("Pending");
+                    }
+
+                    if(!mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString().equals("Vacant"))
+                    {
+                        String bandMemberUserId = mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString();
+                        mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId + "/gigID").setValue(mGigId);
+                        mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId + "/calendarEventID").setValue("Pending");
+                    }
+                }
+
+                if(numberOfBandPositions.equals("3"))
+                {
+                    if(!mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString().equals("Vacant"))
+                    {
+                        String bandMemberUserId = mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString();
+                        mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId + "/gigID").setValue(mGigId);
+                        mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId + "/calendarEventID").setValue("Pending");
+                    }
+
+                    if(!mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString().equals("Vacant"))
+                    {
+                        String bandMemberUserId = mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString();
+                        mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId + "/gigID").setValue(mGigId);
+                        mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId + "/calendarEventID").setValue("Pending");
+                    }
+
+                    if(!mSnapshot.child("Bands/" + mBandId + "/positionThreeMember").getValue().toString().equals("Vacant"))
+                    {
+                        String bandMemberUserId = mSnapshot.child("Bands/" + mBandId + "/positionThreeMember").getValue().toString();
+                        mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId + "/gigID").setValue(mGigId);
+                        mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId + "/calendarEventID").setValue("Pending");
+                    }
+                }
+
+                if(numberOfBandPositions.equals("4"))
+                {
+                    if(!mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString().equals("Vacant"))
+                    {
+                        String bandMemberUserId = mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString();
+                        mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId + "/gigID").setValue(mGigId);
+                        mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId + "/calendarEventID").setValue("Pending");
+                    }
+
+                    if(!mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString().equals("Vacant"))
+                    {
+                        String bandMemberUserId = mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString();
+                        mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId + "/gigID").setValue(mGigId);
+                        mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId + "/calendarEventID").setValue("Pending");
+                    }
+
+                    if(!mSnapshot.child("Bands/" + mBandId + "/positionThreeMember").getValue().toString().equals("Vacant"))
+                    {
+                        String bandMemberUserId = mSnapshot.child("Bands/" + mBandId + "/positionThreeMember").getValue().toString();
+                        mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId + "/gigID").setValue(mGigId);
+                        mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId + "/calendarEventID").setValue("Pending");
+                    }
+
+                    if(!mSnapshot.child("Bands/" + mBandId + "/positionFourMember").getValue().toString().equals("Vacant"))
+                    {
+                        String bandMemberUserId = mSnapshot.child("Bands/" + mBandId + "/positionFourMember").getValue().toString();
+                        mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId + "/gigID").setValue(mGigId);
+                        mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId + "/calendarEventID").setValue("Pending");
+                    }
+                }
+
+                if(numberOfBandPositions.equals("5"))
+                {
+                    if(!mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString().equals("Vacant"))
+                    {
+                        String bandMemberUserId = mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString();
+                        mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId + "/gigID").setValue(mGigId);
+                        mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId + "/calendarEventID").setValue("Pending");
+                    }
+
+                    if(!mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString().equals("Vacant"))
+                    {
+                        String bandMemberUserId = mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString();
+                        mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId + "/gigID").setValue(mGigId);
+                        mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId + "/calendarEventID").setValue("Pending");
+                    }
+
+                    if(!mSnapshot.child("Bands/" + mBandId + "/positionThreeMember").getValue().toString().equals("Vacant"))
+                    {
+                        String bandMemberUserId = mSnapshot.child("Bands/" + mBandId + "/positionThreeMember").getValue().toString();
+                        mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId + "/gigID").setValue(mGigId);
+                        mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId + "/calendarEventID").setValue("Pending");
+                    }
+
+                    if(!mSnapshot.child("Bands/" + mBandId + "/positionFourMember").getValue().toString().equals("Vacant"))
+                    {
+                        String bandMemberUserId = mSnapshot.child("Bands/" + mBandId + "/positionFourMember").getValue().toString();
+                        mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId + "/gigID").setValue(mGigId);
+                        mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId + "/calendarEventID").setValue("Pending");
+                    }
+
+                    if(!mSnapshot.child("Bands/" + mBandId + "/positionFiveMember").getValue().toString().equals("Vacant"))
+                    {
+                        String bandMemberUserId = mSnapshot.child("Bands/" + mBandId + "/positionFiveMember").getValue().toString();
+                        mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId + "/gigID").setValue(mGigId);
+                        mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId + "/calendarEventID").setValue("Pending");
+                    }
+                }
 
                 // A dialog is then shown to alert the user that the changes have been made
                 final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                 builder.setTitle("Confirmation");
-                builder.setMessage("Request Accepted!");
+                builder.setIcon(R.drawable.ic_event_available_black_24dp);
+                builder.setMessage("Request Accepted! Would you like to add this gig to your device calendar?");
                 builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i)
+                    {
+                        if (ActivityCompat.checkSelfPermission(getActivity().getApplicationContext(), android.Manifest.permission.WRITE_CALENDAR) != PackageManager.PERMISSION_GRANTED)
+                        {
+                            requestPermissions(new String[]{android.Manifest.permission.WRITE_CALENDAR}, MY_PERMISSIONS_REQUEST_WRITE_CALENDAR);
+                        }
+
+                        if(hasPermission)
+                        {
+                            CalendarProvider provider = new CalendarProvider(getActivity());
+                            List<me.everything.providers.android.calendar.Calendar> calendars = provider.getCalendars().getList();
+
+                            // Insert Event
+                            ContentResolver cr = getActivity().getContentResolver();
+                            ContentValues values = new ContentValues();
+                            TimeZone timeZone = TimeZone.getDefault();
+                            values.put(CalendarContract.Events.DTSTART, Double.parseDouble(mSnapshot.child("Gigs/" + mGigId + "/startDate/time").getValue().toString()));
+                            values.put(CalendarContract.Events.DTEND, Double.parseDouble(mSnapshot.child("Gigs/" + mGigId + "/endDate/time").getValue().toString()));
+                            values.put(CalendarContract.Events.EVENT_TIMEZONE, timeZone.getID());
+                            values.put(CalendarContract.Events.TITLE, mGigNameTextView.getText().toString());
+                            values.put(CalendarContract.Events.CALENDAR_ID, calendars.get(0).id);
+                            values.put(CalendarContract.Events.EVENT_LOCATION, mVenueNameTextView.getText().toString());
+                            Uri uri = cr.insert(CalendarContract.Events.CONTENT_URI, values);
+
+                            // get the event ID that is the last element in the Uri
+                            final String eventID = uri.getLastPathSegment();
+
+                            if(eventID != null)
+                            {
+                                // A dialog is then shown to alert the user that the changes have been made
+                                final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                                builder.setTitle("Confirmation");
+                                builder.setIcon(R.drawable.ic_event_available_black_24dp);
+                                builder.setMessage("Calendar Event Added!");
+                                builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                                {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i)
+                                    {
+                                        mDatabase.child("UserGigInformation/" + mAuth.getCurrentUser().getUid() + "/" + mGigId + "/calendarEventID").setValue(eventID);
+                                        mDatabase.child("UserGigInformation/" + mAuth.getCurrentUser().getUid() + "/" + mGigId + "/gigID").setValue(mGigId);
+
+                                        ReturnToRequests();
+                                    }
+                                });
+                                builder.setCancelable(false);
+                                builder.show();
+                            }
+
+                            else
+                            {
+                                // A dialog is then shown to alert the user that the changes have been made
+                                final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                                builder.setTitle("Error");
+                                builder.setIcon(R.drawable.ic_event_available_black_24dp);
+                                builder.setMessage("Calendar Event Could Not Be Added!");
+                                builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                                {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i)
+                                    {
+                                        mDatabase.child("UserGigInformation/" + mAuth.getCurrentUser().getUid() + "/" + mGigId + "/gigID").setValue(mGigId);
+                                        ReturnToRequests();
+                                    }
+                                });
+                                builder.setCancelable(false);
+                                builder.show();
+                            }
+                        }
+                    }
+                });
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener()
                 {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i)
@@ -271,10 +480,33 @@ public class MusicianUserGigRequestsReceivedDetailsFragment extends Fragment imp
         builder.show();
     }
 
+    // This method processes the result of the permission request
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults)
+    {
+        if (requestCode == MY_PERMISSIONS_REQUEST_WRITE_CALENDAR)
+
+            // If the permission has been accepted update hasPermission to reflect this
+            if (permissions.length == 1 &&
+                    permissions[0].equals(Manifest.permission.WRITE_CALENDAR) &&
+                    grantResults[0] == PackageManager.PERMISSION_GRANTED)
+            {
+                hasPermission = true;
+            }
+
+            // If the permission has been denied then display a message to that effect
+            else
+            {
+                Toast.makeText(getActivity(), "If you wish use this feature," +
+                        " please ensure you have given permission to access your device's calendar.", Toast.LENGTH_SHORT).show();
+
+                hasPermission = false;
+            }
+    }
+
     private void ReturnToRequests()
     {
         // The user is then taken to the home fragment
         getFragmentManager().popBackStack();
     }
-
 }
