@@ -8,16 +8,18 @@ public class UserGigInformation
 {
     private String calendarEventID;
     private String gigID;
+    private String memberConfirmedRequest;
 
     public UserGigInformation()
     {
 
     }
 
-    public UserGigInformation(String calendarEventID, String gigID)
+    public UserGigInformation(String calendarEventID, String gigID, String memberConfirmedRequest)
     {
         this.calendarEventID = calendarEventID;
         this.gigID = gigID;
+        this.memberConfirmedRequest = memberConfirmedRequest;
     }
 
     public String getCalendarEventID()
@@ -38,5 +40,15 @@ public class UserGigInformation
     public void setGigID(String gigID)
     {
         this.gigID = gigID;
+    }
+
+    public String getMemberConfirmedRequest()
+    {
+        return memberConfirmedRequest;
+    }
+
+    public void setMemberConfirmedRequest(String memberConfirmedRequest)
+    {
+        this.memberConfirmedRequest = memberConfirmedRequest;
     }
 }

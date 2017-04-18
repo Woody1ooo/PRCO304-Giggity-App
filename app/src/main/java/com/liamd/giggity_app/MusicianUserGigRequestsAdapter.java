@@ -65,11 +65,9 @@ public class MusicianUserGigRequestsAdapter extends ArrayAdapter<GigRequest>
             gigRequestListView = (LinearLayout) convertView;
         }
 
-
-        mGigName = mSnapshot.child("Gigs/" + gigRequest.getGigID() + "/title").getValue().toString();
-        mVenueID = mSnapshot.child("Gigs/" + gigRequest.getGigID() + "/venueID").getValue().toString();
-        mVenueName = mSnapshot.child("Venues/" + mVenueID + "/name").getValue().toString();
-
+        mGigName = gigRequest.getGigName();
+        mVenueID = gigRequest.getVenueID();
+        mVenueName = gigRequest.getVenueName();
 
         // Initialise visual components
         mGigNameTextView = (TextView) gigRequestListView.findViewById(R.id.requestGigName);

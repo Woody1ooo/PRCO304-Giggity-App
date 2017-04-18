@@ -231,15 +231,43 @@ public class MusicianUserGigRequestsReceivedDetailsFragment extends Fragment imp
                     if(!mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString().equals("Vacant"))
                     {
                         String bandMemberUserId = mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString();
-                        mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId + "/gigID").setValue(mGigId);
-                        mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId + "/calendarEventID").setValue("Pending");
+
+                        UserGigInformation info = new UserGigInformation();
+                        info.setGigID(mGigId);
+                        info.setCalendarEventID("Pending");
+
+                        if(bandMemberUserId.equals(mAuth.getCurrentUser().getUid()))
+                        {
+                            info.setMemberConfirmedRequest("True");
+                        }
+
+                        else
+                        {
+                            info.setMemberConfirmedRequest("False");
+                        }
+
+                        mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId).setValue(info);
                     }
 
                     if(!mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString().equals("Vacant"))
                     {
                         String bandMemberUserId = mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString();
-                        mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId + "/gigID").setValue(mGigId);
-                        mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId + "/calendarEventID").setValue("Pending");
+
+                        UserGigInformation info = new UserGigInformation();
+                        info.setGigID(mGigId);
+                        info.setCalendarEventID("Pending");
+
+                        if(bandMemberUserId.equals(mAuth.getCurrentUser().getUid()))
+                        {
+                            info.setMemberConfirmedRequest("True");
+                        }
+
+                        else
+                        {
+                            info.setMemberConfirmedRequest("False");
+                        }
+
+                        mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId).setValue(info);
                     }
                 }
 
@@ -248,22 +276,64 @@ public class MusicianUserGigRequestsReceivedDetailsFragment extends Fragment imp
                     if(!mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString().equals("Vacant"))
                     {
                         String bandMemberUserId = mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString();
-                        mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId + "/gigID").setValue(mGigId);
-                        mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId + "/calendarEventID").setValue("Pending");
+
+                        UserGigInformation info = new UserGigInformation();
+                        info.setGigID(mGigId);
+                        info.setCalendarEventID("Pending");
+
+                        if(bandMemberUserId.equals(mAuth.getCurrentUser().getUid()))
+                        {
+                            info.setMemberConfirmedRequest("True");
+                        }
+
+                        else
+                        {
+                            info.setMemberConfirmedRequest("False");
+                        }
+
+                        mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId).setValue(info);
                     }
 
                     if(!mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString().equals("Vacant"))
                     {
                         String bandMemberUserId = mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString();
-                        mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId + "/gigID").setValue(mGigId);
-                        mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId + "/calendarEventID").setValue("Pending");
+
+                        UserGigInformation info = new UserGigInformation();
+                        info.setGigID(mGigId);
+                        info.setCalendarEventID("Pending");
+
+                        if(bandMemberUserId.equals(mAuth.getCurrentUser().getUid()))
+                        {
+                            info.setMemberConfirmedRequest("True");
+                        }
+
+                        else
+                        {
+                            info.setMemberConfirmedRequest("False");
+                        }
+
+                        mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId).setValue(info);
                     }
 
                     if(!mSnapshot.child("Bands/" + mBandId + "/positionThreeMember").getValue().toString().equals("Vacant"))
                     {
                         String bandMemberUserId = mSnapshot.child("Bands/" + mBandId + "/positionThreeMember").getValue().toString();
-                        mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId + "/gigID").setValue(mGigId);
-                        mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId + "/calendarEventID").setValue("Pending");
+
+                        UserGigInformation info = new UserGigInformation();
+                        info.setGigID(mGigId);
+                        info.setCalendarEventID("Pending");
+
+                        if(bandMemberUserId.equals(mAuth.getCurrentUser().getUid()))
+                        {
+                            info.setMemberConfirmedRequest("True");
+                        }
+
+                        else
+                        {
+                            info.setMemberConfirmedRequest("False");
+                        }
+
+                        mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId).setValue(info);
                     }
                 }
 
@@ -272,29 +342,85 @@ public class MusicianUserGigRequestsReceivedDetailsFragment extends Fragment imp
                     if(!mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString().equals("Vacant"))
                     {
                         String bandMemberUserId = mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString();
-                        mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId + "/gigID").setValue(mGigId);
-                        mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId + "/calendarEventID").setValue("Pending");
+
+                        UserGigInformation info = new UserGigInformation();
+                        info.setGigID(mGigId);
+                        info.setCalendarEventID("Pending");
+
+                        if(bandMemberUserId.equals(mAuth.getCurrentUser().getUid()))
+                        {
+                            info.setMemberConfirmedRequest("True");
+                        }
+
+                        else
+                        {
+                            info.setMemberConfirmedRequest("False");
+                        }
+
+                        mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId).setValue(info);
                     }
 
                     if(!mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString().equals("Vacant"))
                     {
                         String bandMemberUserId = mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString();
-                        mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId + "/gigID").setValue(mGigId);
-                        mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId + "/calendarEventID").setValue("Pending");
+
+                        UserGigInformation info = new UserGigInformation();
+                        info.setGigID(mGigId);
+                        info.setCalendarEventID("Pending");
+
+                        if(bandMemberUserId.equals(mAuth.getCurrentUser().getUid()))
+                        {
+                            info.setMemberConfirmedRequest("True");
+                        }
+
+                        else
+                        {
+                            info.setMemberConfirmedRequest("False");
+                        }
+
+                        mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId).setValue(info);
                     }
 
                     if(!mSnapshot.child("Bands/" + mBandId + "/positionThreeMember").getValue().toString().equals("Vacant"))
                     {
                         String bandMemberUserId = mSnapshot.child("Bands/" + mBandId + "/positionThreeMember").getValue().toString();
-                        mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId + "/gigID").setValue(mGigId);
-                        mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId + "/calendarEventID").setValue("Pending");
+
+                        UserGigInformation info = new UserGigInformation();
+                        info.setGigID(mGigId);
+                        info.setCalendarEventID("Pending");
+
+                        if(bandMemberUserId.equals(mAuth.getCurrentUser().getUid()))
+                        {
+                            info.setMemberConfirmedRequest("True");
+                        }
+
+                        else
+                        {
+                            info.setMemberConfirmedRequest("False");
+                        }
+
+                        mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId).setValue(info);
                     }
 
                     if(!mSnapshot.child("Bands/" + mBandId + "/positionFourMember").getValue().toString().equals("Vacant"))
                     {
                         String bandMemberUserId = mSnapshot.child("Bands/" + mBandId + "/positionFourMember").getValue().toString();
-                        mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId + "/gigID").setValue(mGigId);
-                        mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId + "/calendarEventID").setValue("Pending");
+
+                        UserGigInformation info = new UserGigInformation();
+                        info.setGigID(mGigId);
+                        info.setCalendarEventID("Pending");
+
+                        if(bandMemberUserId.equals(mAuth.getCurrentUser().getUid()))
+                        {
+                            info.setMemberConfirmedRequest("True");
+                        }
+
+                        else
+                        {
+                            info.setMemberConfirmedRequest("False");
+                        }
+
+                        mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId).setValue(info);
                     }
                 }
 
@@ -303,36 +429,106 @@ public class MusicianUserGigRequestsReceivedDetailsFragment extends Fragment imp
                     if(!mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString().equals("Vacant"))
                     {
                         String bandMemberUserId = mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString();
-                        mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId + "/gigID").setValue(mGigId);
-                        mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId + "/calendarEventID").setValue("Pending");
+
+                        UserGigInformation info = new UserGigInformation();
+                        info.setGigID(mGigId);
+                        info.setCalendarEventID("Pending");
+
+                        if(bandMemberUserId.equals(mAuth.getCurrentUser().getUid()))
+                        {
+                            info.setMemberConfirmedRequest("True");
+                        }
+
+                        else
+                        {
+                            info.setMemberConfirmedRequest("False");
+                        }
+
+                        mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId).setValue(info);
                     }
 
                     if(!mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString().equals("Vacant"))
                     {
                         String bandMemberUserId = mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString();
-                        mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId + "/gigID").setValue(mGigId);
-                        mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId + "/calendarEventID").setValue("Pending");
+
+                        UserGigInformation info = new UserGigInformation();
+                        info.setGigID(mGigId);
+                        info.setCalendarEventID("Pending");
+
+                        if(bandMemberUserId.equals(mAuth.getCurrentUser().getUid()))
+                        {
+                            info.setMemberConfirmedRequest("True");
+                        }
+
+                        else
+                        {
+                            info.setMemberConfirmedRequest("False");
+                        }
+
+                        mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId).setValue(info);
                     }
 
                     if(!mSnapshot.child("Bands/" + mBandId + "/positionThreeMember").getValue().toString().equals("Vacant"))
                     {
                         String bandMemberUserId = mSnapshot.child("Bands/" + mBandId + "/positionThreeMember").getValue().toString();
-                        mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId + "/gigID").setValue(mGigId);
-                        mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId + "/calendarEventID").setValue("Pending");
+
+                        UserGigInformation info = new UserGigInformation();
+                        info.setGigID(mGigId);
+                        info.setCalendarEventID("Pending");
+
+                        if(bandMemberUserId.equals(mAuth.getCurrentUser().getUid()))
+                        {
+                            info.setMemberConfirmedRequest("True");
+                        }
+
+                        else
+                        {
+                            info.setMemberConfirmedRequest("False");
+                        }
+
+                        mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId).setValue(info);
                     }
 
                     if(!mSnapshot.child("Bands/" + mBandId + "/positionFourMember").getValue().toString().equals("Vacant"))
                     {
                         String bandMemberUserId = mSnapshot.child("Bands/" + mBandId + "/positionFourMember").getValue().toString();
-                        mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId + "/gigID").setValue(mGigId);
-                        mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId + "/calendarEventID").setValue("Pending");
+
+                        UserGigInformation info = new UserGigInformation();
+                        info.setGigID(mGigId);
+                        info.setCalendarEventID("Pending");
+
+                        if(bandMemberUserId.equals(mAuth.getCurrentUser().getUid()))
+                        {
+                            info.setMemberConfirmedRequest("True");
+                        }
+
+                        else
+                        {
+                            info.setMemberConfirmedRequest("False");
+                        }
+
+                        mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId).setValue(info);
                     }
 
                     if(!mSnapshot.child("Bands/" + mBandId + "/positionFiveMember").getValue().toString().equals("Vacant"))
                     {
                         String bandMemberUserId = mSnapshot.child("Bands/" + mBandId + "/positionFiveMember").getValue().toString();
-                        mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId + "/gigID").setValue(mGigId);
-                        mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId + "/calendarEventID").setValue("Pending");
+
+                        UserGigInformation info = new UserGigInformation();
+                        info.setGigID(mGigId);
+                        info.setCalendarEventID("Pending");
+
+                        if(bandMemberUserId.equals(mAuth.getCurrentUser().getUid()))
+                        {
+                            info.setMemberConfirmedRequest("True");
+                        }
+
+                        else
+                        {
+                            info.setMemberConfirmedRequest("False");
+                        }
+
+                        mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId).setValue(info);
                     }
                 }
 

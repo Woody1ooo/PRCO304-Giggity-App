@@ -76,8 +76,8 @@ public class VenueUserGigRequestsAdapter extends ArrayAdapter<GigRequest>
             gigRequestListView = (LinearLayout) convertView;
         }
 
-        mGigName = mSnapshot.child("Gigs/" + gigRequest.getGigID() + "/title").getValue().toString();
-        mBandName = mSnapshot.child("Bands/" + gigRequest.getBandID() + "/name").getValue().toString();
+        mGigName = gigRequest.getGigName();
+        mBandName = gigRequest.getBandName();
 
         // Initialise visual components
         mGigNameTextView = (TextView) gigRequestListView.findViewById(R.id.requestGigName);
