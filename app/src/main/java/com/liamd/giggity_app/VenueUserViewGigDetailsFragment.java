@@ -369,6 +369,8 @@ public class VenueUserViewGigDetailsFragment extends Fragment implements DatePic
             }
         });
 
+        getActivity().setTitle("My Gigs");
+
         return fragmentView;
     }
 

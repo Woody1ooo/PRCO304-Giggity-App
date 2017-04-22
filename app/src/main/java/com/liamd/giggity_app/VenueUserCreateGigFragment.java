@@ -247,6 +247,8 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
             }
         });
 
+        getActivity().setTitle("Create a Gig");
+
         return fragmentView;
     }
 

@@ -192,6 +192,8 @@ public class VenueUserViewGigsFragment extends Fragment
             }
         });
 
+        getActivity().setTitle("My Gigs");
+
         return fragmentView;
     }
 

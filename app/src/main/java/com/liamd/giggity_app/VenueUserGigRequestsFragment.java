@@ -140,9 +140,35 @@ public class VenueUserGigRequestsFragment extends Fragment
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id)
             {
+                GigRequest selectedRequest = (GigRequest) mReceivedGigRequestsListView.getItemAtPosition(position);
+                VenueUserGigRequestsReceivedDetailsFragment fragment = new VenueUserGigRequestsReceivedDetailsFragment();
+                Bundle arguments = new Bundle();
+                arguments.putString("BandID", selectedRequest.getBandID());
+                arguments.putString("GigID", selectedRequest.getGigID());
+                arguments.putString("VenueID", selectedRequest.getVenueID());
+                arguments.putString("GigName", selectedRequest.getGigName());
+                arguments.putString("GigStartDate", selectedRequest.getGigStartDate().toString());
+                arguments.putString("GigEndDate", selectedRequest.getGigEndDate().toString());
+                arguments.putString("RequestStatus", selectedRequest.getRequestStatus());
 
+                fragment.setArguments(arguments);
+
+                // Creates a new fragment transaction to display the details of the selected
+                // request. Some custom animation has been added also.
+                FragmentTransaction fragmentTransaction = getActivity().getFragmentManager()
+                        .beginTransaction();
+                fragmentTransaction.setCustomAnimations(R.animator.enter_from_right, R.animator.enter_from_left);
+                fragmentTransaction.replace(R.id.frame, fragment, "VenueUserGigRequestsReceivedDetailsFragment")
+                        .addToBackStack(null).commit();
+
+                mListOfGigRequestsSent.clear();
+                mListOfFilteredGigRequestsSent.clear();
+                mListOfGigRequestsReceived.clear();
+                mListOfFilteredGigRequestsReceived.clear();
             }
         });
+
+        getActivity().setTitle("Gig Requests");
 
         return fragmentView;
     }

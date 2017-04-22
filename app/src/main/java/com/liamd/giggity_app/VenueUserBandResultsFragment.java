@@ -149,6 +149,8 @@ public class VenueUserBandResultsFragment extends Fragment implements OnMapReady
         // Initialise the list view
         mBandsListView = (ListView) fragmentView.findViewById(R.id.bandsListView);
 
+        getActivity().setTitle("Band Finder");
+
         return fragmentView;
     }
 

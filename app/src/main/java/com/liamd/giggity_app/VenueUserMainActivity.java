@@ -31,10 +31,6 @@ public class VenueUserMainActivity extends AppCompatActivity
     private CircleImageView circleImageView;
     private TextView navigationProfileEmailTextView;
 
-    // Declare Firebase specific variables
-    private FirebaseAuth mAuth;
-    private DatabaseReference mDatabase;
-
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -52,25 +48,22 @@ public class VenueUserMainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        // Creates a reference to Firebase
-        mAuth = FirebaseAuth.getInstance();
-
-        // Creates a reference to the Firebase database
-        mDatabase = FirebaseDatabase.getInstance().getReference();
-
-        // Sets home as the default selected navigation item
-        navigationView.getMenu().getItem(0).setChecked(true);
-
         // Initialise visual components
-        setTitle("Venue User Home");
-
-        // Load Home fragment by default
         setTitle("Home");
-        VenueUserHomeFragment fragment = new VenueUserHomeFragment();
-        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.frame, fragment
-                , "VenueUserHomeFragment");
-        fragmentTransaction.commit();
+
+        if(savedInstanceState == null)
+        {
+            // Sets home as the default selected navigation item
+            navigationView.getMenu().getItem(0).setChecked(true);
+
+            // Load Home fragment by default
+            setTitle("Home");
+            VenueUserHomeFragment fragment = new VenueUserHomeFragment();
+            FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.frame, fragment
+                    , "VenueUserHomeFragment");
+            fragmentTransaction.commit();
+        }
     }
 
     @Override

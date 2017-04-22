@@ -144,6 +144,8 @@ public class VenueUserBandFinderFragment extends Fragment
             }
         });
 
+        getActivity().setTitle("Band Finder");
+
         return fragmentView;
     }
 

@@ -134,6 +134,8 @@ public class VenueUserBandDetailsFragment extends Fragment implements OnMapReady
             }
         });
 
+        getActivity().setTitle("Band Finder");
+
         return fragmentView;
     }
 

@@ -2,6 +2,7 @@ package com.liamd.giggity_app;
 
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.graphics.Typeface;
 import android.location.Location;
@@ -24,6 +25,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.vision.text.Text;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -36,6 +38,7 @@ import java.util.Collections;
 import java.util.Date;
 
 import static com.google.android.gms.maps.model.BitmapDescriptorFactory.HUE_AZURE;
+import static com.google.android.gms.maps.model.BitmapDescriptorFactory.fromAsset;
 
 
 /**
@@ -62,6 +65,7 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
     private ArrayList<Venue> mListOfVenues = new ArrayList<>();
     private ArrayList<GigMarkerInfo> mListOfGigMarkerInfo = new ArrayList<>();
     private ArrayList<Integer> mFilteredGigsToRemove = new ArrayList<>();
+    private ArrayList<Gig> mListOfMultipleGigs = new ArrayList<>();
     private Marker mMarker;
     private Boolean multipleGigs = false;
     private int mGigDistanceSelected;
@@ -85,6 +89,8 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
     private double mGigLocationLat;
     private double mGigLocationLng;
     private Location mUserLocation;
+
+    private TextView mGigNameTextView;
 
     public MusicianUserGigResultsFragment()
     {
@@ -311,7 +317,7 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
                             // This then references the text views found in that layout
                             // (note gig id is a hidden text view)
                             TextView mGigIdTextView = (TextView) v.findViewById(R.id.gigIdTextView);
-                            TextView mGigNameTextView = (TextView) v.findViewById(R.id.gigNameTextView);
+                            mGigNameTextView = (TextView) v.findViewById(R.id.gigNameTextView);
                             TextView mGigStartDateTextView = (TextView) v.findViewById(R.id.gigStartDateTextView);
                             TextView mGigFinishDateTextView = (TextView) v.findViewById(R.id.gigFinishDateTextView);
                             TextView mVenueNameTextView = (TextView) v.findViewById(R.id.venueNameTextView);
@@ -474,34 +480,54 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
     {
         if(mIsInBand)
         {
-            MusicianUserGigDetailsFragment fragment = new MusicianUserGigDetailsFragment();
-            Bundle arguments = new Bundle();
-
-            // This loops through the list of marker info to determine the marker clicked
-            for(int i = 0; i < mListOfGigMarkerInfo.size(); i++)
+            // If the text matches multiple gigs then loop through the markers and get the venue id selected
+            if(mGigNameTextView.getText().equals("Multiple Gigs at this venue!"))
             {
-                mListOfGigMarkerInfo.get(i);
-
-                // Once a match has been found the data can be extracted and passed as a bundle argument
-                if(mListOfGigMarkerInfo.get(i).getMarkerId().equals(marker.getId()))
+                // This loops through the list of marker info to determine the marker clicked
+                for(int i = 0; i < mListOfGigMarkerInfo.size(); i++)
                 {
-                    arguments.putString("GigID", mListOfGigMarkerInfo.get(i).getGigId());
-                    arguments.putString("GigTitle", mListOfGigMarkerInfo.get(i).getGigName());
-                    arguments.putString("GigStartDate", mListOfGigMarkerInfo.get(i).getGigStartDate().toString());
-                    arguments.putString("GigEndDate", mListOfGigMarkerInfo.get(i).getGigEndDate().toString());
-                    arguments.putString("GigVenueID", mListOfGigMarkerInfo.get(i).getVenueId());
+                    mListOfGigMarkerInfo.get(i);
+
+                    // Once a match has been found the data can be extracted and passed as a bundle argument
+                    if (mListOfGigMarkerInfo.get(i).getMarkerId().equals(marker.getId()))
+                    {
+                        // Pass this venue id into the method
+                        ShowMultipleGigsDialog(mListOfGigMarkerInfo.get(i).getVenueId());
+                    }
                 }
             }
 
-            fragment.setArguments(arguments);
+            else
+            {
+                MusicianUserGigDetailsFragment fragment = new MusicianUserGigDetailsFragment();
+                Bundle arguments = new Bundle();
 
-            // Creates a new fragment transaction to display the details of the selected
-            // gig. Some custom animation has been added also.
-            FragmentTransaction fragmentTransaction = getActivity().getFragmentManager()
-                    .beginTransaction();
-            fragmentTransaction.setCustomAnimations(R.animator.enter_from_right, R.animator.enter_from_left);
-            fragmentTransaction.replace(R.id.frame, fragment, "MusicianUserGigDetailsFragment")
-                    .addToBackStack(null).commit();
+                // This loops through the list of marker info to determine the marker clicked
+                for(int i = 0; i < mListOfGigMarkerInfo.size(); i++)
+                {
+                    mListOfGigMarkerInfo.get(i);
+
+                    // Once a match has been found the data can be extracted and passed as a bundle argument
+                    if(mListOfGigMarkerInfo.get(i).getMarkerId().equals(marker.getId()))
+                    {
+                        arguments.putString("GigID", mListOfGigMarkerInfo.get(i).getGigId());
+                        arguments.putString("GigTitle", mListOfGigMarkerInfo.get(i).getGigName());
+                        arguments.putString("GigStartDate", mListOfGigMarkerInfo.get(i).getGigStartDate().toString());
+                        arguments.putString("GigEndDate", mListOfGigMarkerInfo.get(i).getGigEndDate().toString());
+                        arguments.putString("GigVenueID", mListOfGigMarkerInfo.get(i).getVenueId());
+                    }
+                }
+
+                fragment.setArguments(arguments);
+
+                // Creates a new fragment transaction to display the details of the selected
+                // gig. Some custom animation has been added also.
+                FragmentTransaction fragmentTransaction = getActivity().getFragmentManager()
+                        .beginTransaction();
+                fragmentTransaction.setCustomAnimations(R.animator.enter_from_right, R.animator.enter_from_left);
+                fragmentTransaction.replace(R.id.frame, fragment, "MusicianUserGigDetailsFragment")
+                        .addToBackStack(null).commit();
+            }
         }
 
         else
@@ -620,6 +646,69 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
                 mFilteredGigsToRemove.add(listIndex);
             }
         }
+    }
+
+    private void ShowMultipleGigsDialog(String venueId)
+    {
+        // Initially clear the list of multiple gigs
+        mListOfMultipleGigs.clear();
+
+        // Iterate through the list of gigs and find any that exists at the venue id passed in to the method
+        // We can be sure these will all have multiple gigs as this method is only called in that scenario
+        for(Gig gig : mListOfGigs)
+        {
+            if(gig.getVenueID().equals(venueId))
+            {
+                mListOfMultipleGigs.add(gig);
+            }
+        }
+
+        // Show the multiple gigs dialog (multiple_gig_dialog_list)
+        final Dialog multipleGigSelectorDialog = new Dialog(getActivity());
+        multipleGigSelectorDialog.setTitle("Multiple Gigs");
+        multipleGigSelectorDialog.setContentView(R.layout.multiple_gig_dialog_list);
+
+        // Initialise the list view
+        ListView mMultipleGigsListView = (ListView) multipleGigSelectorDialog.findViewById(R.id.multipleGigListDialogList);
+
+        // Set the adapter and pass in the list of multiple gigs at the venue chosen
+        MusicianUserMultipleGigsAdapter adapter = new MusicianUserMultipleGigsAdapter(getActivity(), R.layout.multiple_gig_dialog_layout, mListOfMultipleGigs);
+        mMultipleGigsListView.setAdapter(adapter);
+
+        // show the dialog
+        multipleGigSelectorDialog.show();
+
+        // Add an on click listener for each item in the list
+        mMultipleGigsListView.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id)
+            {
+                multipleGigSelectorDialog.dismiss();
+
+                // This returns the selected gig from the list view
+                Gig selectedGig = (Gig) mGigsListView.getItemAtPosition(position);
+
+                MusicianUserGigDetailsFragment fragment = new MusicianUserGigDetailsFragment();
+                Bundle arguments = new Bundle();
+
+                arguments.putString("GigID", selectedGig.getGigId());
+                arguments.putString("GigTitle", selectedGig.getTitle());
+                arguments.putString("GigStartDate", selectedGig.getStartDate().toString());
+                arguments.putString("GigEndDate", selectedGig.getEndDate().toString());
+                arguments.putString("GigVenueID", selectedGig.getVenueID());
+
+                fragment.setArguments(arguments);
+
+                // Creates a new fragment transaction to display the details of the selected
+                // gig. Some custom animation has been added also.
+                FragmentTransaction fragmentTransaction = getActivity().getFragmentManager()
+                        .beginTransaction();
+                fragmentTransaction.setCustomAnimations(R.animator.enter_from_right, R.animator.enter_from_left);
+                fragmentTransaction.replace(R.id.frame, fragment, "MusicianUserGigDetailsFragment")
+                        .addToBackStack(null).commit();
+            }
+        });
     }
 
     public static DataSnapshot getVenueSnapshot()

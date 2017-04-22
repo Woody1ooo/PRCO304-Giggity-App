@@ -26,7 +26,11 @@ public class VenueUserHomeFragment extends Fragment
                              Bundle savedInstanceState)
     {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.venue_user_fragment_home, container, false);
+        View fragmentView = inflater.inflate(R.layout.venue_user_fragment_home, container, false);
+
+        getActivity().setTitle("Home");
+
+        return fragmentView;
     }
 
 }
