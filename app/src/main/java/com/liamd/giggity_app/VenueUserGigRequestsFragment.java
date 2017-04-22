@@ -1,11 +1,13 @@
 package com.liamd.giggity_app;
 
 
+import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TabHost;
 
@@ -94,6 +96,49 @@ public class VenueUserGigRequestsFragment extends Fragment
 
             @Override
             public void onCancelled(DatabaseError databaseError)
+            {
+
+            }
+        });
+
+        mSentGigRequestsListView.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id)
+            {
+                // This returns the selected request from the list view
+                GigRequest selectedRequest = (GigRequest) mSentGigRequestsListView.getItemAtPosition(position);
+                VenueUserGigRequestsSentDetailsFragment fragment = new VenueUserGigRequestsSentDetailsFragment();
+                Bundle arguments = new Bundle();
+                arguments.putString("BandID", selectedRequest.getBandID());
+                arguments.putString("GigID", selectedRequest.getGigID());
+                arguments.putString("VenueID", selectedRequest.getVenueID());
+                arguments.putString("GigName", selectedRequest.getGigName());
+                arguments.putString("GigStartDate", selectedRequest.getGigStartDate().toString());
+                arguments.putString("GigEndDate", selectedRequest.getGigEndDate().toString());
+                arguments.putString("RequestStatus", selectedRequest.getRequestStatus());
+
+                fragment.setArguments(arguments);
+
+                // Creates a new fragment transaction to display the details of the selected
+                // request. Some custom animation has been added also.
+                FragmentTransaction fragmentTransaction = getActivity().getFragmentManager()
+                        .beginTransaction();
+                fragmentTransaction.setCustomAnimations(R.animator.enter_from_right, R.animator.enter_from_left);
+                fragmentTransaction.replace(R.id.frame, fragment, "VenueUserGigRequestsSentDetailsFragment")
+                        .addToBackStack(null).commit();
+
+                mListOfGigRequestsSent.clear();
+                mListOfFilteredGigRequestsSent.clear();
+                mListOfGigRequestsReceived.clear();
+                mListOfFilteredGigRequestsReceived.clear();
+            }
+        });
+
+        mReceivedGigRequestsListView.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id)
             {
 
             }

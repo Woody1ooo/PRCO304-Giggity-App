@@ -96,7 +96,7 @@ public class VenueUserGigsAdapter extends ArrayAdapter<Gig>
 
             Glide.with(getContext()).using(new FirebaseImageLoader()).load
                     (mProfileImageReference.child("BandProfileImages/" +  mBandId +  "/profileImage"))
-                    .diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).into(mGigActImageView);
+                    .diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).override(500, 500).into(mGigActImageView);
         }
 
         else

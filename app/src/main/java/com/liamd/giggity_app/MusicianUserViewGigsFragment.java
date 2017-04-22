@@ -1,11 +1,13 @@
 package com.liamd.giggity_app;
 
 
+import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -90,6 +92,33 @@ public class MusicianUserViewGigsFragment extends Fragment
 
         // Set the fragment title
         getActivity().setTitle("My Gigs");
+
+        mGigsListView.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id)
+            {
+                Gig selectedGig = (Gig) mGigsListView.getItemAtPosition(position);
+
+                MusicianUserViewGigsDetailsFragment fragment = new MusicianUserViewGigsDetailsFragment();
+
+                Bundle arguments = new Bundle();
+                arguments.putString("GigID", selectedGig.getGigId());
+                arguments.putString("GigTitle", selectedGig.getTitle());
+                arguments.putString("GigStartDate", selectedGig.getStartDate().toString());
+                arguments.putString("GigEndDate", selectedGig.getEndDate().toString());
+                arguments.putString("GigVenueID", selectedGig.getVenueID());
+                fragment.setArguments(arguments);
+
+                // Creates a new fragment transaction to display the details of the selected
+                // gig. Some custom animation has been added also.
+                FragmentTransaction fragmentTransaction = getActivity().getFragmentManager()
+                        .beginTransaction();
+                fragmentTransaction.setCustomAnimations(R.animator.enter_from_right, R.animator.enter_from_left);
+                fragmentTransaction.replace(R.id.frame, fragment, "MusicianUserViewGigsDetailsFragment")
+                        .addToBackStack(null).commit();
+            }
+        });
 
         return fragmentView;
     }

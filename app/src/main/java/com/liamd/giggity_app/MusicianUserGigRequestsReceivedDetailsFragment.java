@@ -616,6 +616,7 @@ public class MusicianUserGigRequestsReceivedDetailsFragment extends Fragment imp
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i)
                     {
+                        mDatabase.child("UserGigInformation/" + mAuth.getCurrentUser().getUid() + "/" + mGigId + "/calendarEventID").setValue("Null");
                         ReturnToRequests();
                     }
                 });

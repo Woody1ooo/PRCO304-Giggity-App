@@ -612,6 +612,14 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
         {
             mFilteredGigsToRemove.add(listIndex);
         }
+
+        if(!mListOfGigs.get(listIndex).getBookedAct().equals("Vacant"))
+        {
+            if(!mFilteredGigsToRemove.contains(listIndex))
+            {
+                mFilteredGigsToRemove.add(listIndex);
+            }
+        }
     }
 
     public static DataSnapshot getVenueSnapshot()

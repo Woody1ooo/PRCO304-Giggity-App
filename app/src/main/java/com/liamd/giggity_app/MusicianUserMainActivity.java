@@ -3,6 +3,7 @@ package com.liamd.giggity_app;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -63,14 +64,14 @@ public class MusicianUserMainActivity extends AppCompatActivity implements Navig
     private DatabaseReference mDatabase;
     private FirebaseStorage mStorage;
     private StorageReference mProfileImageReference;
+    private DataSnapshot mSnapshot;
 
     // Declare general variables
     private String mUserEmail;
     private final static int MY_PERMISSIONS_REQUEST_WRITE_CALENDAR = 1;
-    private boolean hasPermission = true;
+    private boolean hasPermission;
     private ArrayList<UserGigInformation> mListOfUserGigInformation = new ArrayList<>();
     private String mGigId;
-    private boolean mCompletedAddingCalendarEvents = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -185,31 +186,34 @@ public class MusicianUserMainActivity extends AppCompatActivity implements Navig
         mDatabase.addValueEventListener(new ValueEventListener()
         {
             @Override
-            public void onDataChange(final DataSnapshot dataSnapshot)
+            public void onDataChange(DataSnapshot dataSnapshot)
             {
-                if(mCompletedAddingCalendarEvents)
+                if(dataSnapshot.child("UserGigInformation/" + mAuth.getCurrentUser().getUid()).exists())
                 {
-                    if(dataSnapshot.child("UserGigInformation/" + mAuth.getCurrentUser().getUid()).exists())
+                    Iterable<DataSnapshot> children = dataSnapshot.child("UserGigInformation/" + mAuth.getCurrentUser().getUid()).getChildren();
+                    for (DataSnapshot child : children)
                     {
-                        Iterable<DataSnapshot> children = dataSnapshot.child("UserGigInformation/" + mAuth.getCurrentUser().getUid()).getChildren();
-                        for (DataSnapshot child : children)
+                        UserGigInformation userGigInformation;
+                        userGigInformation = child.getValue(UserGigInformation.class);
+                        if(userGigInformation.getCalendarEventID() != null
+                                && userGigInformation.getMemberConfirmedRequest() != null
+                                && userGigInformation.getCalendarEventID().equals("Pending")
+                                && userGigInformation.getMemberConfirmedRequest().equals("False"))
                         {
-                            UserGigInformation userGigInformation;
-                            userGigInformation = child.getValue(UserGigInformation.class);
-                            if(userGigInformation.getCalendarEventID() != null
-                                    && userGigInformation.getMemberConfirmedRequest() != null
-                                    && userGigInformation.getCalendarEventID().equals("Pending")
-                                    && userGigInformation.getMemberConfirmedRequest().equals("False"))
-                            {
-                                mListOfUserGigInformation.add(userGigInformation);
-                            }
+                            mListOfUserGigInformation.add(userGigInformation);
+                        }
+
+                        else if(userGigInformation.getGigID().equals("BandCancelled"))
+                        {
+                            RemoveEventsFromCalendar(userGigInformation, child.getKey());
                         }
                     }
+                }
 
-                    if(mListOfUserGigInformation.size() > 0)
-                    {
-                        AddEventsToCalendar(dataSnapshot);
-                    }
+                if(mListOfUserGigInformation.size() > 0)
+                {
+                    mSnapshot = dataSnapshot;
+                    AddEventsToCalendar(dataSnapshot);
                 }
             }
 
@@ -538,6 +542,8 @@ public class MusicianUserMainActivity extends AppCompatActivity implements Navig
                     grantResults[0] == PackageManager.PERMISSION_GRANTED)
             {
                 hasPermission = true;
+
+                AddEventsToCalendar(mSnapshot);
             }
 
             // If the permission has been denied then display a message to that effect
@@ -572,6 +578,44 @@ public class MusicianUserMainActivity extends AppCompatActivity implements Navig
         NavigationDrawerUserData();
     }
 
+    private void RemoveEventsFromCalendar(UserGigInformation cancelledGig, String gigId)
+    {
+        // Remove Event
+        if(cancelledGig.getGigID().equals("BandCancelled"))
+        {
+            if (ActivityCompat.checkSelfPermission(MusicianUserMainActivity.this, android.Manifest.permission.WRITE_CALENDAR) != PackageManager.PERMISSION_GRANTED)
+            {
+                requestPermissions(new String[]{android.Manifest.permission.WRITE_CALENDAR}, MY_PERMISSIONS_REQUEST_WRITE_CALENDAR);
+            }
+
+            if (hasPermission)
+            {
+                Uri deleteUri;
+                deleteUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, Long.parseLong(cancelledGig.getCalendarEventID()));
+                int rowsRemoved = this.getContentResolver().delete(deleteUri, null, null);
+
+                // The database is then updated to remove the gig entry
+                mDatabase.child("UserGigInformation/" + mAuth.getCurrentUser().getUid() + "/" + gigId).removeValue();
+
+                if(rowsRemoved > 0)
+                {
+                    // A dialog is then shown to alert the user that the changes have been made
+                    final AlertDialog.Builder builder = new AlertDialog.Builder(MusicianUserMainActivity.this);
+                    builder.setTitle("Alert");
+                    builder.setMessage("Your band has pulled out of a gig you were scheduled to play! We have therefore removed this event from your devices calendar for you.");
+                    builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i)
+                        {
+                        }
+                    });
+                    builder.show();
+                }
+            }
+        }
+    }
+
     private void AddEventsToCalendar(final DataSnapshot dataSnapshot)
     {
         // This dialog is created to confirm that the user wants to edit the chosen fields
@@ -599,8 +643,6 @@ public class MusicianUserMainActivity extends AppCompatActivity implements Navig
 
                 if (hasPermission)
                 {
-                    mCompletedAddingCalendarEvents = false;
-
                     for (UserGigInformation element : mListOfUserGigInformation)
                     {
                         final UserGigInformation info = new UserGigInformation();
@@ -621,18 +663,24 @@ public class MusicianUserMainActivity extends AppCompatActivity implements Navig
                         values.put(CalendarContract.Events.DTEND, Double.parseDouble(dataSnapshot.child("Gigs/" + mGigId + "/endDate/time").getValue().toString()));
                         values.put(CalendarContract.Events.EVENT_TIMEZONE, timeZone.getID());
                         values.put(CalendarContract.Events.TITLE, dataSnapshot.child("Gigs/" + mGigId + "/title").getValue().toString());
-                        values.put(CalendarContract.Events.CALENDAR_ID, calendars.get(0).id);
-                        values.put(CalendarContract.Events.EVENT_LOCATION, dataSnapshot.child("Venues/" + venueId + "/name").getValue().toString());
-                        Uri uri = cr.insert(CalendarContract.Events.CONTENT_URI, values);
+                        if(calendars.size() <= 0)
+                        {
+                            Toast.makeText(MusicianUserMainActivity.this, "Please ensure you have at least one device calendar setup!", Toast.LENGTH_SHORT).show();
+                        }
 
-                        // get the event ID that is the last element in the Uri
-                        final String eventID = uri.getLastPathSegment();
+                        else
+                        {
+                            values.put(CalendarContract.Events.CALENDAR_ID, calendars.get(0).id);
+                            values.put(CalendarContract.Events.EVENT_LOCATION, dataSnapshot.child("Venues/" + venueId + "/name").getValue().toString());
+                            Uri uri = cr.insert(CalendarContract.Events.CONTENT_URI, values);
 
-                        // The database is then updated with the calendar event ID
-                        mDatabase.child("UserGigInformation/" + mAuth.getCurrentUser().getUid() + "/" + mGigId + "/calendarEventID").setValue(eventID);
+                            // get the event ID that is the last element in the Uri
+                            final String eventID = uri.getLastPathSegment();
+
+                            // The database is then updated with the calendar event ID
+                            mDatabase.child("UserGigInformation/" + mAuth.getCurrentUser().getUid() + "/" + mGigId + "/calendarEventID").setValue(eventID);
+                        }
                     }
-
-                    mCompletedAddingCalendarEvents = true;
 
                     // The list is then cleared to prevent duplicates
                     mListOfUserGigInformation.clear();
@@ -646,15 +694,25 @@ public class MusicianUserMainActivity extends AppCompatActivity implements Navig
             @Override
             public void onClick(DialogInterface dialogInterface, int i)
             {
-                // If this is declined the field is still updated to prevent asking the user again in future
-                mDatabase.child("UserGigInformation/" + mAuth.getCurrentUser().getUid() + "/" + mGigId + "/calendarEventID").setValue("Null");
+                for (UserGigInformation element : mListOfUserGigInformation)
+                {
+                    final UserGigInformation info = new UserGigInformation();
+                    info.setCalendarEventID(element.getCalendarEventID());
+                    info.setGigID(element.getGigID());
+
+                    // If this is declined the field is still updated to prevent asking the user again in future
+                    mDatabase.child("UserGigInformation/" + mAuth.getCurrentUser().getUid() + "/" + info.getGigID() + "/calendarEventID").setValue("Null");
+                }
 
                 // The list is then cleared to prevent duplicates
                 mListOfUserGigInformation.clear();
                 dialogInterface.dismiss();
             }
         });
-        builder.show();
-        builder.setCancelable(false);
+        if(getApplicationContext() != null)
+        {
+            builder.show();
+            builder.setCancelable(false);
+        }
     }
 }
