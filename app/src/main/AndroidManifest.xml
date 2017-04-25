@@ -6,7 +6,7 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.READ_CALENDAR" />
+    <uses-permission android:name="android.permission.READ_CALENDAR"/>
     <uses-permission android:name="android.permission.WRITE_CALENDAR"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
@@ -48,35 +48,45 @@
         <activity
             android:name=".MusicianUserMainActivity"
             android:label="@string/title_activity_main"
-            android:windowSoftInputMode="stateHidden"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateHidden">
         </activity>
-        <activity android:windowSoftInputMode="stateHidden"
-                  android:name=".RegisterActivity">
+        <activity
+            android:name=".RegisterActivity"
+            android:windowSoftInputMode="stateHidden">
         </activity>
         <activity
             android:name=".VenueUserMainActivity"
             android:label="@string/title_activity_venue_user_main"
-            android:windowSoftInputMode="stateHidden"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateHidden">
         </activity>
-        <activity android:name=".PreSetupActivity"
+        <activity
+            android:name=".PreSetupActivity"
             android:windowSoftInputMode="adjustPan">
         </activity>
-            <meta-data
-                android:name="com.google.android.geo.API_KEY"
-                android:value="AIzaSyD2ABHw_mi2wKzmWVOeOl_qkuW9OSVWDoQ"/>
 
-        <service android:name="NotificationService" android:exported="false">
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyD2ABHw_mi2wKzmWVOeOl_qkuW9OSVWDoQ"/>
+
+        <service
+            android:name=".NotificationService"
+            android:exported="false">
         </service>
 
-        <receiver android:name="BootReceiver">
+        <receiver android:name=".BootReceiver">
             <intent-filter>
                 <action android:name="com.liamd.giggity_app"/>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
             </intent-filter>
         </receiver>
+
+        <activity
+            android:name=".FanUserMainActivity"
+            android:label="@string/title_activity_fan_user_main"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
     </application>
 
 </manifest>
-

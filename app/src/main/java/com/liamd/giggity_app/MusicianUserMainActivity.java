@@ -172,6 +172,13 @@ public class MusicianUserMainActivity extends AppCompatActivity implements Navig
                             Intent startVenueUserMainActivity= new Intent(MusicianUserMainActivity.this, VenueUserMainActivity.class);
                             startActivity(startVenueUserMainActivity);
                         }
+
+                        else if (dataSnapshot.child(mAuth.getCurrentUser().getUid() + "/accountType").getValue().equals("Fan"))
+                        {
+                            finish();
+                            Intent startFanUserMainActivity= new Intent(MusicianUserMainActivity.this, FanUserMainActivity.class);
+                            startActivity(startFanUserMainActivity);
+                        }
                     }
                 }
             }

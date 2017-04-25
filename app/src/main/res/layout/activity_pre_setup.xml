@@ -37,13 +37,21 @@
                 android:paddingLeft="10dp">
 
                 <RadioButton
+                    android:text="Fan"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/fanRadio"
+                    android:paddingLeft="10dp"
+                    android:layout_weight="1"
+                    android:checked="true"/>
+
+                <RadioButton
                     android:text="Musician"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/musicianRadio"
                     android:layout_weight="1"
-                    android:paddingLeft="10dp"
-                    android:checked="true"/>
+                    android:paddingLeft="10dp"/>
 
                 <RadioButton
                     android:text="Venue"
@@ -51,8 +59,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/venueRadio"
                     android:paddingLeft="10dp"
-                    android:layout_weight="1"
-                    />
+                    android:layout_weight="1"/>
 
             </RadioGroup>
 

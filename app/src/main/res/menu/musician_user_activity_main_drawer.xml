@@ -52,7 +52,7 @@
                                 android:title="Band Requests"/>
                             <item
                                 android:id="@+id/nav_band_manager"
-                                android:icon="@drawable/ic_menu_manage"
+                                android:icon="@drawable/ic_build_black_24dp"
                                 android:title="Band Manager"/>
                             <item
                                 android:id="@+id/nav_band_members"

@@ -37,6 +37,7 @@ public class PreSetupActivity extends AppCompatActivity
 {
     // Declare general visual components
     private Button mSaveButton;
+    private RadioButton mFanRadio;
     private RadioButton mMusicianRadio;
     private RadioButton mVenueRadio;
     private ProgressDialog mProgressDialog;
@@ -100,6 +101,7 @@ public class PreSetupActivity extends AppCompatActivity
         // Initialise general visual components
         setTitle("Account Preferences");
         mSaveButton = (Button) findViewById(R.id.saveButton);
+        mFanRadio = (RadioButton) findViewById(R.id.fanRadio);
         mMusicianRadio = (RadioButton) findViewById(R.id.musicianRadio);
         mVenueRadio = (RadioButton) findViewById(R.id.venueRadio);
         mProgressDialog = new ProgressDialog(this);
@@ -146,7 +148,8 @@ public class PreSetupActivity extends AppCompatActivity
 
         // Hide/Show specific visual components
         HideVenueUserComponents();
-        ShowMusicianUserComponents();
+        HideMusicianUserComponents();
+        ShowFanUserComponents();
 
         // Calls the populate name fields method to pre-fill the text boxes
         PopulateNameFields();
@@ -160,6 +163,21 @@ public class PreSetupActivity extends AppCompatActivity
                 // When the save button is clicked, the Save() method is called to handle the
                 // insertion of data into the database.
                 Save();
+            }
+        });
+
+        mFanRadio.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
+        {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b)
+            {
+                if(mFanRadio.isChecked())
+                {
+                    // Show and hide the relevant visual components
+                    HideVenueUserComponents();
+                    HideMusicianUserComponents();
+                    ShowFanUserComponents();
+                }
             }
         });
 
@@ -192,6 +210,8 @@ public class PreSetupActivity extends AppCompatActivity
                 }
             }
         });
+
+
 
         // If the venue finder button is selected, call the LaunchPlacePicker to start
         // the place picker activity
@@ -241,7 +261,7 @@ public class PreSetupActivity extends AppCompatActivity
                         .setTitle("I Can't Find My Venue!")
                         .setMessage("If you can't find your venue on the venue finder, please use" +
                                 " the closest location you can, and use this instead. The name can be" +
-                                " overwritten later in the 'My Venues' section.")
+                                " overwritten later in the 'My Venue Profile' section.")
                         .setNeutralButton(android.R.string.ok, new DialogInterface.OnClickListener()
                         {
                             public void onClick(DialogInterface dialog, int which)
@@ -260,7 +280,7 @@ public class PreSetupActivity extends AppCompatActivity
     {
         // Creates a new dialog to display when the save button is clicked
         new AlertDialog.Builder(PreSetupActivity.this)
-                .setIconAttribute(android.R.attr.alertDialogIcon)
+                .setIcon(R.drawable.ic_info_outline_black_24dp)
                 .setTitle("Set Preferences")
                 .setMessage("Are you sure you want to set these preferences? By clicking 'Yes' you" +
                         " are also confirming that you are over 18 years of age.")
@@ -332,7 +352,7 @@ public class PreSetupActivity extends AppCompatActivity
                             }
 
                             // This block handles venue users
-                            else
+                            else if (mVenueRadio.isChecked())
                             {
                                 // Get the selected items from the spinners as a string to store
                                 // in the database. These can then be parsed later when required.
@@ -450,6 +470,53 @@ public class PreSetupActivity extends AppCompatActivity
                                     });
                                 }
                             }
+
+                            else if (mFanRadio.isChecked())
+                            {
+                                // Get the selected items from the spinners as a string to store
+                                // in the database. These can then be parsed later when required.
+                                mGenreListToString = mGenreSelectSpinner.getSelectedItemsAsString();
+
+                                // ensure the location, genres, and instruments aren't null
+                                if(mMusicianUserAddress != null && mMusicianUserLatLng != null && !mGenreListToString.equals(""))
+                                {
+                                    User userToInsert = new User();
+                                    userToInsert.setAccountType("Fan");
+                                    userToInsert.setHasCompletedSetup(true);
+                                    userToInsert.setFirstName(mFirstNameEditText.getText().toString());
+                                    userToInsert.setLastName(mLastNameEditText.getText().toString());
+                                    userToInsert.setHomeAddress(mMusicianUserAddress);
+                                    userToInsert.setHomeLocation(mPlaceToStoreLatLng);
+                                    userToInsert.setGenres(mGenreListToString);
+                                    userToInsert.setEmail(mAuth.getCurrentUser().getEmail());
+                                    userToInsert.setUserID(mAuth.getCurrentUser().getUid());
+                                    userToInsert.setMusicianDistance(0);
+                                    mDatabase.child("Users/" + mAuth.getCurrentUser().getUid()).setValue(userToInsert);
+
+                                    // A dialog is then shown to alert the user that the changes have been made
+                                    final AlertDialog.Builder builder = new AlertDialog.Builder(PreSetupActivity.this);
+                                    builder.setTitle("Confirmation");
+                                    builder.setMessage("Preferences Set!");
+                                    builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                                    {
+                                        @Override
+                                        public void onClick(DialogInterface dialogInterface, int i)
+                                        {
+                                            // Calls the ReturnToFanUserMainActivity
+                                            ReturnToFanUserMainActivity();
+                                        }
+                                    });
+                                    builder.setCancelable(false);
+                                    builder.show();
+                                }
+
+                                else
+                                {
+                                    Toast.makeText(PreSetupActivity.this,
+                                            "Please ensure you have selected your favourite genres and a valid location!",
+                                            Toast.LENGTH_SHORT).show();
+                                }
+                            }
                         }
                     }
                 })
@@ -502,6 +569,13 @@ public class PreSetupActivity extends AppCompatActivity
         startActivity(startVenueUserMainActivity);
     }
 
+    private void ReturnToFanUserMainActivity()
+    {
+        finish();
+        Intent startFanUserMainActivity = new Intent(PreSetupActivity.this, FanUserMainActivity.class);
+        startActivity(startFanUserMainActivity);
+    }
+
     // Method to display musician user specific visual components
     private void ShowMusicianUserComponents()
     {
@@ -533,6 +607,16 @@ public class PreSetupActivity extends AppCompatActivity
     private void HideVenueUserComponents()
     {
         mCantFindVenueText.setVisibility(View.GONE);
+    }
+
+    private void ShowFanUserComponents()
+    {
+        mInstrumentSelectSpinner.setVisibility(View.GONE);
+        mInstrumentHeadingTextView.setVisibility(View.GONE);
+        mCantFindVenueText.setVisibility(View.GONE);
+        mVenueFinderHeadingTextView.setText("Find Your Home Location");
+        mVenueDetailsTextView.setText("No Location Chosen");
+        mPlaceFinderButton.setText("Launch Location Finder");
     }
 
     // Method to create a new instance of the place picker intent builder

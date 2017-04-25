@@ -26,6 +26,9 @@
         <item>4</item>
         <item>5</item>
     </string-array>
+    <string name="title_activity_fan_user_main">FanUserMainActivity</string>
+
+    <string name="action_settings">Settings</string>
 
 
 </resources>
