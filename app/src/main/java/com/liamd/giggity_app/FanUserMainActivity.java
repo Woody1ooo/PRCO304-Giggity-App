@@ -1,5 +1,7 @@
 package com.liamd.giggity_app;
 
+import android.app.Activity;
+import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.net.Uri;
@@ -135,6 +137,43 @@ public class FanUserMainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
+        if(id == R.id.nav_gig_finder)
+        {
+            ClearBackStack(this);
+
+            setTitle("Gig Finder");
+            MusicianUserGigFinderFragment fragment = new MusicianUserGigFinderFragment();
+            Bundle arguments = new Bundle();
+
+            // This variable determines the path the app takes as it looks at the type of account the user holds
+            arguments.putString("UserType", "Fan");
+            fragment.setArguments(arguments);
+            FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.frame, fragment
+                    , "MusicianUserGigFinderFragment")
+                    .addToBackStack(null)
+                    .commit();
+        }
+
+        else if(id == R.id.nav_my_gigs)
+        {
+            ClearBackStack(this);
+
+            setTitle("My Gigs");
+            MusicianUserViewGigsFragment fragment = new MusicianUserViewGigsFragment();
+            Bundle arguments = new Bundle();
+
+            // This variable determines the path the app takes as it looks at the type of account the user holds
+            arguments.putString("UserType", "Fan");
+            fragment.setArguments(arguments);
+            FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.frame, fragment
+                    , "MusicianUserViewGigsFragment")
+                    .addToBackStack(null)
+                    .commit();
+        }
+
+
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
@@ -187,5 +226,21 @@ public class FanUserMainActivity extends AppCompatActivity
         Intent returnToLoginActivity= new Intent(FanUserMainActivity.this, LoginActivity.class);
         returnToLoginActivity.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         startActivity(returnToLoginActivity);
+    }
+
+    // This clears the back stack of fragments and adds a home fragment
+    private static void ClearBackStack(Activity activity)
+    {
+        FragmentManager fragmentManager = activity.getFragmentManager();
+        for(int i = 0; i < fragmentManager.getBackStackEntryCount(); ++i)
+        {
+            fragmentManager.popBackStack();
+        }
+
+        FanUserHomeFragment fragment = new FanUserHomeFragment();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.frame, fragment
+                , "FanUserHomeFragment");
+        fragmentTransaction.commit();
     }
 }

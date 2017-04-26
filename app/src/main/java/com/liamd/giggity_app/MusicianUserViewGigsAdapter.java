@@ -42,16 +42,18 @@ public class MusicianUserViewGigsAdapter extends ArrayAdapter<Gig>
     private LatLng mBandLocationFromDatabase;
     private double mDistance;
     private String mBandId;
+    private boolean mIsFanUser;
 
     // Declare various variables required
     private int resource;
 
-    public MusicianUserViewGigsAdapter(Context context, int resource, List<Gig> items, DataSnapshot dataSnapshot, String bandId)
+    public MusicianUserViewGigsAdapter(Context context, int resource, List<Gig> items, DataSnapshot dataSnapshot, String bandId, boolean isFanUser)
     {
         super(context, resource, items);
         this.resource = resource;
         this.mSnapshot = dataSnapshot;
         this.mBandId = bandId;
+        this.mIsFanUser = isFanUser;
     }
 
     @Override
@@ -127,8 +129,19 @@ public class MusicianUserViewGigsAdapter extends ArrayAdapter<Gig>
         mGigLocationLat = mSnapshot.child("Venues/" + mGig.getVenueID() + "/venueLocation/latitude").getValue(Double.class);
         mGigLocationLng = mSnapshot.child("Venues/" + mGig.getVenueID() + "/venueLocation/longitude").getValue(Double.class);
 
-        mBandLocationFromDatabase = new LatLng(Double.parseDouble(mSnapshot.child("Bands/" + mBandId + "/baseLocation/latitude").getValue().toString())
-                , Double.parseDouble(mSnapshot.child("Bands/" + mBandId + "/baseLocation/longitude").getValue().toString()));
+        if(!mIsFanUser)
+        {
+            mBandLocationFromDatabase = new LatLng(Double.parseDouble(mSnapshot.child("Bands/" + mBandId + "/baseLocation/latitude").getValue().toString())
+                    , Double.parseDouble(mSnapshot.child("Bands/" + mBandId + "/baseLocation/longitude").getValue().toString()));
+        }
+
+        else
+        {
+            // here mBandId is actually the user ID instead
+            mBandLocationFromDatabase = new LatLng(Double.parseDouble(mSnapshot.child("Users/" + mBandId + "/homeLocation/latitude").getValue().toString())
+                    , Double.parseDouble(mSnapshot.child("Users/" + mBandId + "/homeLocation/longitude").getValue().toString()));
+        }
+
 
         // Then set the data as parameters for the gig location object
         mGigLocation.setLatitude(mGigLocationLat);

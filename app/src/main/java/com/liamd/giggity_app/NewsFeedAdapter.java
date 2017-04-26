@@ -2,7 +2,6 @@ package com.liamd.giggity_app;
 
 import android.content.Context;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +23,7 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by liamd on 24/04/2017.
@@ -110,7 +110,7 @@ public class NewsFeedAdapter extends ArrayAdapter<NewsFeedItem>
         {
             int id = getContext().getResources().getIdentifier("com.liamd.giggity_app:drawable/ic_like_red", null, null);
             mLikeButton.setImageResource(id);
-            mLikeButton.setTag(R.drawable.ic_like_red);
+            mLikeButton.setTag("Red");
 
             notifyDataSetChanged();
             mPassedThrough = true;
@@ -121,7 +121,7 @@ public class NewsFeedAdapter extends ArrayAdapter<NewsFeedItem>
         {
             int id = getContext().getResources().getIdentifier("com.liamd.giggity_app:drawable/ic_like_white", null, null);
             mLikeButton.setImageResource(id);
-            mLikeButton.setTag(R.drawable.ic_like_white);
+            mLikeButton.setTag("White");
 
             notifyDataSetChanged();
             mPassedThrough = true;
@@ -133,7 +133,7 @@ public class NewsFeedAdapter extends ArrayAdapter<NewsFeedItem>
             public void onClick(View view)
             {
                 // If the drawable is the white image it means the user can like the post
-                if(GetImageResourceID(mLikeButton) == R.drawable.ic_like_white)
+                if(mLikeButton.getTag().equals("White"))
                 {
                     mLikeCount = item.getLikeCount();
                     mDatabase.child("NewsFeedItems/" + item.getItemId() + "/likeCount").setValue(mLikeCount + 1);
@@ -142,20 +142,23 @@ public class NewsFeedAdapter extends ArrayAdapter<NewsFeedItem>
                     mListOfItems.get(position).setLikeCount(mLikeCount + 1);
 
                     Picasso.with(getContext()).load(R.drawable.ic_like_red).resize(350, 350).into(mLikeButton);
+                    mLikeButton.setTag("Red");
 
                     notifyDataSetChanged();
                 }
 
-                else if(GetImageResourceID(mLikeButton) == R.drawable.ic_like_red)
+                else if(mLikeButton.getTag().equals("Red"))
                 {
                     mLikeCount = item.getLikeCount();
                     mDatabase.child("NewsFeedItems/" + item.getItemId() + "/likeCount").setValue(mLikeCount -1);
                     mDatabase.child("NewsFeedItems/" + item.getItemId() + "/likes/" + mAuth.getCurrentUser().getUid()).removeValue();
 
                     mListOfItems.get(position).setLikeCount(mLikeCount - 1);
-                    notifyDataSetChanged();
 
                     Picasso.with(getContext()).load(R.drawable.ic_like_white).resize(350, 350).into(mLikeButton);
+                    mLikeButton.setTag("White");
+
+                    notifyDataSetChanged();
                 }
             }
         });
@@ -173,10 +176,5 @@ public class NewsFeedAdapter extends ArrayAdapter<NewsFeedItem>
     public int getItemViewType(int position)
     {
         return position;
-    }
-
-    private int GetImageResourceID(ImageButton imageButton)
-    {
-        return (Integer) imageButton.getTag();
     }
 }

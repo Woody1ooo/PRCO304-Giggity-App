@@ -38,6 +38,7 @@ public class MusicianUserViewGigsFragment extends Fragment
     private ArrayList<Gig> mListOfGigs = new ArrayList<>();
     private String mBandId;
     private DataSnapshot mSnapshot;
+    private boolean mIsFanAccount;
 
     public MusicianUserViewGigsFragment()
     {
@@ -50,6 +51,11 @@ public class MusicianUserViewGigsFragment extends Fragment
     {
         // Inflate the layout for this fragment
         View fragmentView = inflater.inflate(R.layout.musician_user_fragment_view_gigs, container, false);
+
+        if(getArguments().getString("UserType").equals("Fan"))
+        {
+            mIsFanAccount = true;
+        }
 
         // Creates a reference to the Firebase database
         mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -66,17 +72,41 @@ public class MusicianUserViewGigsFragment extends Fragment
             public void onDataChange(DataSnapshot dataSnapshot)
             {
                 mSnapshot = dataSnapshot;
-                mBandId = dataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/bandID").getValue().toString();
 
-                Iterable<DataSnapshot> children = dataSnapshot.child("Gigs").getChildren();
-                for (DataSnapshot child : children)
+                if(!mIsFanAccount)
                 {
-                    Gig gig;
-                    gig = child.getValue(Gig.class);
+                    mBandId = dataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/bandID").getValue().toString();
 
-                    if(gig.getBookedAct().equals(mBandId))
+                    Iterable<DataSnapshot> children = dataSnapshot.child("Gigs").getChildren();
+                    for (DataSnapshot child : children)
                     {
-                        mListOfGigs.add(gig);
+                        Gig gig;
+                        gig = child.getValue(Gig.class);
+
+                        if(gig.getBookedAct().equals(mBandId))
+                        {
+                            mListOfGigs.add(gig);
+                        }
+                    }
+                }
+
+                else
+                {
+                    Iterable<DataSnapshot> children = mSnapshot.child("Tickets/").getChildren();
+                    for (DataSnapshot child : children)
+                    {
+                        String gigId = child.getKey();
+
+                        Iterable<DataSnapshot> levelDownChildren = mSnapshot.child("Gigs/").getChildren();
+                        for (DataSnapshot levelDownChild : levelDownChildren)
+                        {
+                            if(levelDownChild.getKey().equals(gigId))
+                            {
+                                Gig gig;
+                                gig = levelDownChild.getValue(Gig.class);
+                                mListOfGigs.add(gig);
+                            }
+                        }
                     }
                 }
 
@@ -108,6 +138,7 @@ public class MusicianUserViewGigsFragment extends Fragment
                 arguments.putString("GigStartDate", selectedGig.getStartDate().toString());
                 arguments.putString("GigEndDate", selectedGig.getEndDate().toString());
                 arguments.putString("GigVenueID", selectedGig.getVenueID());
+                arguments.putString("UserType", "Fan");
                 fragment.setArguments(arguments);
 
                 // Creates a new fragment transaction to display the details of the selected
@@ -117,6 +148,8 @@ public class MusicianUserViewGigsFragment extends Fragment
                 fragmentTransaction.setCustomAnimations(R.animator.enter_from_right, R.animator.enter_from_left);
                 fragmentTransaction.replace(R.id.frame, fragment, "MusicianUserViewGigsDetailsFragment")
                         .addToBackStack(null).commit();
+
+                mListOfGigs.clear();
             }
         });
 
@@ -131,9 +164,17 @@ public class MusicianUserViewGigsFragment extends Fragment
         // Using the custom VenueUserGigsAdapter, the list of users gigs can be displayed
         if(getActivity() != null)
         {
-            adapter = new MusicianUserViewGigsAdapter(getActivity(), R.layout.musician_user_gig_list, mListOfGigs, mSnapshot, mBandId);
+            if(!mIsFanAccount)
+            {
+                adapter = new MusicianUserViewGigsAdapter(getActivity(), R.layout.musician_user_gig_list, mListOfGigs, mSnapshot, mBandId, mIsFanAccount);
+            }
+
+            else
+            {
+                adapter = new MusicianUserViewGigsAdapter(getActivity(), R.layout.musician_user_gig_list, mListOfGigs, mSnapshot, mAuth.getCurrentUser().getUid(), mIsFanAccount);
+            }
+
             mGigsListView.setAdapter(adapter);
         }
     }
-
 }

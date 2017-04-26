@@ -2,11 +2,13 @@ package com.liamd.giggity_app;
 
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
@@ -16,6 +18,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -31,6 +35,11 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.MultiFormatWriter;
+import com.google.zxing.WriterException;
+import com.google.zxing.common.BitMatrix;
+import com.journeyapps.barcodescanner.BarcodeEncoder;
 
 import java.util.Arrays;
 import java.util.List;
@@ -49,6 +58,7 @@ public class MusicianUserViewGigsDetailsFragment extends Fragment implements OnM
     private TextView mGigEndDateTextView;
     private TextView mGigVenueTextView;
     private Button mCancelButton;
+    private Button mViewTicketButton;
     private MapView mMapView;
     private GoogleMap mGoogleMap;
 
@@ -59,6 +69,7 @@ public class MusicianUserViewGigsDetailsFragment extends Fragment implements OnM
     private com.google.android.gms.maps.model.LatLng mVenueLocation;
     private String mGigStartDate;
     private String mGigEndDate;
+    private boolean mIsFanAccount;
 
     // Declare Firebase specific variables
     private FirebaseAuth mAuth;
@@ -78,6 +89,11 @@ public class MusicianUserViewGigsDetailsFragment extends Fragment implements OnM
         // Inflate the layout for this fragment
         View fragmentView = inflater.inflate(R.layout.musician_user_fragment_view_gigs_details, container, false);
 
+        if(getArguments().getString("UserType").equals("Fan"))
+        {
+            mIsFanAccount = true;
+        }
+
         // Creates a reference to Firebase
         mAuth = FirebaseAuth.getInstance();
 
@@ -90,6 +106,19 @@ public class MusicianUserViewGigsDetailsFragment extends Fragment implements OnM
         mGigEndDateTextView = (TextView) fragmentView.findViewById(R.id.finishDateTextView);
         mGigVenueTextView = (TextView) fragmentView.findViewById(R.id.venueTextView);
         mCancelButton = (Button) fragmentView.findViewById(R.id.cancelButton);
+        mViewTicketButton = (Button) fragmentView.findViewById(R.id.viewTicketButton);
+
+        if(!mIsFanAccount)
+        {
+            mViewTicketButton.setVisibility(View.GONE);
+            mCancelButton.setVisibility(View.VISIBLE);
+        }
+
+        else
+        {
+            mViewTicketButton.setVisibility(View.VISIBLE);
+            mCancelButton.setVisibility(View.GONE);
+        }
 
         // Retrieve variables from the previous fragment
         mVenueId = getArguments().getString("GigVenueID");
@@ -107,6 +136,15 @@ public class MusicianUserViewGigsDetailsFragment extends Fragment implements OnM
             public void onClick(View view)
             {
                 Cancel();
+            }
+        });
+
+        mViewTicketButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                ViewTicket();
             }
         });
 
@@ -187,7 +225,11 @@ public class MusicianUserViewGigsDetailsFragment extends Fragment implements OnM
         double longitude = Double.parseDouble(splitUserHomeLocation.get(1));
 
         mVenueLocation = new com.google.android.gms.maps.model.LatLng(latitude, longitude);
-        mBandId = mSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/bandID").getValue().toString();
+
+        if(!mIsFanAccount)
+        {
+            mBandId = mSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/bandID").getValue().toString();
+        }
     }
 
     @Override
@@ -308,6 +350,34 @@ public class MusicianUserViewGigsDetailsFragment extends Fragment implements OnM
             }
         });
         builder.show();
+    }
+
+    private void ViewTicket()
+    {
+        final Dialog viewTicketDialog = new Dialog(getActivity());
+        viewTicketDialog.setContentView(R.layout.ticket_display_dialog_layout);
+
+        String ticketId = mSnapshot.child("Tickets/" + mGigId + "/" + mAuth.getCurrentUser().getUid() + "/ticketId").getValue().toString();
+        int admissionQuantity = Integer.parseInt(mSnapshot.child("Tickets/" + mGigId + "/" + mAuth.getCurrentUser().getUid() + "/admissionQuantity").getValue().toString());
+
+        // Initialise dialog visual components
+        ImageView mTicketImageView = (ImageView) viewTicketDialog.findViewById(R.id.ticketImageView);
+
+        MultiFormatWriter multiFormatWriter = new MultiFormatWriter();
+        try
+        {
+            BitMatrix bitMatrix = multiFormatWriter.encode(ticketId + "\n" + admissionQuantity, BarcodeFormat.QR_CODE, 750, 750);
+            BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
+            Bitmap bitmap = barcodeEncoder.createBitmap(bitMatrix);
+            mTicketImageView.setImageBitmap(bitmap);
+        }
+
+        catch (WriterException e)
+        {
+            e.printStackTrace();
+        }
+
+        viewTicketDialog.show();
     }
 
     private void ConfirmDialog()

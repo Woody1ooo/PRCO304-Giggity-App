@@ -70,6 +70,7 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
     private Boolean multipleGigs = false;
     private int mGigDistanceSelected;
     private Boolean mIsInBand = false;
+    private boolean mIsFanAccount;
 
     // Declare Visual Components
     private ListView mGigsListView;
@@ -103,6 +104,11 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
     {
         // Inflate the layout for this fragment
         View fragmentView = inflater.inflate(R.layout.musician_user_fragment_gig_results, container, false);
+
+        if(getArguments().getString("UserType").equals("Fan"))
+        {
+            mIsFanAccount = true;
+        }
 
         // This initialises the tabs used to hold the different views
         TabHost tabs = (TabHost) fragmentView.findViewById(R.id.tabhost);
@@ -414,11 +420,73 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id)
             {
-                if(mIsInBand)
+                // If the account is not a fan account continue as usual
+                if(!mIsFanAccount)
+                {
+                    if(mIsInBand)
+                    {
+                        Gig selectedGig = (Gig) mGigsListView.getItemAtPosition(position);
+
+                        MusicianUserGigDetailsFragment fragment = new MusicianUserGigDetailsFragment();
+
+                        Bundle arguments = new Bundle();
+                        arguments.putString("GigID", selectedGig.getGigId());
+                        arguments.putString("GigTitle", selectedGig.getTitle());
+                        arguments.putString("GigStartDate", selectedGig.getStartDate().toString());
+                        arguments.putString("GigEndDate", selectedGig.getEndDate().toString());
+                        arguments.putString("GigVenueID", selectedGig.getVenueID());
+                        fragment.setArguments(arguments);
+
+                        // Creates a new fragment transaction to display the details of the selected
+                        // gig. Some custom animation has been added also.
+                        FragmentTransaction fragmentTransaction = getActivity().getFragmentManager()
+                                .beginTransaction();
+                        fragmentTransaction.setCustomAnimations(R.animator.enter_from_right, R.animator.enter_from_left);
+                        fragmentTransaction.replace(R.id.frame, fragment, "MusicianUserGigDetailsFragment")
+                                .addToBackStack(null).commit();
+                    }
+
+                    else
+                    {
+                        // This dialog is created to tell the user that they can't go any further as they're not in a band
+                        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                        builder.setTitle("Alert");
+                        builder.setIcon(R.drawable.ic_info_outline_black_24dp);
+                        builder.setMessage("We've detected that you're currently not part of a band! " +
+                                "You must be part of one to apply for gig opportunities. Would you like to create one now?");
+                        builder.setPositiveButton("Create Band", new DialogInterface.OnClickListener()
+                        {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i)
+                            {
+                                MusicianUserBandCreatorFragment fragment = new MusicianUserBandCreatorFragment();
+                                getActivity().setTitle("Band Creator");
+                                FragmentTransaction fragmentTransaction = getActivity().getFragmentManager()
+                                        .beginTransaction();
+                                fragmentTransaction.setCustomAnimations(R.animator.enter_from_right, R.animator.enter_from_left);
+                                fragmentTransaction.replace(R.id.frame, fragment, "MusicianUserBandCreatorFragment")
+                                        .addToBackStack(null).commit();
+                            }
+                        });
+
+                        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener()
+                        {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i)
+                            {
+
+                            }
+                        });
+                        builder.show();
+                    }
+                }
+
+                // Otherwise load the fan specific fragments
+                else
                 {
                     Gig selectedGig = (Gig) mGigsListView.getItemAtPosition(position);
 
-                    MusicianUserGigDetailsFragment fragment = new MusicianUserGigDetailsFragment();
+                    FanUserGigDetailsFragment fragment = new FanUserGigDetailsFragment();
 
                     Bundle arguments = new Bundle();
                     arguments.putString("GigID", selectedGig.getGigId());
@@ -433,42 +501,8 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
                     FragmentTransaction fragmentTransaction = getActivity().getFragmentManager()
                             .beginTransaction();
                     fragmentTransaction.setCustomAnimations(R.animator.enter_from_right, R.animator.enter_from_left);
-                    fragmentTransaction.replace(R.id.frame, fragment, "MusicianUserGigDetailsFragment")
+                    fragmentTransaction.replace(R.id.frame, fragment, "FanUserGigDetailsFragment")
                             .addToBackStack(null).commit();
-                }
-
-                else
-                {
-                    // This dialog is created to tell the user that they can't go any further as they're not in a band
-                    final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                    builder.setTitle("Alert");
-                    builder.setIcon(R.drawable.ic_info_outline_black_24dp);
-                    builder.setMessage("We've detected that you're currently not part of a band! " +
-                            "You must be part of one to apply for gig opportunities. Would you like to create one now?");
-                    builder.setPositiveButton("Create Band", new DialogInterface.OnClickListener()
-                    {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i)
-                        {
-                            MusicianUserBandCreatorFragment fragment = new MusicianUserBandCreatorFragment();
-                            getActivity().setTitle("Band Creator");
-                            FragmentTransaction fragmentTransaction = getActivity().getFragmentManager()
-                                    .beginTransaction();
-                            fragmentTransaction.setCustomAnimations(R.animator.enter_from_right, R.animator.enter_from_left);
-                            fragmentTransaction.replace(R.id.frame, fragment, "MusicianUserBandCreatorFragment")
-                                    .addToBackStack(null).commit();
-                        }
-                    });
-
-                    builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener()
-                    {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i)
-                        {
-
-                        }
-                    });
-                    builder.show();
                 }
             }
         });
@@ -478,7 +512,96 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
     @Override
     public void onInfoWindowClick(Marker marker)
     {
-        if(mIsInBand)
+        if(!mIsFanAccount)
+        {
+            if(mIsInBand)
+            {
+                // If the text matches multiple gigs then loop through the markers and get the venue id selected
+                if(mGigNameTextView.getText().equals("Multiple Gigs at this venue!"))
+                {
+                    // This loops through the list of marker info to determine the marker clicked
+                    for(int i = 0; i < mListOfGigMarkerInfo.size(); i++)
+                    {
+                        mListOfGigMarkerInfo.get(i);
+
+                        // Once a match has been found the data can be extracted and passed as a bundle argument
+                        if (mListOfGigMarkerInfo.get(i).getMarkerId().equals(marker.getId()))
+                        {
+                            // Pass this venue id into the method
+                            ShowMultipleGigsDialog(mListOfGigMarkerInfo.get(i).getVenueId());
+                        }
+                    }
+                }
+
+                else
+                {
+                    MusicianUserGigDetailsFragment fragment = new MusicianUserGigDetailsFragment();
+                    Bundle arguments = new Bundle();
+
+                    // This loops through the list of marker info to determine the marker clicked
+                    for(int i = 0; i < mListOfGigMarkerInfo.size(); i++)
+                    {
+                        mListOfGigMarkerInfo.get(i);
+
+                        // Once a match has been found the data can be extracted and passed as a bundle argument
+                        if(mListOfGigMarkerInfo.get(i).getMarkerId().equals(marker.getId()))
+                        {
+                            arguments.putString("GigID", mListOfGigMarkerInfo.get(i).getGigId());
+                            arguments.putString("GigTitle", mListOfGigMarkerInfo.get(i).getGigName());
+                            arguments.putString("GigStartDate", mListOfGigMarkerInfo.get(i).getGigStartDate().toString());
+                            arguments.putString("GigEndDate", mListOfGigMarkerInfo.get(i).getGigEndDate().toString());
+                            arguments.putString("GigVenueID", mListOfGigMarkerInfo.get(i).getVenueId());
+                        }
+                    }
+
+                    fragment.setArguments(arguments);
+
+                    // Creates a new fragment transaction to display the details of the selected
+                    // gig. Some custom animation has been added also.
+                    FragmentTransaction fragmentTransaction = getActivity().getFragmentManager()
+                            .beginTransaction();
+                    fragmentTransaction.setCustomAnimations(R.animator.enter_from_right, R.animator.enter_from_left);
+                    fragmentTransaction.replace(R.id.frame, fragment, "MusicianUserGigDetailsFragment")
+                            .addToBackStack(null).commit();
+                }
+            }
+
+            else
+            {
+                // This dialog is created to tell the user that they can't go any further as they're not in a band
+                final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setTitle("Alert");
+                builder.setMessage("We've detected that you're currently not part of a band! " +
+                        "You must be part of one to apply for gig opportunities. Would you like to create one now?");
+                builder.setIcon(R.drawable.ic_info_outline_black_24dp);
+                builder.setPositiveButton("Create Band", new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i)
+                    {
+                        MusicianUserBandCreatorFragment fragment = new MusicianUserBandCreatorFragment();
+                        getActivity().setTitle("Band Creator");
+                        FragmentTransaction fragmentTransaction = getActivity().getFragmentManager()
+                                .beginTransaction();
+                        fragmentTransaction.setCustomAnimations(R.animator.enter_from_right, R.animator.enter_from_left);
+                        fragmentTransaction.replace(R.id.frame, fragment, "MusicianUserBandCreatorFragment")
+                                .addToBackStack(null).commit();
+                    }
+                });
+
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i)
+                    {
+
+                    }
+                });
+                builder.show();
+            }
+        }
+
+        else
         {
             // If the text matches multiple gigs then loop through the markers and get the venue id selected
             if(mGigNameTextView.getText().equals("Multiple Gigs at this venue!"))
@@ -499,16 +622,16 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
 
             else
             {
-                MusicianUserGigDetailsFragment fragment = new MusicianUserGigDetailsFragment();
+                FanUserGigDetailsFragment fragment = new FanUserGigDetailsFragment();
                 Bundle arguments = new Bundle();
 
                 // This loops through the list of marker info to determine the marker clicked
-                for(int i = 0; i < mListOfGigMarkerInfo.size(); i++)
+                for (int i = 0; i < mListOfGigMarkerInfo.size(); i++)
                 {
                     mListOfGigMarkerInfo.get(i);
 
                     // Once a match has been found the data can be extracted and passed as a bundle argument
-                    if(mListOfGigMarkerInfo.get(i).getMarkerId().equals(marker.getId()))
+                    if (mListOfGigMarkerInfo.get(i).getMarkerId().equals(marker.getId()))
                     {
                         arguments.putString("GigID", mListOfGigMarkerInfo.get(i).getGigId());
                         arguments.putString("GigTitle", mListOfGigMarkerInfo.get(i).getGigName());
@@ -525,44 +648,11 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
                 FragmentTransaction fragmentTransaction = getActivity().getFragmentManager()
                         .beginTransaction();
                 fragmentTransaction.setCustomAnimations(R.animator.enter_from_right, R.animator.enter_from_left);
-                fragmentTransaction.replace(R.id.frame, fragment, "MusicianUserGigDetailsFragment")
+                fragmentTransaction.replace(R.id.frame, fragment, "FanUserGigDetailsFragment")
                         .addToBackStack(null).commit();
             }
         }
 
-        else
-        {
-            // This dialog is created to tell the user that they can't go any further as they're not in a band
-            final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setTitle("Alert");
-            builder.setMessage("We've detected that you're currently not part of a band! " +
-                    "You must be part of one to apply for gig opportunities. Would you like to create one now?");
-            builder.setIcon(R.drawable.ic_info_outline_black_24dp);
-            builder.setPositiveButton("Create Band", new DialogInterface.OnClickListener()
-            {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i)
-                {
-                    MusicianUserBandCreatorFragment fragment = new MusicianUserBandCreatorFragment();
-                    getActivity().setTitle("Band Creator");
-                    FragmentTransaction fragmentTransaction = getActivity().getFragmentManager()
-                            .beginTransaction();
-                    fragmentTransaction.setCustomAnimations(R.animator.enter_from_right, R.animator.enter_from_left);
-                    fragmentTransaction.replace(R.id.frame, fragment, "MusicianUserBandCreatorFragment")
-                            .addToBackStack(null).commit();
-                }
-            });
-
-            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener()
-            {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i)
-                {
-
-                }
-            });
-            builder.show();
-        }
     }
 
     private void PopulateListView()
@@ -639,11 +729,27 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
             mFilteredGigsToRemove.add(listIndex);
         }
 
-        if(!mListOfGigs.get(listIndex).getBookedAct().equals("Vacant"))
+        // If the user is a musician filter out the non-vacant gigs
+        if(!mIsFanAccount)
         {
-            if(!mFilteredGigsToRemove.contains(listIndex))
+            if(!mListOfGigs.get(listIndex).getBookedAct().equals("Vacant"))
             {
-                mFilteredGigsToRemove.add(listIndex);
+                if(!mFilteredGigsToRemove.contains(listIndex))
+                {
+                    mFilteredGigsToRemove.add(listIndex);
+                }
+            }
+        }
+
+        // If the user is a fan only show gigs with acts
+        else
+        {
+            if(mListOfGigs.get(listIndex).getBookedAct().equals("Vacant"))
+            {
+                if(!mFilteredGigsToRemove.contains(listIndex))
+                {
+                    mFilteredGigsToRemove.add(listIndex);
+                }
             }
         }
     }
@@ -684,29 +790,59 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id)
             {
-                multipleGigSelectorDialog.dismiss();
+                if(!mIsFanAccount)
+                {
+                    multipleGigSelectorDialog.dismiss();
 
-                // This returns the selected gig from the list view
-                Gig selectedGig = (Gig) mGigsListView.getItemAtPosition(position);
+                    // This returns the selected gig from the list view
+                    Gig selectedGig = (Gig) mGigsListView.getItemAtPosition(position);
 
-                MusicianUserGigDetailsFragment fragment = new MusicianUserGigDetailsFragment();
-                Bundle arguments = new Bundle();
+                    MusicianUserGigDetailsFragment fragment = new MusicianUserGigDetailsFragment();
+                    Bundle arguments = new Bundle();
 
-                arguments.putString("GigID", selectedGig.getGigId());
-                arguments.putString("GigTitle", selectedGig.getTitle());
-                arguments.putString("GigStartDate", selectedGig.getStartDate().toString());
-                arguments.putString("GigEndDate", selectedGig.getEndDate().toString());
-                arguments.putString("GigVenueID", selectedGig.getVenueID());
+                    arguments.putString("GigID", selectedGig.getGigId());
+                    arguments.putString("GigTitle", selectedGig.getTitle());
+                    arguments.putString("GigStartDate", selectedGig.getStartDate().toString());
+                    arguments.putString("GigEndDate", selectedGig.getEndDate().toString());
+                    arguments.putString("GigVenueID", selectedGig.getVenueID());
 
-                fragment.setArguments(arguments);
+                    fragment.setArguments(arguments);
 
-                // Creates a new fragment transaction to display the details of the selected
-                // gig. Some custom animation has been added also.
-                FragmentTransaction fragmentTransaction = getActivity().getFragmentManager()
-                        .beginTransaction();
-                fragmentTransaction.setCustomAnimations(R.animator.enter_from_right, R.animator.enter_from_left);
-                fragmentTransaction.replace(R.id.frame, fragment, "MusicianUserGigDetailsFragment")
-                        .addToBackStack(null).commit();
+                    // Creates a new fragment transaction to display the details of the selected
+                    // gig. Some custom animation has been added also.
+                    FragmentTransaction fragmentTransaction = getActivity().getFragmentManager()
+                            .beginTransaction();
+                    fragmentTransaction.setCustomAnimations(R.animator.enter_from_right, R.animator.enter_from_left);
+                    fragmentTransaction.replace(R.id.frame, fragment, "MusicianUserGigDetailsFragment")
+                            .addToBackStack(null).commit();
+                }
+
+                else
+                {
+                    multipleGigSelectorDialog.dismiss();
+
+                    // This returns the selected gig from the list view
+                    Gig selectedGig = (Gig) mGigsListView.getItemAtPosition(position);
+
+                    FanUserGigDetailsFragment fragment = new FanUserGigDetailsFragment();
+                    Bundle arguments = new Bundle();
+
+                    arguments.putString("GigID", selectedGig.getGigId());
+                    arguments.putString("GigTitle", selectedGig.getTitle());
+                    arguments.putString("GigStartDate", selectedGig.getStartDate().toString());
+                    arguments.putString("GigEndDate", selectedGig.getEndDate().toString());
+                    arguments.putString("GigVenueID", selectedGig.getVenueID());
+
+                    fragment.setArguments(arguments);
+
+                    // Creates a new fragment transaction to display the details of the selected
+                    // gig. Some custom animation has been added also.
+                    FragmentTransaction fragmentTransaction = getActivity().getFragmentManager()
+                            .beginTransaction();
+                    fragmentTransaction.setCustomAnimations(R.animator.enter_from_right, R.animator.enter_from_left);
+                    fragmentTransaction.replace(R.id.frame, fragment, "FanUserGigDetailsFragment")
+                            .addToBackStack(null).commit();
+                }
             }
         });
     }

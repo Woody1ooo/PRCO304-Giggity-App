@@ -195,7 +195,7 @@ public class MusicianUserMainActivity extends AppCompatActivity implements Navig
             @Override
             public void onDataChange(DataSnapshot dataSnapshot)
             {
-                if(dataSnapshot.child("UserGigInformation/" + mAuth.getCurrentUser().getUid()).exists())
+                if(mAuth.getCurrentUser() != null && dataSnapshot.child("UserGigInformation/" + mAuth.getCurrentUser().getUid()).exists())
                 {
                     Iterable<DataSnapshot> children = dataSnapshot.child("UserGigInformation/" + mAuth.getCurrentUser().getUid()).getChildren();
                     for (DataSnapshot child : children)
@@ -345,6 +345,11 @@ public class MusicianUserMainActivity extends AppCompatActivity implements Navig
 
             setTitle("Gig Finder");
             MusicianUserGigFinderFragment fragment = new MusicianUserGigFinderFragment();
+            Bundle arguments = new Bundle();
+
+            // This variable determines the path the app takes as it looks at the type of account the user holds
+            arguments.putString("UserType", "Musician");
+            fragment.setArguments(arguments);
             FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
             fragmentTransaction.replace(R.id.frame, fragment
                     , "MusicianUserGigFinderFragment")
@@ -359,6 +364,11 @@ public class MusicianUserMainActivity extends AppCompatActivity implements Navig
 
             setTitle("My Gigs");
             MusicianUserViewGigsFragment fragment = new MusicianUserViewGigsFragment();
+            Bundle arguments = new Bundle();
+
+            // This variable determines the path the app takes as it looks at the type of account the user holds
+            arguments.putString("UserType", "Musician");
+            fragment.setArguments(arguments);
             FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
             fragmentTransaction.replace(R.id.frame, fragment
                     , "MusicianUserViewGigsFragment")

@@ -63,6 +63,7 @@ public class MusicianUserGigFinderFragment extends Fragment implements LocationL
     private Location location;
 
     private boolean mIsInBand = true;
+    private boolean mIsFanAccount;
 
     // The minimum distance to change Updates in meters
     private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 10; // 10 meters
@@ -83,6 +84,12 @@ public class MusicianUserGigFinderFragment extends Fragment implements LocationL
     {
         // Inflate the layout for this fragment
         View fragmentView = inflater.inflate(R.layout.musician_user_fragment_gig_finder, container, false);
+
+        // If the user holds a fan account set the flag
+        if(getArguments().getString("UserType").equals("Fan"))
+        {
+            mIsFanAccount = true;
+        }
 
         // Creates a reference to Firebase
         mAuth = FirebaseAuth.getInstance();
@@ -131,7 +138,7 @@ public class MusicianUserGigFinderFragment extends Fragment implements LocationL
                 // If not inform them that they can't apply for gig opportunities.
                 if(dataSnapshot.child(mAuth.getCurrentUser().getUid() + "/inBand").getValue().equals(false))
                 {
-                    if(getActivity() != null)
+                    if(getActivity() != null && !mIsFanAccount)
                     {
                         // A dialog is then shown to alert the user that the changes have been made
                         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -409,6 +416,18 @@ public class MusicianUserGigFinderFragment extends Fragment implements LocationL
 
         arguments.putInt("DistanceSelected", mDistanceSelected);
         arguments.putBoolean("IsInBand", mIsInBand);
+
+        // If the flag is set pass this value on
+        if(mIsFanAccount)
+        {
+            arguments.putString("UserType", "Fan");
+        }
+
+        else
+        {
+            arguments.putString("UserType", "Musician");
+        }
+
         fragment.setArguments(arguments);
 
         // Creates a new fragment transaction to display the details of the selected

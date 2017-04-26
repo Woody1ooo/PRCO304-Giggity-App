@@ -391,8 +391,8 @@ public class MusicianUserBandRequestsInBandReceivedDetailsFragment extends Fragm
                 String newsFeedPushKey = mDatabase.child("NewsFeedItems/").push().getKey();
 
                 NewsFeedItem item = new NewsFeedItem(newsFeedPushKey,
-                        mSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/firstName").getValue().toString() + " " +
-                                mSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/lastName").getValue().toString(),
+                        mSnapshot.child("Users/" + mUserId + "/firstName").getValue().toString() + " " +
+                                mSnapshot.child("Users/" + mUserId + "/lastName").getValue().toString(),
                                 "has just joined " + mSnapshot.child("Bands/" + mBandId + "/name").getValue().toString() + ".", mBandId);
 
                 mDatabase.child("NewsFeedItems/" + newsFeedPushKey).setValue(item);
