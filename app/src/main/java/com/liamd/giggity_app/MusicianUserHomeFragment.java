@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.BaseAdapter;
 import android.widget.ListView;
 
 import com.google.firebase.database.DataSnapshot;
@@ -39,7 +40,7 @@ public class MusicianUserHomeFragment extends Fragment
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState)
+                             final Bundle savedInstanceState)
     {
         // Inflate the layout for this fragment
         View fragmentView = inflater.inflate(R.layout.musician_user_fragment_home, container, false);
@@ -58,6 +59,8 @@ public class MusicianUserHomeFragment extends Fragment
             @Override
             public void onDataChange(DataSnapshot dataSnapshot)
             {
+                mListOfItems.clear();
+
                 // This iterates through the venues and adds them to a list (mListOfVenues)
                 Iterable<DataSnapshot> newsItemChildren = dataSnapshot.getChildren();
                 for (DataSnapshot child : newsItemChildren)
@@ -66,6 +69,17 @@ public class MusicianUserHomeFragment extends Fragment
                     item = child.getValue(NewsFeedItem.class);
 
                     mListOfItems.add(item);
+
+                    if(getActivity() != null && adapter == null)
+                    {
+                        adapter = new NewsFeedAdapter(getActivity(), R.layout.news_feed_list, mListOfItems, dataSnapshot);
+                        mNewsFeedListView.setAdapter(adapter);
+                    }
+
+                    else
+                    {
+                        adapter.notifyDataSetChanged();
+                    }
                 }
             }
 
@@ -76,10 +90,6 @@ public class MusicianUserHomeFragment extends Fragment
             }
         });
 
-        adapter = new NewsFeedAdapter(getActivity(), R.layout.news_feed_list, mListOfItems);
-        mNewsFeedListView.setAdapter(adapter);
-
         return fragmentView;
     }
-
 }

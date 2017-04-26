@@ -6,22 +6,44 @@ package com.liamd.giggity_app;
 
 public class NewsFeedItem
 {
+    private String itemId;
     private String userName;
     private String message;
-    private String gigId;
-    private String bandId;
+    private String userID;
+    private String gigID;
+    private String bandID;
+    private int likeCount;
 
     public NewsFeedItem()
     {
 
     }
 
-    public NewsFeedItem(String userName, String message, String gigId, String bandId)
+    public NewsFeedItem(String itemId, String userName, String message, String gigID, String bandID)
     {
+        this.itemId = itemId;
         this.userName = userName;
         this.message = message;
-        this.gigId = gigId;
-        this.bandId = bandId;
+        this.gigID = gigID;
+        this.bandID = bandID;
+    }
+
+    public NewsFeedItem(String itemId, String userName, String message,  String bandID)
+    {
+        this.itemId = itemId;
+        this.userName = userName;
+        this.message = message;
+        this.bandID = bandID;
+    }
+
+    public String getItemId()
+    {
+        return itemId;
+    }
+
+    public void setItemId(String itemId)
+    {
+        this.itemId = itemId;
     }
 
     public String getUserName()
@@ -44,23 +66,43 @@ public class NewsFeedItem
         this.message = message;
     }
 
-    public String getGigId()
+    public String getUserID()
     {
-        return gigId;
+        return userID;
     }
 
-    public void setGigId(String gigId)
+    public void setUserID(String userID)
     {
-        this.gigId = gigId;
+        this.userID = userID;
     }
 
-    public String getBandId()
+    public String getGigID()
     {
-        return bandId;
+        return gigID;
     }
 
-    public void setBandId(String bandId)
+    public void setGigID(String gigID)
     {
-        this.bandId = bandId;
+        this.gigID = gigID;
+    }
+
+    public String getBandID()
+    {
+        return bandID;
+    }
+
+    public void setBandID(String bandId)
+    {
+        this.bandID = bandID;
+    }
+
+    public int getLikeCount()
+    {
+        return likeCount;
+    }
+
+    public void setLikeCount(int likeCount)
+    {
+        this.likeCount = likeCount;
     }
 }

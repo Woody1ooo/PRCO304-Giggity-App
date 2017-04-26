@@ -387,6 +387,16 @@ public class MusicianUserBandRequestsInBandReceivedDetailsFragment extends Fragm
                 // This posts a notification to the database to be picked up by the user who submitted the request
                 mDatabase.child("Notifications/MusicianSentBandRequestsAccepted/" + mUserId + "/" + mBandId).child("requestStatus").setValue("Accepted");
 
+                // This posts a news feed item
+                String newsFeedPushKey = mDatabase.child("NewsFeedItems/").push().getKey();
+
+                NewsFeedItem item = new NewsFeedItem(newsFeedPushKey,
+                        mSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/firstName").getValue().toString() + " " +
+                                mSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/lastName").getValue().toString(),
+                                "has just joined " + mSnapshot.child("Bands/" + mBandId + "/name").getValue().toString() + ".", mBandId);
+
+                mDatabase.child("NewsFeedItems/" + newsFeedPushKey).setValue(item);
+
                 // A dialog is then shown to alert the user that the changes have been made
                 final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                 builder.setTitle("Confirmation");
