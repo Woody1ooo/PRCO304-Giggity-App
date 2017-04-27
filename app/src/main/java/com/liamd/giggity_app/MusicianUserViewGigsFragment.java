@@ -95,16 +95,22 @@ public class MusicianUserViewGigsFragment extends Fragment
                     Iterable<DataSnapshot> children = mSnapshot.child("Tickets/").getChildren();
                     for (DataSnapshot child : children)
                     {
+                        // Get the gig id of the first ticket
                         String gigId = child.getKey();
 
-                        Iterable<DataSnapshot> levelDownChildren = mSnapshot.child("Gigs/").getChildren();
-                        for (DataSnapshot levelDownChild : levelDownChildren)
+                        // If the gig has a child with the current user's id it means the current user has a ticket for that gig
+                        if(dataSnapshot.child("Tickets/" + gigId + "/" + mAuth.getCurrentUser().getUid()).exists())
                         {
-                            if(levelDownChild.getKey().equals(gigId))
+                            // The details of that gig can then be obtained and posted to the list view
+                            Iterable<DataSnapshot> levelDownChildren = mSnapshot.child("Gigs/").getChildren();
+                            for (DataSnapshot levelDownChild : levelDownChildren)
                             {
-                                Gig gig;
-                                gig = levelDownChild.getValue(Gig.class);
-                                mListOfGigs.add(gig);
+                                if(levelDownChild.getKey().equals(gigId))
+                                {
+                                    Gig gig;
+                                    gig = levelDownChild.getValue(Gig.class);
+                                    mListOfGigs.add(gig);
+                                }
                             }
                         }
                     }
@@ -138,7 +144,17 @@ public class MusicianUserViewGigsFragment extends Fragment
                 arguments.putString("GigStartDate", selectedGig.getStartDate().toString());
                 arguments.putString("GigEndDate", selectedGig.getEndDate().toString());
                 arguments.putString("GigVenueID", selectedGig.getVenueID());
-                arguments.putString("UserType", "Fan");
+
+                if(mIsFanAccount)
+                {
+                    arguments.putString("UserType", "Fan");
+                }
+
+                else
+                {
+                    arguments.putString("UserType", "Musician");
+                }
+
                 fragment.setArguments(arguments);
 
                 // Creates a new fragment transaction to display the details of the selected

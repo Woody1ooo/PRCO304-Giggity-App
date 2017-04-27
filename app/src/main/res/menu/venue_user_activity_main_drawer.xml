@@ -33,6 +33,10 @@
                         android:id="@+id/nav_gig_requests"
                         android:icon="@drawable/ic_swap_vert_black_24dp"
                         android:title="Gig Requests"/>
+                    <item
+                        android:id="@+id/nav_ticket_scanner"
+                        android:icon="@drawable/ic_barcode_24dp"
+                        android:title="Ticket Scanner"/>
                     </group>
                 </menu>
             </item>

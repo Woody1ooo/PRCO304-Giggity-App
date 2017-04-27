@@ -7,10 +7,15 @@ package com.liamd.giggity_app;
 public class Ticket
 {
     private String ticketId;
-    private int admissionQuantity;
+    private long admissionQuantity;
     private String gigId;
 
-    public Ticket(String ticketId, int admissionQuantity, String gigId)
+    public Ticket()
+    {
+
+    }
+
+    public Ticket(String ticketId, long admissionQuantity, String gigId)
     {
         this.ticketId = ticketId;
         this.admissionQuantity = admissionQuantity;
@@ -27,12 +32,12 @@ public class Ticket
         this.ticketId = ticketId;
     }
 
-    public int getAdmissionQuantity()
+    public long getAdmissionQuantity()
     {
         return admissionQuantity;
     }
 
-    public void setAdmissionQuantity(int admissionQuantity)
+    public void setAdmissionQuantity(long admissionQuantity)
     {
         this.admissionQuantity = admissionQuantity;
     }

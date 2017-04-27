@@ -272,7 +272,7 @@ public class FanUserGigDetailsFragment extends Fragment implements OnMapReadyCal
         ticketPickerDialog.setTitle("Ticket Picker");
         ticketPickerDialog.setContentView(R.layout.ticket_purchase_dialog_layout);
 
-        final double ticketCost = 10;
+        final int ticketCost = 10;
 
         // Initialise dialog visual components
         TextView mGigNameTextView = (TextView) ticketPickerDialog.findViewById(R.id.gigNameTextView);

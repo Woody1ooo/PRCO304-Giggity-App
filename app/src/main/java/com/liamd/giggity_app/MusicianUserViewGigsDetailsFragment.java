@@ -354,19 +354,22 @@ public class MusicianUserViewGigsDetailsFragment extends Fragment implements OnM
 
     private void ViewTicket()
     {
+        // This creates an instance of the view ticket dialog which displays an image view
         final Dialog viewTicketDialog = new Dialog(getActivity());
         viewTicketDialog.setContentView(R.layout.ticket_display_dialog_layout);
 
+        // By obtaining the ticket ID and admission quantity these can then be set against the ticket
         String ticketId = mSnapshot.child("Tickets/" + mGigId + "/" + mAuth.getCurrentUser().getUid() + "/ticketId").getValue().toString();
-        int admissionQuantity = Integer.parseInt(mSnapshot.child("Tickets/" + mGigId + "/" + mAuth.getCurrentUser().getUid() + "/admissionQuantity").getValue().toString());
+        long admissionQuantity = Long.parseLong(mSnapshot.child("Tickets/" + mGigId + "/" + mAuth.getCurrentUser().getUid() + "/admissionQuantity").getValue().toString());
 
         // Initialise dialog visual components
         ImageView mTicketImageView = (ImageView) viewTicketDialog.findViewById(R.id.ticketImageView);
 
         MultiFormatWriter multiFormatWriter = new MultiFormatWriter();
+
         try
         {
-            BitMatrix bitMatrix = multiFormatWriter.encode(ticketId + "\n" + admissionQuantity, BarcodeFormat.QR_CODE, 750, 750);
+            BitMatrix bitMatrix = multiFormatWriter.encode(ticketId + "\n" + admissionQuantity + "\n" + mGigId + "\n" + mGigNameTextView.getText().toString(), BarcodeFormat.QR_CODE, 750, 750);
             BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
             Bitmap bitmap = barcodeEncoder.createBitmap(bitMatrix);
             mTicketImageView.setImageBitmap(bitmap);

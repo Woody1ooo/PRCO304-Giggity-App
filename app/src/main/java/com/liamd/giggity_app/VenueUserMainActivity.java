@@ -172,7 +172,18 @@ public class VenueUserMainActivity extends AppCompatActivity
             fragmentTransaction.replace(R.id.frame, fragment, "VenueUserGigRequestsFragment")
                     .addToBackStack(null)
                     .commit();
+        }
 
+        else if(id == R.id.nav_ticket_scanner)
+        {
+            getFragmentManager().popBackStackImmediate();
+
+            setTitle("Ticket Scanner");
+            VenueUserTicketScannerFragment fragment = new VenueUserTicketScannerFragment();
+            FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.frame, fragment, "VenueUserTicketScannerFragment")
+                    .addToBackStack(null)
+                    .commit();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
