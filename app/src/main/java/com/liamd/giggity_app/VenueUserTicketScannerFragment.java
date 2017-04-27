@@ -91,94 +91,102 @@ public class VenueUserTicketScannerFragment extends Fragment
             // If there is data process it as follows
             else
             {
-                // This splits the data around the line breaks thus separating it into individual components
-                String splitResult[] = result.getContents().split("\\n");
-                final String ticketIdFromScan = splitResult[0];
-                final int quantityFromScan = Integer.parseInt(splitResult[1]);
-                final String gigIdFromScan = splitResult[2];
-                final String[] userId = {""};
-                final String gigName = splitResult[3];
-
-                mDatabase.addListenerForSingleValueEvent(new ValueEventListener()
+                try
                 {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot)
+                    // This splits the data around the line breaks thus separating it into individual components
+                    String splitResult[] = result.getContents().split("\\n");
+                    final String ticketIdFromScan = splitResult[0];
+                    final int quantityFromScan = Integer.parseInt(splitResult[1]);
+                    final String gigIdFromScan = splitResult[2];
+                    final String[] userId = {""};
+                    final String gigName = splitResult[3];
+
+                    mDatabase.addListenerForSingleValueEvent(new ValueEventListener()
                     {
-                        // Loop through the snapshot using the gig id scanned and take the key as the user id
-                        Iterable<DataSnapshot> children = dataSnapshot.child("Tickets/" + gigIdFromScan).getChildren();
-                        for (DataSnapshot child : children)
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot)
                         {
-                            userId[0] = child.getKey();
-
-                            // Add the ticket to the list of tickets
-                            Ticket ticket;
-                            ticket = child.getValue(Ticket.class);
-                            mListOfTickets.add(ticket);
-                        }
-
-                        // Get the logged in user's venue id to check that the ticket they are confirming is one at their own venue
-                        mVenueId = dataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/venueID").getValue().toString();
-
-                        // For each ticket in list of tickets check that the gig id, ticket id, quantity, and venue Id all match
-                        for (Ticket databaseTicket : mListOfTickets)
-                        {
-                            if(databaseTicket.getGigId().equals(gigIdFromScan)
-                                    && databaseTicket.getTicketId().equals(ticketIdFromScan)
-                                    && databaseTicket.getAdmissionQuantity() == quantityFromScan
-                                    && dataSnapshot.child("Gigs/" + databaseTicket.getGigId() + "/venueID").getValue().equals(mVenueId))
+                            // Loop through the snapshot using the gig id scanned and take the key as the user id
+                            Iterable<DataSnapshot> children = dataSnapshot.child("Tickets/" + gigIdFromScan).getChildren();
+                            for (DataSnapshot child : children)
                             {
-                                // If this is the case show it's a valid ticket and ask the user to confirm
-                                final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                                builder.setTitle("Valid Ticket!");
-                                builder.setMessage("This ticket grants " + quantityFromScan + " person(s) entry to the following gig: \n\n" + gigName +
-                                        "\n\nAre you sure you wish to confirm this ticket?");
-                                builder.setPositiveButton("Confirm", new DialogInterface.OnClickListener()
-                                {
-                                    // If the user confirms this the ticket is removed from the database to prevent it from being used multiple times
-                                    @Override
-                                    public void onClick(DialogInterface dialogInterface, int i)
-                                    {
-                                        mDatabase.child("Tickets/" + gigIdFromScan + "/" + userId[0]).removeValue();
-                                        mListOfTickets.clear();
+                                userId[0] = child.getKey();
 
-                                        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                                        builder.setTitle("Confirmation");
-                                        builder.setMessage("Ticket Processed!");
-                                        builder.setPositiveButton("Confirm", new DialogInterface.OnClickListener()
+                                // Add the ticket to the list of tickets
+                                Ticket ticket;
+                                ticket = child.getValue(Ticket.class);
+                                mListOfTickets.add(ticket);
+                            }
+
+                            // Get the logged in user's venue id to check that the ticket they are confirming is one at their own venue
+                            mVenueId = dataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/venueID").getValue().toString();
+
+                            // For each ticket in list of tickets check that the gig id, ticket id, quantity, and venue Id all match
+                            for (Ticket databaseTicket : mListOfTickets)
+                            {
+                                if (databaseTicket.getGigId().equals(gigIdFromScan)
+                                        && databaseTicket.getTicketId().equals(ticketIdFromScan)
+                                        && databaseTicket.getAdmissionQuantity() == quantityFromScan
+                                        && dataSnapshot.child("Gigs/" + databaseTicket.getGigId() + "/venueID").getValue().equals(mVenueId))
+                                {
+                                    // If this is the case show it's a valid ticket and ask the user to confirm
+                                    final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                                    builder.setTitle("Valid Ticket!");
+                                    builder.setMessage("This ticket grants " + quantityFromScan + " person(s) entry to the following gig: \n\n" + gigName +
+                                            "\n\nAre you sure you wish to confirm this ticket?");
+                                    builder.setPositiveButton("Confirm", new DialogInterface.OnClickListener()
+                                    {
+                                        // If the user confirms this the ticket is removed from the database to prevent it from being used multiple times
+                                        @Override
+                                        public void onClick(DialogInterface dialogInterface, int i)
                                         {
-                                            @Override
-                                            public void onClick(DialogInterface dialogInterface, int i)
+                                            mDatabase.child("Tickets/" + gigIdFromScan + "/" + userId[0]).removeValue();
+                                            mListOfTickets.clear();
+
+                                            final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                                            builder.setTitle("Confirmation");
+                                            builder.setMessage("Ticket Processed!");
+                                            builder.setPositiveButton("Confirm", new DialogInterface.OnClickListener()
                                             {
+                                                @Override
+                                                public void onClick(DialogInterface dialogInterface, int i)
+                                                {
 
-                                            }
-                                        });
-                                        builder.show();
-                                    }
-                                });
-                                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener()
-                                {
-                                    @Override
-                                    public void onClick(DialogInterface dialogInterface, int i)
+                                                }
+                                            });
+                                            builder.show();
+                                        }
+                                    });
+                                    builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener()
                                     {
+                                        @Override
+                                        public void onClick(DialogInterface dialogInterface, int i)
+                                        {
 
-                                    }
-                                });
-                                builder.show();
-                            }
+                                        }
+                                    });
+                                    builder.show();
+                                }
 
-                            else
-                            {
-                                Toast.makeText(getActivity(), "Something went wrong! Are you sure this gig is at your venue?", Toast.LENGTH_LONG).show();
+                                else
+                                {
+                                    Toast.makeText(getActivity(), "Something went wrong! Are you sure this gig is at your venue?", Toast.LENGTH_LONG).show();
+                                }
                             }
                         }
-                    }
 
-                    @Override
-                    public void onCancelled(DatabaseError databaseError)
-                    {
+                        @Override
+                        public void onCancelled(DatabaseError databaseError)
+                        {
 
-                    }
-                });
+                        }
+                    });
+                }
+                catch(IndexOutOfBoundsException e)
+                {
+                    System.out.println(e);
+                    Toast.makeText(getActivity(), "Something went wrong! Are you sure this gig is at your venue?", Toast.LENGTH_LONG).show();
+                }
             }
         }
 
