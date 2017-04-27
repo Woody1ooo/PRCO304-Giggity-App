@@ -204,6 +204,25 @@
                 android:layout_marginRight="20dp"
                 android:layout_marginBottom="20dp"/>
 
+            <TextView
+                android:text="Featured Item"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="20dp"
+                android:paddingLeft="10dp"
+                android:id="@+id/textView17"
+                android:textSize="16sp"
+                android:textColor="@color/cast_expanded_controller_background_color"/>
+
+        <CheckBox
+            android:id="@+id/featuredItemCheckBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:text="Yes"/>
+
             <Button
                 android:text="Create Gig"
                 android:layout_width="match_parent"

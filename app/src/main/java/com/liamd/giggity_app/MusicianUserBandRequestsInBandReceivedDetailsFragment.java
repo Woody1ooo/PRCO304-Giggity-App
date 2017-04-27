@@ -395,6 +395,8 @@ public class MusicianUserBandRequestsInBandReceivedDetailsFragment extends Fragm
                                 mSnapshot.child("Users/" + mUserId + "/lastName").getValue().toString(),
                                 "has just joined " + mSnapshot.child("Bands/" + mBandId + "/name").getValue().toString() + ".", mBandId);
 
+                item.setUserID(mUserId);
+
                 mDatabase.child("NewsFeedItems/" + newsFeedPushKey).setValue(item);
 
                 // A dialog is then shown to alert the user that the changes have been made

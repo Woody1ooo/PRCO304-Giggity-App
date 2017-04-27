@@ -5,6 +5,7 @@ import android.*;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -20,8 +21,12 @@ import android.support.v4.app.ActivityCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -63,6 +68,7 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
     private Button mSelectFinishTimeButton;
     private TextView mStartTimeSelectedTextView;
     private TextView mFinishTimeSelectedTextView;
+    private CheckBox mFeaturedItemCheckBox;
     private Button mCreateGigButton;
 
     // Declare Firebase specific variables
@@ -96,6 +102,9 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
     private boolean hasPermission = true;
     private String mGigId;
 
+    private boolean mIsFeatured;
+    private int mFeaturedWeekQuantity;
+
     public VenueUserCreateGigFragment()
     {
         // Required empty public constructor
@@ -125,6 +134,8 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
 
         mStartTimeSelectedTextView = (TextView) fragmentView.findViewById(R.id.StartTimeSelectedLabel);
         mFinishTimeSelectedTextView = (TextView) fragmentView.findViewById(R.id.FinishTimeSelectedLabel);
+
+        mFeaturedItemCheckBox = (CheckBox) fragmentView.findViewById(R.id.featuredItemCheckBox);
 
         mCreateGigButton = (Button) fragmentView.findViewById(R.id.createGigButton);
 
@@ -225,6 +236,18 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
                         // When the select finish time button is clicked, the method to display
                         // the time picker is called
                         FinishTimeShowTimePicker();
+                    }
+                });
+
+                mFeaturedItemCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
+                {
+                    @Override
+                    public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked)
+                    {
+                        if(isChecked)
+                        {
+                            OpenFeaturedPaymentDialog();
+                        }
                     }
                 });
 
@@ -783,6 +806,122 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
     public void onTimeSet(TimePicker timePicker, int i, int i1)
     {
 
+    }
+
+    private void OpenFeaturedPaymentDialog()
+    {
+        final Dialog ticketPickerDialog = new Dialog(getActivity());
+        ticketPickerDialog.setContentView(R.layout.featured_item_purchase_dialog_layout);
+
+        final int cost = 15;
+
+        // Initialise dialog visual components
+        final Spinner mWeeksQuantitySpinner = (Spinner) ticketPickerDialog.findViewById(R.id.weeksQuantitySpinner);
+        final TextView mCostTotalTextView = (TextView) ticketPickerDialog.findViewById(R.id.costTotalTextView);
+        Button mPurchaseButton = (Button) ticketPickerDialog.findViewById(R.id.purchaseButton);
+
+        mWeeksQuantitySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
+        {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id)
+            {
+                if(position == 0)
+                {
+                    mCostTotalTextView.setText("£" + cost + ".00");
+                    mFeaturedWeekQuantity = 1;
+                }
+
+                else if(position == 1)
+                {
+                    mCostTotalTextView.setText("£" + cost * 2 + ".00");
+                    mFeaturedWeekQuantity = 2;
+                }
+
+                else if(position == 2)
+                {
+                    mCostTotalTextView.setText("£" + cost * 3 + ".00");
+                    mFeaturedWeekQuantity = 3;
+                }
+
+                else if(position == 3)
+                {
+                    mCostTotalTextView.setText("£" + cost * 4 + ".00");
+                    mFeaturedWeekQuantity = 4;
+                }
+
+                else if(position == 4)
+                {
+                    mCostTotalTextView.setText("£" + cost * 5 + ".00");
+                    mFeaturedWeekQuantity = 5;
+                }
+
+                else if(position == 5)
+                {
+                    mCostTotalTextView.setText("£" + cost * 6 + ".00");
+                    mFeaturedWeekQuantity = 6;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView)
+            {
+
+            }
+        });
+
+        mPurchaseButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                // This dialog is created to confirm that the users want to purchase the tickets
+                final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setTitle("Confirm Purchase");
+                builder.setMessage("Are you sure you wish to make this purchase?");
+                builder.setPositiveButton("Confirm", new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i)
+                    {
+                        dialogInterface.dismiss();
+
+                        mIsFeatured = true;
+
+                        // This creates a ticket object and posts it to the database under the generated push key
+                        String newsItemId = mDatabase.child("NewsFeedItems").push().getKey();
+                        NewsFeedItem newsFeedItem = new NewsFeedItem(newsItemId, mVenueName, "has just posted a gig at their venue! Musicians wanted!", mGigId, mIsFeatured, mFeaturedWeekQuantity);
+                        mDatabase.child("NewsFeedItems/" + newsItemId + "/").setValue(newsFeedItem);
+
+                        // This dialog is created to confirm that the users want to purchase the tickets
+                        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                        builder.setTitle("Confirmation");
+                        builder.setMessage("Featured status purchased! This will now appear as a featured item at the top of the news feed for " + mFeaturedWeekQuantity + " weeks.");
+                        builder.setPositiveButton("Confirm", new DialogInterface.OnClickListener()
+                        {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i)
+                            {
+                                dialogInterface.dismiss();
+                                mFeaturedItemCheckBox.setEnabled(false);
+                                ticketPickerDialog.dismiss();
+                            }
+                        });
+                        builder.show();
+                        builder.setCancelable(false);
+                    }
+                });
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i)
+                    {
+
+                    }
+                });
+                builder.show();
+            }
+        });
+        ticketPickerDialog.show();
     }
 
     private void ReturnToHome()

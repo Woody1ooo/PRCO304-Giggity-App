@@ -23,7 +23,8 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
  * Created by liamd on 24/04/2017.
@@ -32,9 +33,10 @@ import java.util.Map;
 public class NewsFeedAdapter extends ArrayAdapter<NewsFeedItem>
 {
     // Declare visual components
+    private ImageView mFeaturedImageView;
     private TextView mUserNameTextView;
     private TextView mNewsFeedMessageTextView;
-    private ImageView mImageView;
+    private CircleImageView mImageView;
     private TextView mLikeCountTextView;
     private ImageButton mLikeButton;
 
@@ -88,25 +90,32 @@ public class NewsFeedAdapter extends ArrayAdapter<NewsFeedItem>
         }
 
         // Initialise visual components
+
+        mFeaturedImageView = (ImageView)newsFeedListView.findViewById(R.id.featuredImageView);
         mUserNameTextView = (TextView)newsFeedListView.findViewById(R.id.userNameTextView);
         mNewsFeedMessageTextView = (TextView)newsFeedListView.findViewById(R.id.newsFeedMessageTextView);
-        mImageView = (ImageView)newsFeedListView.findViewById(R.id.userImageView);
+        mImageView = (CircleImageView)newsFeedListView.findViewById(R.id.userImageView);
         mLikeButton = (ImageButton) newsFeedListView.findViewById(R.id.likeButton);
         mLikeCountTextView = (TextView)newsFeedListView.findViewById(R.id.likeCountTextView);
+
+        Glide.with(getContext()).using(new FirebaseImageLoader()).load
+                (mProfileImageReference.child("ProfileImages/" +  item.getUserID() +  "/profileImage"))
+                .override(300, 300).into(mImageView);
 
         mUserNameTextView.setText(item.getUserName());
         mUserNameTextView.setTypeface(null, Typeface.BOLD);
 
         mNewsFeedMessageTextView.setText(item.getMessage());
 
-        Glide.with(getContext()).using(new FirebaseImageLoader()).load
-                (mProfileImageReference.child("ProfileImages/" +  item.getUserID() +  "/profileImage"))
-                .override(250, 250).into(mImageView);
+        if(!item.isFeatured())
+        {
+            mFeaturedImageView.setVisibility(View.GONE);
+        }
 
         mLikeCountTextView.setText("Likes: " + item.getLikeCount());
 
         // Check if the user has already liked it and if so set it to the red one
-        if(mSnapshot.child(item.getItemId() + "/likes/" + mAuth.getCurrentUser().getUid()).exists() && !mPassedThrough)
+        if(mSnapshot.child(item.getItemID() + "/likes/" + mAuth.getCurrentUser().getUid()).exists() && !mPassedThrough)
         {
             int id = getContext().getResources().getIdentifier("com.liamd.giggity_app:drawable/ic_like_red", null, null);
             mLikeButton.setImageResource(id);
@@ -117,7 +126,7 @@ public class NewsFeedAdapter extends ArrayAdapter<NewsFeedItem>
         }
 
         // Otherwise set it to the white icon
-        else if(!mSnapshot.child(item.getItemId() + "/likes/" + mAuth.getCurrentUser().getUid()).exists() && !mPassedThrough)
+        else if(!mSnapshot.child(item.getItemID() + "/likes/" + mAuth.getCurrentUser().getUid()).exists() && !mPassedThrough)
         {
             int id = getContext().getResources().getIdentifier("com.liamd.giggity_app:drawable/ic_like_white", null, null);
             mLikeButton.setImageResource(id);
@@ -136,8 +145,8 @@ public class NewsFeedAdapter extends ArrayAdapter<NewsFeedItem>
                 if(mLikeButton.getTag().equals("White"))
                 {
                     mLikeCount = item.getLikeCount();
-                    mDatabase.child("NewsFeedItems/" + item.getItemId() + "/likeCount").setValue(mLikeCount + 1);
-                    mDatabase.child("NewsFeedItems/" + item.getItemId() + "/likes/" + mAuth.getCurrentUser().getUid() + "/like").setValue("true");
+                    mDatabase.child("NewsFeedItems/" + item.getItemID() + "/likeCount").setValue(mLikeCount + 1);
+                    mDatabase.child("NewsFeedItems/" + item.getItemID() + "/likes/" + mAuth.getCurrentUser().getUid() + "/like").setValue("true");
 
                     mListOfItems.get(position).setLikeCount(mLikeCount + 1);
 
@@ -150,8 +159,8 @@ public class NewsFeedAdapter extends ArrayAdapter<NewsFeedItem>
                 else if(mLikeButton.getTag().equals("Red"))
                 {
                     mLikeCount = item.getLikeCount();
-                    mDatabase.child("NewsFeedItems/" + item.getItemId() + "/likeCount").setValue(mLikeCount -1);
-                    mDatabase.child("NewsFeedItems/" + item.getItemId() + "/likes/" + mAuth.getCurrentUser().getUid()).removeValue();
+                    mDatabase.child("NewsFeedItems/" + item.getItemID() + "/likeCount").setValue(mLikeCount -1);
+                    mDatabase.child("NewsFeedItems/" + item.getItemID() + "/likes/" + mAuth.getCurrentUser().getUid()).removeValue();
 
                     mListOfItems.get(position).setLikeCount(mLikeCount - 1);
 

@@ -728,8 +728,8 @@ public class MusicianUserMainActivity extends AppCompatActivity implements Navig
         });
         if(getApplicationContext() != null)
         {
-            builder.show();
-            builder.setCancelable(false);
+            //builder.show();
+            //builder.setCancelable(false);
         }
     }
 }
