@@ -110,15 +110,33 @@ public class MusicianUserGigFinderFragment extends Fragment implements LocationL
 
         // Add items to the genre list, and set the spinner to use these
         mGenreList = new ArrayList<>();
-        mGenreList.add("Classic Rock");
+        mGenreList.add("Acoustic");
         mGenreList.add("Alternative Rock");
         mGenreList.add("Blues");
+        mGenreList.add("Classic Rock");
+        mGenreList.add("Classical");
+        mGenreList.add("Country");
+        mGenreList.add("Death Metal");
+        mGenreList.add("Disco");
+        mGenreList.add("Electronic");
+        mGenreList.add("Folk");
+        mGenreList.add("Funk");
+        mGenreList.add("Garage");
+        mGenreList.add("Grunge");
+        mGenreList.add("Hip-Hop");
+        mGenreList.add("House");
         mGenreList.add("Indie");
+        mGenreList.add("Jazz");
         mGenreList.add("Metal");
         mGenreList.add("Pop");
-        mGenreList.add("Classical");
-        mGenreList.add("Jazz");
-        mGenreList.add("Acoustic");
+        mGenreList.add("Psychedelic Rock");
+        mGenreList.add("Punk");
+        mGenreList.add("Rap");
+        mGenreList.add("Reggae");
+        mGenreList.add("R&B");
+        mGenreList.add("Ska");
+        mGenreList.add("Techno");
+        mGenreList.add("Thrash Metal");
 
         mGenreSelectSpinner.setItems(mGenreList);
 

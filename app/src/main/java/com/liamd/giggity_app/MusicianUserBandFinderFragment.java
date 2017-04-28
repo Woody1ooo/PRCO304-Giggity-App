@@ -106,29 +106,58 @@ public class MusicianUserBandFinderFragment extends Fragment implements Location
 
         // Add items to the genre list, and set the spinner to use these
         mGenreList = new ArrayList<>();
-        mGenreList.add("Classic Rock");
+        mGenreList.add("Acoustic");
         mGenreList.add("Alternative Rock");
         mGenreList.add("Blues");
+        mGenreList.add("Classic Rock");
+        mGenreList.add("Classical");
+        mGenreList.add("Country");
+        mGenreList.add("Death Metal");
+        mGenreList.add("Disco");
+        mGenreList.add("Electronic");
+        mGenreList.add("Folk");
+        mGenreList.add("Funk");
+        mGenreList.add("Garage");
+        mGenreList.add("Grunge");
+        mGenreList.add("Hip-Hop");
+        mGenreList.add("House");
         mGenreList.add("Indie");
+        mGenreList.add("Jazz");
         mGenreList.add("Metal");
         mGenreList.add("Pop");
-        mGenreList.add("Classical");
-        mGenreList.add("Jazz");
-        mGenreList.add("Acoustic");
+        mGenreList.add("Psychedelic Rock");
+        mGenreList.add("Punk");
+        mGenreList.add("Rap");
+        mGenreList.add("Reggae");
+        mGenreList.add("R&B");
+        mGenreList.add("Ska");
+        mGenreList.add("Techno");
+        mGenreList.add("Thrash Metal");
 
         mGenreSelectSpinner.setItems(mGenreList);
 
         // Add items to the instrument list, and set the spinner to use these
         mInstrumentList = new ArrayList<>();
-        mInstrumentList.add("Lead Vocals");
-        mInstrumentList.add("Backing Vocals");
-        mInstrumentList.add("Lead Guitar");
-        mInstrumentList.add("Rhythm Guitar");
         mInstrumentList.add("Acoustic Guitar");
+        mInstrumentList.add("Backing Vocals");
+        mInstrumentList.add("Banjo");
         mInstrumentList.add("Bass Guitar");
+        mInstrumentList.add("Cajon");
+        mInstrumentList.add("Cello");
+        mInstrumentList.add("Clarinet");
+        mInstrumentList.add("Classical Guitar");
+        mInstrumentList.add("DJ");
         mInstrumentList.add("Drums");
+        mInstrumentList.add("Flute");
         mInstrumentList.add("Keyboards");
+        mInstrumentList.add("Lead Guitar");
+        mInstrumentList.add("Lead Vocals");
         mInstrumentList.add("Piano");
+        mInstrumentList.add("Rhythm Guitar");
+        mInstrumentList.add("Saxophone");
+        mInstrumentList.add("Synthesiser");
+        mInstrumentList.add("Trumpet");
+        mInstrumentList.add("Violin");
 
         mBandRoleSpinner.setItems(mInstrumentList);
 

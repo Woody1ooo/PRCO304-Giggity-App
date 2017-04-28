@@ -141,15 +141,33 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
 
         // Add items to the genre list, and set the spinner to use these
         mGenreList = new ArrayList<>();
-        mGenreList.add("Classic Rock");
+        mGenreList.add("Acoustic");
         mGenreList.add("Alternative Rock");
         mGenreList.add("Blues");
+        mGenreList.add("Classic Rock");
+        mGenreList.add("Classical");
+        mGenreList.add("Country");
+        mGenreList.add("Death Metal");
+        mGenreList.add("Disco");
+        mGenreList.add("Electronic");
+        mGenreList.add("Folk");
+        mGenreList.add("Funk");
+        mGenreList.add("Garage");
+        mGenreList.add("Grunge");
+        mGenreList.add("Hip-Hop");
+        mGenreList.add("House");
         mGenreList.add("Indie");
+        mGenreList.add("Jazz");
         mGenreList.add("Metal");
         mGenreList.add("Pop");
-        mGenreList.add("Classical");
-        mGenreList.add("Jazz");
-        mGenreList.add("Acoustic");
+        mGenreList.add("Psychedelic Rock");
+        mGenreList.add("Punk");
+        mGenreList.add("Rap");
+        mGenreList.add("Reggae");
+        mGenreList.add("R&B");
+        mGenreList.add("Ska");
+        mGenreList.add("Techno");
+        mGenreList.add("Thrash Metal");
 
         mGenresSpinner.setItems(mGenreList);
 
@@ -502,6 +520,11 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
                                 mDatabase.child("Gigs/" + mGigId).child("genres").setValue(mGenresSpinner.getSelectedItemsAsString());
                                 mDatabase.child("Gigs/" + mGigId).child("bookedAct").setValue("Vacant");
 
+                                // This creates a ticket object and posts it to the database under the generated push key
+                                String newsItemId = mDatabase.child("NewsFeedItems").push().getKey();
+                                NewsFeedItem newsFeedItem = new NewsFeedItem(newsItemId, mVenueName, "has just posted a gig at their venue! Musicians wanted!", mGigId, mIsFeatured, mFeaturedWeekQuantity);
+                                mDatabase.child("NewsFeedItems/" + newsItemId + "/").setValue(newsFeedItem);
+
                                 // A dialog is then shown to alert the user that the changes have been made
                                 final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                                 builder.setTitle("Confirmation");
@@ -812,6 +835,15 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
     {
         final Dialog ticketPickerDialog = new Dialog(getActivity());
         ticketPickerDialog.setContentView(R.layout.featured_item_purchase_dialog_layout);
+
+        ticketPickerDialog.setOnDismissListener(new DialogInterface.OnDismissListener()
+        {
+            @Override
+            public void onDismiss(DialogInterface dialogInterface)
+            {
+                mFeaturedItemCheckBox.setChecked(false);
+            }
+        });
 
         final int cost = 15;
 

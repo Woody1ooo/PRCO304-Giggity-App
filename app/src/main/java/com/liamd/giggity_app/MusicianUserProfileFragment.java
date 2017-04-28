@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -63,8 +64,8 @@ public class MusicianUserProfileFragment extends Fragment implements YouTubePlay
     // Declare visual components
     private CircleImageView profileImageView;
     private CircleImageView mainActivityImageView;
-    private TextView changeImageTextView;
-    private TextView removeImageTextView;
+    private ImageButton changeImageButton;
+    private ImageButton removeImageButton;
     private EditText firstNameEditText;
     private EditText lastNameEditText;
     private EditText emailEditText;
@@ -125,8 +126,8 @@ public class MusicianUserProfileFragment extends Fragment implements YouTubePlay
         // Initialise visual components
         profileImageView = (CircleImageView) fragmentView.findViewById(R.id.profile_image);
         mainActivityImageView = (CircleImageView) getActivity().findViewById(R.id.headerProfileImage);
-        changeImageTextView = (TextView) fragmentView.findViewById(R.id.changeImageTextView);
-        removeImageTextView = (TextView) fragmentView.findViewById(R.id.removeImageTextView);
+        changeImageButton = (ImageButton) fragmentView.findViewById(R.id.changeImageButton);
+        removeImageButton = (ImageButton) fragmentView.findViewById(R.id.removeImageButton);
         firstNameEditText = (EditText) fragmentView.findViewById(R.id.firstNameEditText);
         lastNameEditText = (EditText) fragmentView.findViewById(R.id.lastNameEditText);
         emailEditText = (EditText) fragmentView.findViewById(R.id.emailEditText);
@@ -149,35 +150,60 @@ public class MusicianUserProfileFragment extends Fragment implements YouTubePlay
 
         // Add items to the genre list, and set the spinner to use these
         mGenreList = new ArrayList<>();
-        mGenreList.add("Classic Rock");
+        mGenreList.add("Acoustic");
         mGenreList.add("Alternative Rock");
         mGenreList.add("Blues");
+        mGenreList.add("Classic Rock");
+        mGenreList.add("Classical");
+        mGenreList.add("Country");
+        mGenreList.add("Death Metal");
+        mGenreList.add("Disco");
+        mGenreList.add("Electronic");
+        mGenreList.add("Folk");
+        mGenreList.add("Funk");
+        mGenreList.add("Garage");
+        mGenreList.add("Grunge");
+        mGenreList.add("Hip-Hop");
+        mGenreList.add("House");
         mGenreList.add("Indie");
+        mGenreList.add("Jazz");
         mGenreList.add("Metal");
         mGenreList.add("Pop");
-        mGenreList.add("Classical");
-        mGenreList.add("Jazz");
-        mGenreList.add("Acoustic");
+        mGenreList.add("Psychedelic Rock");
+        mGenreList.add("Punk");
+        mGenreList.add("Rap");
+        mGenreList.add("Reggae");
+        mGenreList.add("R&B");
+        mGenreList.add("Ska");
+        mGenreList.add("Techno");
+        mGenreList.add("Thrash Metal");
 
         genreSpinner.setItems(mGenreList);
 
         // Add items to the instrument list, and set the spinner to use these
         mInstrumentList = new ArrayList<>();
-        mInstrumentList.add("Lead Vocals");
-        mInstrumentList.add("Backing Vocals");
-        mInstrumentList.add("Lead Guitar");
-        mInstrumentList.add("Rhythm Guitar");
         mInstrumentList.add("Acoustic Guitar");
+        mInstrumentList.add("Backing Vocals");
+        mInstrumentList.add("Banjo");
         mInstrumentList.add("Bass Guitar");
+        mInstrumentList.add("Cajon");
+        mInstrumentList.add("Cello");
+        mInstrumentList.add("Clarinet");
+        mInstrumentList.add("Classical Guitar");
+        mInstrumentList.add("DJ");
         mInstrumentList.add("Drums");
+        mInstrumentList.add("Flute");
         mInstrumentList.add("Keyboards");
+        mInstrumentList.add("Lead Guitar");
+        mInstrumentList.add("Lead Vocals");
         mInstrumentList.add("Piano");
+        mInstrumentList.add("Rhythm Guitar");
+        mInstrumentList.add("Saxophone");
+        mInstrumentList.add("Synthesiser");
+        mInstrumentList.add("Trumpet");
+        mInstrumentList.add("Violin");
 
         instrumentSpinner.setItems(mInstrumentList);
-
-        // Add the images to the text views
-        changeImageTextView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_insert_photo_black_18dp, 0, 0, 0);
-        removeImageTextView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_delete_black_18dp, 0, 0, 0);
 
         // Creates a reference to Firebase
         mAuth = FirebaseAuth.getInstance();
@@ -193,7 +219,7 @@ public class MusicianUserProfileFragment extends Fragment implements YouTubePlay
         LoadProfilePicture();
 
         // When the changeImageTextView is clicked the CheckForPermissions method is called
-        changeImageTextView.setOnClickListener(new View.OnClickListener()
+        changeImageButton.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View view)
@@ -203,7 +229,7 @@ public class MusicianUserProfileFragment extends Fragment implements YouTubePlay
         });
 
         // When the removeImageTextView is clicked the CheckForPermissions method is called
-        removeImageTextView.setOnClickListener(new View.OnClickListener()
+        removeImageButton.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View view)
@@ -401,7 +427,7 @@ public class MusicianUserProfileFragment extends Fragment implements YouTubePlay
                 // The caching and memory features have been disabled to allow only the latest image to display
                 Glide.with(getContext()).using(new FirebaseImageLoader()).load
                         (mProfileImageReference.child("ProfileImages/" + mAuth.getCurrentUser().getUid() + "/profileImage"))
-                        .diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).override(350, 350).into(profileImageView);
+                        .diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).override(500, 500).into(profileImageView);
             }
 
             // If the user doesn't have an image the default image is loaded
@@ -410,7 +436,7 @@ public class MusicianUserProfileFragment extends Fragment implements YouTubePlay
             @Override
             public void onFailure(@NonNull Exception e)
             {
-                Picasso.with(getContext()).load(R.drawable.com_facebook_profile_picture_blank_portrait).resize(350, 350).into(profileImageView);
+                Picasso.with(getContext()).load(R.drawable.com_facebook_profile_picture_blank_portrait).resize(500, 500).into(profileImageView);
             }
         });
     }
@@ -455,7 +481,7 @@ public class MusicianUserProfileFragment extends Fragment implements YouTubePlay
                 mProgressDialog.show();
                 mProgressDialog.setCancelable(false);
                 mProfileImageReference.child("ProfileImages/" + mAuth.getCurrentUser().getUid() + "/profileImage").delete();
-                Picasso.with(getContext()).load(R.drawable.com_facebook_profile_picture_blank_portrait).resize(350, 350).into(profileImageView);
+                Picasso.with(getContext()).load(R.drawable.com_facebook_profile_picture_blank_portrait).resize(500, 500).into(profileImageView);
 
                 // This updates the image on the navigation drawer as well
                 Picasso.with(getContext()).load(R.drawable.com_facebook_profile_picture_blank_portrait).resize(220, 220).into(mainActivityImageView);
@@ -523,7 +549,7 @@ public class MusicianUserProfileFragment extends Fragment implements YouTubePlay
                             // The caching and memory features have been disabled to allow only the latest image to display
                             StorageReference profileImagesRef = mProfileImageReference.child("ProfileImages/" + mAuth.getCurrentUser().getUid() + "/profileImage");
                             Glide.with(getContext()).using(new FirebaseImageLoader()).load
-                                    (profileImagesRef).diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).override(350, 350).into(profileImageView);
+                                    (profileImagesRef).diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).override(500, 500).into(profileImageView);
 
                             ((DrawerProfilePictureUpdater) getActivity()).UpdateDrawerProfilePicture();
 

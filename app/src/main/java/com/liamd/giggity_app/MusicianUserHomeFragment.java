@@ -89,7 +89,7 @@ public class MusicianUserHomeFragment extends Fragment
                         mNewsFeedListView.setAdapter(adapter);
                     }
 
-                    else
+                    else if (getActivity() != null && adapter != null)
                     {
                         adapter.notifyDataSetChanged();
                     }

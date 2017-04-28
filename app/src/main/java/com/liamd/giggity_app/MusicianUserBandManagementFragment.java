@@ -1,7 +1,6 @@
 package com.liamd.giggity_app;
 
 
-import android.*;
 import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -23,6 +22,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -59,6 +59,8 @@ import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 import static android.app.Activity.RESULT_OK;
 
 
@@ -68,9 +70,9 @@ import static android.app.Activity.RESULT_OK;
 public class MusicianUserBandManagementFragment extends Fragment implements YouTubePlayer.OnInitializedListener
 {
     // Declare general visual components
-    private ImageView mBandImageView;
-    private TextView mChangeImageTextView;
-    private TextView mRemoveImageTextView;
+    private CircleImageView mBandImageView;
+    private ImageButton mChangeImageButton;
+    private ImageButton mRemoveImageButton;
     private EditText mBandNameEditText;
     private MultiSelectSpinner mGenreSpinner;
     private Spinner mPositionsSpinner;
@@ -138,9 +140,9 @@ public class MusicianUserBandManagementFragment extends Fragment implements YouT
         // Creates a reference to the Firebase database
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
-        mBandImageView = (ImageView) fragmentView.findViewById(R.id.bandImageView);
-        mChangeImageTextView = (TextView) fragmentView.findViewById(R.id.changeImageTextView);
-        mRemoveImageTextView = (TextView) fragmentView.findViewById(R.id.removeImageTextView);
+        mBandImageView = (CircleImageView) fragmentView.findViewById(R.id.bandImageView);
+        mChangeImageButton = (ImageButton) fragmentView.findViewById(R.id.changeImageButton);
+        mRemoveImageButton= (ImageButton) fragmentView.findViewById(R.id.removeImageButton);
         mBandNameEditText = (EditText) fragmentView.findViewById(R.id.bandNameEditText);
         mGenreSpinner = (MultiSelectSpinner) fragmentView.findViewById(R.id.genreSpinner);
         mPositionsSpinner = (Spinner) fragmentView.findViewById(R.id.bandPositionSpinner);
@@ -184,39 +186,64 @@ public class MusicianUserBandManagementFragment extends Fragment implements YouT
 
         // Add items to the genre list, and set the spinner to use these
         mGenreList = new ArrayList<>();
-        mGenreList.add("Classic Rock");
+        mGenreList.add("Acoustic");
         mGenreList.add("Alternative Rock");
         mGenreList.add("Blues");
+        mGenreList.add("Classic Rock");
+        mGenreList.add("Classical");
+        mGenreList.add("Country");
+        mGenreList.add("Death Metal");
+        mGenreList.add("Disco");
+        mGenreList.add("Electronic");
+        mGenreList.add("Folk");
+        mGenreList.add("Funk");
+        mGenreList.add("Garage");
+        mGenreList.add("Grunge");
+        mGenreList.add("Hip-Hop");
+        mGenreList.add("House");
         mGenreList.add("Indie");
+        mGenreList.add("Jazz");
         mGenreList.add("Metal");
         mGenreList.add("Pop");
-        mGenreList.add("Classical");
-        mGenreList.add("Jazz");
-        mGenreList.add("Acoustic");
+        mGenreList.add("Psychedelic Rock");
+        mGenreList.add("Punk");
+        mGenreList.add("Rap");
+        mGenreList.add("Reggae");
+        mGenreList.add("R&B");
+        mGenreList.add("Ska");
+        mGenreList.add("Techno");
+        mGenreList.add("Thrash Metal");
 
         mGenreSpinner.setItems(mGenreList);
 
         // Add items to the instrument list, and set the spinner to use these
         mInstrumentList = new ArrayList<>();
-        mInstrumentList.add("Lead Vocals");
-        mInstrumentList.add("Backing Vocals");
-        mInstrumentList.add("Lead Guitar");
-        mInstrumentList.add("Rhythm Guitar");
         mInstrumentList.add("Acoustic Guitar");
+        mInstrumentList.add("Backing Vocals");
+        mInstrumentList.add("Banjo");
         mInstrumentList.add("Bass Guitar");
+        mInstrumentList.add("Cajon");
+        mInstrumentList.add("Cello");
+        mInstrumentList.add("Clarinet");
+        mInstrumentList.add("Classical Guitar");
+        mInstrumentList.add("DJ");
         mInstrumentList.add("Drums");
+        mInstrumentList.add("Flute");
         mInstrumentList.add("Keyboards");
+        mInstrumentList.add("Lead Guitar");
+        mInstrumentList.add("Lead Vocals");
         mInstrumentList.add("Piano");
+        mInstrumentList.add("Rhythm Guitar");
+        mInstrumentList.add("Saxophone");
+        mInstrumentList.add("Synthesiser");
+        mInstrumentList.add("Trumpet");
+        mInstrumentList.add("Violin");
 
         mPositionOneSpinner.setItems(mInstrumentList);
         mPositionTwoSpinner.setItems(mInstrumentList);
         mPositionThreeSpinner.setItems(mInstrumentList);
         mPositionFourSpinner.setItems(mInstrumentList);
         mPositionFiveSpinner.setItems(mInstrumentList);
-
-        // Add the images to the text views
-        mChangeImageTextView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_insert_photo_black_18dp, 0, 0, 0);
-        mRemoveImageTextView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_delete_black_18dp, 0, 0, 0);
 
         // This gets the number from the band positions spinner and then displays/hides the relevant components as needed
         mPositionsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
@@ -330,7 +357,7 @@ public class MusicianUserBandManagementFragment extends Fragment implements YouT
         });
 
         // When the changeImageTextView is clicked the CheckForPermissions method is called
-        mChangeImageTextView.setOnClickListener(new View.OnClickListener()
+        mChangeImageButton.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View view)
@@ -340,7 +367,7 @@ public class MusicianUserBandManagementFragment extends Fragment implements YouT
         });
 
         // When the removeImageTextView is clicked the CheckForPermissions method is called
-        mRemoveImageTextView.setOnClickListener(new View.OnClickListener()
+        mRemoveImageButton.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View view)
@@ -498,7 +525,7 @@ public class MusicianUserBandManagementFragment extends Fragment implements YouT
                 // The caching and memory features have been disabled to allow only the latest image to display
                 Glide.with(getContext()).using(new FirebaseImageLoader()).load
                         (mBandProfileImageReference.child("BandProfileImages/" + mBandID + "/profileImage"))
-                        .diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).into(mBandImageView);
+                        .diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).override(500, 500).into(mBandImageView);
             }
 
             // If the user doesn't have an image the default image is loaded
@@ -507,7 +534,7 @@ public class MusicianUserBandManagementFragment extends Fragment implements YouT
             @Override
             public void onFailure(@NonNull Exception e)
             {
-                Picasso.with(getContext()).load(R.drawable.com_facebook_profile_picture_blank_portrait).resize(350, 350).into(mBandImageView);
+                Picasso.with(getContext()).load(R.drawable.com_facebook_profile_picture_blank_portrait).resize(500, 500).into(mBandImageView);
             }
         });
     }

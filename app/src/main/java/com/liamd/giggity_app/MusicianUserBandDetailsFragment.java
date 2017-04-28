@@ -46,7 +46,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class MusicianUserBandDetailsFragment extends Fragment implements YouTubePlayer.OnInitializedListener
 {
     // Declare visual components
-    private ImageView mBandImageView;
+    private CircleImageView mBandImageView;
     private TextView mBandNameTextView;
     private TextView mBandGenresTextView;
     private TextView mNumberOfPositionsTextView;
@@ -116,7 +116,7 @@ public class MusicianUserBandDetailsFragment extends Fragment implements YouTube
         mBandProfileImageReference = mStorage.getReference();
 
         // Initialise visual components
-        mBandImageView = (ImageView) fragmentView.findViewById(R.id.bandImageView);
+        mBandImageView = (CircleImageView) fragmentView.findViewById(R.id.bandImageView);
 
         mBandNameTextView = (TextView) fragmentView.findViewById(R.id.bandNameTextView);
         mBandGenresTextView = (TextView) fragmentView.findViewById(R.id.bandGenresTextView);
@@ -394,7 +394,7 @@ public class MusicianUserBandDetailsFragment extends Fragment implements YouTube
                 mUserInstruments = dataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/instruments").getValue().toString();
 
                 // If the band ahas a youtube url stored against their profile parse this to load into the video player
-                if (dataSnapshot.child("Bands/" + mBandId + "/youtubeUrl").exists())
+                if (dataSnapshot.child("Bands/" + mBandId + "/youtubeUrl").exists() && !dataSnapshot.child("Bands/" + mBandId + "/youtubeUrl").getValue().toString().equals(""))
                 {
                     mYoutubeURL = dataSnapshot.child("Bands/" + mBandId + "/youtubeUrl").getValue().toString();
                     mParsedYoutubeURL = ParseURL(mYoutubeURL);
@@ -475,7 +475,7 @@ public class MusicianUserBandDetailsFragment extends Fragment implements YouTube
         // This populates the bands profile image view from firebase storage
         Glide.with(getContext()).using(new FirebaseImageLoader()).load
                 (mBandProfileImageReference.child("BandProfileImages/" + mBandId + "/profileImage"))
-                .diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).into(mBandImageView);
+                .diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).override(500, 500).into(mBandImageView);
 
         if(mNumberOfPositions.equals("1"))
         {
@@ -495,7 +495,7 @@ public class MusicianUserBandDetailsFragment extends Fragment implements YouTube
                 mApplyForPositionOneButton.setBackgroundColor(getResources().getColor(R.color.buttonDisabledColor));
                 Glide.with(getContext()).using(new FirebaseImageLoader()).load
                         (mBandProfileImageReference.child("ProfileImages/" + positionOneUserID + "/profileImage"))
-                        .diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).override(350, 350).into(mPositionOneProfileImageView);
+                        .diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).override(500, 500).into(mPositionOneProfileImageView);
             }
 
             mPositionOneInstrumentTextView.append(mDataSnapshot.child("Bands/" + mBandId + "/positionOne").getValue().toString());

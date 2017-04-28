@@ -3,7 +3,6 @@
              android:layout_width="match_parent"
              android:layout_height="match_parent"
              tools:context="com.liamd.giggity_app.MusicianUserHomeFragment">
-
     <ListView
         android:id="@+id/newsFeedListView"
         android:layout_width="match_parent"
