@@ -100,6 +100,28 @@ public class FanUserMainActivity extends AppCompatActivity
         {
             super.onBackPressed();
         }
+
+        // If the back button is pressed when the home fragment is visible the navigation view and title are set to this to prevent the wrong navigation options/title from displaying
+        FanUserHomeFragment homeFragment = (FanUserHomeFragment) getFragmentManager().findFragmentByTag("FanUserHomeFragment");
+        if(homeFragment != null && homeFragment.isVisible())
+        {
+            final NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+            navigationView.setNavigationItemSelectedListener(this);
+            navigationView.getMenu().getItem(0).setChecked(true);
+            setTitle("Home");
+        }
+
+        // This ensures that home is the fragment that should be returned to
+        if(getFragmentManager().getBackStackEntryCount() == 0)
+        {
+            // This ensures that whenever the back button is pressed there is never a blank home screen shown
+            setTitle("Home");
+            FanUserHomeFragment fragment = new FanUserHomeFragment();
+            FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.frame, fragment
+                    , "FanUserHomeFragment");
+            fragmentTransaction.commit();
+        }
     }
 
     @Override

@@ -79,6 +79,28 @@ public class VenueUserMainActivity extends AppCompatActivity
         {
             super.onBackPressed();
         }
+
+        // If the back button is pressed when the home fragment is visible the navigation view and title are set to this to prevent the wrong navigation options/title from displaying
+        VenueUserHomeFragment homeFragment = (VenueUserHomeFragment) getFragmentManager().findFragmentByTag("VenueUserHomeFragment");
+        if(homeFragment != null && homeFragment.isVisible())
+        {
+            final NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+            navigationView.setNavigationItemSelectedListener(this);
+            navigationView.getMenu().getItem(0).setChecked(true);
+            setTitle("Home");
+        }
+
+        // This ensures that home is the fragment that should be returned to
+        if(getFragmentManager().getBackStackEntryCount() == 0)
+        {
+            // This ensures that whenever the back button is pressed there is never a blank home screen shown
+            setTitle("Home");
+            VenueUserHomeFragment fragment = new VenueUserHomeFragment();
+            FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.frame, fragment
+                    , "VenueUserHomeFragment");
+            fragmentTransaction.commit();
+        }
     }
 
     @Override

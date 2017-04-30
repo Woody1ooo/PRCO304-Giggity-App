@@ -270,6 +270,18 @@ public class MusicianUserMainActivity extends AppCompatActivity implements Navig
             navigationView.getMenu().getItem(0).setChecked(true);
             setTitle("Home");
         }
+
+        // This ensures that home is the fragment that should be returned to
+        if(getFragmentManager().getBackStackEntryCount() == 0)
+        {
+            // This ensures that whenever the back button is pressed there is never a blank home screen shown
+            setTitle("Home");
+            MusicianUserHomeFragment fragment = new MusicianUserHomeFragment();
+            FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.frame, fragment
+                    , "MusicianUserHomeFragment");
+            fragmentTransaction.commit();
+        }
     }
 
     @Override
