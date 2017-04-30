@@ -9,14 +9,17 @@ import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.provider.CalendarContract;
+import android.support.v13.app.FragmentCompat;
 import android.support.v4.app.ActivityCompat;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -98,8 +101,8 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
 
     private Boolean isStartDate;
 
-    private final static int MY_PERMISSIONS_REQUEST_WRITE_CALENDAR = 1;
-    private boolean hasPermission = true;
+    private final static int PERMISSION_ALL = 1;
+    private boolean mIsEventWithoutEndDate;
     private String mGigId;
 
     private boolean mIsFeatured;
@@ -262,7 +265,7 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
                     @Override
                     public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked)
                     {
-                        if(isChecked)
+                        if (isChecked)
                         {
                             OpenFeaturedPaymentDialog();
                         }
@@ -473,7 +476,9 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
                         Toast.makeText(getActivity(),
                                 "Please ensure you have given a value for all the required fields!",
                                 Toast.LENGTH_SHORT).show();
-                    } else
+                    }
+
+                    else
                     {
                         try
                         {
@@ -483,10 +488,11 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
                             mStartDate = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss.SSS").parse(mStartDay + "/" +
                                     mStartMonth + "/" + mStartYear + " " +
                                     mStartHour + ":" + mStartMinute + ":" + "00" + "." + "000");
-                        } catch (ParseException e)
+                        }
+
+                        catch (ParseException e)
                         {
                             e.printStackTrace();
-
                         }
 
                         try
@@ -535,62 +541,19 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
                                     @Override
                                     public void onClick(DialogInterface dialogInterface, int i)
                                     {
+                                        mIsEventWithoutEndDate = true;
+
                                         // First check that the user has granted permission to write to the calendar
-                                        if (ActivityCompat.checkSelfPermission(getActivity().getApplicationContext(), Manifest.permission.WRITE_CALENDAR) != PackageManager.PERMISSION_GRANTED)
+                                        String[] PERMISSIONS = {Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR};
+
+                                        if (!hasPermissions(getActivity(), PERMISSIONS))
                                         {
-                                            requestPermissions(new String[]{Manifest.permission.WRITE_CALENDAR}, MY_PERMISSIONS_REQUEST_WRITE_CALENDAR);
+                                            requestPermissions(PERMISSIONS, PERMISSION_ALL);
                                         }
 
-                                        if (hasPermission)
+                                        else if (hasPermissions(getActivity(), PERMISSIONS))
                                         {
-                                            // This 3rd party library then provides a list of all the calendar providers that the user has
-                                            CalendarProvider provider = new CalendarProvider(getActivity());
-                                            List<me.everything.providers.android.calendar.Calendar> calendars = provider.getCalendars().getList();
-
-                                            // This then creates and inserts the event with the details into the calendar with the first element of the providers list
-                                            ContentResolver cr = getActivity().getContentResolver();
-                                            ContentValues values = new ContentValues();
-                                            TimeZone timeZone = TimeZone.getDefault();
-                                            values.put(CalendarContract.Events.DTSTART, mStartDate.getTime());
-                                            values.put(CalendarContract.Events.DTEND, mFinishDate.getTime());
-                                            values.put(CalendarContract.Events.EVENT_TIMEZONE, timeZone.getID());
-                                            values.put(CalendarContract.Events.TITLE, mGigNameEditText.getText().toString());
-
-                                            if (calendars.size() <= 0)
-                                            {
-                                                Toast.makeText(getActivity(), "Please ensure you have at least one device calendar setup!", Toast.LENGTH_SHORT).show();
-                                            }
-
-                                            else
-                                            {
-                                                values.put(CalendarContract.Events.CALENDAR_ID, calendars.get(0).id);
-                                                values.put(CalendarContract.Events.EVENT_LOCATION, mVenueName);
-                                                Uri uri = cr.insert(CalendarContract.Events.CONTENT_URI, values);
-
-                                                // The event id is then extracted
-                                                final String eventID = uri.getLastPathSegment();
-
-                                                if (eventID != null)
-                                                {
-                                                    // A dialog is then shown to alert the user that the changes have been made
-                                                    final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                                                    builder.setTitle("Confirmation");
-                                                    builder.setIcon(R.drawable.ic_event_available_black_24dp);
-                                                    builder.setMessage("Calendar Event Added!");
-                                                    builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
-                                                    {
-                                                        @Override
-                                                        public void onClick(DialogInterface dialogInterface, int i)
-                                                        {
-                                                            // This value is then stored in the database so edits can be made to the event
-                                                            mDatabase.child("Gigs/" + mGigId + "/calendarEventId").setValue(eventID);
-                                                            ReturnToHome();
-                                                        }
-                                                    });
-                                                    builder.setCancelable(false);
-                                                    builder.show();
-                                                }
-                                            }
+                                            CreateCalendarEvent();
                                         }
 
                                         else
@@ -623,9 +586,7 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
                                 });
                                 builder.setCancelable(false);
                                 builder.show();
-                            }
-
-                            else
+                            } else
                             {
                                 mGigId = mDatabase.push().getKey();
 
@@ -670,69 +631,19 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
                                         @Override
                                         public void onClick(DialogInterface dialogInterface, int i)
                                         {
-                                            if (ActivityCompat.checkSelfPermission(getActivity().getApplicationContext(), Manifest.permission.WRITE_CALENDAR) != PackageManager.PERMISSION_GRANTED)
+                                            mIsEventWithoutEndDate = false;
+
+                                            // First check that the user has granted permission to write to the calendar
+                                            String[] PERMISSIONS = {Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR};
+
+                                            if (!hasPermissions(getActivity(), PERMISSIONS))
                                             {
-                                                requestPermissions(new String[]{Manifest.permission.WRITE_CALENDAR}, MY_PERMISSIONS_REQUEST_WRITE_CALENDAR);
+                                                requestPermissions(PERMISSIONS, PERMISSION_ALL);
                                             }
 
-                                            if(hasPermission)
+                                            else if (hasPermissions(getActivity(), PERMISSIONS))
                                             {
-                                                CalendarProvider provider = new CalendarProvider(getActivity());
-                                                List<me.everything.providers.android.calendar.Calendar> calendars = provider.getCalendars().getList();
-
-                                                // Insert Event
-                                                ContentResolver cr = getActivity().getContentResolver();
-                                                ContentValues values = new ContentValues();
-                                                TimeZone timeZone = TimeZone.getDefault();
-                                                values.put(CalendarContract.Events.DTSTART, mStartDate.getTime());
-                                                values.put(CalendarContract.Events.DTEND, mFinishDate.getTime());
-                                                values.put(CalendarContract.Events.EVENT_TIMEZONE, timeZone.getID());
-                                                values.put(CalendarContract.Events.TITLE, mGigNameEditText.getText().toString());
-                                                values.put(CalendarContract.Events.CALENDAR_ID, calendars.get(0).id);
-                                                values.put(CalendarContract.Events.EVENT_LOCATION, mVenueName);
-                                                Uri uri = cr.insert(CalendarContract.Events.CONTENT_URI, values);
-
-                                                // get the event ID that is the last element in the Uri
-                                                final String eventID = uri.getLastPathSegment();
-
-                                                if(eventID != null)
-                                                {
-                                                    // A dialog is then shown to alert the user that the changes have been made
-                                                    final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                                                    builder.setTitle("Confirmation");
-                                                    builder.setIcon(R.drawable.ic_event_available_black_24dp);
-                                                    builder.setMessage("Calendar Event Added!");
-                                                    builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
-                                                    {
-                                                        @Override
-                                                        public void onClick(DialogInterface dialogInterface, int i)
-                                                        {
-                                                            mDatabase.child("Gigs/" + mGigId + "/calendarEventId").setValue(eventID);
-                                                            ReturnToHome();
-                                                        }
-                                                    });
-                                                    builder.setCancelable(false);
-                                                    builder.show();
-                                                }
-
-                                                else
-                                                {
-                                                    // A dialog is then shown to alert the user that the changes have been made
-                                                    final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                                                    builder.setTitle("Error");
-                                                    builder.setIcon(R.drawable.ic_event_available_black_24dp);
-                                                    builder.setMessage("Calendar Event Could Not Be Added!");
-                                                    builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
-                                                    {
-                                                        @Override
-                                                        public void onClick(DialogInterface dialogInterface, int i)
-                                                        {
-                                                            ReturnToHome();
-                                                        }
-                                                    });
-                                                    builder.setCancelable(false);
-                                                    builder.show();
-                                                }
+                                                CreateCalendarEvent();
                                             }
                                         }
                                     });
@@ -767,29 +678,7 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
         builder.show();
     }
 
-    // This method processes the result of the permission request
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults)
-    {
-        if (requestCode == MY_PERMISSIONS_REQUEST_WRITE_CALENDAR)
 
-            // If the permission has been accepted update hasPermission to reflect this
-            if (permissions.length == 1 &&
-                    permissions[0].equals(Manifest.permission.WRITE_CALENDAR) &&
-                    grantResults[0] == PackageManager.PERMISSION_GRANTED)
-            {
-                hasPermission = true;
-            }
-
-            // If the permission has been denied then display a message to that effect
-            else
-            {
-                Toast.makeText(getActivity(), "If you wish use this feature," +
-                        " please ensure you have given permission to access your device's calendar.", Toast.LENGTH_SHORT).show();
-
-                hasPermission = false;
-            }
-    }
 
     // This method takes a snapshot of the database as a parameter and returns a
     // list of trimmed strings to populate the list of genres that the user selected
@@ -954,6 +843,181 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
             }
         });
         ticketPickerDialog.show();
+    }
+
+    public static boolean hasPermissions(Context context, String... permissions)
+    {
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && context != null && permissions != null)
+        {
+            for (String permission : permissions)
+            {
+                if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED)
+                {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    // This method processes the result of the permission request
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults)
+    {
+        if (requestCode == PERMISSION_ALL)
+        {
+            // If the permission has been accepted update hasPermission to reflect this
+            if (permissions.length == 2 && permissions[0].equals(Manifest.permission.READ_CALENDAR)
+                    && permissions[1].equals(Manifest.permission.WRITE_CALENDAR)
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+            {
+                if (mIsEventWithoutEndDate)
+                {
+                    CreateCalendarEventWithoutEndDate();
+                }
+
+                else if (!mIsEventWithoutEndDate)
+                {
+                    CreateCalendarEvent();
+                }
+            }
+
+            // If the permission has been denied then display a message to that effect
+            else
+            {
+                Toast.makeText(getActivity(), "If you wish use this feature," +
+                        " please ensure you have given permission to access your device's calendar.", Toast.LENGTH_SHORT).show();
+                ReturnToHome();
+            }
+        }
+    }
+
+    private void CreateCalendarEvent()
+    {
+        // First check that the user has granted permission to write to the calendar
+        String[] PERMISSIONS = {Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR};
+
+        CalendarProvider provider = new CalendarProvider(getActivity());
+        List<me.everything.providers.android.calendar.Calendar> calendars = provider.getCalendars().getList();
+
+        // Insert Event
+        ContentResolver cr = getActivity().getContentResolver();
+        ContentValues values = new ContentValues();
+        TimeZone timeZone = TimeZone.getDefault();
+        values.put(CalendarContract.Events.DTSTART, mStartDate.getTime());
+        values.put(CalendarContract.Events.DTEND, mFinishDate.getTime());
+        values.put(CalendarContract.Events.EVENT_TIMEZONE, timeZone.getID());
+        values.put(CalendarContract.Events.TITLE, mGigNameEditText.getText().toString());
+        values.put(CalendarContract.Events.CALENDAR_ID, calendars.get(0).id);
+        values.put(CalendarContract.Events.EVENT_LOCATION, mVenueName);
+
+        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.WRITE_CALENDAR) != PackageManager.PERMISSION_GRANTED)
+        {
+            ActivityCompat.requestPermissions(getActivity(), PERMISSIONS, PERMISSION_ALL);
+        }
+
+        Uri uri = cr.insert(CalendarContract.Events.CONTENT_URI, values);
+
+        // get the event ID that is the last element in the Uri
+        final String eventID = uri.getLastPathSegment();
+
+        if(eventID != null)
+        {
+            // A dialog is then shown to alert the user that the changes have been made
+            final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setTitle("Confirmation");
+            builder.setIcon(R.drawable.ic_event_available_black_24dp);
+            builder.setMessage("Calendar Event Added!");
+            builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+            {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i)
+                {
+                    mDatabase.child("Gigs/" + mGigId + "/calendarEventId").setValue(eventID);
+                    ReturnToHome();
+                }
+            });
+            builder.setCancelable(false);
+            builder.show();
+        }
+
+        else
+        {
+            // A dialog is then shown to alert the user that the changes have been made
+            final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setTitle("Error");
+            builder.setIcon(R.drawable.ic_event_available_black_24dp);
+            builder.setMessage("Calendar Event Could Not Be Added!");
+            builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+            {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i)
+                {
+                    ReturnToHome();
+                }
+            });
+            builder.setCancelable(false);
+            builder.show();
+        }
+    }
+
+    private void CreateCalendarEventWithoutEndDate()
+    {
+        // First check that the user has granted permission to write to the calendar
+        String[] PERMISSIONS = {Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR};
+
+        // This 3rd party library then provides a list of all the calendar providers that the user has
+        CalendarProvider provider = new CalendarProvider(getActivity());
+        List<me.everything.providers.android.calendar.Calendar> calendars = provider.getCalendars().getList();
+
+        // This then creates and inserts the event with the details into the calendar with the first element of the providers list
+        ContentResolver cr = getActivity().getContentResolver();
+        ContentValues values = new ContentValues();
+        TimeZone timeZone = TimeZone.getDefault();
+        values.put(CalendarContract.Events.DTSTART, mStartDate.getTime());
+        values.put(CalendarContract.Events.DTEND, mFinishDate.getTime());
+        values.put(CalendarContract.Events.EVENT_TIMEZONE, timeZone.getID());
+        values.put(CalendarContract.Events.TITLE, mGigNameEditText.getText().toString());
+
+        if (calendars.size() <= 0)
+        {
+            Toast.makeText(getActivity(), "Please ensure you have at least one device calendar setup!", Toast.LENGTH_SHORT).show();
+        } else
+        {
+            values.put(CalendarContract.Events.CALENDAR_ID, calendars.get(0).id);
+            values.put(CalendarContract.Events.EVENT_LOCATION, mVenueName);
+
+            if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.WRITE_CALENDAR) != PackageManager.PERMISSION_GRANTED)
+            {
+                ActivityCompat.requestPermissions(getActivity(), PERMISSIONS, PERMISSION_ALL);
+            }
+
+            Uri uri = cr.insert(CalendarContract.Events.CONTENT_URI, values);
+
+            // The event id is then extracted
+            final String eventID = uri.getLastPathSegment();
+
+            if (eventID != null)
+            {
+                // A dialog is then shown to alert the user that the changes have been made
+                final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setTitle("Confirmation");
+                builder.setIcon(R.drawable.ic_event_available_black_24dp);
+                builder.setMessage("Calendar Event Added!");
+                builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i)
+                    {
+                        // This value is then stored in the database so edits can be made to the event
+                        mDatabase.child("Gigs/" + mGigId + "/calendarEventId").setValue(eventID);
+                        ReturnToHome();
+                    }
+                });
+                builder.setCancelable(false);
+                builder.show();
+            }
+        }
     }
 
     private void ReturnToHome()
