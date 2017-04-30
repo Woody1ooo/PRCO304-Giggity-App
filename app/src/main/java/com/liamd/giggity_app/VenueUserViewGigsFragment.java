@@ -173,6 +173,8 @@ public class VenueUserViewGigsFragment extends Fragment
                 arguments.putString("GigStartDate", selectedGig.getStartDate().toString());
                 arguments.putString("GigEndDate", selectedGig.getEndDate().toString());
                 arguments.putString("GigVenueID", selectedGig.getVenueID());
+                arguments.putInt("GigTicketCost", selectedGig.getTicketCost());
+                arguments.putInt("GigTicketQuantity", selectedGig.getTicketQuantity());
                 fragment.setArguments(arguments);
 
                 // Creates a new fragment transaction to display the details of the selected

@@ -18,7 +18,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -69,6 +72,11 @@ public class VenueUserViewGigDetailsFragment extends Fragment implements DatePic
     private Button mUpdateFinishTimeButton;
     private TextView mStartTimeSelectedTextView;
     private TextView mFinishTimeSelectedTextView;
+    private NumberPicker mTicketCostNumberPicker;
+    private TextView mTicketCostSelectedTextView;
+    private TextView mTicketQuantitySelectedTextView;
+    private CheckBox mMatchVenueCapacityCheckBox;
+    private NumberPicker mTicketQuantityNumberPicker;
     private Button mUpdateGigButton;
     private Button mDeleteGigButton;
 
@@ -116,6 +124,9 @@ public class VenueUserViewGigDetailsFragment extends Fragment implements DatePic
     private List<String> mGenreList;
     private String mBandId;
     private String mCalendarEventId;
+    private int mTicketCost;
+    private int mVenueCapacity;
+    private int mTicketQuantity;
 
     // These variables determine which elements of the gig have been edited
     private Boolean isStartDateEdited = false;
@@ -160,6 +171,16 @@ public class VenueUserViewGigDetailsFragment extends Fragment implements DatePic
 
         mStartTimeSelectedTextView = (TextView) fragmentView.findViewById(R.id.StartTimeSelectedLabel);
         mFinishTimeSelectedTextView = (TextView) fragmentView.findViewById(R.id.FinishTimeSelectedLabel);
+
+        mTicketCostSelectedTextView = (TextView) fragmentView.findViewById(R.id.TicketCostSelectedTextView);
+        mTicketCostNumberPicker = (NumberPicker) fragmentView.findViewById(R.id.ticketCostNumberPicker);
+        mTicketCostNumberPicker.setMinValue(0);
+        mTicketCostNumberPicker.setMaxValue(100);
+
+        mTicketQuantitySelectedTextView = (TextView) fragmentView.findViewById(R.id.TicketQuantitySelectedTextView);
+        mMatchVenueCapacityCheckBox = (CheckBox) fragmentView.findViewById(R.id.matchVenueCapacityItemCheckBox);
+        mTicketQuantityNumberPicker = (NumberPicker) fragmentView.findViewById(R.id.ticketQuantityNumberPicker);
+        mTicketQuantityNumberPicker.setMinValue(1);
 
         mUpdateGigButton = (Button) fragmentView.findViewById(R.id.UpdateGigButton);
         mDeleteGigButton = (Button) fragmentView.findViewById(R.id.DeleteGigButton);
@@ -259,11 +280,24 @@ public class VenueUserViewGigDetailsFragment extends Fragment implements DatePic
                             Picasso.with(getContext()).load(R.drawable.com_facebook_profile_picture_blank_portrait).resize(350, 350).into(mArtistImageView);
                         }
                     });
-
                 }
 
                 // This obtains the venue ID from the previous fragment
                 mVenueId = getArguments().getString("GigVenueID");
+
+                // Pull the venue capacity from the database
+                mVenueCapacity = Integer.parseInt(dataSnapshot.child("Venues/" + mVenueId + "/capacity").getValue().toString());
+                mTicketQuantityNumberPicker.setMaxValue(mVenueCapacity);
+
+                // Pull the ticket values from the previous fragment
+                mTicketQuantity = getArguments().getInt("GigTicketQuantity");
+                mTicketCost = getArguments().getInt("GigTicketCost");
+
+                // Set the UI components to these values
+                mTicketQuantityNumberPicker.setValue(mTicketQuantity);
+                mTicketQuantitySelectedTextView.setText(mTicketQuantity + " ticket(s)");
+                mTicketCostNumberPicker.setValue(mTicketCost);
+                mTicketCostSelectedTextView.setText("£" + mTicketCost + ".00");
 
                 // Get the genres selected against the gig
                 mGigGenres = dataSnapshot.child("Gigs/" + mGigID + "/genres").getValue().toString();
@@ -327,6 +361,47 @@ public class VenueUserViewGigDetailsFragment extends Fragment implements DatePic
                         // When the select finish time button is clicked, the method to display
                         // the time picker is called
                         FinishTimeShowTimePicker();
+                    }
+                });
+
+                mTicketCostNumberPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener()
+                {
+                    @Override
+                    public void onValueChange(NumberPicker numberPicker, int oldValue, int newValue)
+                    {
+                        mTicketCostSelectedTextView.setText("£" + newValue + ".00");
+                        mTicketCost = newValue;
+                    }
+                });
+
+                // As the ticket quantities are changed the display is updated
+                mTicketQuantityNumberPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener()
+                {
+                    @Override
+                    public void onValueChange(NumberPicker numberPicker, int oldValue, int newValue)
+                    {
+                        mTicketQuantitySelectedTextView.setText(newValue + " ticket(s)");
+                        mTicketQuantity = newValue;
+                    }
+                });
+
+                mMatchVenueCapacityCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
+                {
+                    @Override
+                    public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked)
+                    {
+                        if(isChecked)
+                        {
+                            mTicketQuantityNumberPicker.setValue(mVenueCapacity);
+                            mTicketQuantityNumberPicker.setEnabled(false);
+                            mTicketQuantitySelectedTextView.setText(mVenueCapacity + " ticket(s)");
+                            mTicketQuantity = mVenueCapacity;
+                        }
+
+                        else
+                        {
+                            mTicketQuantityNumberPicker.setEnabled(true);
+                        }
                     }
                 });
 
