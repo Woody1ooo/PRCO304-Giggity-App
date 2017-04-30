@@ -29,6 +29,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.NumberPicker;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -71,6 +72,11 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
     private Button mSelectFinishTimeButton;
     private TextView mStartTimeSelectedTextView;
     private TextView mFinishTimeSelectedTextView;
+    private NumberPicker mTicketCostNumberPicker;
+    private TextView mTicketCostSelectedTextView;
+    private TextView mTicketQuantitySelectedTextView;
+    private CheckBox mMatchVenueCapacityCheckBox;
+    private NumberPicker mTicketQuantityNumberPicker;
     private CheckBox mFeaturedItemCheckBox;
     private Button mCreateGigButton;
 
@@ -98,6 +104,10 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
     private int mFinishDay;
     private int mFinishHour;
     private int mFinishMinute;
+
+    private int mTicketCost;
+    private int mVenueCapacity;
+    private int mTicketQuantity;
 
     private Boolean isStartDate;
 
@@ -137,6 +147,16 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
 
         mStartTimeSelectedTextView = (TextView) fragmentView.findViewById(R.id.StartTimeSelectedLabel);
         mFinishTimeSelectedTextView = (TextView) fragmentView.findViewById(R.id.FinishTimeSelectedLabel);
+
+        mTicketCostSelectedTextView = (TextView) fragmentView.findViewById(R.id.TicketCostSelectedTextView);
+        mTicketCostNumberPicker = (NumberPicker) fragmentView.findViewById(R.id.ticketCostNumberPicker);
+        mTicketCostNumberPicker.setMinValue(0);
+        mTicketCostNumberPicker.setMaxValue(100);
+
+        mTicketQuantitySelectedTextView = (TextView) fragmentView.findViewById(R.id.TicketQuantitySelectedTextView);
+        mMatchVenueCapacityCheckBox = (CheckBox) fragmentView.findViewById(R.id.matchVenueCapacityItemCheckBox);
+        mTicketQuantityNumberPicker = (NumberPicker) fragmentView.findViewById(R.id.ticketQuantityNumberPicker);
+        mTicketQuantityNumberPicker.setMinValue(1);
 
         mFeaturedItemCheckBox = (CheckBox) fragmentView.findViewById(R.id.featuredItemCheckBox);
 
@@ -196,6 +216,21 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
                 // This is then used as the text for a non-editable edit text field
                 mVenueNameEditText.setText(mVenueName);
                 mVenueNameEditText.setEnabled(false);
+
+                // This populates the ticket quantity picker's maximum value with the capacity set when the venue was created
+                mVenueCapacity = Integer.parseInt(dataSnapshot.child("Venues/" + mVenueId + "/capacity").getValue().toString());
+                mTicketQuantityNumberPicker.setMaxValue(mVenueCapacity);
+
+                // As the ticket quantities are changed the display is updated
+                mTicketQuantityNumberPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener()
+                {
+                    @Override
+                    public void onValueChange(NumberPicker numberPicker, int oldValue, int newValue)
+                    {
+                        mTicketQuantitySelectedTextView.setText(newValue + " ticket(s)");
+                        mTicketQuantity = newValue;
+                    }
+                });
 
                 // This method populates the genre spinner with the genres the user
                 // selected when setting up their account
@@ -260,6 +295,36 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
                     }
                 });
 
+                mTicketCostNumberPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener()
+                {
+                    @Override
+                    public void onValueChange(NumberPicker numberPicker, int oldValue, int newValue)
+                    {
+                        mTicketCostSelectedTextView.setText("£" + newValue + ".00");
+                        mTicketCost = newValue;
+                    }
+                });
+
+                mMatchVenueCapacityCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
+                {
+                    @Override
+                    public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked)
+                    {
+                        if(isChecked)
+                        {
+                            mTicketQuantityNumberPicker.setValue(mVenueCapacity);
+                            mTicketQuantityNumberPicker.setEnabled(false);
+                            mTicketQuantitySelectedTextView.setText(mVenueCapacity + " ticket(s)");
+                            mTicketQuantity = mVenueCapacity;
+                        }
+
+                        else
+                        {
+                            mTicketQuantityNumberPicker.setEnabled(true);
+                        }
+                    }
+                });
+
                 mFeaturedItemCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
                 {
                     @Override
@@ -271,6 +336,7 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
                         }
                     }
                 });
+
 
                 mCreateGigButton.setOnClickListener(new View.OnClickListener()
                 {
@@ -460,16 +526,20 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
             public void onClick(DialogInterface dialog, int which)
             {
                 // This ensures that a value has been set for
-                // name, start date, start time, and finish time
+                // name, start date, start time, finish time, ticket cost, and ticket quantity
                 if (mGigNameEditText.getText().toString().matches("")
                         || mStartDateSelectedTextView.getText().equals("No date selected!")
                         || mStartTimeSelectedTextView.getText().equals("No time selected!")
-                        || mFinishTimeSelectedTextView.getText().equals("No time selected"))
+                        || mFinishTimeSelectedTextView.getText().equals("No time selected")
+                        || mTicketCostSelectedTextView.getText().equals("No cost selected!")
+                        || mTicketQuantitySelectedTextView.getText().equals("No tickets selected!"))
                 {
                     Toast.makeText(getActivity(),
                             "Please ensure you have given a value for all the required fields!",
                             Toast.LENGTH_SHORT).show();
-                } else
+                }
+
+                else
                 {
                     if (mGenresSpinner.getSelectedItem() == "")
                     {
@@ -525,6 +595,10 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
 
                                 mDatabase.child("Gigs/" + mGigId).child("genres").setValue(mGenresSpinner.getSelectedItemsAsString());
                                 mDatabase.child("Gigs/" + mGigId).child("bookedAct").setValue("Vacant");
+
+                                // Insert the ticket information to the database
+                                mDatabase.child("Gigs/" + mGigId).child("ticketCost").setValue(mTicketCost);
+                                mDatabase.child("Gigs/" + mGigId).child("ticketQuantity").setValue(mTicketQuantity);
 
                                 // This creates a ticket object and posts it to the database under the generated push key
                                 String newsItemId = mDatabase.child("NewsFeedItems").push().getKey();
@@ -586,7 +660,9 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
                                 });
                                 builder.setCancelable(false);
                                 builder.show();
-                            } else
+                            }
+
+                            else
                             {
                                 mGigId = mDatabase.push().getKey();
 
@@ -620,6 +696,10 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
 
                                     mDatabase.child("Gigs/" + mGigId).child("genres").setValue(mGenresSpinner.getSelectedItemsAsString());
                                     mDatabase.child("Gigs/" + mGigId).child("bookedAct").setValue("Vacant");
+
+                                    // Insert the ticket information to the database
+                                    mDatabase.child("Gigs/" + mGigId).child("ticketCost").setValue(mTicketCost);
+                                    mDatabase.child("Gigs/" + mGigId).child("ticketQuantity").setValue(mTicketQuantity);
 
                                     // A dialog is then shown to alert the user that the changes have been made
                                     final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -982,7 +1062,9 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
         if (calendars.size() <= 0)
         {
             Toast.makeText(getActivity(), "Please ensure you have at least one device calendar setup!", Toast.LENGTH_SHORT).show();
-        } else
+        }
+
+        else
         {
             values.put(CalendarContract.Events.CALENDAR_ID, calendars.get(0).id);
             values.put(CalendarContract.Events.EVENT_LOCATION, mVenueName);

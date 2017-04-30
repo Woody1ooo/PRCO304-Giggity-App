@@ -204,15 +204,76 @@
                 android:layout_marginRight="20dp"
                 android:layout_marginBottom="20dp"/>
 
+        <TextView
+            android:text="Ticket Cost"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="20dp"
+            android:paddingLeft="10dp"
+            android:id="@+id/textView19"
+            android:textSize="16sp"
+            android:textColor="@color/cast_expanded_controller_background_color"/>
+
+        <TextView
+            android:text="No cost selected!"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="20dp"
+            android:paddingLeft="10dp"
+            android:id="@+id/TicketCostSelectedTextView"/>
+
+        <NumberPicker
+            android:id="@+id/ticketCostNumberPicker"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:text="Ticket Quantity Available"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="20dp"
+            android:paddingLeft="10dp"
+            android:id="@+id/textView21"
+            android:textSize="16sp"
+            android:textColor="@color/cast_expanded_controller_background_color"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
             <TextView
-                android:text="Featured Item"
-                android:layout_width="match_parent"
+                android:id="@+id/TicketQuantitySelectedTextView"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingTop="20dp"
                 android:paddingLeft="10dp"
-                android:id="@+id/textView17"
-                android:textSize="16sp"
-                android:textColor="@color/cast_expanded_controller_background_color"/>
+                android:paddingTop="20dp"
+                android:text="No tickets selected!"/>
+
+            <CheckBox
+                android:id="@+id/matchVenueCapacityItemCheckBox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:layout_marginLeft="30dp"
+                android:text="Match Venue Capacity"
+                android:textAlignment="textEnd"/>
+        </LinearLayout>
+
+        <NumberPicker
+            android:id="@+id/ticketQuantityNumberPicker"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:id="@+id/textView17"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="10dp"
+            android:paddingTop="20dp"
+            android:text="Featured Gig"
+            android:textColor="@color/cast_expanded_controller_background_color"
+            android:textSize="16sp"/>
 
         <CheckBox
             android:id="@+id/featuredItemCheckBox"

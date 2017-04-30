@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.NumberPicker;
 import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -53,13 +54,15 @@ public class PreSetupActivity extends AppCompatActivity
     private MultiSelectSpinner mInstrumentSelectSpinner;
     private List<String> mGenreList;
     private List<String> mInstrumentList;
-    private TextView mGenreHeadingTextView;
     private TextView mInstrumentHeadingTextView;
 
     // Declare Venue specific visual components
     private TextView mVenueFinderHeadingTextView;
     private TextView mVenueDetailsTextView;
     private Button mPlaceFinderButton;
+    private TextView mVenueCapacityHeadingTextView;
+    private TextView mVenueCapacitySelectedTextView;
+    private NumberPicker mVenueCapacityNumberPicker;
 
     // Declare Firebase specific variables
     private FirebaseAuth mAuth;
@@ -112,11 +115,15 @@ public class PreSetupActivity extends AppCompatActivity
         mVenueDetailsTextView = (TextView) findViewById(R.id.venueDetails);
         mPlaceFinderButton = (Button) findViewById(R.id.placeFinderButton);
         mGenreSelectSpinner = (MultiSelectSpinner) findViewById(R.id.genreSpinner);
-        mGenreHeadingTextView = (TextView) findViewById(R.id.genreHeadingTextView);
         mInstrumentSelectSpinner = (MultiSelectSpinner) findViewById(R.id.instrumentSpinner);
         mInstrumentHeadingTextView = (TextView) findViewById(R.id.instrumentHeadingTextView);
         mFirstNameEditText = (EditText) findViewById(R.id.firstNameTxt);
         mLastNameEditText = (EditText) findViewById(R.id.lastNameTxt);
+        mVenueCapacityHeadingTextView = (TextView) findViewById(R.id.venueCapacityHeadingTextView);
+        mVenueCapacitySelectedTextView = (TextView) findViewById(R.id.VenueCapacitySelectedTextView);
+        mVenueCapacityNumberPicker = (NumberPicker) findViewById(R.id.venueCapacityNumberPicker);
+        mVenueCapacityNumberPicker.setMinValue(1);
+        mVenueCapacityNumberPicker.setMaxValue(1000);
 
         // Add items to the genre list, and set the spinner to use these
         mGenreList = new ArrayList<>();
@@ -240,7 +247,15 @@ public class PreSetupActivity extends AppCompatActivity
             }
         });
 
-
+        // This updates the venue capacity text view as the number picker is updated
+        mVenueCapacityNumberPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener()
+        {
+            @Override
+            public void onValueChange(NumberPicker numberPicker, int oldValue, int newValue)
+            {
+                mVenueCapacitySelectedTextView.setText(newValue + " person(s)");
+            }
+        });
 
         // If the venue finder button is selected, call the LaunchPlacePicker to start
         // the place picker activity
@@ -415,7 +430,7 @@ public class PreSetupActivity extends AppCompatActivity
                                             // to each place through Google My Business
                                             if(!dataSnapshot.hasChild(mVenueID))
                                             {
-                                                if(!mGenreListToString.equals(""))
+                                                if(!mGenreListToString.equals("") || !mVenueCapacitySelectedTextView.getText().equals("No capacity selected!"))
                                                 {
                                                     // If the place hasn't already been taken by another
                                                     // user, update the user's entry in the database
@@ -434,6 +449,9 @@ public class PreSetupActivity extends AppCompatActivity
 
                                                     mDatabase.child("Venues/" + mVenueID + "/venueLocation")
                                                             .setValue(mPlaceToStoreLatLng);
+
+                                                    mDatabase.child("Venues/" + mVenueID + "/capacity")
+                                                            .setValue(mVenueCapacityNumberPicker.getValue());
 
                                                     mDatabase.child("Users/" + mAuth.getCurrentUser().getUid()
                                                             + "/firstName").setValue(mFirstNameEditText.getText().toString());
@@ -474,7 +492,7 @@ public class PreSetupActivity extends AppCompatActivity
                                                 {
                                                     Toast.makeText(PreSetupActivity.this,
                                                             "Please ensure you have chosen the genres" +
-                                                                    " your venue is associated with!",
+                                                                    " your venue is associated with, and the capacity your venue holds!",
                                                             Toast.LENGTH_SHORT).show();
                                                 }
                                             }
@@ -630,12 +648,18 @@ public class PreSetupActivity extends AppCompatActivity
         mVenueFinderHeadingTextView.setText("Find Your Venue");
         mVenueDetailsTextView.setText("No Venue Chosen");
         mPlaceFinderButton.setText("Launch Venue Finder");
+        mVenueCapacityHeadingTextView.setVisibility(View.VISIBLE);
+        mVenueCapacitySelectedTextView.setVisibility(View.VISIBLE);
+        mVenueCapacityNumberPicker.setVisibility(View.VISIBLE);
     }
 
     // Method to hide venue user specific visual components
     private void HideVenueUserComponents()
     {
         mCantFindVenueText.setVisibility(View.GONE);
+        mVenueCapacityHeadingTextView.setVisibility(View.GONE);
+        mVenueCapacitySelectedTextView.setVisibility(View.GONE);
+        mVenueCapacityNumberPicker.setVisibility(View.GONE);
     }
 
     private void ShowFanUserComponents()

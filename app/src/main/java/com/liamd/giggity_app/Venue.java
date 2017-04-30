@@ -1,6 +1,5 @@
 package com.liamd.giggity_app;
 
-import com.google.android.gms.maps.model.LatLng;
 
 /**
  * Created by liamd on 20/02/2017.
@@ -12,6 +11,7 @@ public class Venue
     private String venueID;
     private String userID;
     private com.liamd.giggity_app.LatLng venueLocation;
+    private int venueCapacity;
 
     public Venue()
     {
@@ -24,6 +24,15 @@ public class Venue
         this.venueID = venueID;
         this.userID = userID;
         this.venueLocation = venueLocation;
+    }
+
+    public Venue(String name, String venueID, String userID, com.liamd.giggity_app.LatLng venueLocation, int venueCapacity)
+    {
+        this.name = name;
+        this.venueID = venueID;
+        this.userID = userID;
+        this.venueLocation = venueLocation;
+        this.venueCapacity = venueCapacity;
     }
 
     public String getName()
@@ -64,5 +73,15 @@ public class Venue
     public void setVenueLocation(com.liamd.giggity_app.LatLng venueLocation)
     {
         this.venueLocation = venueLocation;
+    }
+
+    public int getVenueCapacity()
+    {
+        return venueCapacity;
+    }
+
+    public void setVenueCapacity(int venueCapacity)
+    {
+        this.venueCapacity = venueCapacity;
     }
 }

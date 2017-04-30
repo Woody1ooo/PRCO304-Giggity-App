@@ -81,6 +81,7 @@ public class FanUserGigDetailsFragment extends Fragment implements OnMapReadyCal
     private String mParsedYouTubeURL;
     private String mYoutubeUrlEntered;
     private int mTicketQuantity;
+    private int mTicketQuantityAvailable;
 
     // Declare Firebase specific variables
     private FirebaseAuth mAuth;
@@ -272,7 +273,9 @@ public class FanUserGigDetailsFragment extends Fragment implements OnMapReadyCal
         ticketPickerDialog.setTitle("Ticket Picker");
         ticketPickerDialog.setContentView(R.layout.ticket_purchase_dialog_layout);
 
-        final int ticketCost = 10;
+        // This pulls the ticket cost and quantity set by the venue owner into the cost field
+        final int ticketCost = Integer.parseInt(mSnapshot.child("Gigs/" + mGigId + "/ticketCost").getValue().toString());
+        mTicketQuantityAvailable = Integer.parseInt(mSnapshot.child("Gigs/" + mGigId + "/ticketQuantity").getValue().toString());
 
         // Initialise dialog visual components
         TextView mGigNameTextView = (TextView) ticketPickerDialog.findViewById(R.id.gigNameTextView);
@@ -335,33 +338,55 @@ public class FanUserGigDetailsFragment extends Fragment implements OnMapReadyCal
                     {
                         dialogInterface.dismiss();
 
-                        // This creates a ticket object and posts it to the database under the generated push key
-                        String ticketId = mDatabase.child("Tickets").push().getKey();
-                        Ticket ticket = new Ticket(ticketId, mTicketQuantity, mGigId);
-                        mDatabase.child("Tickets/" + mGigId + "/" + mAuth.getCurrentUser().getUid() + "/").setValue(ticket);
-
-                        // This dialog is created to confirm that the users want to purchase the tickets
-                        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                        builder.setTitle("Confirmation");
-                        builder.setMessage("Tickets Purchased! To access your ticket please navigate to 'My Gigs' > View Ticket'.");
-                        builder.setPositiveButton("Confirm", new DialogInterface.OnClickListener()
+                        // If the user has selected more tickets than there are available then a message is displayed
+                        if(mTicketQuantityAvailable < mTicketQuantity)
                         {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i)
+                            // This dialog is created to confirm that the users want to purchase the tickets
+                            final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                            builder.setTitle("Error!");
+                            builder.setMessage("You've selected more tickets than there are available! Please amend your order.");
+                            builder.setPositiveButton("Confirm", new DialogInterface.OnClickListener()
                             {
-                                dialogInterface.dismiss();
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i)
+                                {
 
-                                getActivity().finish();
-                                getActivity().overridePendingTransition(0,0);
+                                }
+                            });
+                            builder.show();
+                        }
 
-                                Intent intent = new Intent(getActivity(), FanUserMainActivity.class);
-                                startActivity(intent);
+                        else
+                        {
+                            // This creates a ticket object and posts it to the database under the generated push key
+                            String ticketId = mDatabase.child("Tickets").push().getKey();
+                            Ticket ticket = new Ticket(ticketId, mTicketQuantity, mGigId);
+                            mDatabase.child("Tickets/" + mGigId + "/" + mAuth.getCurrentUser().getUid() + "/").setValue(ticket);
+                            mDatabase.child("Gigs/" + mGigId + "/ticketQuantity").setValue(mTicketQuantityAvailable - mTicketQuantity);
 
-                                getFragmentManager().popBackStackImmediate();
-                            }
-                        });
-                        builder.show();
-                        builder.setCancelable(false);
+                            // This dialog is created to confirm that the users want to purchase the tickets
+                            final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                            builder.setTitle("Confirmation");
+                            builder.setMessage("Tickets Purchased! To access your ticket please navigate to 'My Gigs' > View Ticket'.");
+                            builder.setPositiveButton("Confirm", new DialogInterface.OnClickListener()
+                            {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i)
+                                {
+                                    dialogInterface.dismiss();
+
+                                    getActivity().finish();
+                                    getActivity().overridePendingTransition(0,0);
+
+                                    Intent intent = new Intent(getActivity(), FanUserMainActivity.class);
+                                    startActivity(intent);
+
+                                    getFragmentManager().popBackStackImmediate();
+                                }
+                            });
+                            builder.show();
+                            builder.setCancelable(false);
+                        }
                     }
                 });
                 builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener()

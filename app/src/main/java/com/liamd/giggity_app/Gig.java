@@ -15,6 +15,8 @@ public class Gig
     private String gigId;
     private double gigDistance;
     private String bookedAct;
+    private int ticketCost;
+    private int ticketQuantity;
 
     public Gig()
     {
@@ -48,7 +50,17 @@ public class Gig
         this.gigDistance = gigDistance;
     }
 
-
+    public Gig(Date endDate, Date startDate, String title, String venueID, String gigId, double gigDistance, int ticketCost, int ticketQuantity)
+    {
+        this.endDate = endDate;
+        this.startDate = startDate;
+        this.title = title;
+        this.venueID = venueID;
+        this.gigId = gigId;
+        this.gigDistance = gigDistance;
+        this.ticketCost = ticketCost;
+        this.ticketQuantity = ticketQuantity;
+    }
 
     public Date getEndDate()
     {
@@ -118,5 +130,25 @@ public class Gig
     public void setBookedAct(String bookedAct)
     {
         this.bookedAct = bookedAct;
+    }
+
+    public int getTicketCost()
+    {
+        return ticketCost;
+    }
+
+    public void setTicketCost(int ticketCost)
+    {
+        this.ticketCost = ticketCost;
+    }
+
+    public int getTicketQuantity()
+    {
+        return ticketQuantity;
+    }
+
+    public void setTicketQuantity(int ticketQuantity)
+    {
+        this.ticketQuantity = ticketQuantity;
     }
 }

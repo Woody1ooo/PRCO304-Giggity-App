@@ -169,10 +169,32 @@
                 android:id="@+id/venueHelpTextView"
                 android:layout_marginTop="30dp"
                 android:textAlignment="center"
-                android:paddingBottom="30dp"
                 android:layout_weight="0.12"
                 android:textColor="@color/colorPrimary"
                 android:layout_marginBottom="32dp"/>
+
+            <TextView
+                android:id="@+id/venueCapacityHeadingTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="10dp"
+                android:paddingTop="20dp"
+                android:text="Venue Capacity"
+                android:textColor="@color/cast_expanded_controller_background_color"
+                android:textSize="16sp"/>
+
+            <TextView
+                android:id="@+id/VenueCapacitySelectedTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="10dp"
+                android:paddingTop="20dp"
+                android:text="No capacity selected!"/>
+
+            <NumberPicker
+                android:id="@+id/venueCapacityNumberPicker"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
 
             <Button
                 android:text="Save"
