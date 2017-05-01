@@ -44,7 +44,7 @@
                     android:layout_gravity="start"
                     android:background="@null"
                     android:scaleType="fitCenter"
-                    app:srcCompat="@drawable/ic_insert_photo_black_24dp"/>
+                    app:srcCompat="@drawable/ic_insert_photo_black_24px"/>
 
                 <ImageButton
                     android:id="@+id/removeImageButton"
@@ -54,7 +54,7 @@
                     android:layout_gravity="end"
                     android:background="@null"
                     android:scaleType="fitCenter"
-                    app:srcCompat="@drawable/ic_delete_black_24dp"/>
+                    app:srcCompat="@drawable/ic_delete_black_24px"/>
 
             </LinearLayout>
 

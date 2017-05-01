@@ -45,6 +45,10 @@ public class PreSetupActivity extends AppCompatActivity
     private TextView mCantFindVenueText;
     private EditText mFirstNameEditText;
     private EditText mLastNameEditText;
+    private TextView mVenueNameHeadingTextView;
+    private EditText mVenueNameEditText;
+    private TextView mFirstNameHeadingTextView;
+    private TextView mLastNameHeadingTextView;
 
     // Declare general user variables
     private String[] splitName;
@@ -119,6 +123,10 @@ public class PreSetupActivity extends AppCompatActivity
         mInstrumentHeadingTextView = (TextView) findViewById(R.id.instrumentHeadingTextView);
         mFirstNameEditText = (EditText) findViewById(R.id.firstNameTxt);
         mLastNameEditText = (EditText) findViewById(R.id.lastNameTxt);
+        mVenueNameEditText = (EditText) findViewById(R.id.venueNameEditText);
+        mVenueNameHeadingTextView = (TextView) findViewById(R.id.venueNameHeadingTextView);
+        mFirstNameHeadingTextView = (TextView) findViewById(R.id.firstNameHeadingTextView);
+        mLastNameHeadingTextView = (TextView) findViewById(R.id.lastNameHeadingTextView);
         mVenueCapacityHeadingTextView = (TextView) findViewById(R.id.venueCapacityHeadingTextView);
         mVenueCapacitySelectedTextView = (TextView) findViewById(R.id.VenueCapacitySelectedTextView);
         mVenueCapacityNumberPicker = (NumberPicker) findViewById(R.id.venueCapacityNumberPicker);
@@ -305,7 +313,7 @@ public class PreSetupActivity extends AppCompatActivity
                         .setTitle("I Can't Find My Venue!")
                         .setMessage("If you can't find your venue on the venue finder, please use" +
                                 " the closest location you can, and use this instead. The name can be" +
-                                " overwritten later in the 'My Venue Profile' section.")
+                                " overwritten below or later in the 'My Venue Profile' section.")
                         .setNeutralButton(android.R.string.ok, new DialogInterface.OnClickListener()
                         {
                             public void onClick(DialogInterface dialog, int which)
@@ -313,7 +321,7 @@ public class PreSetupActivity extends AppCompatActivity
                                 dialog.dismiss();
                             }
                         })
-                        .setIcon(R.drawable.ic_info_outline_black_24dp)
+                        .setIcon(R.drawable.ic_info_outline_black_24px)
                         .show();
             }
         });
@@ -324,7 +332,7 @@ public class PreSetupActivity extends AppCompatActivity
     {
         // Creates a new dialog to display when the save button is clicked
         new AlertDialog.Builder(PreSetupActivity.this)
-                .setIcon(R.drawable.ic_info_outline_black_24dp)
+                .setIcon(R.drawable.ic_info_outline_black_24px)
                 .setTitle("Set Preferences")
                 .setMessage("Are you sure you want to set these preferences? By clicking 'Yes' you" +
                         " are also confirming that you are over 18 years of age.")
@@ -332,14 +340,18 @@ public class PreSetupActivity extends AppCompatActivity
                 {
                     public void onClick(DialogInterface dialog, int which)
                     {
-                        // Ensure that a value has been entered for first and last names
-                        if(TextUtils.isEmpty(mFirstNameEditText.getText())
-                                || TextUtils.isEmpty(mLastNameEditText.getText()))
+                        if(!mVenueRadio.isChecked())
                         {
-                            Toast.makeText(PreSetupActivity.this,
-                                    "Please enter a value for both first and last names!"
-                                    , Toast.LENGTH_SHORT).show();
+                            // Ensure that a value has been entered for first and last names
+                            if(TextUtils.isEmpty(mFirstNameEditText.getText())
+                                    || TextUtils.isEmpty(mLastNameEditText.getText()))
+                            {
+                                Toast.makeText(PreSetupActivity.this,
+                                        "Please enter a value for both first and last names!"
+                                        , Toast.LENGTH_SHORT).show();
+                            }
                         }
+
                         else
                         {
                             // This block handles musician users
@@ -405,7 +417,18 @@ public class PreSetupActivity extends AppCompatActivity
                                 // Creates a venue object to store the venue information generated
                                 // by the place finder
                                 final Venue venue = new Venue();
-                                venue.setName(mVenueName);
+
+                                // If the user has manually overriden the venue name
+                                if(!mVenueNameEditText.getText().toString().equals(""))
+                                {
+                                    venue.setName(mVenueNameEditText.getText().toString());
+                                }
+
+                                else
+                                {
+                                    venue.setName(mVenueName);
+                                }
+
                                 venue.setVenueID(mVenueID);
                                 venue.setUserID(mAuth.getCurrentUser().getUid());
 
@@ -631,6 +654,8 @@ public class PreSetupActivity extends AppCompatActivity
         mVenueFinderHeadingTextView.setText("Find Your Home Location");
         mVenueDetailsTextView.setText("No Location Chosen");
         mPlaceFinderButton.setText("Launch Location Finder");
+        mVenueNameEditText.setVisibility(View.GONE);
+        mVenueNameHeadingTextView.setVisibility(View.GONE);
     }
 
     // Method to hide musician user specific visual components
@@ -638,6 +663,10 @@ public class PreSetupActivity extends AppCompatActivity
     {
         mInstrumentSelectSpinner.setVisibility(View.GONE);
         mInstrumentHeadingTextView.setVisibility(View.GONE);
+        mFirstNameHeadingTextView.setVisibility(View.GONE);
+        mLastNameHeadingTextView.setVisibility(View.GONE);
+        mFirstNameEditText.setVisibility(View.GONE);
+        mLastNameEditText.setVisibility(View.GONE);
     }
 
     // Method to display venue user specific visual components
@@ -651,11 +680,15 @@ public class PreSetupActivity extends AppCompatActivity
         mVenueCapacityHeadingTextView.setVisibility(View.VISIBLE);
         mVenueCapacitySelectedTextView.setVisibility(View.VISIBLE);
         mVenueCapacityNumberPicker.setVisibility(View.VISIBLE);
+        mVenueNameEditText.setVisibility(View.VISIBLE);
+        mVenueNameHeadingTextView.setVisibility(View.VISIBLE);
     }
 
     // Method to hide venue user specific visual components
     private void HideVenueUserComponents()
     {
+        mVenueNameEditText.setVisibility(View.GONE);
+        mVenueNameHeadingTextView.setVisibility(View.GONE);
         mCantFindVenueText.setVisibility(View.GONE);
         mVenueCapacityHeadingTextView.setVisibility(View.GONE);
         mVenueCapacitySelectedTextView.setVisibility(View.GONE);
@@ -664,6 +697,12 @@ public class PreSetupActivity extends AppCompatActivity
 
     private void ShowFanUserComponents()
     {
+        mFirstNameHeadingTextView.setVisibility(View.VISIBLE);
+        mLastNameHeadingTextView.setVisibility(View.VISIBLE);
+        mFirstNameEditText.setVisibility(View.VISIBLE);
+        mLastNameEditText.setVisibility(View.VISIBLE);
+        mVenueNameEditText.setVisibility(View.GONE);
+        mVenueNameHeadingTextView.setVisibility(View.GONE);
         mInstrumentSelectSpinner.setVisibility(View.GONE);
         mInstrumentHeadingTextView.setVisibility(View.GONE);
         mCantFindVenueText.setVisibility(View.GONE);
@@ -684,6 +723,8 @@ public class PreSetupActivity extends AppCompatActivity
     // Takes the result of the activity and stores the data
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
+        mProgressDialog.hide();
+
         if (requestCode == PLACE_PICKER_REQUEST)
         {
             if (resultCode == RESULT_OK)

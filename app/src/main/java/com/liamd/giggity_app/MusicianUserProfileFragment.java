@@ -469,7 +469,7 @@ public class MusicianUserProfileFragment extends Fragment implements YouTubePlay
         // they have chosen
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle("Delete Profile Picture");
-        builder.setIcon(R.drawable.ic_info_outline_black_24dp);
+        builder.setIcon(R.drawable.ic_info_outline_black_24px);
         builder.setMessage("Are you sure you wish to delete your profile picture?");
         builder.setPositiveButton("Delete", new DialogInterface.OnClickListener()
         {
@@ -511,7 +511,7 @@ public class MusicianUserProfileFragment extends Fragment implements YouTubePlay
             // This dialog is created to confirm that the user wants to edit their picture
             final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             builder.setTitle("Update Profile Picture");
-            builder.setIcon(R.drawable.ic_info_outline_black_24dp);
+            builder.setIcon(R.drawable.ic_info_outline_black_24px);
             builder.setMessage("Are you sure you wish to use this image for your profile picture?");
             builder.setPositiveButton("Update", new DialogInterface.OnClickListener()
             {
@@ -752,7 +752,7 @@ public class MusicianUserProfileFragment extends Fragment implements YouTubePlay
         // This dialog is created to confirm that the user wants to edit the chosen fields
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle("Update Profile Preferences");
-        builder.setIcon(R.drawable.ic_info_outline_black_24dp);
+        builder.setIcon(R.drawable.ic_info_outline_black_24px);
         builder.setMessage("Are you sure you wish to update these fields?");
         builder.setPositiveButton("Update", new DialogInterface.OnClickListener()
         {
@@ -823,7 +823,7 @@ public class MusicianUserProfileFragment extends Fragment implements YouTubePlay
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle("Leave Band?");
         builder.setMessage("Are you sure you wish to leave your band?");
-        builder.setIcon(R.drawable.ic_info_outline_black_24dp);
+        builder.setIcon(R.drawable.ic_info_outline_black_24px);
         builder.setPositiveButton("Confirm", new DialogInterface.OnClickListener()
         {
             @Override

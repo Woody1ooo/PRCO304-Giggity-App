@@ -64,14 +64,14 @@
             </RadioGroup>
 
             <TextView
-                android:text="First Name"
+                android:id="@+id/firstNameHeadingTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/textView8"
-                android:layout_weight="1"
-                android:textAppearance="@style/TextAppearance.AppCompat.Menu"
                 android:layout_marginTop="22dp"
-                android:paddingLeft="10dp"/>
+                android:layout_weight="1"
+                android:paddingLeft="10dp"
+                android:text="First Name"
+                android:textAppearance="@style/TextAppearance.AppCompat.Menu"/>
 
             <EditText
                 android:layout_width="match_parent"
@@ -82,14 +82,14 @@
                 android:paddingLeft="10dp"/>
 
             <TextView
-                android:text="Last Name"
+                android:id="@+id/lastNameHeadingTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/textView10"
-                android:layout_weight="1"
-                android:textAppearance="@style/TextAppearance.AppCompat.Menu"
                 android:layout_marginTop="22dp"
-                android:paddingLeft="10dp"/>
+                android:layout_weight="1"
+                android:paddingLeft="10dp"
+                android:text="Last Name"
+                android:textAppearance="@style/TextAppearance.AppCompat.Menu"/>
 
             <EditText
                 android:layout_width="match_parent"
@@ -172,6 +172,24 @@
                 android:layout_weight="0.12"
                 android:textColor="@color/colorPrimary"
                 android:layout_marginBottom="32dp"/>
+
+            <TextView
+                android:id="@+id/venueNameHeadingTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="22dp"
+                android:layout_weight="1"
+                android:paddingLeft="10dp"
+                android:text="Venue Name (Optional if you wish to override the name set by the place picker)"
+                android:textAppearance="@style/TextAppearance.AppCompat.Menu"/>
+
+            <EditText
+                android:id="@+id/venueNameEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="textPersonName"
+                android:paddingLeft="10dp"/>
 
             <TextView
                 android:id="@+id/venueCapacityHeadingTextView"

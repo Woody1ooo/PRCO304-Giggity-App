@@ -3,7 +3,8 @@
              android:layout_width="match_parent"
              android:layout_height="match_parent"
              xmlns:app="http://schemas.android.com/apk/res-auto"
-             tools:context="com.liamd.giggity_app.MusicianUserProfileFragment">
+             tools:context="com.liamd.giggity_app.VenueUserProfileFragment">
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -16,12 +17,11 @@
             <de.hdodenhof.circleimageview.CircleImageView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/profile_image"
+                android:id="@+id/venueImage"
                 app:civ_border_width="2dp"
                 app:civ_border_color="#FF000000"
                 android:layout_marginTop="15dp"
                 app:srcCompat="@drawable/com_facebook_profile_picture_blank_portrait"
-                android:paddingRight="10dp"
                 android:layout_weight="1"
                 android:layout_gravity="center_horizontal"
                 android:foregroundGravity="center_horizontal"/>
@@ -56,39 +56,21 @@
             </LinearLayout>
 
             <TextView
-                android:text="First Name"
+                android:text="Venue Name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/textView8"
+                android:id="@+id/venueNameHeadingTextView"
                 android:layout_weight="1"
                 android:textAppearance="@style/TextAppearance.AppCompat.Menu"
                 android:layout_marginTop="22dp"
                 android:paddingLeft="10dp"/>
 
             <EditText
+                android:id="@+id/venueNameEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textPersonName"
                 android:ems="10"
-                android:id="@+id/firstNameEditText"
-                android:paddingLeft="10dp"/>
-
-            <TextView
-                android:text="Last Name"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/textView10"
-                android:layout_weight="1"
-                android:textAppearance="@style/TextAppearance.AppCompat.Menu"
-                android:layout_marginTop="22dp"
-                android:paddingLeft="10dp"/>
-
-            <EditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
                 android:inputType="textPersonName"
-                android:ems="10"
-                android:id="@+id/lastNameEditText"
                 android:paddingLeft="10dp"/>
 
             <TextView
@@ -108,8 +90,7 @@
                 android:ems="10"
                 android:id="@+id/emailEditText"
                 android:enabled="false"
-                android:paddingLeft="10dp"
-                />
+                android:paddingLeft="10dp"/>
 
             <TextView
                 android:text="Genres"
@@ -125,71 +106,26 @@
                 android:layout_width="fill_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="0.15"
-                android:layout_marginBottom="32dp"
-                android:layout_marginTop="22dp"
-                android:paddingLeft="10dp"/>
-
-            <TextView
-                android:text="Instruments"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/instrumentHeadingTextView"
-                android:textAppearance="@style/TextAppearance.AppCompat.Menu"
-                android:layout_marginTop="12dp"
-                android:paddingLeft="10dp"/>
-
-            <com.liamd.giggity_app.MultiSelectSpinner
-                android:id="@+id/instrumentSpinner"
-                android:layout_width="fill_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="0.15"
                 android:layout_marginBottom="22dp"
                 android:layout_marginTop="22dp"
                 android:paddingLeft="10dp"/>
 
             <TextView
-                android:text="Band"
+                android:id="@+id/locationFinderHeadingTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/bandHeadingTextView"
-                android:layout_weight="1"
-                android:textAppearance="@style/TextAppearance.AppCompat.Menu"
                 android:layout_marginTop="22dp"
-                android:paddingLeft="10dp"/>
+                android:paddingLeft="10dp"
+                android:text="Find Your Venue"
+                android:textAppearance="@style/TextAppearance.AppCompat.Menu"/>
 
             <TextView
-                android:id="@+id/bandNameTextView"
+                android:id="@+id/locationDetailsTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="21dp"
                 android:paddingLeft="10dp"
-                android:text="No Current Band!"/>
-
-            <Button
-                android:id="@+id/leaveBandButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="32dp"
-                android:background="@color/colorPrimaryDark"
-                android:text="Leave Band"
-                android:textColor="@color/cardview_light_background"/>
-
-            <TextView
-                android:text="Find Your Location"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/locationFinderHeadingTextView"
-                android:textAppearance="@style/TextAppearance.AppCompat.Menu"
-                android:layout_marginTop="22dp"
-                android:paddingLeft="10dp"/>
-
-            <TextView
-                android:text="No Location Chosen!"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="21dp"
-                android:id="@+id/locationDetailsTextView"
-                android:paddingLeft="10dp"/>
+                android:text="No Venue Chosen!"/>
 
             <Button
                 android:text="Launch Location Finder"
@@ -201,39 +137,27 @@
                 android:layout_marginTop="32dp"/>
 
             <TextView
-                android:text="Youtube Promo URL"
+                android:id="@+id/venueCapacityHeadingTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/youtubeUrlTextView"
-                android:layout_weight="1"
-                android:textAppearance="@style/TextAppearance.AppCompat.Menu"
-                android:layout_marginTop="22dp"
-                android:paddingLeft="10dp"/>
+                android:paddingLeft="10dp"
+                android:paddingTop="20dp"
+                android:text="Venue Capacity"
+                android:textColor="@color/cast_expanded_controller_background_color"
+                android:textSize="16sp"/>
 
-            <EditText
+            <TextView
+                android:id="@+id/VenueCapacitySelectedTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textUri"
-                android:ems="10"
-                android:id="@+id/youtubeUrlEditText"
-                android:paddingLeft="10dp"/>
+                android:paddingLeft="10dp"
+                android:paddingTop="20dp"
+                android:text="No capacity selected!"/>
 
-            <Button
-                android:id="@+id/checkUrlButton"
+            <NumberPicker
+                android:id="@+id/venueCapacityNumberPicker"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="@color/colorPrimaryDark"
-                android:text="Submit URL"
-                android:textColor="@color/mdtp_white"
-                android:layout_marginTop="22dp"/>
-
-            <FrameLayout
-                android:id="@+id/youtube_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:visibility="visible"/>
+                android:layout_height="wrap_content"/>
 
             <Button
                 android:text="Save"

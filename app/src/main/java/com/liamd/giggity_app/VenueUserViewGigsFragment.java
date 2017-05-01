@@ -111,7 +111,7 @@ public class VenueUserViewGigsFragment extends Fragment
                 if(mListOfUsersGigs.isEmpty() && getActivity() != null)
                 {
                     final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                    builder.setIcon(R.drawable.ic_info_outline_black_24dp);
+                    builder.setIcon(R.drawable.ic_info_outline_black_24px);
                     builder.setTitle("No Gigs!");
                     builder.setMessage("You haven't created any gigs yet! Would you like to create one?");
                     builder.setPositiveButton("Yes", new DialogInterface.OnClickListener()

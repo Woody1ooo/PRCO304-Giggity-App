@@ -535,7 +535,7 @@ public class MusicianUserGigRequestsReceivedDetailsFragment extends Fragment imp
                 // A dialog is then shown to alert the user that the changes have been made
                 final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                 builder.setTitle("Confirmation");
-                builder.setIcon(R.drawable.ic_event_available_black_24dp);
+                builder.setIcon(R.drawable.ic_event_available_black_24px);
                 builder.setMessage("Request Accepted! Would you like to add this gig to your device calendar?");
                 builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
                 {
@@ -572,7 +572,7 @@ public class MusicianUserGigRequestsReceivedDetailsFragment extends Fragment imp
                                 // A dialog is then shown to alert the user that the changes have been made
                                 final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                                 builder.setTitle("Confirmation");
-                                builder.setIcon(R.drawable.ic_event_available_black_24dp);
+                                builder.setIcon(R.drawable.ic_event_available_black_24px);
                                 builder.setMessage("Calendar Event Added!");
                                 builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
                                 {
@@ -594,7 +594,7 @@ public class MusicianUserGigRequestsReceivedDetailsFragment extends Fragment imp
                                 // A dialog is then shown to alert the user that the changes have been made
                                 final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                                 builder.setTitle("Error");
-                                builder.setIcon(R.drawable.ic_event_available_black_24dp);
+                                builder.setIcon(R.drawable.ic_event_available_black_24px);
                                 builder.setMessage("Calendar Event Could Not Be Added!");
                                 builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
                                 {

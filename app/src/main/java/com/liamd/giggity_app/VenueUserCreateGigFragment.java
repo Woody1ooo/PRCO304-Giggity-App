@@ -518,7 +518,7 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
     private void CreateGig()
     {
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setIcon(R.drawable.ic_info_outline_black_24dp);
+        builder.setIcon(R.drawable.ic_info_outline_black_24px);
         builder.setTitle("Create Gig");
         builder.setMessage("Are you sure you want to create this gig?");
         builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener()
@@ -608,7 +608,7 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
                                 // A dialog is then shown to alert the user that the changes have been made
                                 final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                                 builder.setTitle("Confirmation");
-                                builder.setIcon(R.drawable.ic_event_available_black_24dp);
+                                builder.setIcon(R.drawable.ic_event_available_black_24px);
                                 builder.setMessage("Gig Created! Would you like to add this to your device calendar?");
                                 builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
                                 {
@@ -635,7 +635,7 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
                                             // A dialog is then shown to alert the user that the changes have been made
                                             final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                                             builder.setTitle("Error");
-                                            builder.setIcon(R.drawable.ic_event_available_black_24dp);
+                                            builder.setIcon(R.drawable.ic_event_available_black_24px);
                                             builder.setMessage("Calendar Event Could Not Be Added!");
                                             builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
                                             {
@@ -705,7 +705,7 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
                                     final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                                     builder.setTitle("Confirmation");
                                     builder.setMessage("Gig Created! Would you like to add this to your device calendar?");
-                                    builder.setIcon(R.drawable.ic_event_available_black_24dp);
+                                    builder.setIcon(R.drawable.ic_event_available_black_24px);
                                     builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
                                     {
                                         @Override
@@ -1006,7 +1006,7 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
             // A dialog is then shown to alert the user that the changes have been made
             final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             builder.setTitle("Confirmation");
-            builder.setIcon(R.drawable.ic_event_available_black_24dp);
+            builder.setIcon(R.drawable.ic_event_available_black_24px);
             builder.setMessage("Calendar Event Added!");
             builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
             {
@@ -1026,7 +1026,7 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
             // A dialog is then shown to alert the user that the changes have been made
             final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             builder.setTitle("Error");
-            builder.setIcon(R.drawable.ic_event_available_black_24dp);
+            builder.setIcon(R.drawable.ic_event_available_black_24px);
             builder.setMessage("Calendar Event Could Not Be Added!");
             builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
             {
@@ -1084,7 +1084,7 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
                 // A dialog is then shown to alert the user that the changes have been made
                 final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                 builder.setTitle("Confirmation");
-                builder.setIcon(R.drawable.ic_event_available_black_24dp);
+                builder.setIcon(R.drawable.ic_event_available_black_24px);
                 builder.setMessage("Calendar Event Added!");
                 builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
                 {

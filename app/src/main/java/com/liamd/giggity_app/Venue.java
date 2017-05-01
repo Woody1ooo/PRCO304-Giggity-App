@@ -11,7 +11,7 @@ public class Venue
     private String venueID;
     private String userID;
     private com.liamd.giggity_app.LatLng venueLocation;
-    private int venueCapacity;
+    private int capacity;
 
     public Venue()
     {
@@ -26,13 +26,13 @@ public class Venue
         this.venueLocation = venueLocation;
     }
 
-    public Venue(String name, String venueID, String userID, com.liamd.giggity_app.LatLng venueLocation, int venueCapacity)
+    public Venue(String name, String venueID, String userID, com.liamd.giggity_app.LatLng venueLocation, int capacity)
     {
         this.name = name;
         this.venueID = venueID;
         this.userID = userID;
         this.venueLocation = venueLocation;
-        this.venueCapacity = venueCapacity;
+        this.capacity = capacity;
     }
 
     public String getName()
@@ -75,13 +75,13 @@ public class Venue
         this.venueLocation = venueLocation;
     }
 
-    public int getVenueCapacity()
+    public int getCapacity()
     {
-        return venueCapacity;
+        return capacity;
     }
 
-    public void setVenueCapacity(int venueCapacity)
+    public void setCapacity(int capacity)
     {
-        this.venueCapacity = venueCapacity;
+        this.capacity = capacity;
     }
 }

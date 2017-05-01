@@ -852,6 +852,8 @@ public class VenueUserViewGigDetailsFragment extends Fragment implements DatePic
                         mDatabase.child("Gigs/" + mGigID + "/" + "title").setValue(mGigNameEditText.getText().toString());
                         mDatabase.child("Gigs/" + mGigID + "/" + "venueID").setValue(mVenueId);
                         mDatabase.child("Gigs/" + mGigID + "/" + "genres").setValue(mGenreSpinner.getSelectedItemsAsString());
+                        mDatabase.child("Gigs/" + mGigID + "/" + "ticketCost").setValue(mTicketCostNumberPicker.getValue());
+                        mDatabase.child("Gigs/" + mGigID + "/" + "ticketQuantity").setValue(mTicketQuantityNumberPicker.getValue());
 
                         // If the event has a calendar event update the relevant fields
                         if(mCalendarEventId != null)
@@ -896,6 +898,8 @@ public class VenueUserViewGigDetailsFragment extends Fragment implements DatePic
                                 mDatabase.child("Gigs/" + mGigID + "/" + "startDate").setValue(newStartDate);
                                 mDatabase.child("Gigs/" + mGigID + "/" + "endDate").setValue(newEndDate);
                                 mDatabase.child("Gigs/" + mGigID + "/" + "genres").setValue(mGenreSpinner.getSelectedItemsAsString());
+                                mDatabase.child("Gigs/" + mGigID + "/" + "ticketCost").setValue(mTicketCostNumberPicker.getValue());
+                                mDatabase.child("Gigs/" + mGigID + "/" + "ticketQuantity").setValue(mTicketQuantityNumberPicker.getValue());
 
                                 // If the event has a calendar event update the relevant fields
                                 if(mCalendarEventId != null)
@@ -946,6 +950,8 @@ public class VenueUserViewGigDetailsFragment extends Fragment implements DatePic
                                 mDatabase.child("Gigs/" + mGigID + "/" + "startDate").setValue(newStartDate);
                                 mDatabase.child("Gigs/" + mGigID + "/" + "venueID").setValue(mVenueId);
                                 mDatabase.child("Gigs/" + mGigID + "/" + "genres").setValue(mGenreSpinner.getSelectedItemsAsString());
+                                mDatabase.child("Gigs/" + mGigID + "/" + "ticketCost").setValue(mTicketCostNumberPicker.getValue());
+                                mDatabase.child("Gigs/" + mGigID + "/" + "ticketQuantity").setValue(mTicketQuantityNumberPicker.getValue());
 
                                 // If the event has a calendar event update the relevant fields
                                 if(mCalendarEventId != null)
@@ -994,6 +1000,8 @@ public class VenueUserViewGigDetailsFragment extends Fragment implements DatePic
                                 mDatabase.child("Gigs/" + mGigID + "/" + "endDate").setValue(newEndDate);
                                 mDatabase.child("Gigs/" + mGigID + "/" + "venueID").setValue(mVenueId);
                                 mDatabase.child("Gigs/" + mGigID + "/" + "genres").setValue(mGenreSpinner.getSelectedItemsAsString());
+                                mDatabase.child("Gigs/" + mGigID + "/" + "ticketCost").setValue(mTicketCostNumberPicker.getValue());
+                                mDatabase.child("Gigs/" + mGigID + "/" + "ticketQuantity").setValue(mTicketQuantityNumberPicker.getValue());
 
                                 // If the event has a calendar event update the relevant fields
                                 if(mCalendarEventId != null)
@@ -1052,6 +1060,8 @@ public class VenueUserViewGigDetailsFragment extends Fragment implements DatePic
                                 mDatabase.child("Gigs/" + mGigID + "/" + "endDate").setValue(newFinishDateWithExistingTime);
                                 mDatabase.child("Gigs/" + mGigID + "/" + "venueID").setValue(mVenueId);
                                 mDatabase.child("Gigs/" + mGigID + "/" + "genres").setValue(mGenreSpinner.getSelectedItemsAsString());
+                                mDatabase.child("Gigs/" + mGigID + "/" + "ticketCost").setValue(mTicketCostNumberPicker.getValue());
+                                mDatabase.child("Gigs/" + mGigID + "/" + "ticketQuantity").setValue(mTicketQuantityNumberPicker.getValue());
 
                                 // If the event has a calendar event update the relevant fields
                                 if(mCalendarEventId != null)
@@ -1108,6 +1118,8 @@ public class VenueUserViewGigDetailsFragment extends Fragment implements DatePic
                                 mDatabase.child("Gigs/" + mGigID + "/" + "endDate").setValue(newFinishTimeWithExistingDate);
                                 mDatabase.child("Gigs/" + mGigID + "/" + "venueID").setValue(mVenueId);
                                 mDatabase.child("Gigs/" + mGigID + "/" + "genres").setValue(mGenreSpinner.getSelectedItemsAsString());
+                                mDatabase.child("Gigs/" + mGigID + "/" + "ticketCost").setValue(mTicketCostNumberPicker.getValue());
+                                mDatabase.child("Gigs/" + mGigID + "/" + "ticketQuantity").setValue(mTicketQuantityNumberPicker.getValue());
 
                                 // If the event has a calendar event update the relevant fields
                                 if(mCalendarEventId != null)
@@ -1165,6 +1177,8 @@ public class VenueUserViewGigDetailsFragment extends Fragment implements DatePic
                                 mDatabase.child("Gigs/" + mGigID + "/" + "endDate").setValue(newFinishDateWithExistingTime);
                                 mDatabase.child("Gigs/" + mGigID + "/" + "venueID").setValue(mVenueId);
                                 mDatabase.child("Gigs/" + mGigID + "/" + "genres").setValue(mGenreSpinner.getSelectedItemsAsString());
+                                mDatabase.child("Gigs/" + mGigID + "/" + "ticketCost").setValue(mTicketCostNumberPicker.getValue());
+                                mDatabase.child("Gigs/" + mGigID + "/" + "ticketQuantity").setValue(mTicketQuantityNumberPicker.getValue());
 
                                 // If the event has a calendar event update the relevant fields
                                 if(mCalendarEventId != null)
@@ -1223,6 +1237,8 @@ public class VenueUserViewGigDetailsFragment extends Fragment implements DatePic
                                 mDatabase.child("Gigs/" + mGigID + "/" + "endDate").setValue(newFinishTimeWithExistingDate);
                                 mDatabase.child("Gigs/" + mGigID + "/" + "venueID").setValue(mVenueId);
                                 mDatabase.child("Gigs/" + mGigID + "/" + "genres").setValue(mGenreSpinner.getSelectedItemsAsString());
+                                mDatabase.child("Gigs/" + mGigID + "/" + "ticketCost").setValue(mTicketCostNumberPicker.getValue());
+                                mDatabase.child("Gigs/" + mGigID + "/" + "ticketQuantity").setValue(mTicketQuantityNumberPicker.getValue());
 
                                 // If the event has a calendar event update the relevant fields
                                 if(mCalendarEventId != null)
@@ -1271,6 +1287,8 @@ public class VenueUserViewGigDetailsFragment extends Fragment implements DatePic
                                 mDatabase.child("Gigs/" + mGigID + "/" + "endDate").setValue(newFinishTimeWithExistingDate);
                                 mDatabase.child("Gigs/" + mGigID + "/" + "venueID").setValue(mVenueId);
                                 mDatabase.child("Gigs/" + mGigID + "/" + "genres").setValue(mGenreSpinner.getSelectedItemsAsString());
+                                mDatabase.child("Gigs/" + mGigID + "/" + "ticketCost").setValue(mTicketCostNumberPicker.getValue());
+                                mDatabase.child("Gigs/" + mGigID + "/" + "ticketQuantity").setValue(mTicketQuantityNumberPicker.getValue());
 
                                 // If the event has a calendar event update the relevant fields
                                 if(mCalendarEventId != null)
@@ -1318,6 +1336,8 @@ public class VenueUserViewGigDetailsFragment extends Fragment implements DatePic
                                 mDatabase.child("Gigs/" + mGigID + "/" + "endDate").setValue(newStartTimeWithExistingDate);
                                 mDatabase.child("Gigs/" + mGigID + "/" + "venueID").setValue(mVenueId);
                                 mDatabase.child("Gigs/" + mGigID + "/" + "genres").setValue(mGenreSpinner.getSelectedItemsAsString());
+                                mDatabase.child("Gigs/" + mGigID + "/" + "ticketCost").setValue(mTicketCostNumberPicker.getValue());
+                                mDatabase.child("Gigs/" + mGigID + "/" + "ticketQuantity").setValue(mTicketQuantityNumberPicker.getValue());
 
                                 // If the event has a calendar event update the relevant fields
                                 if(mCalendarEventId != null)
@@ -1364,6 +1384,8 @@ public class VenueUserViewGigDetailsFragment extends Fragment implements DatePic
                                 mDatabase.child("Gigs/" + mGigID + "/" + "endDate").setValue(newFinishDateWithExistingTime);
                                 mDatabase.child("Gigs/" + mGigID + "/" + "venueID").setValue(mVenueId);
                                 mDatabase.child("Gigs/" + mGigID + "/" + "genres").setValue(mGenreSpinner.getSelectedItemsAsString());
+                                mDatabase.child("Gigs/" + mGigID + "/" + "ticketCost").setValue(mTicketCostNumberPicker.getValue());
+                                mDatabase.child("Gigs/" + mGigID + "/" + "ticketQuantity").setValue(mTicketQuantityNumberPicker.getValue());
 
                                 // If the event has a calendar event update the relevant fields
                                 if(mCalendarEventId != null)
@@ -1411,6 +1433,8 @@ public class VenueUserViewGigDetailsFragment extends Fragment implements DatePic
                                 mDatabase.child("Gigs/" + mGigID + "/" + "startDate").setValue(newStartDateWithExistingTime);
                                 mDatabase.child("Gigs/" + mGigID + "/" + "venueID").setValue(mVenueId);
                                 mDatabase.child("Gigs/" + mGigID + "/" + "genres").setValue(mGenreSpinner.getSelectedItemsAsString());
+                                mDatabase.child("Gigs/" + mGigID + "/" + "ticketCost").setValue(mTicketCostNumberPicker.getValue());
+                                mDatabase.child("Gigs/" + mGigID + "/" + "ticketQuantity").setValue(mTicketQuantityNumberPicker.getValue());
 
                                 // If the event has a calendar event update the relevant fields
                                 if(mCalendarEventId != null)
@@ -1493,7 +1517,7 @@ public class VenueUserViewGigDetailsFragment extends Fragment implements DatePic
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle("Delete Gig");
         builder.setMessage("Are you sure you want to delete this gig?");
-        builder.setIcon(R.drawable.ic_event_available_black_24dp);
+        builder.setIcon(R.drawable.ic_event_available_black_24px);
         builder.setPositiveButton("Confirm", new DialogInterface.OnClickListener()
         {
             @Override
@@ -1543,7 +1567,7 @@ public class VenueUserViewGigDetailsFragment extends Fragment implements DatePic
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle("Remove Act");
         builder.setMessage("Are you sure you want to remove this act from your gig?");
-        builder.setIcon(R.drawable.ic_info_outline_black_24dp);
+        builder.setIcon(R.drawable.ic_info_outline_black_24px);
         builder.setPositiveButton("Confirm", new DialogInterface.OnClickListener()
         {
             @Override

@@ -6,6 +6,7 @@ import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -16,20 +17,38 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.facebook.login.LoginManager;
+import com.firebase.ui.storage.images.FirebaseImageLoader;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class VenueUserMainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener
+public class VenueUserMainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, DrawerProfilePictureUpdater
 {
     // Declare visual components
-    private CircleImageView circleImageView;
-    private TextView navigationProfileEmailTextView;
+    private CircleImageView mProfileImageView;
+    private TextView mNavigationProfileEmailTextView;
+
+    // Declare firebase variables
+    private FirebaseAuth mAuth;
+    private DatabaseReference mDatabase;
+    private FirebaseStorage mStorage;
+    private StorageReference mVenueImageReference;
+
+    // Declare general variables
+    private String mVenueId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -47,6 +66,32 @@ public class VenueUserMainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        // Creates a reference to Firebase
+        mAuth = FirebaseAuth.getInstance();
+
+        // Creates a reference to the Firebase database
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+
+        // Data snapshot to retrieve the venue ID
+        mDatabase.child("Users/" + mAuth.getCurrentUser().getUid()).addListenerForSingleValueEvent(new ValueEventListener()
+        {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot)
+            {
+                mVenueId = dataSnapshot.child("venueID").getValue().toString();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError)
+            {
+
+            }
+        });
+
+        // Creates a reference to the storage element of firebase
+        mStorage = FirebaseStorage.getInstance();
+        mVenueImageReference = mStorage.getReference();
 
         // Initialise visual components
         setTitle("Home");
@@ -153,6 +198,21 @@ public class VenueUserMainActivity extends AppCompatActivity
                     .commit();
         }
 
+        else if (id == R.id.nav_profile)
+        {
+            //ClearBackStack(this);
+
+            getFragmentManager().popBackStackImmediate();
+
+            setTitle("My Venue Profile");
+            VenueUserProfileFragment fragment = new VenueUserProfileFragment();
+            FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.frame, fragment
+                    , "VenueUserProfileFragment")
+                    .addToBackStack(null)
+                    .commit();
+        }
+
         else if (id == R.id.nav_create_gig)
         {
             //ClearBackStack(this);
@@ -217,17 +277,38 @@ public class VenueUserMainActivity extends AppCompatActivity
     // The image view needs to be initialised here as onCreate doesn't draw the drawer
     private void NavigationDrawerUserData()
     {
-        Uri photoURI;
-        String userEmail;
+        // Initialise visual components
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        mProfileImageView = (CircleImageView) navigationView.getHeaderView(0).findViewById(R.id.navDrawerImageView);
+        mNavigationProfileEmailTextView = (TextView) navigationView.getHeaderView(0).findViewById(R.id.userEmailTextView);
 
-        circleImageView = (CircleImageView) findViewById(R.id.profile_image);
-        navigationProfileEmailTextView = (TextView) findViewById(R.id.userEmailTextView);
+        mVenueImageReference.child("VenueProfileImages/" + mVenueId + "/profileImage")
+                .getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>()
+        {
+            @Override
+            public void onSuccess(Uri uri)
+            {
+                Glide.with(getApplicationContext()).using(new FirebaseImageLoader()).load
+                        (mVenueImageReference.child("VenueProfileImages/" + mVenueId + "/profileImage"))
+                        .diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).override(220, 220).into(mProfileImageView);
+            }
 
-        photoURI = FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl();
-        Picasso.with(this).load(photoURI).resize(220, 220).into(circleImageView);
+        }).addOnFailureListener(new OnFailureListener()
+        {
+            @Override
+            public void onFailure(@NonNull Exception e)
+            {
+                Picasso.with(getApplicationContext()).load(R.drawable.com_facebook_profile_picture_blank_portrait).resize(220, 220).into(mProfileImageView);
+            }
+        });
 
-        userEmail = FirebaseAuth.getInstance().getCurrentUser().getEmail();
-        navigationProfileEmailTextView.setText(userEmail);
+        mNavigationProfileEmailTextView.setText(FirebaseAuth.getInstance().getCurrentUser().getEmail());
+    }
+
+    @Override
+    public void UpdateDrawerProfilePicture()
+    {
+        NavigationDrawerUserData();
     }
 
     private void Logout()

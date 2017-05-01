@@ -458,7 +458,7 @@ public class MusicianUserBandManagementFragment extends Fragment implements YouT
                                 dialog.dismiss();
                             }
                         })
-                        .setIcon(R.drawable.ic_info_outline_black_24dp)
+                        .setIcon(R.drawable.ic_info_outline_black_24px)
                         .show();
             }
         });

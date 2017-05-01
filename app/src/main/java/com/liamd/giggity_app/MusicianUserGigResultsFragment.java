@@ -21,6 +21,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -298,7 +299,6 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
                     // The marker is then added to the map
                     mMarker = mGoogleMap.addMarker(new MarkerOptions().position(convertedGigLocation));
 
-
                     // A new GigMarkerInfo object is created to store the information about the marker.
                     // This needs to be done because a standard marker can only hold a title and snippet
                     GigMarkerInfo marker = new GigMarkerInfo(mGigFinishDate, mGigId, mGigName, mGigStartDate,
@@ -451,7 +451,7 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
                         // This dialog is created to tell the user that they can't go any further as they're not in a band
                         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                         builder.setTitle("Alert");
-                        builder.setIcon(R.drawable.ic_info_outline_black_24dp);
+                        builder.setIcon(R.drawable.ic_info_outline_black_24px);
                         builder.setMessage("We've detected that you're currently not part of a band! " +
                                 "You must be part of one to apply for gig opportunities. Would you like to create one now?");
                         builder.setPositiveButton("Create Band", new DialogInterface.OnClickListener()
@@ -573,7 +573,7 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
                 builder.setTitle("Alert");
                 builder.setMessage("We've detected that you're currently not part of a band! " +
                         "You must be part of one to apply for gig opportunities. Would you like to create one now?");
-                builder.setIcon(R.drawable.ic_info_outline_black_24dp);
+                builder.setIcon(R.drawable.ic_info_outline_black_24px);
                 builder.setPositiveButton("Create Band", new DialogInterface.OnClickListener()
                 {
                     @Override

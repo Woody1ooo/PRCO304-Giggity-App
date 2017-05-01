@@ -434,7 +434,7 @@ public class MusicianUserBandCreatorFragment extends Fragment implements YouTube
                                 dialog.dismiss();
                             }
                         })
-                        .setIcon(R.drawable.ic_info_outline_black_24dp)
+                        .setIcon(R.drawable.ic_info_outline_black_24px)
                         .show();
             }
         });

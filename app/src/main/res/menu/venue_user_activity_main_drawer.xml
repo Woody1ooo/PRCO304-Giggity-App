@@ -4,14 +4,14 @@
     <group android:id="@+id/group_default" android:checkableBehavior="single">
         <item
             android:id="@+id/nav_venue_home"
-            android:icon="@drawable/ic_home_black_24dp"
+            android:icon="@drawable/ic_home_black_24px"
             android:title="Home"/>
         <item android:title="Profile">
             <menu>
                 <group android:id="@+id/group_profile" android:checkableBehavior="single">
                     <item
                         android:id="@+id/nav_profile"
-                        android:icon="@drawable/ic_person_black_24dp"
+                        android:icon="@drawable/ic_person_black_24px"
                         android:title="My Venue Profile"/>
                     </group>
             </menu>
@@ -23,19 +23,19 @@
                 <group android:id="@+id/group_gigs" android:checkableBehavior="single">
                     <item
                         android:id="@+id/nav_my_gigs"
-                        android:icon="@drawable/ic_event_black_24dp"
+                        android:icon="@drawable/ic_event_black_24px"
                         android:title="My Gigs"/>
                     <item
                         android:id="@+id/nav_create_gig"
-                        android:icon="@drawable/ic_event_available_black_24dp"
+                        android:icon="@drawable/ic_event_available_black_24px"
                         android:title="Create a Gig"/>
                     <item
                         android:id="@+id/nav_gig_requests"
-                        android:icon="@drawable/ic_swap_vert_black_24dp"
+                        android:icon="@drawable/ic_swap_vert_black_24px"
                         android:title="Gig Requests"/>
                     <item
                         android:id="@+id/nav_ticket_scanner"
-                        android:icon="@drawable/ic_barcode_24dp"
+                        android:icon="@drawable/ic_barcode_scan_24px"
                         android:title="Ticket Scanner"/>
                     </group>
                 </menu>
@@ -45,7 +45,7 @@
                 <group android:id="@+id/group_app" android:checkableBehavior="single">
                     <item
                         android:id="@+id/nav_settings"
-                        android:icon="@drawable/ic_settings_black_24dp"
+                        android:icon="@drawable/ic_settings_black_24px"
                         android:title="App Settings"/>
                     </group>
                 </menu>
@@ -54,7 +54,7 @@
         <menu>
             <item
                 android:id="@+id/nav_logout"
-                android:icon="@drawable/ic_ext_24dp"
+                android:icon="@drawable/ic_exit_to_app_black_24px"
                 android:title="Logout"/>
         </menu>
     </item>

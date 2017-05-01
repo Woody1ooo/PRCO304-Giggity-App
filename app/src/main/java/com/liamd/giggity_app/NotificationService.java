@@ -213,7 +213,7 @@ public class NotificationService extends Service
                 .setContentIntent(pendingIntent)
                 .setDefaults(Notification.DEFAULT_SOUND)
                 .setAutoCancel(true)
-                .setSmallIcon(R.drawable.ic_info_outline_black_24dp);
+                .setSmallIcon(R.drawable.ic_info_outline_black_24px);
 
         Notification notification = builder.build();
 

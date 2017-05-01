@@ -161,7 +161,7 @@ public class MusicianUserGigFinderFragment extends Fragment implements LocationL
                         // A dialog is then shown to alert the user that the changes have been made
                         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                         builder.setTitle("Notice");
-                        builder.setIcon(R.drawable.ic_info_outline_black_24dp);
+                        builder.setIcon(R.drawable.ic_info_outline_black_24px);
                         builder.setMessage("Please note that as you are not currently a member of a band or a solo artist, you cannot apply for any gig opportunities." +
                                 " You are however still able to browse.");
                         builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
