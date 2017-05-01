@@ -4,7 +4,10 @@ package com.liamd.giggity_app;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 import android.os.Bundle;
 import android.app.Fragment;
@@ -54,6 +57,7 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
     private Double mLongitude;
     private static LatLng mLocation;
     private Boolean mLocationType;
+    private String mHomeMarkerId;
 
     // Declare Firebase specific variables
     private FirebaseAuth mAuth;
@@ -186,10 +190,22 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
     {
         mGoogleMap = map;
 
+        // The marker is then added to the map with set size attributes
+        int height = 125;
+        int width = 125;
+
+        // This creates a drawable bitmap
+        BitmapDrawable bitMapDraw = (BitmapDrawable)getResources().getDrawable(R.drawable.ic_home_pin);
+        Bitmap bitmap = bitMapDraw.getBitmap();
+        Bitmap smallMarker = Bitmap.createScaledBitmap(bitmap, width, height, false);
+
         // This places a marker at the users chosen location
-        mGoogleMap.addMarker(new MarkerOptions()
+        Marker marker = mGoogleMap.addMarker(new MarkerOptions()
                 .position(mLocation)
-                .icon(BitmapDescriptorFactory.defaultMarker(HUE_AZURE)));
+                .icon(BitmapDescriptorFactory.fromBitmap(smallMarker)));
+
+        // The marker id is then extracted to determine whether the marker is home when clicked
+        mHomeMarkerId = marker.getId();
 
         // This zooms the map in to a reasonable level (12) and centers it on the location provided
         float zoomLevel = 15;
@@ -297,7 +313,13 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
                                     gigLocation.getLongitude());
 
                     // The marker is then added to the map
-                    mMarker = mGoogleMap.addMarker(new MarkerOptions().position(convertedGigLocation));
+                    int height = 125;
+                    int width = 125;
+                    BitmapDrawable bitMapDraw = (BitmapDrawable)getResources().getDrawable(R.drawable.ic_pin);
+                    Bitmap b = bitMapDraw.getBitmap();
+                    Bitmap smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
+
+                    mMarker = mGoogleMap.addMarker(new MarkerOptions().position(convertedGigLocation).icon(BitmapDescriptorFactory.fromBitmap(smallMarker)));
 
                     // A new GigMarkerInfo object is created to store the information about the marker.
                     // This needs to be done because a standard marker can only hold a title and snippet
@@ -400,6 +422,14 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
                                     mGigNameTextView.setText("Multiple Gigs at this venue!");
                                     mGigStartDateTextView.setText("Click to see what's on offer!");
                                     mGigFinishDateTextView.setText("");
+                                }
+
+                                else if (markerSelected.getId().equals(mHomeMarkerId))
+                                {
+                                    mGigNameTextView.setText("Your location!");
+                                    mGigFinishDateTextView.setVisibility(View.GONE);
+                                    mGigStartDateTextView.setVisibility(View.GONE);
+                                    mVenueNameTextView.setVisibility(View.GONE);
                                 }
 
                                 // Reset multiple gigs for when another marker is clicked
@@ -512,9 +542,101 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
     @Override
     public void onInfoWindowClick(Marker marker)
     {
-        if(!mIsFanAccount)
+        if(mGigNameTextView.getText().equals("Your location!"))
+        {}
+
+        else
         {
-            if(mIsInBand)
+            if(!mIsFanAccount)
+            {
+                if(mIsInBand)
+                {
+                    // If the text matches multiple gigs then loop through the markers and get the venue id selected
+                    if(mGigNameTextView.getText().equals("Multiple Gigs at this venue!"))
+                    {
+                        // This loops through the list of marker info to determine the marker clicked
+                        for(int i = 0; i < mListOfGigMarkerInfo.size(); i++)
+                        {
+                            mListOfGigMarkerInfo.get(i);
+
+                            // Once a match has been found the data can be extracted and passed as a bundle argument
+                            if (mListOfGigMarkerInfo.get(i).getMarkerId().equals(marker.getId()))
+                            {
+                                // Pass this venue id into the method
+                                ShowMultipleGigsDialog(mListOfGigMarkerInfo.get(i).getVenueId());
+                            }
+                        }
+                    }
+
+                    else
+                    {
+                        MusicianUserGigDetailsFragment fragment = new MusicianUserGigDetailsFragment();
+                        Bundle arguments = new Bundle();
+
+                        // This loops through the list of marker info to determine the marker clicked
+                        for(int i = 0; i < mListOfGigMarkerInfo.size(); i++)
+                        {
+                            mListOfGigMarkerInfo.get(i);
+
+                            // Once a match has been found the data can be extracted and passed as a bundle argument
+                            if(mListOfGigMarkerInfo.get(i).getMarkerId().equals(marker.getId()))
+                            {
+                                arguments.putString("GigID", mListOfGigMarkerInfo.get(i).getGigId());
+                                arguments.putString("GigTitle", mListOfGigMarkerInfo.get(i).getGigName());
+                                arguments.putString("GigStartDate", mListOfGigMarkerInfo.get(i).getGigStartDate().toString());
+                                arguments.putString("GigEndDate", mListOfGigMarkerInfo.get(i).getGigEndDate().toString());
+                                arguments.putString("GigVenueID", mListOfGigMarkerInfo.get(i).getVenueId());
+                            }
+                        }
+
+                        fragment.setArguments(arguments);
+
+                        // Creates a new fragment transaction to display the details of the selected
+                        // gig. Some custom animation has been added also.
+                        FragmentTransaction fragmentTransaction = getActivity().getFragmentManager()
+                                .beginTransaction();
+                        fragmentTransaction.setCustomAnimations(R.animator.enter_from_right, R.animator.enter_from_left);
+                        fragmentTransaction.replace(R.id.frame, fragment, "MusicianUserGigDetailsFragment")
+                                .addToBackStack(null).commit();
+                    }
+                }
+
+                else
+                {
+                    // This dialog is created to tell the user that they can't go any further as they're not in a band
+                    final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    builder.setTitle("Alert");
+                    builder.setMessage("We've detected that you're currently not part of a band! " +
+                            "You must be part of one to apply for gig opportunities. Would you like to create one now?");
+                    builder.setIcon(R.drawable.ic_info_outline_black_24px);
+                    builder.setPositiveButton("Create Band", new DialogInterface.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i)
+                        {
+                            MusicianUserBandCreatorFragment fragment = new MusicianUserBandCreatorFragment();
+                            getActivity().setTitle("Band Creator");
+                            FragmentTransaction fragmentTransaction = getActivity().getFragmentManager()
+                                    .beginTransaction();
+                            fragmentTransaction.setCustomAnimations(R.animator.enter_from_right, R.animator.enter_from_left);
+                            fragmentTransaction.replace(R.id.frame, fragment, "MusicianUserBandCreatorFragment")
+                                    .addToBackStack(null).commit();
+                        }
+                    });
+
+                    builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i)
+                        {
+
+                        }
+                    });
+                    builder.show();
+                }
+            }
+
+            else
             {
                 // If the text matches multiple gigs then loop through the markers and get the venue id selected
                 if(mGigNameTextView.getText().equals("Multiple Gigs at this venue!"))
@@ -535,16 +657,16 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
 
                 else
                 {
-                    MusicianUserGigDetailsFragment fragment = new MusicianUserGigDetailsFragment();
+                    FanUserGigDetailsFragment fragment = new FanUserGigDetailsFragment();
                     Bundle arguments = new Bundle();
 
                     // This loops through the list of marker info to determine the marker clicked
-                    for(int i = 0; i < mListOfGigMarkerInfo.size(); i++)
+                    for (int i = 0; i < mListOfGigMarkerInfo.size(); i++)
                     {
                         mListOfGigMarkerInfo.get(i);
 
                         // Once a match has been found the data can be extracted and passed as a bundle argument
-                        if(mListOfGigMarkerInfo.get(i).getMarkerId().equals(marker.getId()))
+                        if (mListOfGigMarkerInfo.get(i).getMarkerId().equals(marker.getId()))
                         {
                             arguments.putString("GigID", mListOfGigMarkerInfo.get(i).getGigId());
                             arguments.putString("GigTitle", mListOfGigMarkerInfo.get(i).getGigName());
@@ -561,98 +683,11 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
                     FragmentTransaction fragmentTransaction = getActivity().getFragmentManager()
                             .beginTransaction();
                     fragmentTransaction.setCustomAnimations(R.animator.enter_from_right, R.animator.enter_from_left);
-                    fragmentTransaction.replace(R.id.frame, fragment, "MusicianUserGigDetailsFragment")
+                    fragmentTransaction.replace(R.id.frame, fragment, "FanUserGigDetailsFragment")
                             .addToBackStack(null).commit();
                 }
             }
-
-            else
-            {
-                // This dialog is created to tell the user that they can't go any further as they're not in a band
-                final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setTitle("Alert");
-                builder.setMessage("We've detected that you're currently not part of a band! " +
-                        "You must be part of one to apply for gig opportunities. Would you like to create one now?");
-                builder.setIcon(R.drawable.ic_info_outline_black_24px);
-                builder.setPositiveButton("Create Band", new DialogInterface.OnClickListener()
-                {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i)
-                    {
-                        MusicianUserBandCreatorFragment fragment = new MusicianUserBandCreatorFragment();
-                        getActivity().setTitle("Band Creator");
-                        FragmentTransaction fragmentTransaction = getActivity().getFragmentManager()
-                                .beginTransaction();
-                        fragmentTransaction.setCustomAnimations(R.animator.enter_from_right, R.animator.enter_from_left);
-                        fragmentTransaction.replace(R.id.frame, fragment, "MusicianUserBandCreatorFragment")
-                                .addToBackStack(null).commit();
-                    }
-                });
-
-                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener()
-                {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i)
-                    {
-
-                    }
-                });
-                builder.show();
-            }
         }
-
-        else
-        {
-            // If the text matches multiple gigs then loop through the markers and get the venue id selected
-            if(mGigNameTextView.getText().equals("Multiple Gigs at this venue!"))
-            {
-                // This loops through the list of marker info to determine the marker clicked
-                for(int i = 0; i < mListOfGigMarkerInfo.size(); i++)
-                {
-                    mListOfGigMarkerInfo.get(i);
-
-                    // Once a match has been found the data can be extracted and passed as a bundle argument
-                    if (mListOfGigMarkerInfo.get(i).getMarkerId().equals(marker.getId()))
-                    {
-                        // Pass this venue id into the method
-                        ShowMultipleGigsDialog(mListOfGigMarkerInfo.get(i).getVenueId());
-                    }
-                }
-            }
-
-            else
-            {
-                FanUserGigDetailsFragment fragment = new FanUserGigDetailsFragment();
-                Bundle arguments = new Bundle();
-
-                // This loops through the list of marker info to determine the marker clicked
-                for (int i = 0; i < mListOfGigMarkerInfo.size(); i++)
-                {
-                    mListOfGigMarkerInfo.get(i);
-
-                    // Once a match has been found the data can be extracted and passed as a bundle argument
-                    if (mListOfGigMarkerInfo.get(i).getMarkerId().equals(marker.getId()))
-                    {
-                        arguments.putString("GigID", mListOfGigMarkerInfo.get(i).getGigId());
-                        arguments.putString("GigTitle", mListOfGigMarkerInfo.get(i).getGigName());
-                        arguments.putString("GigStartDate", mListOfGigMarkerInfo.get(i).getGigStartDate().toString());
-                        arguments.putString("GigEndDate", mListOfGigMarkerInfo.get(i).getGigEndDate().toString());
-                        arguments.putString("GigVenueID", mListOfGigMarkerInfo.get(i).getVenueId());
-                    }
-                }
-
-                fragment.setArguments(arguments);
-
-                // Creates a new fragment transaction to display the details of the selected
-                // gig. Some custom animation has been added also.
-                FragmentTransaction fragmentTransaction = getActivity().getFragmentManager()
-                        .beginTransaction();
-                fragmentTransaction.setCustomAnimations(R.animator.enter_from_right, R.animator.enter_from_left);
-                fragmentTransaction.replace(R.id.frame, fragment, "FanUserGigDetailsFragment")
-                        .addToBackStack(null).commit();
-            }
-        }
-
     }
 
     private void PopulateListView()

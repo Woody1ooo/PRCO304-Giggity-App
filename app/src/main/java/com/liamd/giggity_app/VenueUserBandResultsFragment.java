@@ -2,6 +2,8 @@ package com.liamd.giggity_app;
 
 
 import android.app.FragmentTransaction;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 import android.os.Bundle;
 import android.app.Fragment;
@@ -45,6 +47,7 @@ public class VenueUserBandResultsFragment extends Fragment implements OnMapReady
     private Double mLatitude;
     private Double mLongitude;
     private static com.google.android.gms.maps.model.LatLng mLocation;
+    private String mHomeMarkerId;
 
     // Declare Firebase specific variables
     private FirebaseAuth mAuth;
@@ -56,6 +59,7 @@ public class VenueUserBandResultsFragment extends Fragment implements OnMapReady
     // Declare Visual Components
     private ListView mBandsListView;
     private VenueUserBandsAdapter adapter;
+    private TextView mBandNameTextView;
 
     // Declare variables to be stored to pass to the next fragment
     private String mBandId;
@@ -160,10 +164,22 @@ public class VenueUserBandResultsFragment extends Fragment implements OnMapReady
     {
         mGoogleMap = map;
 
+        // The marker is then added to the map with set size attributes
+        int height = 125;
+        int width = 125;
+
+        // This creates a drawable bitmap
+        BitmapDrawable bitMapDraw = (BitmapDrawable)getResources().getDrawable(R.drawable.ic_home_pin);
+        Bitmap bitmap = bitMapDraw.getBitmap();
+        Bitmap smallMarker = Bitmap.createScaledBitmap(bitmap, width, height, false);
+
         // This places a marker at the users chosen location
-        mGoogleMap.addMarker(new MarkerOptions()
+        Marker marker = mGoogleMap.addMarker(new MarkerOptions()
                 .position(mLocation)
-                .icon(BitmapDescriptorFactory.defaultMarker(HUE_AZURE)));
+                .icon(BitmapDescriptorFactory.fromBitmap(smallMarker)));
+
+        // The marker id is then extracted to determine whether the marker is home when clicked
+        mHomeMarkerId = marker.getId();
 
         // This zooms the map in to a reasonable level (12) and centers it on the location provided
         float zoomLevel = 15;
@@ -228,7 +244,14 @@ public class VenueUserBandResultsFragment extends Fragment implements OnMapReady
                     bandLocation.getLongitude());
 
             // The marker is then added to the map
-            mMarker = mGoogleMap.addMarker(new MarkerOptions().position(convertedBandLocation));
+            int height = 125;
+            int width = 125;
+            BitmapDrawable bitMapDraw = (BitmapDrawable)getResources().getDrawable(R.drawable.ic_pin);
+            Bitmap b = bitMapDraw.getBitmap();
+            Bitmap smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
+
+            // The marker is then added to the map
+            mMarker = mGoogleMap.addMarker(new MarkerOptions().position(convertedBandLocation).icon(BitmapDescriptorFactory.fromBitmap(smallMarker)));
 
             // A new BandMarkerInfo object is created to store the information about the marker.
             // This needs to be done because a standard marker can only hold a title and snippet
@@ -251,7 +274,7 @@ public class VenueUserBandResultsFragment extends Fragment implements OnMapReady
 
                     // This then references the text views found in that layout
                     // (note gig id is a hidden text view)
-                    TextView mBandNameTextView = (TextView) v.findViewById(R.id.bandNameTextView);
+                    mBandNameTextView = (TextView) v.findViewById(R.id.bandNameTextView);
                     TextView mBandDistanceTextView = (TextView) v.findViewById(R.id.bandDistanceTextView);
                     TextView mBandGenres = (TextView) v.findViewById(R.id.genresTextView);
 
@@ -265,6 +288,13 @@ public class VenueUserBandResultsFragment extends Fragment implements OnMapReady
                             mBandNameTextView.setText(mListOfBandMarkerInfo.get(i).getBandName());
                             mBandDistanceTextView.setText(mListOfBandMarkerInfo.get(i).getBandDistance() +"km");
                             mBandGenres.setText(mListOfBandMarkerInfo.get(i).getBandGenres());
+                        }
+
+                        else if (markerSelected.getId().equals(mHomeMarkerId))
+                        {
+                            mBandNameTextView.setText("Your location!");
+                            mBandDistanceTextView.setVisibility(View.GONE);
+                            mBandGenres.setVisibility(View.GONE);
                         }
                     }
                     return v;
@@ -417,36 +447,38 @@ public class VenueUserBandResultsFragment extends Fragment implements OnMapReady
     @Override
     public void onInfoWindowClick(Marker marker)
     {
-        VenueUserBandDetailsFragment fragment = new VenueUserBandDetailsFragment();
-        Bundle arguments = new Bundle();
-
-        for(int i = 0; i < mListOfBandMarkerInfo.size(); i++)
+        if (!mBandNameTextView.getText().equals("Your location!"))
         {
-            mListOfBandMarkerInfo.get(i);
+            VenueUserBandDetailsFragment fragment = new VenueUserBandDetailsFragment();
+            Bundle arguments = new Bundle();
 
-            if(mListOfBandMarkerInfo.get(i).getMarkerId().equals(marker.getId()))
+            for(int i = 0; i < mListOfBandMarkerInfo.size(); i++)
             {
-                arguments.putString("BandID", mListOfBandMarkerInfo.get(i).getBandId());
-                arguments.putString("BandName", mListOfBandMarkerInfo.get(i).getBandName());
-                arguments.putString("BandGenres", mListOfBandMarkerInfo.get(i).getBandGenres());
-                arguments.putDouble("BandDistance", mListOfBandMarkerInfo.get(i).getBandDistance());
-                arguments.putDouble("BandLocationLat", mListOfBandMarkerInfo.get(i).getBandLocation().getLatitude());
-                arguments.putDouble("BandLocationLng", mListOfBandMarkerInfo.get(i).getBandLocation().getLongitude());
-                arguments.putDouble("VenueLocationLat", mListOfBandMarkerInfo.get(i).getVenueLocation().getLatitude());
-                arguments.putDouble("VenueLocationLng", mListOfBandMarkerInfo.get(i).getVenueLocation().getLongitude());
-                arguments.putString("GigId", mGigId);
+                mListOfBandMarkerInfo.get(i);
+
+                if(mListOfBandMarkerInfo.get(i).getMarkerId().equals(marker.getId()))
+                {
+                    arguments.putString("BandID", mListOfBandMarkerInfo.get(i).getBandId());
+                    arguments.putString("BandName", mListOfBandMarkerInfo.get(i).getBandName());
+                    arguments.putString("BandGenres", mListOfBandMarkerInfo.get(i).getBandGenres());
+                    arguments.putDouble("BandDistance", mListOfBandMarkerInfo.get(i).getBandDistance());
+                    arguments.putDouble("BandLocationLat", mListOfBandMarkerInfo.get(i).getBandLocation().getLatitude());
+                    arguments.putDouble("BandLocationLng", mListOfBandMarkerInfo.get(i).getBandLocation().getLongitude());
+                    arguments.putDouble("VenueLocationLat", mListOfBandMarkerInfo.get(i).getVenueLocation().getLatitude());
+                    arguments.putDouble("VenueLocationLng", mListOfBandMarkerInfo.get(i).getVenueLocation().getLongitude());
+                    arguments.putString("GigId", mGigId);
+                }
             }
+
+            fragment.setArguments(arguments);
+
+            // Creates a new fragment transaction to display the details of the selected
+            // gig. Some custom animation has been added also.
+            FragmentTransaction fragmentTransaction = getActivity().getFragmentManager()
+                    .beginTransaction();
+            fragmentTransaction.setCustomAnimations(R.animator.enter_from_right, R.animator.enter_from_left);
+            fragmentTransaction.replace(R.id.frame, fragment, "VenueUserBandDetailsFragment")
+                    .addToBackStack(null).commit();
         }
-
-        fragment.setArguments(arguments);
-
-        // Creates a new fragment transaction to display the details of the selected
-        // gig. Some custom animation has been added also.
-        FragmentTransaction fragmentTransaction = getActivity().getFragmentManager()
-                .beginTransaction();
-        fragmentTransaction.setCustomAnimations(R.animator.enter_from_right, R.animator.enter_from_left);
-        fragmentTransaction.replace(R.id.frame, fragment, "VenueUserBandDetailsFragment")
-                .addToBackStack(null).commit();
-
     }
 }
