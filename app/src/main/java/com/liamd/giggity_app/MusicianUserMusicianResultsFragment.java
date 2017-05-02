@@ -2,6 +2,9 @@ package com.liamd.giggity_app;
 
 
 import android.app.FragmentTransaction;
+import android.graphics.Bitmap;
+import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 import android.os.Bundle;
 import android.app.Fragment;
@@ -45,6 +48,7 @@ public class MusicianUserMusicianResultsFragment extends Fragment implements OnM
     private Double mLatitude;
     private Double mLongitude;
     private static com.google.android.gms.maps.model.LatLng mLocation;
+    private String mHomeMarkerId;
 
     // Declare Firebase specific variables
     private DatabaseReference mDatabase;
@@ -53,6 +57,7 @@ public class MusicianUserMusicianResultsFragment extends Fragment implements OnM
     // Declare Visual Components
     private ListView mMusiciansListView;
     private MusicianUserMusiciansAdapter adapter;
+    private TextView mUserNameTextView;
 
     // Declare general variables
     private ArrayList<User> mListOfMusicians = new ArrayList<>();
@@ -161,18 +166,33 @@ public class MusicianUserMusicianResultsFragment extends Fragment implements OnM
     {
         mGoogleMap = map;
 
-        // This places a marker at the users chosen location
-        mGoogleMap.addMarker(new MarkerOptions()
-                .position(mLocation)
-                .icon(BitmapDescriptorFactory.defaultMarker(HUE_AZURE)));
+        // The marker is then added to the map with set size attributes
+        int height = 125;
+        int width = 125;
 
-        // This zooms the map in to a reasonable level (12) and centers it on the location provided
-        float zoomLevel = 15;
-        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mLocation, zoomLevel));
-        mGoogleMap.setOnInfoWindowClickListener(this);
+        // This creates a drawable bitmap
+        if(getActivity() != null)
+        {
+            BitmapDrawable bitMapDraw = (BitmapDrawable) getResources().getDrawable(R.drawable.ic_home_pin);
+            Bitmap bitmap = bitMapDraw.getBitmap();
+            Bitmap smallMarker = Bitmap.createScaledBitmap(bitmap, width, height, false);
 
-        // Once the map is ready, it can be set up using SetupMap()
-        SetupMap();
+            // This places a marker at the users chosen location
+            Marker marker = mGoogleMap.addMarker(new MarkerOptions()
+                    .position(mLocation)
+                    .icon(BitmapDescriptorFactory.fromBitmap(smallMarker)));
+
+            // The marker id is then extracted to determine whether the marker is home when clicked
+            mHomeMarkerId = marker.getId();
+
+            // This zooms the map in to a reasonable level (12) and centers it on the location provided
+            float zoomLevel = 15;
+            mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mLocation, zoomLevel));
+            mGoogleMap.setOnInfoWindowClickListener(this);
+
+            // Once the map is ready, it can be set up using SetupMap()
+            SetupMap();
+        }
     }
 
     // This initialises the map and takes a data snapshot from the users section
@@ -233,7 +253,14 @@ public class MusicianUserMusicianResultsFragment extends Fragment implements OnM
                     userLocation.getLongitude());
 
             // The marker is then added to the map
-            mMarker = mGoogleMap.addMarker(new MarkerOptions().position(convertedUserLocation));
+            int height = 125;
+            int width = 125;
+            BitmapDrawable bitMapDraw = (BitmapDrawable)getResources().getDrawable(R.drawable.ic_pin);
+            Bitmap b = bitMapDraw.getBitmap();
+            Bitmap smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
+
+            // The marker is then added to the map
+            mMarker = mGoogleMap.addMarker(new MarkerOptions().position(convertedUserLocation).icon(BitmapDescriptorFactory.fromBitmap(smallMarker)));
 
             // A new BandMarkerInfo object is created to store the information about the marker.
             // This needs to be done because a standard marker can only hold a title and snippet
@@ -256,7 +283,8 @@ public class MusicianUserMusicianResultsFragment extends Fragment implements OnM
 
                     // This then references the text views found in that layout
                     // (note gig id is a hidden text view)
-                    TextView mUserNameTextView = (TextView) v.findViewById(R.id.userNameTextView);
+                    mUserNameTextView = (TextView) v.findViewById(R.id.userNameTextView);
+                    mUserNameTextView.setTypeface(null, Typeface.BOLD);
                     TextView mUserDistanceTextView = (TextView) v.findViewById(R.id.userDistanceTextView);
                     TextView mUserGenresTextView = (TextView) v.findViewById(R.id.userGenresTextView);
                     TextView mUserInstrumentsTextView = (TextView) v.findViewById(R.id.userInstrumentsTextView);
@@ -272,6 +300,14 @@ public class MusicianUserMusicianResultsFragment extends Fragment implements OnM
                             mUserDistanceTextView.setText(mListOfMusicianMarkerInfo.get(i).getUserDistance() +"km");
                             mUserGenresTextView.setText(mListOfMusicianMarkerInfo.get(i).getUserGenres());
                             mUserInstrumentsTextView.setText(mListOfMusicianMarkerInfo.get(i).getUserInstruments());
+                        }
+
+                        else if (markerSelected.getId().equals(mHomeMarkerId))
+                        {
+                            mUserNameTextView.setText("Your location!");
+                            mUserDistanceTextView.setVisibility(View.GONE);
+                            mUserGenresTextView.setVisibility(View.GONE);
+                            mUserInstrumentsTextView.setVisibility(View.GONE);
                         }
                     }
                     return v;
@@ -485,38 +521,40 @@ public class MusicianUserMusicianResultsFragment extends Fragment implements OnM
     @Override
     public void onInfoWindowClick(Marker marker)
     {
-        MusicianUserMusicianDetailsFragment fragment = new MusicianUserMusicianDetailsFragment();
-        Bundle arguments = new Bundle();
-
-        for(int i = 0; i < mListOfMusicianMarkerInfo.size(); i++)
+        if(!mUserNameTextView.getText().equals("Your location!"))
         {
-            mListOfMusicianMarkerInfo.get(i);
+            MusicianUserMusicianDetailsFragment fragment = new MusicianUserMusicianDetailsFragment();
+            Bundle arguments = new Bundle();
 
-            if(mListOfMusicianMarkerInfo.get(i).getMarkerId().equals(marker.getId()))
+            for (int i = 0; i < mListOfMusicianMarkerInfo.size(); i++)
             {
-                arguments.putString("UserID", mListOfMusicianMarkerInfo.get(i).getUserId());
-                arguments.putString("UserName", mListOfMusicianMarkerInfo.get(i).getUserName());
-                arguments.putString("UserGenres", mListOfMusicianMarkerInfo.get(i).getUserGenres());
-                arguments.putString("UserInstruments", mListOfMusicianMarkerInfo.get(i).getUserInstruments());
-                arguments.putString("PositionInstruments", mPositionInstruments);
-                arguments.putString("BandId", mBandId);
-                arguments.putString("BandPosition", mBandPosition);
-                arguments.putDouble("Distance", mListOfMusicianMarkerInfo.get(i).getUserDistance());
-                arguments.putDouble("Lat", mListOfMusicianMarkerInfo.get(i).getUserLocation().getLatitude());
-                arguments.putDouble("Lng", mListOfMusicianMarkerInfo.get(i).getUserLocation().getLongitude());
-                fragment.setArguments(arguments);
+                mListOfMusicianMarkerInfo.get(i);
+
+                if (mListOfMusicianMarkerInfo.get(i).getMarkerId().equals(marker.getId()))
+                {
+                    arguments.putString("UserID", mListOfMusicianMarkerInfo.get(i).getUserId());
+                    arguments.putString("UserName", mListOfMusicianMarkerInfo.get(i).getUserName());
+                    arguments.putString("UserGenres", mListOfMusicianMarkerInfo.get(i).getUserGenres());
+                    arguments.putString("UserInstruments", mListOfMusicianMarkerInfo.get(i).getUserInstruments());
+                    arguments.putString("PositionInstruments", mPositionInstruments);
+                    arguments.putString("BandId", mBandId);
+                    arguments.putString("BandPosition", mBandPosition);
+                    arguments.putDouble("Distance", mListOfMusicianMarkerInfo.get(i).getUserDistance());
+                    arguments.putDouble("Lat", mListOfMusicianMarkerInfo.get(i).getUserLocation().getLatitude());
+                    arguments.putDouble("Lng", mListOfMusicianMarkerInfo.get(i).getUserLocation().getLongitude());
+                    fragment.setArguments(arguments);
+                }
             }
+
+            fragment.setArguments(arguments);
+
+            // Creates a new fragment transaction to display the details of the selected
+            // user. Some custom animation has been added also.
+            FragmentTransaction fragmentTransaction = getActivity().getFragmentManager()
+                    .beginTransaction();
+            fragmentTransaction.setCustomAnimations(R.animator.enter_from_right, R.animator.enter_from_left);
+            fragmentTransaction.replace(R.id.frame, fragment, "MusicianUserMusicianDetailsFragment")
+                    .addToBackStack(null).commit();
         }
-
-        fragment.setArguments(arguments);
-
-        // Creates a new fragment transaction to display the details of the selected
-        // user. Some custom animation has been added also.
-        FragmentTransaction fragmentTransaction = getActivity().getFragmentManager()
-                .beginTransaction();
-        fragmentTransaction.setCustomAnimations(R.animator.enter_from_right, R.animator.enter_from_left);
-        fragmentTransaction.replace(R.id.frame, fragment, "MusicianUserMusicianDetailsFragment")
-                .addToBackStack(null).commit();
-
     }
 }

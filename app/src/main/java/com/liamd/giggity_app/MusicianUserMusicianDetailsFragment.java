@@ -6,6 +6,8 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
@@ -176,9 +178,14 @@ public class MusicianUserMusicianDetailsFragment extends Fragment implements OnM
                 com.google.android.gms.maps.model.LatLng musicianLocation = new LatLng(mMusicianLocationLat, mMusicianLocationLng);
 
                 // This places a marker at the users chosen location
-                mGoogleMap.addMarker(new MarkerOptions()
-                        .position(musicianLocation)
-                        .icon(BitmapDescriptorFactory.defaultMarker(HUE_RED)));
+                int height = 125;
+                int width = 125;
+                BitmapDrawable bitMapDraw = (BitmapDrawable)getResources().getDrawable(R.drawable.ic_pin);
+                Bitmap b = bitMapDraw.getBitmap();
+                Bitmap smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
+
+                // This places a marker at the users chosen location
+                mGoogleMap.addMarker(new MarkerOptions().position(musicianLocation).icon(BitmapDescriptorFactory.fromBitmap(smallMarker)));
 
                 // This zooms the map in to a reasonable level (12) and centers it on the location provided
                 float zoomLevel = 15;

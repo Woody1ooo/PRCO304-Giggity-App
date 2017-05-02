@@ -129,6 +129,7 @@ public class RegisterActivity extends AppCompatActivity
                                                 // as the key.
                                                 mDatabase.child("Users").child(mAuth.getCurrentUser().getUid()).setValue(newUser);
                                                 mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/inBand").setValue(false);
+                                                mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/accountType").setValue("Pending");
                                             }
                                         }
 

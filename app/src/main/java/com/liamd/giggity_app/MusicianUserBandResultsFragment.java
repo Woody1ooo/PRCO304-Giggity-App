@@ -2,6 +2,9 @@ package com.liamd.giggity_app;
 
 
 import android.app.FragmentTransaction;
+import android.graphics.Bitmap;
+import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 import android.os.Bundle;
 import android.app.Fragment;
@@ -47,6 +50,7 @@ public class MusicianUserBandResultsFragment extends Fragment implements OnMapRe
     private Double mLongitude;
     private static com.google.android.gms.maps.model.LatLng mLocation;
     private Boolean mLocationType;
+    private String mHomeMarkerId;
 
     // Declare Firebase specific variables
     private FirebaseAuth mAuth;
@@ -58,6 +62,7 @@ public class MusicianUserBandResultsFragment extends Fragment implements OnMapRe
     // Declare Visual Components
     private ListView mBandsListView;
     private MusicianUserBandsAdapter adapter;
+    private TextView mBandNameTextView;
 
     // Declare variables to be stored to pass to the next fragment
     private String mBandId;
@@ -177,18 +182,33 @@ public class MusicianUserBandResultsFragment extends Fragment implements OnMapRe
     {
         mGoogleMap = map;
 
-        // This places a marker at the users chosen location
-        mGoogleMap.addMarker(new MarkerOptions()
-                .position(mLocation)
-                .icon(BitmapDescriptorFactory.defaultMarker(HUE_AZURE)));
+        // The marker is then added to the map with set size attributes
+        int height = 125;
+        int width = 125;
 
-        // This zooms the map in to a reasonable level (12) and centers it on the location provided
-        float zoomLevel = 15;
-        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mLocation, zoomLevel));
-        mGoogleMap.setOnInfoWindowClickListener(this);
+        // This creates a drawable bitmap
+        if(getActivity() != null)
+        {
+            BitmapDrawable bitMapDraw = (BitmapDrawable) getResources().getDrawable(R.drawable.ic_home_pin);
+            Bitmap bitmap = bitMapDraw.getBitmap();
+            Bitmap smallMarker = Bitmap.createScaledBitmap(bitmap, width, height, false);
 
-        // Once the map is ready, it can be set up using SetupMap()
-        SetupMap();
+            // This places a marker at the users chosen location
+            Marker marker = mGoogleMap.addMarker(new MarkerOptions()
+                    .position(mLocation)
+                    .icon(BitmapDescriptorFactory.fromBitmap(smallMarker)));
+
+            // The marker id is then extracted to determine whether the marker is home when clicked
+            mHomeMarkerId = marker.getId();
+
+            // This zooms the map in to a reasonable level (12) and centers it on the location provided
+            float zoomLevel = 15;
+            mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mLocation, zoomLevel));
+            mGoogleMap.setOnInfoWindowClickListener(this);
+
+            // Once the map is ready, it can be set up using SetupMap()
+            SetupMap();
+        }
     }
 
     // This initialises the map and takes a data snapshot from both the Gigs and Venues sections
@@ -246,7 +266,13 @@ public class MusicianUserBandResultsFragment extends Fragment implements OnMapRe
                             bandLocation.getLongitude());
 
             // The marker is then added to the map
-            mMarker = mGoogleMap.addMarker(new MarkerOptions().position(convertedBandLocation));
+            int height = 125;
+            int width = 125;
+            BitmapDrawable bitMapDraw = (BitmapDrawable)getResources().getDrawable(R.drawable.ic_pin);
+            Bitmap b = bitMapDraw.getBitmap();
+            Bitmap smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
+
+            mMarker = mGoogleMap.addMarker(new MarkerOptions().position(convertedBandLocation).icon(BitmapDescriptorFactory.fromBitmap(smallMarker)));
 
             // A new BandMarkerInfo object is created to store the information about the marker.
             // This needs to be done because a standard marker can only hold a title and snippet
@@ -269,7 +295,8 @@ public class MusicianUserBandResultsFragment extends Fragment implements OnMapRe
 
                     // This then references the text views found in that layout
                     // (note gig id is a hidden text view)
-                    TextView mBandNameTextView = (TextView) v.findViewById(R.id.bandNameTextView);
+                    mBandNameTextView = (TextView) v.findViewById(R.id.bandNameTextView);
+                    mBandNameTextView.setTypeface(null, Typeface.BOLD);
                     TextView mBandDistanceTextView = (TextView) v.findViewById(R.id.bandDistanceTextView);
                     TextView mNumberOfPositions = (TextView) v.findViewById(R.id.bandPositionsTextView);
                     TextView mBandGenres = (TextView) v.findViewById(R.id.genresTextView);
@@ -285,6 +312,14 @@ public class MusicianUserBandResultsFragment extends Fragment implements OnMapRe
                             mBandDistanceTextView.setText(mListOfBandMarkerInfo.get(i).getBandDistance() +"km");
                             mNumberOfPositions.setText("Total Positions: " + mListOfBandMarkerInfo.get(i).getNumberOfPositions());
                             mBandGenres.setText(mListOfBandMarkerInfo.get(i).getBandGenres());
+                        }
+
+                        else if (markerSelected.getId().equals(mHomeMarkerId))
+                        {
+                            mBandNameTextView.setText("Your location!");
+                            mBandDistanceTextView.setVisibility(View.GONE);
+                            mNumberOfPositions.setVisibility(View.GONE);
+                            mBandGenres.setVisibility(View.GONE);
                         }
                     }
                     return v;
@@ -556,30 +591,33 @@ public class MusicianUserBandResultsFragment extends Fragment implements OnMapRe
     @Override
     public void onInfoWindowClick(Marker marker)
     {
-        MusicianUserBandDetailsFragment fragment = new MusicianUserBandDetailsFragment();
-        Bundle arguments = new Bundle();
-
-        for(int i = 0; i < mListOfBandMarkerInfo.size(); i++)
+        if(!mBandNameTextView.getText().equals("Your location!"))
         {
-            mListOfBandMarkerInfo.get(i);
+            MusicianUserBandDetailsFragment fragment = new MusicianUserBandDetailsFragment();
+            Bundle arguments = new Bundle();
 
-            if(mListOfBandMarkerInfo.get(i).getMarkerId().equals(marker.getId()))
+            for(int i = 0; i < mListOfBandMarkerInfo.size(); i++)
             {
-                arguments.putString("BandID", mListOfBandMarkerInfo.get(i).getBandId());
-                arguments.putString("BandName", mListOfBandMarkerInfo.get(i).getBandName());
-                arguments.putString("BandGenres", mListOfBandMarkerInfo.get(i).getBandGenres());
-                arguments.putString("BandNumberOfPositions", mListOfBandMarkerInfo.get(i).getNumberOfPositions());
+                mListOfBandMarkerInfo.get(i);
+
+                if(mListOfBandMarkerInfo.get(i).getMarkerId().equals(marker.getId()))
+                {
+                    arguments.putString("BandID", mListOfBandMarkerInfo.get(i).getBandId());
+                    arguments.putString("BandName", mListOfBandMarkerInfo.get(i).getBandName());
+                    arguments.putString("BandGenres", mListOfBandMarkerInfo.get(i).getBandGenres());
+                    arguments.putString("BandNumberOfPositions", mListOfBandMarkerInfo.get(i).getNumberOfPositions());
+                }
             }
+
+            fragment.setArguments(arguments);
+
+            // Creates a new fragment transaction to display the details of the selected
+            // gig. Some custom animation has been added also.
+            FragmentTransaction fragmentTransaction = getActivity().getFragmentManager()
+                    .beginTransaction();
+            fragmentTransaction.setCustomAnimations(R.animator.enter_from_right, R.animator.enter_from_left);
+            fragmentTransaction.replace(R.id.frame, fragment, "MusicianUserBandDetailsFragment")
+                    .addToBackStack(null).commit();
         }
-
-        fragment.setArguments(arguments);
-
-        // Creates a new fragment transaction to display the details of the selected
-        // gig. Some custom animation has been added also.
-        FragmentTransaction fragmentTransaction = getActivity().getFragmentManager()
-                .beginTransaction();
-        fragmentTransaction.setCustomAnimations(R.animator.enter_from_right, R.animator.enter_from_left);
-        fragmentTransaction.replace(R.id.frame, fragment, "MusicianUserBandDetailsFragment")
-                .addToBackStack(null).commit();
     }
 }

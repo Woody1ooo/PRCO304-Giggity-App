@@ -195,25 +195,28 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
         int width = 125;
 
         // This creates a drawable bitmap
-        BitmapDrawable bitMapDraw = (BitmapDrawable)getResources().getDrawable(R.drawable.ic_home_pin);
-        Bitmap bitmap = bitMapDraw.getBitmap();
-        Bitmap smallMarker = Bitmap.createScaledBitmap(bitmap, width, height, false);
+        if(getActivity() != null)
+        {
+            BitmapDrawable bitMapDraw = (BitmapDrawable)getResources().getDrawable(R.drawable.ic_home_pin);
+            Bitmap bitmap = bitMapDraw.getBitmap();
+            Bitmap smallMarker = Bitmap.createScaledBitmap(bitmap, width, height, false);
 
-        // This places a marker at the users chosen location
-        Marker marker = mGoogleMap.addMarker(new MarkerOptions()
-                .position(mLocation)
-                .icon(BitmapDescriptorFactory.fromBitmap(smallMarker)));
+            // This places a marker at the users chosen location
+            Marker marker = mGoogleMap.addMarker(new MarkerOptions()
+                    .position(mLocation)
+                    .icon(BitmapDescriptorFactory.fromBitmap(smallMarker)));
 
-        // The marker id is then extracted to determine whether the marker is home when clicked
-        mHomeMarkerId = marker.getId();
+            // The marker id is then extracted to determine whether the marker is home when clicked
+            mHomeMarkerId = marker.getId();
 
-        // This zooms the map in to a reasonable level (12) and centers it on the location provided
-        float zoomLevel = 15;
-        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mLocation, zoomLevel));
-        mGoogleMap.setOnInfoWindowClickListener(this);
+            // This zooms the map in to a reasonable level (12) and centers it on the location provided
+            float zoomLevel = 15;
+            mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mLocation, zoomLevel));
+            mGoogleMap.setOnInfoWindowClickListener(this);
 
-        // Once the map is ready, it can be set up using SetupMap()
-        SetupMap();
+            // Once the map is ready, it can be set up using SetupMap()
+            SetupMap();
+        }
     }
 
     // This initialises the map and takes a data snapshot from both the Gigs and Venues sections
@@ -308,8 +311,7 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
                     // To expose the methods required for marker placement, the gigLocation
                     // variable is then converted back into the standard Google Maps
                     // LatLng object (convertedGigLocation)
-                    final com.google.android.gms.maps.model.LatLng convertedGigLocation =
-                            new com.google.android.gms.maps.model.LatLng(gigLocation.getLatitude(),
+                    final com.google.android.gms.maps.model.LatLng convertedGigLocation = new com.google.android.gms.maps.model.LatLng(gigLocation.getLatitude(),
                                     gigLocation.getLongitude());
 
                     // The marker is then added to the map
@@ -542,10 +544,7 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
     @Override
     public void onInfoWindowClick(Marker marker)
     {
-        if(mGigNameTextView.getText().equals("Your location!"))
-        {}
-
-        else
+        if(!mGigNameTextView.getText().equals("Your location!"))
         {
             if(!mIsFanAccount)
             {

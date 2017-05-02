@@ -312,6 +312,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                                         mDatabase.child("Users").child(mAuth.getCurrentUser()
                                                 .getUid()).setValue(newUser);
                                         mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/inBand").setValue(false);
+                                        mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/accountType").setValue("Pending");
                                     }
                                 }
 
@@ -383,6 +384,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                                                 // as the key.
                                                 mDatabase.child("Users").child(mAuth.getCurrentUser().getUid()).setValue(newUser);
                                                 mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/inBand").setValue(false);
+                                                mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/accountType").setValue("Pending");
                                             }
                                         }
 

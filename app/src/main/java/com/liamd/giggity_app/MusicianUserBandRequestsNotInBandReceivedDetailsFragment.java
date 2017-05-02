@@ -5,6 +5,8 @@ import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.DialogInterface;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
@@ -185,11 +187,14 @@ public class MusicianUserBandRequestsNotInBandReceivedDetailsFragment extends Fr
                 mSnapshot = dataSnapshot;
                 PopulateFields();
 
+                int height = 125;
+                int width = 125;
+                BitmapDrawable bitMapDraw = (BitmapDrawable)getResources().getDrawable(R.drawable.ic_pin);
+                Bitmap b = bitMapDraw.getBitmap();
+                Bitmap smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
+
                 // This places a marker at the users chosen location
-                mGoogleMap.addMarker(new MarkerOptions()
-                        .position(mBandConvertedLatLng)
-                        .icon(BitmapDescriptorFactory.defaultMarker(HUE_AZURE)));
-                GetUserLocation();
+                mGoogleMap.addMarker(new MarkerOptions().position(mBandConvertedLatLng).icon(BitmapDescriptorFactory.fromBitmap(smallMarker)));
 
                 mLocationDistanceTextView.setText("Distance From Band: " + mDistance + "km");
 
