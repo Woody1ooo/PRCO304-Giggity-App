@@ -87,11 +87,12 @@ public class MusicianUserBandDetailsFragment extends Fragment implements YouTube
     // Declare general variables
     private String mBandId;
     private String mNumberOfPositions;
-    private DataSnapshot mDataSnapshot;
+    private DataSnapshot mSnapshot;
     private String mYoutubeURL;
     private String mParsedYoutubeURL;
     private String mPositionAppliedFor;
     private String mUserInstruments;
+    private String mUserName;
 
     public MusicianUserBandDetailsFragment()
     {
@@ -387,8 +388,11 @@ public class MusicianUserBandDetailsFragment extends Fragment implements YouTube
             @Override
             public void onDataChange(DataSnapshot dataSnapshot)
             {
-                mDataSnapshot = dataSnapshot;
+                mSnapshot = dataSnapshot;
                 PopulateFields();
+
+                mUserName = dataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/firstName").getValue().toString()
+                        + " " + dataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/lastName").getValue().toString();
 
                 // Get the user's instruments
                 mUserInstruments = dataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/instruments").getValue().toString();
@@ -482,12 +486,12 @@ public class MusicianUserBandDetailsFragment extends Fragment implements YouTube
             String positionOneUserID;
             String positionOneName;
 
-            positionOneUserID = mDataSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString();
+            positionOneUserID = mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString();
 
             if(!positionOneUserID.equals("Vacant"))
             {
-                positionOneName = mDataSnapshot.child("Users/" + positionOneUserID + "/firstName").getValue().toString() + " " +
-                        mDataSnapshot.child("Users/" + positionOneUserID + "/lastName").getValue().toString();
+                positionOneName = mSnapshot.child("Users/" + positionOneUserID + "/firstName").getValue().toString() + " " +
+                        mSnapshot.child("Users/" + positionOneUserID + "/lastName").getValue().toString();
 
                 mPositionOneNameTextView.setText(positionOneName);
                 mApplyForPositionOneButton.setEnabled(false);
@@ -498,7 +502,7 @@ public class MusicianUserBandDetailsFragment extends Fragment implements YouTube
                         .diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).override(500, 500).into(mPositionOneProfileImageView);
             }
 
-            mPositionOneInstrumentTextView.append(mDataSnapshot.child("Bands/" + mBandId + "/positionOne").getValue().toString());
+            mPositionOneInstrumentTextView.append(mSnapshot.child("Bands/" + mBandId + "/positionOne").getValue().toString());
         }
 
         else if(mNumberOfPositions.equals("2"))
@@ -509,12 +513,12 @@ public class MusicianUserBandDetailsFragment extends Fragment implements YouTube
             String positionTwoUserID;
             String positionTwoName;
 
-            positionOneUserID = mDataSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString();
+            positionOneUserID = mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString();
 
             if(!positionOneUserID.equals("Vacant"))
             {
-                positionOneName = mDataSnapshot.child("Users/" + positionOneUserID + "/firstName").getValue().toString() + " " +
-                        mDataSnapshot.child("Users/" + positionOneUserID + "/lastName").getValue().toString();
+                positionOneName = mSnapshot.child("Users/" + positionOneUserID + "/firstName").getValue().toString() + " " +
+                        mSnapshot.child("Users/" + positionOneUserID + "/lastName").getValue().toString();
 
                 mPositionOneNameTextView.setText(positionOneName);
                 mApplyForPositionOneButton.setEnabled(false);
@@ -525,14 +529,14 @@ public class MusicianUserBandDetailsFragment extends Fragment implements YouTube
                         .diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).override(350, 350).into(mPositionOneProfileImageView);
             }
 
-            mPositionOneInstrumentTextView.append(mDataSnapshot.child("Bands/" + mBandId + "/positionOne").getValue().toString());
+            mPositionOneInstrumentTextView.append(mSnapshot.child("Bands/" + mBandId + "/positionOne").getValue().toString());
 
-            positionTwoUserID = mDataSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString();
+            positionTwoUserID = mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString();
 
             if(!positionTwoUserID.equals("Vacant"))
             {
-                positionTwoName = mDataSnapshot.child("Users/" + positionTwoUserID + "/firstName").getValue().toString() + " " +
-                        mDataSnapshot.child("Users/" + positionTwoUserID + "/lastName").getValue().toString();
+                positionTwoName = mSnapshot.child("Users/" + positionTwoUserID + "/firstName").getValue().toString() + " " +
+                        mSnapshot.child("Users/" + positionTwoUserID + "/lastName").getValue().toString();
 
                 mPositionTwoNameTextView.setText(positionTwoName);
                 mApplyForPositionTwoButton.setEnabled(false);
@@ -543,7 +547,7 @@ public class MusicianUserBandDetailsFragment extends Fragment implements YouTube
                         .diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).override(350, 350).into(mPositionTwoProfileImageView);
             }
 
-            mPositionTwoInstrumentTextView.append(mDataSnapshot.child("Bands/" + mBandId + "/positionTwo").getValue().toString());
+            mPositionTwoInstrumentTextView.append(mSnapshot.child("Bands/" + mBandId + "/positionTwo").getValue().toString());
         }
 
         else if(mNumberOfPositions.equals("3"))
@@ -557,12 +561,12 @@ public class MusicianUserBandDetailsFragment extends Fragment implements YouTube
             String positionThreeUserID;
             String positionThreeName;
 
-            positionOneUserID = mDataSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString();
+            positionOneUserID = mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString();
 
             if(!positionOneUserID.equals("Vacant"))
             {
-                positionOneName = mDataSnapshot.child("Users/" + positionOneUserID + "/firstName").getValue().toString() + " " +
-                        mDataSnapshot.child("Users/" + positionOneUserID + "/lastName").getValue().toString();
+                positionOneName = mSnapshot.child("Users/" + positionOneUserID + "/firstName").getValue().toString() + " " +
+                        mSnapshot.child("Users/" + positionOneUserID + "/lastName").getValue().toString();
 
                 mPositionOneNameTextView.setText(positionOneName);
                 mApplyForPositionOneButton.setEnabled(false);
@@ -574,14 +578,14 @@ public class MusicianUserBandDetailsFragment extends Fragment implements YouTube
                         .diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).override(350, 350).into(mPositionOneProfileImageView);
             }
 
-            mPositionOneInstrumentTextView.append(mDataSnapshot.child("Bands/" + mBandId + "/positionOne").getValue().toString());
+            mPositionOneInstrumentTextView.append(mSnapshot.child("Bands/" + mBandId + "/positionOne").getValue().toString());
 
-            positionTwoUserID = mDataSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString();
+            positionTwoUserID = mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString();
 
             if(!positionTwoUserID.equals("Vacant"))
             {
-                positionTwoName = mDataSnapshot.child("Users/" + positionTwoUserID + "/firstName").getValue().toString() + " " +
-                        mDataSnapshot.child("Users/" + positionTwoUserID + "/lastName").getValue().toString();
+                positionTwoName = mSnapshot.child("Users/" + positionTwoUserID + "/firstName").getValue().toString() + " " +
+                        mSnapshot.child("Users/" + positionTwoUserID + "/lastName").getValue().toString();
 
                 mPositionTwoNameTextView.setText(positionTwoName);
                 mApplyForPositionTwoButton.setEnabled(false);
@@ -593,14 +597,14 @@ public class MusicianUserBandDetailsFragment extends Fragment implements YouTube
                         .diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).override(350, 350).into(mPositionTwoProfileImageView);
             }
 
-            mPositionTwoInstrumentTextView.append(mDataSnapshot.child("Bands/" + mBandId + "/positionTwo").getValue().toString());
+            mPositionTwoInstrumentTextView.append(mSnapshot.child("Bands/" + mBandId + "/positionTwo").getValue().toString());
 
-            positionThreeUserID = mDataSnapshot.child("Bands/" + mBandId + "/positionThreeMember").getValue().toString();
+            positionThreeUserID = mSnapshot.child("Bands/" + mBandId + "/positionThreeMember").getValue().toString();
 
             if(!positionThreeUserID.equals("Vacant"))
             {
-                positionThreeName = mDataSnapshot.child("Users/" + positionThreeUserID + "/firstName").getValue().toString() + " " +
-                        mDataSnapshot.child("Users/" + positionThreeUserID + "/lastName").getValue().toString();
+                positionThreeName = mSnapshot.child("Users/" + positionThreeUserID + "/firstName").getValue().toString() + " " +
+                        mSnapshot.child("Users/" + positionThreeUserID + "/lastName").getValue().toString();
 
                 mPositionThreeNameTextView.setText(positionThreeName);
                 mApplyForPositionThreeButton.setEnabled(false);
@@ -611,7 +615,7 @@ public class MusicianUserBandDetailsFragment extends Fragment implements YouTube
                         .diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).override(350, 350).into(mPositionThreeProfileImageView);
             }
 
-            mPositionThreeInstrumentTextView.append(mDataSnapshot.child("Bands/" + mBandId + "/positionThree").getValue().toString());
+            mPositionThreeInstrumentTextView.append(mSnapshot.child("Bands/" + mBandId + "/positionThree").getValue().toString());
         }
 
         else if(mNumberOfPositions.equals("4"))
@@ -628,12 +632,12 @@ public class MusicianUserBandDetailsFragment extends Fragment implements YouTube
             String positionFourUserID;
             String positionFourName;
 
-            positionOneUserID = mDataSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString();
+            positionOneUserID = mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString();
 
             if(!positionOneUserID.equals("Vacant"))
             {
-                positionOneName = mDataSnapshot.child("Users/" + positionOneUserID + "/firstName").getValue().toString() + " " +
-                        mDataSnapshot.child("Users/" + positionOneUserID + "/lastName").getValue().toString();
+                positionOneName = mSnapshot.child("Users/" + positionOneUserID + "/firstName").getValue().toString() + " " +
+                        mSnapshot.child("Users/" + positionOneUserID + "/lastName").getValue().toString();
 
                 mPositionOneNameTextView.setText(positionOneName);
                 mApplyForPositionOneButton.setEnabled(false);
@@ -645,14 +649,14 @@ public class MusicianUserBandDetailsFragment extends Fragment implements YouTube
                         .diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).override(350, 350).into(mPositionOneProfileImageView);
             }
 
-            mPositionOneInstrumentTextView.append(mDataSnapshot.child("Bands/" + mBandId + "/positionOne").getValue().toString());
+            mPositionOneInstrumentTextView.append(mSnapshot.child("Bands/" + mBandId + "/positionOne").getValue().toString());
 
-            positionTwoUserID = mDataSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString();
+            positionTwoUserID = mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString();
 
             if(!positionTwoUserID.equals("Vacant"))
             {
-                positionTwoName = mDataSnapshot.child("Users/" + positionTwoUserID + "/firstName").getValue().toString() + " " +
-                        mDataSnapshot.child("Users/" + positionTwoUserID + "/lastName").getValue().toString();
+                positionTwoName = mSnapshot.child("Users/" + positionTwoUserID + "/firstName").getValue().toString() + " " +
+                        mSnapshot.child("Users/" + positionTwoUserID + "/lastName").getValue().toString();
 
                 mPositionTwoNameTextView.setText(positionTwoName);
                 mApplyForPositionTwoButton.setEnabled(false);
@@ -664,14 +668,14 @@ public class MusicianUserBandDetailsFragment extends Fragment implements YouTube
                         .diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).override(350, 350).into(mPositionTwoProfileImageView);
             }
 
-            mPositionTwoInstrumentTextView.append(mDataSnapshot.child("Bands/" + mBandId + "/positionTwo").getValue().toString());
+            mPositionTwoInstrumentTextView.append(mSnapshot.child("Bands/" + mBandId + "/positionTwo").getValue().toString());
 
-            positionThreeUserID = mDataSnapshot.child("Bands/" + mBandId + "/positionThreeMember").getValue().toString();
+            positionThreeUserID = mSnapshot.child("Bands/" + mBandId + "/positionThreeMember").getValue().toString();
 
             if(!positionThreeUserID.equals("Vacant"))
             {
-                positionThreeName = mDataSnapshot.child("Users/" + positionThreeUserID + "/firstName").getValue().toString() + " " +
-                        mDataSnapshot.child("Users/" + positionThreeUserID + "/lastName").getValue().toString();
+                positionThreeName = mSnapshot.child("Users/" + positionThreeUserID + "/firstName").getValue().toString() + " " +
+                        mSnapshot.child("Users/" + positionThreeUserID + "/lastName").getValue().toString();
 
                 mPositionThreeNameTextView.setText(positionThreeName);
                 mApplyForPositionThreeButton.setEnabled(false);
@@ -682,14 +686,14 @@ public class MusicianUserBandDetailsFragment extends Fragment implements YouTube
                         .diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).override(350, 350).into(mPositionThreeProfileImageView);
             }
 
-            mPositionThreeInstrumentTextView.append(mDataSnapshot.child("Bands/" + mBandId + "/positionThree").getValue().toString());
+            mPositionThreeInstrumentTextView.append(mSnapshot.child("Bands/" + mBandId + "/positionThree").getValue().toString());
 
-            positionFourUserID = mDataSnapshot.child("Bands/" + mBandId + "/positionFourMember").getValue().toString();
+            positionFourUserID = mSnapshot.child("Bands/" + mBandId + "/positionFourMember").getValue().toString();
 
             if(!positionFourUserID.equals("Vacant"))
             {
-                positionFourName = mDataSnapshot.child("Users/" + positionFourUserID + "/firstName").getValue().toString() + " " +
-                        mDataSnapshot.child("Users/" + positionFourUserID + "/lastName").getValue().toString();
+                positionFourName = mSnapshot.child("Users/" + positionFourUserID + "/firstName").getValue().toString() + " " +
+                        mSnapshot.child("Users/" + positionFourUserID + "/lastName").getValue().toString();
 
                 mPositionFourNameTextView.setText(positionFourName);
                 mApplyForPositionFourButton.setEnabled(false);
@@ -700,7 +704,7 @@ public class MusicianUserBandDetailsFragment extends Fragment implements YouTube
                         .diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).override(350, 350).into(mPositionFourProfileImageView);
             }
 
-            mPositionFourInstrumentTextView.append(mDataSnapshot.child("Bands/" + mBandId + "/positionFour").getValue().toString());
+            mPositionFourInstrumentTextView.append(mSnapshot.child("Bands/" + mBandId + "/positionFour").getValue().toString());
         }
 
         else if(mNumberOfPositions.equals("5"))
@@ -720,12 +724,12 @@ public class MusicianUserBandDetailsFragment extends Fragment implements YouTube
             String positionFiveUserID;
             String positionFiveName;
 
-            positionOneUserID = mDataSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString();
+            positionOneUserID = mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString();
 
             if(!positionOneUserID.equals("Vacant"))
             {
-                positionOneName = mDataSnapshot.child("Users/" + positionOneUserID + "/firstName").getValue().toString() + " " +
-                        mDataSnapshot.child("Users/" + positionOneUserID + "/lastName").getValue().toString();
+                positionOneName = mSnapshot.child("Users/" + positionOneUserID + "/firstName").getValue().toString() + " " +
+                        mSnapshot.child("Users/" + positionOneUserID + "/lastName").getValue().toString();
 
                 mPositionOneNameTextView.setText(positionOneName);
                 mApplyForPositionOneButton.setEnabled(false);
@@ -737,14 +741,14 @@ public class MusicianUserBandDetailsFragment extends Fragment implements YouTube
                         .diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).override(350, 350).into(mPositionOneProfileImageView);
             }
 
-            mPositionOneInstrumentTextView.append(mDataSnapshot.child("Bands/" + mBandId + "/positionOne").getValue().toString());
+            mPositionOneInstrumentTextView.append(mSnapshot.child("Bands/" + mBandId + "/positionOne").getValue().toString());
 
-            positionTwoUserID = mDataSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString();
+            positionTwoUserID = mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString();
 
             if(!positionTwoUserID.equals("Vacant"))
             {
-                positionTwoName = mDataSnapshot.child("Users/" + positionTwoUserID + "/firstName").getValue().toString() + " " +
-                        mDataSnapshot.child("Users/" + positionTwoUserID + "/lastName").getValue().toString();
+                positionTwoName = mSnapshot.child("Users/" + positionTwoUserID + "/firstName").getValue().toString() + " " +
+                        mSnapshot.child("Users/" + positionTwoUserID + "/lastName").getValue().toString();
 
                 mPositionTwoNameTextView.setText(positionTwoName);
                 mApplyForPositionTwoButton.setEnabled(false);
@@ -756,14 +760,14 @@ public class MusicianUserBandDetailsFragment extends Fragment implements YouTube
                         .diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).override(350, 350).into(mPositionTwoProfileImageView);
             }
 
-            mPositionTwoInstrumentTextView.append(mDataSnapshot.child("Bands/" + mBandId + "/positionTwo").getValue().toString());
+            mPositionTwoInstrumentTextView.append(mSnapshot.child("Bands/" + mBandId + "/positionTwo").getValue().toString());
 
-            positionThreeUserID = mDataSnapshot.child("Bands/" + mBandId + "/positionThreeMember").getValue().toString();
+            positionThreeUserID = mSnapshot.child("Bands/" + mBandId + "/positionThreeMember").getValue().toString();
 
             if(!positionThreeUserID.equals("Vacant"))
             {
-                positionThreeName = mDataSnapshot.child("Users/" + positionThreeUserID + "/firstName").getValue().toString() + " " +
-                        mDataSnapshot.child("Users/" + positionThreeUserID + "/lastName").getValue().toString();
+                positionThreeName = mSnapshot.child("Users/" + positionThreeUserID + "/firstName").getValue().toString() + " " +
+                        mSnapshot.child("Users/" + positionThreeUserID + "/lastName").getValue().toString();
 
                 mPositionThreeNameTextView.setText(positionThreeName);
                 mApplyForPositionThreeButton.setEnabled(false);
@@ -774,14 +778,14 @@ public class MusicianUserBandDetailsFragment extends Fragment implements YouTube
                         .diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).override(350, 350).into(mPositionThreeProfileImageView);
             }
 
-            mPositionThreeInstrumentTextView.append(mDataSnapshot.child("Bands/" + mBandId + "/positionThree").getValue().toString());
+            mPositionThreeInstrumentTextView.append(mSnapshot.child("Bands/" + mBandId + "/positionThree").getValue().toString());
 
-            positionFourUserID = mDataSnapshot.child("Bands/" + mBandId + "/positionFourMember").getValue().toString();
+            positionFourUserID = mSnapshot.child("Bands/" + mBandId + "/positionFourMember").getValue().toString();
 
             if(!positionFourUserID.equals("Vacant"))
             {
-                positionFourName = mDataSnapshot.child("Users/" + positionFourUserID + "/firstName").getValue().toString() + " " +
-                        mDataSnapshot.child("Users/" + positionFourUserID + "/lastName").getValue().toString();
+                positionFourName = mSnapshot.child("Users/" + positionFourUserID + "/firstName").getValue().toString() + " " +
+                        mSnapshot.child("Users/" + positionFourUserID + "/lastName").getValue().toString();
 
                 mPositionFourNameTextView.setText(positionFourName);
                 mApplyForPositionFourButton.setEnabled(false);
@@ -793,14 +797,14 @@ public class MusicianUserBandDetailsFragment extends Fragment implements YouTube
             }
 
 
-            mPositionFourInstrumentTextView.append(mDataSnapshot.child("Bands/" + mBandId + "/positionFour").getValue().toString());
+            mPositionFourInstrumentTextView.append(mSnapshot.child("Bands/" + mBandId + "/positionFour").getValue().toString());
 
-            positionFiveUserID = mDataSnapshot.child("Bands/" + mBandId + "/positionFiveMember").getValue().toString();
+            positionFiveUserID = mSnapshot.child("Bands/" + mBandId + "/positionFiveMember").getValue().toString();
 
             if(!positionFiveUserID.equals("Vacant"))
             {
-                positionFiveName = mDataSnapshot.child("Users/" + positionFiveUserID + "/firstName").getValue().toString() + " " +
-                        mDataSnapshot.child("Users/" + positionFiveUserID + "/lastName").getValue().toString();
+                positionFiveName = mSnapshot.child("Users/" + positionFiveUserID + "/firstName").getValue().toString() + " " +
+                        mSnapshot.child("Users/" + positionFiveUserID + "/lastName").getValue().toString();
 
                 mPositionFiveNameTextView.setText(positionFiveName);
                 mApplyForPositionFiveButton.setEnabled(false);
@@ -811,7 +815,7 @@ public class MusicianUserBandDetailsFragment extends Fragment implements YouTube
                         .diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).override(350, 350).into(mPositionFiveProfileImageView);
             }
 
-            mPositionFiveInstrumentTextView.append(mDataSnapshot.child("Bands/" + mBandId + "/positionFive").getValue().toString());
+            mPositionFiveInstrumentTextView.append(mSnapshot.child("Bands/" + mBandId + "/positionFive").getValue().toString());
         }
     }
 
@@ -829,15 +833,13 @@ public class MusicianUserBandDetailsFragment extends Fragment implements YouTube
             public void onClick(DialogInterface dialogInterface, int i)
             {
                 // Once the position is determined the MusicianSetBandRequests are updated using a generated key
-                if(positionAppliedFor.equals("1"))
+                if (positionAppliedFor.equals("1"))
                 {
                     // If the user has already submitted a request to this band alert them of this and decline the request
-                    if(mDataSnapshot.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).exists())
+                    if (mSnapshot.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).exists())
                     {
                         RequestExistsDialog();
-                    }
-
-                    else
+                    } else
                     {
                         mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("bandID").setValue(mBandId);
                         mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("bandPosition").setValue("positionOne");
@@ -845,24 +847,18 @@ public class MusicianUserBandDetailsFragment extends Fragment implements YouTube
                         mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("requestStatus").setValue("Pending");
                         mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("bandName").setValue(mBandNameTextView.getText().toString());
                         mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("userName").setValue(
-                                mDataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/firstName").getValue() + " " + mDataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/lastName").getValue());
+                                mSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/firstName").getValue() + " " + mSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/lastName").getValue());
                         mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("userID").setValue(mAuth.getCurrentUser().getUid());
                         mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("userInstruments").setValue(mUserInstruments);
 
-
-                        mDatabase.child("Notifications/MusicianSentBandRequestsPending/" + mBandId + "/" + mAuth.getCurrentUser().getUid()).child("requestStatus").setValue("Pending");
                         ConfirmDialog();
                     }
-                }
-
-                else if(positionAppliedFor.equals("2"))
+                } else if (positionAppliedFor.equals("2"))
                 {
-                    if(mDataSnapshot.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).exists())
+                    if (mSnapshot.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).exists())
                     {
                         RequestExistsDialog();
-                    }
-
-                    else
+                    } else
                     {
                         mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("bandID").setValue(mBandId);
                         mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("bandPosition").setValue("positionTwo");
@@ -870,23 +866,18 @@ public class MusicianUserBandDetailsFragment extends Fragment implements YouTube
                         mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("requestStatus").setValue("Pending");
                         mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("bandName").setValue(mBandNameTextView.getText().toString());
                         mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("userName").setValue(
-                                mDataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/firstName").getValue() + " " + mDataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/lastName").getValue());
+                                mSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/firstName").getValue() + " " + mSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/lastName").getValue());
                         mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("userID").setValue(mAuth.getCurrentUser().getUid());
                         mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("userInstruments").setValue(mUserInstruments);
 
-                        mDatabase.child("Notifications/MusicianSentBandRequestsPending/" + mBandId + "/" + mAuth.getCurrentUser().getUid()).child("requestStatus").setValue("Pending");
                         ConfirmDialog();
                     }
-                }
-
-                else if(positionAppliedFor.equals("3"))
+                } else if (positionAppliedFor.equals("3"))
                 {
-                    if(mDataSnapshot.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).exists())
+                    if (mSnapshot.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).exists())
                     {
                         RequestExistsDialog();
-                    }
-
-                    else
+                    } else
                     {
                         mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("bandID").setValue(mBandId);
                         mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("bandPosition").setValue("positionThree");
@@ -894,23 +885,18 @@ public class MusicianUserBandDetailsFragment extends Fragment implements YouTube
                         mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("requestStatus").setValue("Pending");
                         mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("bandName").setValue(mBandNameTextView.getText().toString());
                         mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("userName").setValue(
-                                mDataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/firstName").getValue() + " " + mDataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/lastName").getValue());
+                                mSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/firstName").getValue() + " " + mSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/lastName").getValue());
                         mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("userID").setValue(mAuth.getCurrentUser().getUid());
                         mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("userInstruments").setValue(mUserInstruments);
 
-                        mDatabase.child("Notifications/MusicianSentBandRequestsPending/" + mBandId + "/" + mAuth.getCurrentUser().getUid()).child("requestStatus").setValue("Pending");
                         ConfirmDialog();
                     }
-                }
-
-                else if(positionAppliedFor.equals("4"))
+                } else if (positionAppliedFor.equals("4"))
                 {
-                    if(mDataSnapshot.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).exists())
+                    if (mSnapshot.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).exists())
                     {
                         RequestExistsDialog();
-                    }
-
-                    else
+                    } else
                     {
                         mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("bandID").setValue(mBandId);
                         mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("bandPosition").setValue("positionFour");
@@ -918,23 +904,18 @@ public class MusicianUserBandDetailsFragment extends Fragment implements YouTube
                         mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("requestStatus").setValue("Pending");
                         mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("bandName").setValue(mBandNameTextView.getText().toString());
                         mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("userName").setValue(
-                                mDataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/firstName").getValue() + " " + mDataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/lastName").getValue());
+                                mSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/firstName").getValue() + " " + mSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/lastName").getValue());
                         mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("userID").setValue(mAuth.getCurrentUser().getUid());
                         mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("userInstruments").setValue(mUserInstruments);
 
-                        mDatabase.child("Notifications/MusicianSentBandRequestsPending/" + mBandId + "/" + mAuth.getCurrentUser().getUid()).child("requestStatus").setValue("Pending");
                         ConfirmDialog();
                     }
-                }
-
-                else if(positionAppliedFor.equals("5"))
+                } else if (positionAppliedFor.equals("5"))
                 {
-                    if(mDataSnapshot.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).exists())
+                    if (mSnapshot.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).exists())
                     {
                         RequestExistsDialog();
-                    }
-
-                    else
+                    } else
                     {
                         mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("bandID").setValue(mBandId);
                         mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("bandPosition").setValue("positionFive");
@@ -942,12 +923,265 @@ public class MusicianUserBandDetailsFragment extends Fragment implements YouTube
                         mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("requestStatus").setValue("Pending");
                         mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("bandName").setValue(mBandNameTextView.getText().toString());
                         mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("userName").setValue(
-                                mDataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/firstName").getValue() + " " + mDataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/lastName").getValue());
+                                mSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/firstName").getValue() + " " + mSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/lastName").getValue());
                         mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("userID").setValue(mAuth.getCurrentUser().getUid());
                         mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).child("userInstruments").setValue(mUserInstruments);
 
-                        mDatabase.child("Notifications/MusicianSentBandRequestsPending/" + mBandId + "/" + mAuth.getCurrentUser().getUid()).child("requestStatus").setValue("Pending");
                         ConfirmDialog();
+                    }
+                }
+
+                // Check how many people in the band need notifications sent
+                if (mSnapshot.child("Bands/" + mBandId + "/numberOfPositions").getValue().toString().equals("2"))
+                {
+                    // Check the position isn't vacant
+                    if (!mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString().equals("Vacant"))
+                    {
+                        String bandMemberUserID;
+                        String notificationID;
+
+                        // Get the band members user ID
+                        bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString();
+
+                        // Generate a notification ID from the database
+                        notificationID = mDatabase.push().getKey();
+
+                        Notification notification = new Notification(notificationID, mUserName + " has applied for a position at your band!", "MusicianSentBandRequestPending");
+
+                        mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
+                    }
+
+                    // Check the position isn't vacant
+                    if (!mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString().equals("Vacant"))
+                    {
+                        String bandMemberUserID;
+                        String notificationID;
+
+                        // Get the band members user ID
+                        bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString();
+
+                        // Generate a notification ID from the database
+                        notificationID = mDatabase.push().getKey();
+
+                        Notification notification = new Notification(notificationID, mUserName + " has applied for a position at your band!", "MusicianSentBandRequestPending");
+
+                        mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
+                    }
+                }
+
+                // Check how many people in the band need notifications sent
+                else if (mSnapshot.child("Bands/" + mBandId + "/numberOfPositions").getValue().toString().equals("3"))
+                {
+                    // Check the position isn't vacant
+                    if (!mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString().equals("Vacant"))
+                    {
+                        String bandMemberUserID;
+                        String notificationID;
+
+                        // Get the band members user ID
+                        bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString();
+
+                        // Generate a notification ID from the database
+                        notificationID = mDatabase.push().getKey();
+
+                        Notification notification = new Notification(notificationID, mUserName + " has applied for a position at your band!", "MusicianSentBandRequestPending");
+
+                        mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
+                    }
+
+                    // Check the position isn't vacant
+                    if (!mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString().equals("Vacant"))
+                    {
+                        String bandMemberUserID;
+                        String notificationID;
+
+                        // Get the band members user ID
+                        bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString();
+
+                        // Generate a notification ID from the database
+                        notificationID = mDatabase.push().getKey();
+
+                        Notification notification = new Notification(notificationID, mUserName + " has applied for a position at your band!", "MusicianSentBandRequestPending");
+
+                        mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
+                    }
+
+                    // Check the position isn't vacant
+                    if (!mSnapshot.child("Bands/" + mBandId + "/positionThreeMember").getValue().toString().equals("Vacant"))
+                    {
+                        String bandMemberUserID;
+                        String notificationID;
+
+                        // Get the band members user ID
+                        bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionThreeMember").getValue().toString();
+
+                        // Generate a notification ID from the database
+                        notificationID = mDatabase.push().getKey();
+
+                        Notification notification = new Notification(notificationID, mUserName + " has applied for a position at your band!", "MusicianSentBandRequestPending");
+
+                        mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
+                    }
+                }
+
+                // Check how many people in the band need notifications sent
+                else if (mSnapshot.child("Bands/" + mBandId + "/numberOfPositions").getValue().toString().equals("4"))
+                {
+                    // Check the position isn't vacant
+                    if (!mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString().equals("Vacant"))
+                    {
+                        String bandMemberUserID;
+                        String notificationID;
+
+                        // Get the band members user ID
+                        bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString();
+
+                        // Generate a notification ID from the database
+                        notificationID = mDatabase.push().getKey();
+
+                        Notification notification = new Notification(notificationID, mUserName + " has applied for a position at your band!", "MusicianSentBandRequestPending");
+
+                        mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
+                    }
+
+                    // Check the position isn't vacant
+                    if (!mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString().equals("Vacant"))
+                    {
+                        String bandMemberUserID;
+                        String notificationID;
+
+                        // Get the band members user ID
+                        bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString();
+
+                        // Generate a notification ID from the database
+                        notificationID = mDatabase.push().getKey();
+
+                        Notification notification = new Notification(notificationID, mUserName + " has applied for a position at your band!", "MusicianSentBandRequestPending");
+
+                        mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
+                    }
+
+                    // Check the position isn't vacant
+                    if (!mSnapshot.child("Bands/" + mBandId + "/positionThreeMember").getValue().toString().equals("Vacant"))
+                    {
+                        String bandMemberUserID;
+                        String notificationID;
+
+                        // Get the band members user ID
+                        bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionThreeMember").getValue().toString();
+
+                        // Generate a notification ID from the database
+                        notificationID = mDatabase.push().getKey();
+
+                        Notification notification = new Notification(notificationID, mUserName + " has applied for a position at your band!", "MusicianSentBandRequestPending");
+
+                        mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
+                    }
+
+                    // Check the position isn't vacant
+                    if (!mSnapshot.child("Bands/" + mBandId + "/positionFourMember").getValue().toString().equals("Vacant"))
+                    {
+                        String bandMemberUserID;
+                        String notificationID;
+
+                        // Get the band members user ID
+                        bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionFourMember").getValue().toString();
+
+                        // Generate a notification ID from the database
+                        notificationID = mDatabase.push().getKey();
+
+                        Notification notification = new Notification(notificationID, mUserName + " has applied for a position at your band!", "MusicianSentBandRequestPending");
+
+                        mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
+                    }
+                }
+
+                // Check how many people in the band need notifications sent
+                else if (mSnapshot.child("Bands/" + mBandId + "/numberOfPositions").getValue().toString().equals("5"))
+                {
+                    // Check the position isn't vacant
+                    if (!mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString().equals("Vacant"))
+                    {
+                        String bandMemberUserID;
+                        String notificationID;
+
+                        // Get the band members user ID
+                        bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString();
+
+                        // Generate a notification ID from the database
+                        notificationID = mDatabase.push().getKey();
+
+                        Notification notification = new Notification(notificationID, mUserName + " has applied for a position at your band!", "MusicianSentBandRequestPending");
+
+                        mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
+                    }
+
+                    // Check the position isn't vacant
+                    if (!mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString().equals("Vacant"))
+                    {
+                        String bandMemberUserID;
+                        String notificationID;
+
+                        // Get the band members user ID
+                        bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString();
+
+                        // Generate a notification ID from the database
+                        notificationID = mDatabase.push().getKey();
+
+                        Notification notification = new Notification(notificationID, mUserName + " has applied for a position at your band!", "MusicianSentBandRequestPending");
+
+                        mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
+                    }
+
+                    // Check the position isn't vacant
+                    if (!mSnapshot.child("Bands/" + mBandId + "/positionThreeMember").getValue().toString().equals("Vacant"))
+                    {
+                        String bandMemberUserID;
+                        String notificationID;
+
+                        // Get the band members user ID
+                        bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionThreeMember").getValue().toString();
+
+                        // Generate a notification ID from the database
+                        notificationID = mDatabase.push().getKey();
+
+                        Notification notification = new Notification(notificationID, mUserName + " has applied for a position at your band!", "MusicianSentBandRequestPending");
+
+                        mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
+                    }
+
+                    // Check the position isn't vacant
+                    if (!mSnapshot.child("Bands/" + mBandId + "/positionFourMember").getValue().toString().equals("Vacant"))
+                    {
+                        String bandMemberUserID;
+                        String notificationID;
+
+                        // Get the band members user ID
+                        bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionFourMember").getValue().toString();
+
+                        // Generate a notification ID from the database
+                        notificationID = mDatabase.push().getKey();
+
+                        Notification notification = new Notification(notificationID, mUserName + " has applied for a position at your band!", "MusicianSentBandRequestPending");
+
+                        mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
+                    }
+
+                    // Check the position isn't vacant
+                    if (!mSnapshot.child("Bands/" + mBandId + "/positionFiveMember").getValue().toString().equals("Vacant"))
+                    {
+                        String bandMemberUserID;
+                        String notificationID;
+
+                        // Get the band members user ID
+                        bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionFiveMember").getValue().toString();
+
+                        // Generate a notification ID from the database
+                        notificationID = mDatabase.push().getKey();
+
+                        Notification notification = new Notification(notificationID, mUserName + " has applied for a position at your band!", "MusicianSentBandRequestPending");
+
+                        mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
                     }
                 }
             }

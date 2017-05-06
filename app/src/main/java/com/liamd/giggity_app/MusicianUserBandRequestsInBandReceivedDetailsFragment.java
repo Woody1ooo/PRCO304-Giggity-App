@@ -391,7 +391,17 @@ public class MusicianUserBandRequestsInBandReceivedDetailsFragment extends Fragm
                 mDatabase.child("Bands/" + mBandId + "/" + mBandPosition + "Member").setValue(mUserId);
 
                 // This posts a notification to the database to be picked up by the user who submitted the request
-                mDatabase.child("Notifications/MusicianSentBandRequestsAccepted/" + mUserId + "/" + mBandId).child("requestStatus").setValue("Accepted");
+                String notificationID;
+                String bandName;
+
+                // Generate a notification ID from the database
+                notificationID = mDatabase.push().getKey();
+
+                // Get the band's name
+                bandName = mSnapshot.child("Bands/" + mBandId + "/name").getValue().toString();
+
+                Notification notification = new Notification(notificationID, bandName + " has accepted your request to join their band!", "MusicianSentBandRequestAccepted");
+                mDatabase.child("Users/" + mUserId + "/notifications/" + notificationID + "/").setValue(notification);
 
                 // This posts a news feed item
                 String newsFeedPushKey = mDatabase.child("NewsFeedItems/").push().getKey();
@@ -447,7 +457,17 @@ public class MusicianUserBandRequestsInBandReceivedDetailsFragment extends Fragm
                 mDatabase.child("MusicianSentBandRequests/" + mUserId + "/" + mBandId + "/requestStatus").setValue("Rejected");
 
                 // This posts a notification to the database to be picked up by the user who submitted the request
-                mDatabase.child("Notifications/MusicianSentBandRequestsRejected/" + mUserId + "/" + mBandId).child("requestStatus").setValue("Rejected");
+                String notificationID;
+                String bandName;
+
+                // Generate a notification ID from the database
+                notificationID = mDatabase.push().getKey();
+
+                // Get the band's name
+                bandName = mSnapshot.child("Bands/" + mBandId + "/name").getValue().toString();
+
+                Notification notification = new Notification(notificationID, bandName + " has rejected your request to join their band!", "MusicianSentBandRequestRejected");
+                mDatabase.child("Users/" + mUserId + "/notifications/" + notificationID + "/").setValue(notification);
 
                 // A dialog is then shown to alert the user that the changes have been made
                 final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());

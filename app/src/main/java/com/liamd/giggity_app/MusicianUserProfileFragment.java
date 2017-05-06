@@ -348,8 +348,11 @@ public class MusicianUserProfileFragment extends Fragment implements YouTubePlay
                     urlStored = dataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/youtubeUrl").getValue().toString();
                     youtubeUrlEditText.setText(urlStored);
 
-                    youtubeUrlEntered = ParseURL(youtubeUrlEditText.getText());
-                    LoadYoutubePlayer();
+                    if(!urlStored.equals(""))
+                    {
+                        youtubeUrlEntered = ParseURL(youtubeUrlEditText.getText());
+                        LoadYoutubePlayer();
+                    }
                 }
             }
 

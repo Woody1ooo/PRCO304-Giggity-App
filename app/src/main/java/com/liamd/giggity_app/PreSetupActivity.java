@@ -350,65 +350,115 @@ public class PreSetupActivity extends AppCompatActivity
                                         "Please enter a value for both first and last names!"
                                         , Toast.LENGTH_SHORT).show();
                             }
+
+                            else
+                            {
+                                // This block handles musician users
+                                if (mMusicianRadio.isChecked())
+                                {
+                                    // Get the selected items from the spinners as a string to store
+                                    // in the database. These can then be parsed later when required.
+                                    mInstrumentListToString = mInstrumentSelectSpinner.getSelectedItemsAsString();
+                                    mGenreListToString = mGenreSelectSpinner.getSelectedItemsAsString();
+
+                                    // ensure the location, genres, and instruments aren't null
+                                    if(mMusicianUserAddress != null && mMusicianUserLatLng != null &&
+                                            !mInstrumentListToString.equals("") && !mGenreListToString.equals(""))
+                                    {
+                                        User userToInsert = new User();
+                                        userToInsert.setAccountType("Musician");
+                                        userToInsert.setHasCompletedSetup(true);
+                                        userToInsert.setFirstName(mFirstNameEditText.getText().toString());
+                                        userToInsert.setLastName(mLastNameEditText.getText().toString());
+                                        userToInsert.setHomeAddress(mMusicianUserAddress);
+                                        userToInsert.setHomeLocation(mPlaceToStoreLatLng);
+                                        userToInsert.setInstruments(mInstrumentListToString);
+                                        userToInsert.setGenres(mGenreListToString);
+                                        userToInsert.setEmail(mAuth.getCurrentUser().getEmail());
+                                        userToInsert.setUserID(mAuth.getCurrentUser().getUid());
+                                        userToInsert.setMusicianDistance(0);
+                                        userToInsert.setInBand(false);
+                                        mDatabase.child("Users/" + mAuth.getCurrentUser().getUid()).setValue(userToInsert);
+
+                                        // A dialog is then shown to alert the user that the changes have been made
+                                        final AlertDialog.Builder builder = new AlertDialog.Builder(PreSetupActivity.this);
+                                        builder.setTitle("Confirmation");
+                                        builder.setMessage("Preferences Set!");
+                                        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                                        {
+                                            @Override
+                                            public void onClick(DialogInterface dialogInterface, int i)
+                                            {
+                                                // Calls the ReturnToMusicianUserMainActivity
+                                                ReturnToMusicianUserMainActivity();
+                                            }
+                                        });
+                                        builder.setCancelable(false);
+                                        builder.show();
+                                    }
+
+                                    else
+                                    {
+                                        Toast.makeText(PreSetupActivity.this,
+                                                "Please ensure you have selected your instruments, genres," +
+                                                        " and a valid location!",
+                                                Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+
+                                else if (mFanRadio.isChecked())
+                                {
+                                    // Get the selected items from the spinners as a string to store
+                                    // in the database. These can then be parsed later when required.
+                                    mGenreListToString = mGenreSelectSpinner.getSelectedItemsAsString();
+
+                                    // ensure the location, genres, and instruments aren't null
+                                    if(mMusicianUserAddress != null && mMusicianUserLatLng != null && !mGenreListToString.equals(""))
+                                    {
+                                        User userToInsert = new User();
+                                        userToInsert.setAccountType("Fan");
+                                        userToInsert.setHasCompletedSetup(true);
+                                        userToInsert.setFirstName(mFirstNameEditText.getText().toString());
+                                        userToInsert.setLastName(mLastNameEditText.getText().toString());
+                                        userToInsert.setHomeAddress(mMusicianUserAddress);
+                                        userToInsert.setHomeLocation(mPlaceToStoreLatLng);
+                                        userToInsert.setGenres(mGenreListToString);
+                                        userToInsert.setEmail(mAuth.getCurrentUser().getEmail());
+                                        userToInsert.setUserID(mAuth.getCurrentUser().getUid());
+                                        userToInsert.setMusicianDistance(0);
+                                        mDatabase.child("Users/" + mAuth.getCurrentUser().getUid()).setValue(userToInsert);
+
+                                        // A dialog is then shown to alert the user that the changes have been made
+                                        final AlertDialog.Builder builder = new AlertDialog.Builder(PreSetupActivity.this);
+                                        builder.setTitle("Confirmation");
+                                        builder.setMessage("Preferences Set!");
+                                        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                                        {
+                                            @Override
+                                            public void onClick(DialogInterface dialogInterface, int i)
+                                            {
+                                                // Calls the ReturnToFanUserMainActivity
+                                                ReturnToFanUserMainActivity();
+                                            }
+                                        });
+                                        builder.setCancelable(false);
+                                        builder.show();
+                                    }
+
+                                    else
+                                    {
+                                        Toast.makeText(PreSetupActivity.this,
+                                                "Please ensure you have selected your favourite genres and a valid location!",
+                                                Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            }
                         }
 
                         else
                         {
-                            // This block handles musician users
-                            if (mMusicianRadio.isChecked())
-                            {
-                                // Get the selected items from the spinners as a string to store
-                                // in the database. These can then be parsed later when required.
-                                mInstrumentListToString = mInstrumentSelectSpinner.getSelectedItemsAsString();
-                                mGenreListToString = mGenreSelectSpinner.getSelectedItemsAsString();
-
-                                // ensure the location, genres, and instruments aren't null
-                                if(mMusicianUserAddress != null && mMusicianUserLatLng != null &&
-                                        !mInstrumentListToString.equals("") && !mGenreListToString.equals(""))
-                                {
-                                    User userToInsert = new User();
-                                    userToInsert.setAccountType("Musician");
-                                    userToInsert.setHasCompletedSetup(true);
-                                    userToInsert.setFirstName(mFirstNameEditText.getText().toString());
-                                    userToInsert.setLastName(mLastNameEditText.getText().toString());
-                                    userToInsert.setHomeAddress(mMusicianUserAddress);
-                                    userToInsert.setHomeLocation(mPlaceToStoreLatLng);
-                                    userToInsert.setInstruments(mInstrumentListToString);
-                                    userToInsert.setGenres(mGenreListToString);
-                                    userToInsert.setEmail(mAuth.getCurrentUser().getEmail());
-                                    userToInsert.setUserID(mAuth.getCurrentUser().getUid());
-                                    userToInsert.setMusicianDistance(0);
-                                    userToInsert.setInBand(false);
-                                    mDatabase.child("Users/" + mAuth.getCurrentUser().getUid()).setValue(userToInsert);
-
-                                    // A dialog is then shown to alert the user that the changes have been made
-                                    final AlertDialog.Builder builder = new AlertDialog.Builder(PreSetupActivity.this);
-                                    builder.setTitle("Confirmation");
-                                    builder.setMessage("Preferences Set!");
-                                    builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
-                                    {
-                                        @Override
-                                        public void onClick(DialogInterface dialogInterface, int i)
-                                        {
-                                            // Calls the ReturnToMusicianUserMainActivity
-                                            ReturnToMusicianUserMainActivity();
-                                        }
-                                    });
-                                    builder.setCancelable(false);
-                                    builder.show();
-                                }
-
-                                else
-                                {
-                                    Toast.makeText(PreSetupActivity.this,
-                                            "Please ensure you have selected your instruments, genres," +
-                                                    " and a valid location!",
-                                            Toast.LENGTH_SHORT).show();
-                                }
-                            }
-
                             // This block handles venue users
-                            else if (mVenueRadio.isChecked())
+                            if (mVenueRadio.isChecked())
                             {
                                 // Get the selected items from the spinners as a string to store
                                 // in the database. These can then be parsed later when required.
@@ -538,53 +588,6 @@ public class PreSetupActivity extends AppCompatActivity
 
                                         }
                                     });
-                                }
-                            }
-
-                            else if (mFanRadio.isChecked())
-                            {
-                                // Get the selected items from the spinners as a string to store
-                                // in the database. These can then be parsed later when required.
-                                mGenreListToString = mGenreSelectSpinner.getSelectedItemsAsString();
-
-                                // ensure the location, genres, and instruments aren't null
-                                if(mMusicianUserAddress != null && mMusicianUserLatLng != null && !mGenreListToString.equals(""))
-                                {
-                                    User userToInsert = new User();
-                                    userToInsert.setAccountType("Fan");
-                                    userToInsert.setHasCompletedSetup(true);
-                                    userToInsert.setFirstName(mFirstNameEditText.getText().toString());
-                                    userToInsert.setLastName(mLastNameEditText.getText().toString());
-                                    userToInsert.setHomeAddress(mMusicianUserAddress);
-                                    userToInsert.setHomeLocation(mPlaceToStoreLatLng);
-                                    userToInsert.setGenres(mGenreListToString);
-                                    userToInsert.setEmail(mAuth.getCurrentUser().getEmail());
-                                    userToInsert.setUserID(mAuth.getCurrentUser().getUid());
-                                    userToInsert.setMusicianDistance(0);
-                                    mDatabase.child("Users/" + mAuth.getCurrentUser().getUid()).setValue(userToInsert);
-
-                                    // A dialog is then shown to alert the user that the changes have been made
-                                    final AlertDialog.Builder builder = new AlertDialog.Builder(PreSetupActivity.this);
-                                    builder.setTitle("Confirmation");
-                                    builder.setMessage("Preferences Set!");
-                                    builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
-                                    {
-                                        @Override
-                                        public void onClick(DialogInterface dialogInterface, int i)
-                                        {
-                                            // Calls the ReturnToFanUserMainActivity
-                                            ReturnToFanUserMainActivity();
-                                        }
-                                    });
-                                    builder.setCancelable(false);
-                                    builder.show();
-                                }
-
-                                else
-                                {
-                                    Toast.makeText(PreSetupActivity.this,
-                                            "Please ensure you have selected your favourite genres and a valid location!",
-                                            Toast.LENGTH_SHORT).show();
                                 }
                             }
                         }

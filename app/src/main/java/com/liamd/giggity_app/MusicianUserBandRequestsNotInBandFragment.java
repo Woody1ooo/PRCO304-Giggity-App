@@ -198,7 +198,7 @@ public class MusicianUserBandRequestsNotInBandFragment extends Fragment
             mListOfBandRequestsSent.add(bandRequest);
         }
 
-        mPassedThrough = false;
+        //mPassedThrough = false;
 
         // This iterates through the band requests the user has received and adds them to a list (mListOfBandRequestsReceived)
         // This has been commented as this feature hasn't yet been enabled
@@ -207,18 +207,18 @@ public class MusicianUserBandRequestsNotInBandFragment extends Fragment
         {
             mBandIdKey = child.getKey();
 
-            mPassedThrough = false;
+            // = false;
 
             Iterable<DataSnapshot> levelDownReceivedRequestChildren = mBandSentDataSnapshot.child(mBandIdKey).getChildren();
             for (DataSnapshot levelDownChild : levelDownReceivedRequestChildren)
             {
-                if (!mPassedThrough)
-                {
+                //if (!mPassedThrough)
+                //{
                     BandRequest bandRequest;
                     bandRequest = levelDownChild.getValue(BandRequest.class);
                     mListOfBandRequestsReceived.add(bandRequest);
-                }
-                mPassedThrough = true;
+               // }
+                //mPassedThrough = true;
             }
         }
 
