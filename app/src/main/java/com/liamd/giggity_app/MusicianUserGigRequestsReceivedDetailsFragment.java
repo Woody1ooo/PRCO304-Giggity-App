@@ -538,6 +538,15 @@ public class MusicianUserGigRequestsReceivedDetailsFragment extends Fragment imp
                     }
                 }
 
+                // This posts a notification to the database to be picked up by the user who submitted the request
+                String notificationID;
+
+                // Generate a notification ID from the database
+                notificationID = mDatabase.push().getKey();
+
+                Notification notification = new Notification(notificationID, mSnapshot.child("Bands/" + mBandId + "/name").getValue().toString() + " has accepted your request to play " + mGigNameTextView.getText().toString(), "VenueSentGigRequestRejected");
+                mDatabase.child("Users/" + mSnapshot.child("Venues/" + mVenueId + "/userID").getValue().toString() + "/notifications/" + notificationID + "/").setValue(notification);
+
                 // A dialog is then shown to alert the user that the changes have been made
                 final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                 builder.setTitle("Confirmation");
@@ -654,6 +663,15 @@ public class MusicianUserGigRequestsReceivedDetailsFragment extends Fragment imp
             public void onClick(DialogInterface dialogInterface, int i)
             {
                 mDatabase.child("VenueSentGigRequests/" + mVenueId + "/" + mGigId + "/" + mBandId + "/requestStatus").setValue("Rejected");
+
+                // This posts a notification to the database to be picked up by the user who submitted the request
+                String notificationID;
+
+                // Generate a notification ID from the database
+                notificationID = mDatabase.push().getKey();
+
+                Notification notification = new Notification(notificationID, mSnapshot.child("Bands/" + mBandId + "/name").getValue().toString() + " has rejected your request to play " + mGigNameTextView.getText().toString(), "VenueSentGigRequestRejected");
+                mDatabase.child("Users/" + mSnapshot.child("Venues/" + mVenueId + "/userID").getValue().toString() + "/notifications/" + notificationID + "/").setValue(notification);
 
                 // A dialog is then shown to alert the user that the changes have been made
                 final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());

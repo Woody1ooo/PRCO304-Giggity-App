@@ -259,6 +259,20 @@ public class MusicianUserGigDetailsFragment extends Fragment implements OnMapRea
                     mDatabase.child("BandSentGigRequests/" + mBandId + "/" + mGigId).child("gigID").setValue(mGigId);
                     mDatabase.child("BandSentGigRequests/" + mBandId + "/" + mGigId).child("venueID").setValue(mVenueId);
                     mDatabase.child("BandSentGigRequests/" + mBandId + "/" + mGigId).child("requestStatus").setValue("Pending");
+
+                    // This posts a notification to the database to be picked up by the user who submitted the request
+                    String notificationID;
+                    String bandName;
+
+                    // Generate a notification ID from the database
+                    notificationID = mDatabase.push().getKey();
+
+                    // Get the band's name
+                    bandName = mSnapshot.child("Bands/" + mBandId + "/name").getValue().toString();
+
+                    Notification notification = new Notification(notificationID, bandName + " has requested to play at " + mGigNameTextView.getText().toString() + "!", "MusicianSentGigRequestPending");
+                    mDatabase.child("Users/" + mSnapshot.child("Venues/" + mVenueId + "/userID").getValue().toString() + "/notifications/" + notificationID + "/").setValue(notification);
+
                     ConfirmDialog();
                 }
             }

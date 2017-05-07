@@ -338,6 +338,16 @@ public class MusicianUserMusicianDetailsFragment extends Fragment implements OnM
                     mDatabase.child("BandSentMusicianRequests/" + mBandId + "/" + mUserId).child("userInstruments").setValue(mUserInstruments);
                     mDatabase.child("BandSentMusicianRequests/" + mBandId + "/" + mUserId).child("bandName").setValue(mSnapshot.child("Bands/" + mBandId + "/name").getValue().toString());
                     mDatabase.child("BandSentMusicianRequests/" + mBandId + "/" + mUserId).child("positionInstruments").setValue(getArguments().getString("PositionInstruments"));
+
+                    // This posts a notification to the database to be picked up by the user who submitted the request
+                    String notificationID;
+
+                    // Generate a notification ID from the database
+                    notificationID = mDatabase.push().getKey();
+
+                    Notification notification = new Notification(notificationID, mSnapshot.child("Bands/" + mBandId + "/name").getValue().toString() + " has invited you to join their band!", "BandSentBandRequestPending");
+                    mDatabase.child("Users/" + mUserId + "/notifications/" + notificationID + "/").setValue(notification);
+
                     ConfirmDialog();
                 }
             }
