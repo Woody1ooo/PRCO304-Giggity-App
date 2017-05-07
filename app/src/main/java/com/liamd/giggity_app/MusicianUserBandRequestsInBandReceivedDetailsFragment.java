@@ -318,9 +318,17 @@ public class MusicianUserBandRequestsInBandReceivedDetailsFragment extends Fragm
             return matcher.group();
         }
 
+        // If the URL doesn't match this it means the url is probably a share link which is shortened
+        // This block will determine this if it's the case
         else
         {
-            return null;
+            String URL;
+            String[] parsedURL;
+
+            URL = youtubeURL.toString();
+            parsedURL = URL.split("/");
+
+            return parsedURL[3];
         }
     }
 
@@ -385,50 +393,70 @@ public class MusicianUserBandRequestsInBandReceivedDetailsFragment extends Fragm
             @Override
             public void onClick(DialogInterface dialogInterface, int i)
             {
-                mDatabase.child("MusicianSentBandRequests/" + mUserId + "/" + mBandId + "/requestStatus").setValue("Accepted");
-                mDatabase.child("Users/" + mUserId + "/inBand").setValue(true);
-                mDatabase.child("Users/" + mUserId + "/bandID").setValue(mBandId);
-                mDatabase.child("Bands/" + mBandId + "/" + mBandPosition + "Member").setValue(mUserId);
-
-                // This posts a notification to the database to be picked up by the user who submitted the request
-                String notificationID;
-                String bandName;
-
-                // Generate a notification ID from the database
-                notificationID = mDatabase.push().getKey();
-
-                // Get the band's name
-                bandName = mSnapshot.child("Bands/" + mBandId + "/name").getValue().toString();
-
-                Notification notification = new Notification(notificationID, bandName + " has accepted your request to join their band!", "MusicianSentBandRequestAccepted");
-                mDatabase.child("Users/" + mUserId + "/notifications/" + notificationID + "/").setValue(notification);
-
-                // This posts a news feed item
-                String newsFeedPushKey = mDatabase.child("NewsFeedItems/").push().getKey();
-
-                NewsFeedItem item = new NewsFeedItem(newsFeedPushKey,
-                        mSnapshot.child("Users/" + mUserId + "/firstName").getValue().toString() + " " +
-                                mSnapshot.child("Users/" + mUserId + "/lastName").getValue().toString(),
-                                "has just joined " + mSnapshot.child("Bands/" + mBandId + "/name").getValue().toString() + ".", mBandId);
-
-                item.setUserID(mUserId);
-
-                mDatabase.child("NewsFeedItems/" + newsFeedPushKey).setValue(item);
-
-                // A dialog is then shown to alert the user that the changes have been made
-                final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setTitle("Confirmation");
-                builder.setMessage("User Added!");
-                builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                // If a decision hasn't yet been made allow the user to confirm this request
+                if(mSnapshot.child("MusicianSentBandRequests/" + mUserId + "/" + mBandId + "/requestStatus").getValue().toString().equals("Pending"))
                 {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i)
+                    mDatabase.child("MusicianSentBandRequests/" + mUserId + "/" + mBandId + "/requestStatus").setValue("Accepted");
+                    mDatabase.child("Users/" + mUserId + "/inBand").setValue(true);
+                    mDatabase.child("Users/" + mUserId + "/bandID").setValue(mBandId);
+                    mDatabase.child("Bands/" + mBandId + "/" + mBandPosition + "Member").setValue(mUserId);
+
+                    // This posts a notification to the database to be picked up by the user who submitted the request
+                    String notificationID;
+                    String bandName;
+
+                    // Generate a notification ID from the database
+                    notificationID = mDatabase.push().getKey();
+
+                    // Get the band's name
+                    bandName = mSnapshot.child("Bands/" + mBandId + "/name").getValue().toString();
+
+                    Notification notification = new Notification(notificationID, bandName + " has accepted your request to join their band!", "MusicianSentBandRequestAccepted");
+                    mDatabase.child("Users/" + mUserId + "/notifications/" + notificationID + "/").setValue(notification);
+
+                    // This posts a news feed item
+                    String newsFeedPushKey = mDatabase.child("NewsFeedItems/").push().getKey();
+
+                    NewsFeedItem item = new NewsFeedItem(newsFeedPushKey,
+                            mSnapshot.child("Users/" + mUserId + "/firstName").getValue().toString() + " " +
+                                    mSnapshot.child("Users/" + mUserId + "/lastName").getValue().toString(),
+                            "has just joined " + mSnapshot.child("Bands/" + mBandId + "/name").getValue().toString() + ".", mBandId);
+
+                    item.setUserID(mUserId);
+
+                    mDatabase.child("NewsFeedItems/" + newsFeedPushKey).setValue(item);
+
+                    // A dialog is then shown to alert the user that the changes have been made
+                    final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    builder.setTitle("Confirmation");
+                    builder.setMessage("User Added!");
+                    builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
                     {
-                        ReturnToHome();
-                    }
-                });
-                builder.setCancelable(false);
-                builder.show();
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i)
+                        {
+                            ReturnToHome();
+                        }
+                    });
+                    builder.setCancelable(false);
+                    builder.show();
+                }
+
+                else
+                {
+                    // A dialog is then shown to alert the user that the changes have been made
+                    final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    builder.setTitle("Error!");
+                    builder.setMessage("You cannot change a request that has already been handled!");
+                    builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i)
+                        {
+                        }
+                    });
+                    builder.show();
+                }
             }
         });
 
@@ -454,35 +482,55 @@ public class MusicianUserBandRequestsInBandReceivedDetailsFragment extends Fragm
             @Override
             public void onClick(DialogInterface dialogInterface, int i)
             {
-                mDatabase.child("MusicianSentBandRequests/" + mUserId + "/" + mBandId + "/requestStatus").setValue("Rejected");
-
-                // This posts a notification to the database to be picked up by the user who submitted the request
-                String notificationID;
-                String bandName;
-
-                // Generate a notification ID from the database
-                notificationID = mDatabase.push().getKey();
-
-                // Get the band's name
-                bandName = mSnapshot.child("Bands/" + mBandId + "/name").getValue().toString();
-
-                Notification notification = new Notification(notificationID, bandName + " has rejected your request to join their band!", "MusicianSentBandRequestRejected");
-                mDatabase.child("Users/" + mUserId + "/notifications/" + notificationID + "/").setValue(notification);
-
-                // A dialog is then shown to alert the user that the changes have been made
-                final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setTitle("Confirmation");
-                builder.setMessage("User Rejected!");
-                builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                // If a decision hasn't yet been made allow the user to reject this request
+                if(mSnapshot.child("MusicianSentBandRequests/" + mUserId + "/" + mBandId + "/requestStatus").getValue().toString().equals("Pending"))
                 {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i)
+                    mDatabase.child("MusicianSentBandRequests/" + mUserId + "/" + mBandId + "/requestStatus").setValue("Rejected");
+
+                    // This posts a notification to the database to be picked up by the user who submitted the request
+                    String notificationID;
+                    String bandName;
+
+                    // Generate a notification ID from the database
+                    notificationID = mDatabase.push().getKey();
+
+                    // Get the band's name
+                    bandName = mSnapshot.child("Bands/" + mBandId + "/name").getValue().toString();
+
+                    Notification notification = new Notification(notificationID, bandName + " has rejected your request to join their band!", "MusicianSentBandRequestRejected");
+                    mDatabase.child("Users/" + mUserId + "/notifications/" + notificationID + "/").setValue(notification);
+
+                    // A dialog is then shown to alert the user that the changes have been made
+                    final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    builder.setTitle("Confirmation");
+                    builder.setMessage("User Rejected!");
+                    builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
                     {
-                        ReturnToRequests();
-                    }
-                });
-                builder.setCancelable(false);
-                builder.show();
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i)
+                        {
+                            ReturnToRequests();
+                        }
+                    });
+                    builder.setCancelable(false);
+                    builder.show();
+                }
+
+                else
+                {
+                    // A dialog is then shown to alert the user that the changes have been made
+                    final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    builder.setTitle("Error!");
+                    builder.setMessage("You cannot change a request that has already been handled!");
+                    builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i)
+                        {
+                        }
+                    });
+                    builder.show();
+                }
             }
         });
 

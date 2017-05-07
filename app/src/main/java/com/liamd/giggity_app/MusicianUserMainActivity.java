@@ -5,9 +5,12 @@ import android.app.AlertDialog;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.CalendarContract;
@@ -113,82 +116,95 @@ public class MusicianUserMainActivity extends AppCompatActivity implements Navig
             menu.findItem(R.id.nav_requests_band).setVisible(false);
         }
 
-        // At the database reference "Users/%logged in user id%/hasCompletedSetup", a check is made
-        // to see if the value is true or false.
-        // If the user hasn't completed the account setup yet (i.e. hasCompletedSetup = false)
-        // load the setup activity on startup
-        mDatabase.child("Users/").addValueEventListener(new ValueEventListener()
+        // If the network is unavailable display the dialog to prevent unauthorised navigation drawer selections
+        if(!IsNetworkAvailable())
         {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot)
+            DisplayNetworkAlertDialog();
+        }
+
+        else
+        {
+            // At the database reference "Users/%logged in user id%/hasCompletedSetup", a check is made
+            // to see if the value is true or false.
+            // If the user hasn't completed the account setup yet (i.e. hasCompletedSetup = false)
+            // load the setup activity on startup
+            mDatabase.child("Users/").addValueEventListener(new ValueEventListener()
             {
-                if(mAuth.getCurrentUser() != null)
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot)
                 {
-                    // Check if the node exists then determine whether they are in a band already to show/hide items
-                    if(dataSnapshot.child(mAuth.getCurrentUser().getUid() + "/inBand").exists())
+                    if(mAuth.getCurrentUser() != null)
                     {
-                        if(dataSnapshot.child(mAuth.getCurrentUser().getUid() + "/inBand").getValue().equals(true))
+                        // Check if the node exists then determine whether they are in a band already to show/hide items
+                        if(dataSnapshot.child(mAuth.getCurrentUser().getUid() + "/inBand").exists())
                         {
-                            NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-                            Menu menu = navigationView.getMenu();
-                            menu.findItem(R.id.nav_band_manager).setVisible(true);
-                            menu.findItem(R.id.nav_band_members).setVisible(true);
-                            menu.findItem(R.id.nav_requests_band).setVisible(true);
-                            menu.findItem(R.id.nav_band_creator).setVisible(false);
-                            menu.findItem(R.id.nav_band_finder).setVisible(false);
-                            menu.findItem(R.id.nav_requests_musician).setVisible(false);
+                            if(dataSnapshot.child(mAuth.getCurrentUser().getUid() + "/inBand").getValue().equals(true))
+                            {
+                                NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+                                Menu menu = navigationView.getMenu();
+                                menu.findItem(R.id.nav_my_gigs).setVisible(true);
+                                menu.findItem(R.id.nav_requests_gig).setVisible(true);
+                                menu.findItem(R.id.nav_band_manager).setVisible(true);
+                                menu.findItem(R.id.nav_band_members).setVisible(true);
+                                menu.findItem(R.id.nav_requests_band).setVisible(true);
+                                menu.findItem(R.id.nav_band_creator).setVisible(false);
+                                menu.findItem(R.id.nav_band_finder).setVisible(false);
+                                menu.findItem(R.id.nav_requests_musician).setVisible(false);
+                            }
+
+                            else
+                            {
+                                NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+                                Menu menu = navigationView.getMenu();
+                                menu.findItem(R.id.nav_my_gigs).setVisible(false);
+                                menu.findItem(R.id.nav_requests_gig).setVisible(false);
+                                menu.findItem(R.id.nav_band_manager).setVisible(false);
+                                menu.findItem(R.id.nav_band_members).setVisible(false);
+                                menu.findItem(R.id.nav_requests_band).setVisible(false);
+                                menu.findItem(R.id.nav_band_creator).setVisible(true);
+                                menu.findItem(R.id.nav_band_finder).setVisible(true);
+                                menu.findItem(R.id.nav_requests_musician).setVisible(true);
+                            }
                         }
 
+                        // First check if the user needs to complete the pre setup
+                        // If not, then the pre setup activity is launched
+                        // When the user returns to this point, it should skip to the else statement
+                        if(dataSnapshot.child(mAuth.getCurrentUser().getUid() + "/hasCompletedSetup").getValue() == null)
+                        {
+                            Intent startPreSetupActivity = new Intent(MusicianUserMainActivity.this, PreSetupActivity.class);
+                            startActivity(startPreSetupActivity);
+                            finish();
+                        }
+
+                        // This checks the account type that the user has. If the account is a musician account
+                        // then no intents need to be fired as this activity has already been created
                         else
                         {
-                            NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-                            Menu menu = navigationView.getMenu();
-                            menu.findItem(R.id.nav_band_manager).setVisible(false);
-                            menu.findItem(R.id.nav_band_members).setVisible(false);
-                            menu.findItem(R.id.nav_requests_band).setVisible(false);
-                            menu.findItem(R.id.nav_band_creator).setVisible(true);
-                            menu.findItem(R.id.nav_band_finder).setVisible(true);
-                            menu.findItem(R.id.nav_requests_musician).setVisible(true);
-                        }
-                    }
+                            if (dataSnapshot.child(mAuth.getCurrentUser().getUid() + "/accountType").getValue().equals("Venue"))
+                            {
+                                finish();
+                                Intent startVenueUserMainActivity= new Intent(MusicianUserMainActivity.this, VenueUserMainActivity.class);
+                                startActivity(startVenueUserMainActivity);
+                            }
 
-                    // First check if the user needs to complete the pre setup
-                    // If not, then the pre setup activity is launched
-                    // When the user returns to this point, it should skip to the else statement
-                    if(dataSnapshot.child(mAuth.getCurrentUser().getUid() + "/hasCompletedSetup").getValue() == null)
-                    {
-                        Intent startPreSetupActivity = new Intent(MusicianUserMainActivity.this, PreSetupActivity.class);
-                        startActivity(startPreSetupActivity);
-                        finish();
-                    }
-
-                    // This checks the account type that the user has. If the account is a musician account
-                    // then no intents need to be fired as this activity has already been created
-                    else
-                    {
-                        if (dataSnapshot.child(mAuth.getCurrentUser().getUid() + "/accountType").getValue().equals("Venue"))
-                        {
-                            finish();
-                            Intent startVenueUserMainActivity= new Intent(MusicianUserMainActivity.this, VenueUserMainActivity.class);
-                            startActivity(startVenueUserMainActivity);
-                        }
-
-                        else if (dataSnapshot.child(mAuth.getCurrentUser().getUid() + "/accountType").getValue().equals("Fan"))
-                        {
-                            finish();
-                            Intent startFanUserMainActivity= new Intent(MusicianUserMainActivity.this, FanUserMainActivity.class);
-                            startActivity(startFanUserMainActivity);
+                            else if (dataSnapshot.child(mAuth.getCurrentUser().getUid() + "/accountType").getValue().equals("Fan"))
+                            {
+                                finish();
+                                Intent startFanUserMainActivity= new Intent(MusicianUserMainActivity.this, FanUserMainActivity.class);
+                                startActivity(startFanUserMainActivity);
+                            }
                         }
                     }
                 }
-            }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError)
-            {
+                @Override
+                public void onCancelled(DatabaseError databaseError)
+                {
 
-            }
-        });
+                }
+            });
+        }
 
         mDatabase.addValueEventListener(new ValueEventListener()
         {
@@ -741,10 +757,49 @@ public class MusicianUserMainActivity extends AppCompatActivity implements Navig
                 dialogInterface.dismiss();
             }
         });
+
         if(getApplicationContext() != null)
         {
             //builder.show();
             //builder.setCancelable(false);
         }
+    }
+
+    // This method checks whether an internet connection is present
+    private boolean IsNetworkAvailable()
+    {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
+    // If there is no network connection an undismissable dialog is displayed as at least one database read is required to check which navigation options to display
+    // Once the connection is restored the user can continue
+    private void DisplayNetworkAlertDialog()
+    {
+        // A dialog is then shown to alert the user that the changes have been made
+        final AlertDialog.Builder builder = new AlertDialog.Builder(MusicianUserMainActivity.this);
+        builder.setTitle("Error!");
+        builder.setMessage("It seems you've lost your internet connection! Some parts of Giggity require this to function correctly. When your connection is restored you will be able to continue.");
+        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i)
+            {
+                if(!IsNetworkAvailable())
+                {
+                    DisplayNetworkAlertDialog();
+                }
+
+                else
+                {
+                    dialogInterface.dismiss();
+                    finish();
+                    startActivity(getIntent());
+                }
+            }
+        });
+        builder.show();
+        builder.setCancelable(false);
     }
 }

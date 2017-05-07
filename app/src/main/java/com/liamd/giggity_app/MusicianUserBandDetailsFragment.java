@@ -455,9 +455,19 @@ public class MusicianUserBandDetailsFragment extends Fragment implements YouTube
         if (matcher.find())
         {
             return matcher.group();
-        } else
+        }
+
+        // If the URL doesn't match this it means the url is probably a share link which is shortened
+        // This block will determine this if it's the case
+        else
         {
-            return null;
+            String URL;
+            String[] parsedURL;
+
+            URL = youtubeURL.toString();
+            parsedURL = URL.split("/");
+
+            return parsedURL[3];
         }
     }
 

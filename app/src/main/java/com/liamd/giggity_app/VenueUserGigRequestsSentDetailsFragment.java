@@ -405,22 +405,41 @@ public class VenueUserGigRequestsSentDetailsFragment extends Fragment implements
             @Override
             public void onClick(DialogInterface dialogInterface, int i)
             {
-                mDatabase.child("VenueSentGigRequests/" + mVenueId + "/" + mGigId + "/" + mBandId).removeValue();
-
-                // A dialog is then shown to alert the user that the changes have been made
-                final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setTitle("Confirmation");
-                builder.setMessage("Request Deleted!");
-                builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                if(mRequestStatus.equals("Pending"))
                 {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i)
+                    mDatabase.child("VenueSentGigRequests/" + mVenueId + "/" + mGigId + "/" + mBandId).removeValue();
+
+                    // A dialog is then shown to alert the user that the changes have been made
+                    final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    builder.setTitle("Confirmation");
+                    builder.setMessage("Request Deleted!");
+                    builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
                     {
-                        ReturnToRequests();
-                    }
-                });
-                builder.setCancelable(false);
-                builder.show();
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i)
+                        {
+                            ReturnToRequests();
+                        }
+                    });
+                    builder.setCancelable(false);
+                    builder.show();
+                }
+
+                else
+                {
+                    // A dialog is then shown to alert the user that the changes have been made
+                    final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    builder.setTitle("Error!");
+                    builder.setMessage("You cannot change a request that has already been handled!");
+                    builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i)
+                        {
+                        }
+                    });
+                    builder.show();
+                }
             }
         });
 

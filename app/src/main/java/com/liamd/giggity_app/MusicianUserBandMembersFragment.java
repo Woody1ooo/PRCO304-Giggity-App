@@ -742,29 +742,32 @@ public class MusicianUserBandMembersFragment extends Fragment
     // This method takes the relevant user id and image view and populates it with each user's profile image
     private void PopulateImageView(final String userId, final CircleImageView imageView)
     {
-        // This reference looks at the Firebase storage and works out whether the current user has an image
-        mProfileImageReference.child("ProfileImages/" + userId + "/profileImage")
-                .getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>()
+        if(getActivity() != null)
         {
-            // If the user has an image this is loaded into the image view
-            @Override
-            public void onSuccess(Uri uri)
+            // This reference looks at the Firebase storage and works out whether the current user has an image
+            mProfileImageReference.child("ProfileImages/" + userId + "/profileImage")
+                    .getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>()
             {
-                // The caching and memory features have been disabled to allow only the latest image to display
-                Glide.with(getContext()).using(new FirebaseImageLoader()).load
-                        (mProfileImageReference.child("ProfileImages/" + userId + "/profileImage"))
-                        .diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).override(350, 350).into(imageView);
-            }
+                // If the user has an image this is loaded into the image view
+                @Override
+                public void onSuccess(Uri uri)
+                {
+                    // The caching and memory features have been disabled to allow only the latest image to display
+                    Glide.with(getContext()).using(new FirebaseImageLoader()).load
+                            (mProfileImageReference.child("ProfileImages/" + userId + "/profileImage"))
+                            .diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).override(350, 350).into(imageView);
+                }
 
-            // If the user doesn't have an image the default image is loaded
-        }).addOnFailureListener(new OnFailureListener()
-        {
-            @Override
-            public void onFailure(@NonNull Exception e)
+                // If the user doesn't have an image the default image is loaded
+            }).addOnFailureListener(new OnFailureListener()
             {
-                Picasso.with(getContext()).load(R.drawable.com_facebook_profile_picture_blank_portrait).resize(350, 350).into(imageView);
-            }
-        });
+                @Override
+                public void onFailure(@NonNull Exception e)
+                {
+                    Picasso.with(getContext()).load(R.drawable.com_facebook_profile_picture_blank_portrait).resize(350, 350).into(imageView);
+                }
+            });
+        }
     }
 
     private void Hire(String positionSelected, String positionInstruments)

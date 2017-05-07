@@ -195,6 +195,7 @@ public class MusicianUserBandRequestsNotInBandReceivedDetailsFragment extends Fr
 
                 // This places a marker at the users chosen location
                 mGoogleMap.addMarker(new MarkerOptions().position(mBandConvertedLatLng).icon(BitmapDescriptorFactory.fromBitmap(smallMarker)));
+                GetUserLocation();
 
                 mLocationDistanceTextView.setText("Distance From Band: " + mDistance + "km");
 
@@ -302,9 +303,17 @@ public class MusicianUserBandRequestsNotInBandReceivedDetailsFragment extends Fr
             return matcher.group();
         }
 
+        // If the URL doesn't match this it means the url is probably a share link which is shortened
+        // This block will determine this if it's the case
         else
         {
-            return null;
+            String URL;
+            String[] parsedURL;
+
+            URL = youtubeURL.toString();
+            parsedURL = URL.split("/");
+
+            return parsedURL[3];
         }
     }
 
@@ -369,349 +378,368 @@ public class MusicianUserBandRequestsNotInBandReceivedDetailsFragment extends Fr
             @Override
             public void onClick(DialogInterface dialogInterface, int i)
             {
-                mDatabase.child("BandSentMusicianRequests/" + mBandId + "/" + mAuth.getCurrentUser().getUid() + "/requestStatus").setValue("Accepted");
-                mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/inBand").setValue(true);
-                mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/bandID").setValue(mBandId);
-                mDatabase.child("Bands/" + mBandId + "/" + mBandPosition + "Member").setValue(mAuth.getCurrentUser().getUid());
-
-                // Check how many people in the band need notifications sent
-                if (mSnapshot.child("Bands/" + mBandId + "/numberOfPositions").getValue().toString().equals("2"))
+                if(mSnapshot.child("BandSentMusicianRequests/" + mBandId + "/" + mAuth.getCurrentUser().getUid() + "/requestStatus").getValue().toString().equals("Pending"))
                 {
-                    // Check the position isn't vacant
-                    if(!mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString().equals("Vacant"))
+                    mDatabase.child("BandSentMusicianRequests/" + mBandId + "/" + mAuth.getCurrentUser().getUid() + "/requestStatus").setValue("Accepted");
+                    mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/inBand").setValue(true);
+                    mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/bandID").setValue(mBandId);
+                    mDatabase.child("Bands/" + mBandId + "/" + mBandPosition + "Member").setValue(mAuth.getCurrentUser().getUid());
+
+                    // Check how many people in the band need notifications sent
+                    if (mSnapshot.child("Bands/" + mBandId + "/numberOfPositions").getValue().toString().equals("2"))
                     {
-                        String bandMemberUserID;
-                        String notificationID;
-                        String bandMemberName;
+                        // Check the position isn't vacant
+                        if (!mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString().equals("Vacant"))
+                        {
+                            String bandMemberUserID;
+                            String notificationID;
+                            String bandMemberName;
 
-                        // Get the band members user ID
-                        bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString();
+                            // Get the band members user ID
+                            bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString();
 
-                        // Generate a notification ID from the database
-                        notificationID = mDatabase.push().getKey();
+                            // Generate a notification ID from the database
+                            notificationID = mDatabase.push().getKey();
 
-                        // Get the band members name using the ID
-                        bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
-                                mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
+                            // Get the band members name using the ID
+                            bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
+                                    mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
 
-                        Notification notification = new Notification(notificationID, bandMemberName + " has accepted a request at your band!", "BandSentMusicianRequestAccepted");
+                            Notification notification = new Notification(notificationID, bandMemberName + " has accepted a request at your band!", "BandSentMusicianRequestAccepted");
 
-                        mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
+                            mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
+                        }
+
+                        // Check the position isn't vacant
+                        if (!mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString().equals("Vacant"))
+                        {
+                            String bandMemberUserID;
+                            String notificationID;
+                            String bandMemberName;
+
+                            // Get the band members user ID
+                            bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString();
+
+                            // Generate a notification ID from the database
+                            notificationID = mDatabase.push().getKey();
+
+                            // Get the band members name using the ID
+                            bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
+                                    mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
+
+                            Notification notification = new Notification(notificationID, bandMemberName + " has accepted a request at your band!", "BandSentMusicianRequestAccepted");
+
+                            mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
+                        }
                     }
 
-                    // Check the position isn't vacant
-                    if(!mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString().equals("Vacant"))
+                    // Check how many people in the band need notifications sent
+                    else if (mSnapshot.child("Bands/" + mBandId + "/numberOfPositions").getValue().toString().equals("3"))
                     {
-                        String bandMemberUserID;
-                        String notificationID;
-                        String bandMemberName;
+                        // Check the position isn't vacant
+                        if (!mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString().equals("Vacant"))
+                        {
+                            String bandMemberUserID;
+                            String notificationID;
+                            String bandMemberName;
 
-                        // Get the band members user ID
-                        bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString();
+                            // Get the band members user ID
+                            bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString();
 
-                        // Generate a notification ID from the database
-                        notificationID = mDatabase.push().getKey();
+                            // Generate a notification ID from the database
+                            notificationID = mDatabase.push().getKey();
 
-                        // Get the band members name using the ID
-                        bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
-                                mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
+                            // Get the band members name using the ID
+                            bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
+                                    mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
 
-                        Notification notification = new Notification(notificationID, bandMemberName + " has accepted a request at your band!", "BandSentMusicianRequestAccepted");
+                            Notification notification = new Notification(notificationID, bandMemberName + " has accepted a request at your band!", "BandSentMusicianRequestAccepted");
 
-                        mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
+                            mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
+                        }
+
+                        // Check the position isn't vacant
+                        if (!mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString().equals("Vacant"))
+                        {
+                            String bandMemberUserID;
+                            String notificationID;
+                            String bandMemberName;
+
+                            // Get the band members user ID
+                            bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString();
+
+                            // Generate a notification ID from the database
+                            notificationID = mDatabase.push().getKey();
+
+                            // Get the band members name using the ID
+                            bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
+                                    mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
+
+                            Notification notification = new Notification(notificationID, bandMemberName + " has accepted a request at your band!", "BandSentMusicianRequestAccepted");
+
+                            mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
+                        }
+
+                        // Check the position isn't vacant
+                        if (!mSnapshot.child("Bands/" + mBandId + "/positionThreeMember").getValue().toString().equals("Vacant"))
+                        {
+                            String bandMemberUserID;
+                            String notificationID;
+                            String bandMemberName;
+
+                            // Get the band members user ID
+                            bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionThreeMember").getValue().toString();
+
+                            // Generate a notification ID from the database
+                            notificationID = mDatabase.push().getKey();
+
+                            // Get the band members name using the ID
+                            bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
+                                    mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
+
+                            Notification notification = new Notification(notificationID, bandMemberName + " has accepted a request at your band!", "BandSentMusicianRequestAccepted");
+
+                            mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
+                        }
                     }
+
+                    // Check how many people in the band need notifications sent
+                    else if (mSnapshot.child("Bands/" + mBandId + "/numberOfPositions").getValue().toString().equals("4"))
+                    {
+                        // Check the position isn't vacant
+                        if (!mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString().equals("Vacant"))
+                        {
+                            String bandMemberUserID;
+                            String notificationID;
+                            String bandMemberName;
+
+                            // Get the band members user ID
+                            bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString();
+
+                            // Generate a notification ID from the database
+                            notificationID = mDatabase.push().getKey();
+
+                            // Get the band members name using the ID
+                            bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
+                                    mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
+
+                            Notification notification = new Notification(notificationID, bandMemberName + " has accepted a request at your band!", "BandSentMusicianRequestAccepted");
+
+                            mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
+                        }
+
+                        // Check the position isn't vacant
+                        if (!mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString().equals("Vacant"))
+                        {
+                            String bandMemberUserID;
+                            String notificationID;
+                            String bandMemberName;
+
+                            // Get the band members user ID
+                            bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString();
+
+                            // Generate a notification ID from the database
+                            notificationID = mDatabase.push().getKey();
+
+                            // Get the band members name using the ID
+                            bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
+                                    mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
+
+                            Notification notification = new Notification(notificationID, bandMemberName + " has accepted a request at your band!", "BandSentMusicianRequestAccepted");
+
+                            mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
+                        }
+
+                        // Check the position isn't vacant
+                        if (!mSnapshot.child("Bands/" + mBandId + "/positionThreeMember").getValue().toString().equals("Vacant"))
+                        {
+                            String bandMemberUserID;
+                            String notificationID;
+                            String bandMemberName;
+
+                            // Get the band members user ID
+                            bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionThreeMember").getValue().toString();
+
+                            // Generate a notification ID from the database
+                            notificationID = mDatabase.push().getKey();
+
+                            // Get the band members name using the ID
+                            bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
+                                    mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
+
+                            Notification notification = new Notification(notificationID, bandMemberName + " has accepted a request at your band!", "BandSentMusicianRequestAccepted");
+
+                            mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
+                        }
+
+                        // Check the position isn't vacant
+                        if (!mSnapshot.child("Bands/" + mBandId + "/positionFourMember").getValue().toString().equals("Vacant"))
+                        {
+                            String bandMemberUserID;
+                            String notificationID;
+                            String bandMemberName;
+
+                            // Get the band members user ID
+                            bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionFourMember").getValue().toString();
+
+                            // Generate a notification ID from the database
+                            notificationID = mDatabase.push().getKey();
+
+                            // Get the band members name using the ID
+                            bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
+                                    mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
+
+                            Notification notification = new Notification(notificationID, bandMemberName + " has accepted a request at your band!", "BandSentMusicianRequestAccepted");
+
+                            mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
+                        }
+                    }
+
+                    // Check how many people in the band need notifications sent
+                    else if (mSnapshot.child("Bands/" + mBandId + "/numberOfPositions").getValue().toString().equals("5"))
+                    {
+                        // Check the position isn't vacant
+                        if (!mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString().equals("Vacant"))
+                        {
+                            String bandMemberUserID;
+                            String notificationID;
+                            String bandMemberName;
+
+                            // Get the band members user ID
+                            bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString();
+
+                            // Generate a notification ID from the database
+                            notificationID = mDatabase.push().getKey();
+
+                            // Get the band members name using the ID
+                            bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
+                                    mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
+
+                            Notification notification = new Notification(notificationID, bandMemberName + " has accepted a request at your band!", "BandSentMusicianRequestAccepted");
+
+                            mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
+                        }
+
+                        // Check the position isn't vacant
+                        if (!mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString().equals("Vacant"))
+                        {
+                            String bandMemberUserID;
+                            String notificationID;
+                            String bandMemberName;
+
+                            // Get the band members user ID
+                            bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString();
+
+                            // Generate a notification ID from the database
+                            notificationID = mDatabase.push().getKey();
+
+                            // Get the band members name using the ID
+                            bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
+                                    mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
+
+                            Notification notification = new Notification(notificationID, bandMemberName + " has accepted a request at your band!", "BandSentMusicianRequestAccepted");
+
+                            mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
+                        }
+
+                        // Check the position isn't vacant
+                        if (!mSnapshot.child("Bands/" + mBandId + "/positionThreeMember").getValue().toString().equals("Vacant"))
+                        {
+                            String bandMemberUserID;
+                            String notificationID;
+                            String bandMemberName;
+
+                            // Get the band members user ID
+                            bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionThreeMember").getValue().toString();
+
+                            // Generate a notification ID from the database
+                            notificationID = mDatabase.push().getKey();
+
+                            // Get the band members name using the ID
+                            bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
+                                    mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
+
+                            Notification notification = new Notification(notificationID, bandMemberName + " has accepted a request at your band!", "BandSentMusicianRequestAccepted");
+
+                            mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
+                        }
+
+                        // Check the position isn't vacant
+                        if (!mSnapshot.child("Bands/" + mBandId + "/positionFourMember").getValue().toString().equals("Vacant"))
+                        {
+                            String bandMemberUserID;
+                            String notificationID;
+                            String bandMemberName;
+
+                            // Get the band members user ID
+                            bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionFourMember").getValue().toString();
+
+                            // Generate a notification ID from the database
+                            notificationID = mDatabase.push().getKey();
+
+                            // Get the band members name using the ID
+                            bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
+                                    mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
+
+                            Notification notification = new Notification(notificationID, bandMemberName + " has accepted a request at your band!", "BandSentMusicianRequestAccepted");
+
+                            mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
+                        }
+
+                        // Check the position isn't vacant
+                        if (!mSnapshot.child("Bands/" + mBandId + "/positionFiveMember").getValue().toString().equals("Vacant"))
+                        {
+                            String bandMemberUserID;
+                            String notificationID;
+                            String bandMemberName;
+
+                            // Get the band members user ID
+                            bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionFiveMember").getValue().toString();
+
+                            // Generate a notification ID from the database
+                            notificationID = mDatabase.push().getKey();
+
+                            // Get the band members name using the ID
+                            bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
+                                    mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
+
+                            Notification notification = new Notification(notificationID, bandMemberName + " has accepted a request at your band!", "BandSentMusicianRequestAccepted");
+
+                            mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
+                        }
+                    }
+
+                    // A dialog is then shown to alert the user that the changes have been made
+                    final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    builder.setTitle("Confirmation");
+                    builder.setMessage("Band Joined!");
+                    builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i)
+                        {
+                            ReturnToRequests();
+                        }
+                    });
+                    builder.setCancelable(false);
+                    builder.show();
                 }
 
-                // Check how many people in the band need notifications sent
-                else if (mSnapshot.child("Bands/" + mBandId + "/numberOfPositions").getValue().toString().equals("3"))
+                else
                 {
-                    // Check the position isn't vacant
-                    if(!mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString().equals("Vacant"))
+                    // A dialog is then shown to alert the user that the changes have been made
+                    final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    builder.setTitle("Error!");
+                    builder.setMessage("You cannot change a request that has already been handled!");
+                    builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
                     {
-                        String bandMemberUserID;
-                        String notificationID;
-                        String bandMemberName;
-
-                        // Get the band members user ID
-                        bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString();
-
-                        // Generate a notification ID from the database
-                        notificationID = mDatabase.push().getKey();
-
-                        // Get the band members name using the ID
-                        bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
-                                mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
-
-                        Notification notification = new Notification(notificationID, bandMemberName + " has accepted a request at your band!", "BandSentMusicianRequestAccepted");
-
-                        mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
-                    }
-
-                    // Check the position isn't vacant
-                    if(!mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString().equals("Vacant"))
-                    {
-                        String bandMemberUserID;
-                        String notificationID;
-                        String bandMemberName;
-
-                        // Get the band members user ID
-                        bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString();
-
-                        // Generate a notification ID from the database
-                        notificationID = mDatabase.push().getKey();
-
-                        // Get the band members name using the ID
-                        bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
-                                mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
-
-                        Notification notification = new Notification(notificationID, bandMemberName + " has accepted a request at your band!", "BandSentMusicianRequestAccepted");
-
-                        mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
-                    }
-
-                    // Check the position isn't vacant
-                    if(!mSnapshot.child("Bands/" + mBandId + "/positionThreeMember").getValue().toString().equals("Vacant"))
-                    {
-                        String bandMemberUserID;
-                        String notificationID;
-                        String bandMemberName;
-
-                        // Get the band members user ID
-                        bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionThreeMember").getValue().toString();
-
-                        // Generate a notification ID from the database
-                        notificationID = mDatabase.push().getKey();
-
-                        // Get the band members name using the ID
-                        bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
-                                mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
-
-                        Notification notification = new Notification(notificationID, bandMemberName + " has accepted a request at your band!", "BandSentMusicianRequestAccepted");
-
-                        mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
-                    }
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i)
+                        {
+                        }
+                    });
+                    builder.show();
                 }
-
-                // Check how many people in the band need notifications sent
-                else if (mSnapshot.child("Bands/" + mBandId + "/numberOfPositions").getValue().toString().equals("4"))
-                {
-                    // Check the position isn't vacant
-                    if(!mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString().equals("Vacant"))
-                    {
-                        String bandMemberUserID;
-                        String notificationID;
-                        String bandMemberName;
-
-                        // Get the band members user ID
-                        bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString();
-
-                        // Generate a notification ID from the database
-                        notificationID = mDatabase.push().getKey();
-
-                        // Get the band members name using the ID
-                        bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
-                                mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
-
-                        Notification notification = new Notification(notificationID, bandMemberName + " has accepted a request at your band!", "BandSentMusicianRequestAccepted");
-
-                        mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
-                    }
-
-                    // Check the position isn't vacant
-                    if(!mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString().equals("Vacant"))
-                    {
-                        String bandMemberUserID;
-                        String notificationID;
-                        String bandMemberName;
-
-                        // Get the band members user ID
-                        bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString();
-
-                        // Generate a notification ID from the database
-                        notificationID = mDatabase.push().getKey();
-
-                        // Get the band members name using the ID
-                        bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
-                                mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
-
-                        Notification notification = new Notification(notificationID, bandMemberName + " has accepted a request at your band!", "BandSentMusicianRequestAccepted");
-
-                        mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
-                    }
-
-                    // Check the position isn't vacant
-                    if(!mSnapshot.child("Bands/" + mBandId + "/positionThreeMember").getValue().toString().equals("Vacant"))
-                    {
-                        String bandMemberUserID;
-                        String notificationID;
-                        String bandMemberName;
-
-                        // Get the band members user ID
-                        bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionThreeMember").getValue().toString();
-
-                        // Generate a notification ID from the database
-                        notificationID = mDatabase.push().getKey();
-
-                        // Get the band members name using the ID
-                        bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
-                                mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
-
-                        Notification notification = new Notification(notificationID, bandMemberName + " has accepted a request at your band!", "BandSentMusicianRequestAccepted");
-
-                        mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
-                    }
-
-                    // Check the position isn't vacant
-                    if(!mSnapshot.child("Bands/" + mBandId + "/positionFourMember").getValue().toString().equals("Vacant"))
-                    {
-                        String bandMemberUserID;
-                        String notificationID;
-                        String bandMemberName;
-
-                        // Get the band members user ID
-                        bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionFourMember").getValue().toString();
-
-                        // Generate a notification ID from the database
-                        notificationID = mDatabase.push().getKey();
-
-                        // Get the band members name using the ID
-                        bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
-                                mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
-
-                        Notification notification = new Notification(notificationID, bandMemberName + " has accepted a request at your band!", "BandSentMusicianRequestAccepted");
-
-                        mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
-                    }
-                }
-
-                // Check how many people in the band need notifications sent
-                else if (mSnapshot.child("Bands/" + mBandId + "/numberOfPositions").getValue().toString().equals("5"))
-                {
-                    // Check the position isn't vacant
-                    if(!mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString().equals("Vacant"))
-                    {
-                        String bandMemberUserID;
-                        String notificationID;
-                        String bandMemberName;
-
-                        // Get the band members user ID
-                        bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString();
-
-                        // Generate a notification ID from the database
-                        notificationID = mDatabase.push().getKey();
-
-                        // Get the band members name using the ID
-                        bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
-                                mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
-
-                        Notification notification = new Notification(notificationID, bandMemberName + " has accepted a request at your band!", "BandSentMusicianRequestAccepted");
-
-                        mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
-                    }
-
-                    // Check the position isn't vacant
-                    if(!mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString().equals("Vacant"))
-                    {
-                        String bandMemberUserID;
-                        String notificationID;
-                        String bandMemberName;
-
-                        // Get the band members user ID
-                        bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString();
-
-                        // Generate a notification ID from the database
-                        notificationID = mDatabase.push().getKey();
-
-                        // Get the band members name using the ID
-                        bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
-                                mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
-
-                        Notification notification = new Notification(notificationID, bandMemberName + " has accepted a request at your band!", "BandSentMusicianRequestAccepted");
-
-                        mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
-                    }
-
-                    // Check the position isn't vacant
-                    if(!mSnapshot.child("Bands/" + mBandId + "/positionThreeMember").getValue().toString().equals("Vacant"))
-                    {
-                        String bandMemberUserID;
-                        String notificationID;
-                        String bandMemberName;
-
-                        // Get the band members user ID
-                        bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionThreeMember").getValue().toString();
-
-                        // Generate a notification ID from the database
-                        notificationID = mDatabase.push().getKey();
-
-                        // Get the band members name using the ID
-                        bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
-                                mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
-
-                        Notification notification = new Notification(notificationID, bandMemberName + " has accepted a request at your band!", "BandSentMusicianRequestAccepted");
-
-                        mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
-                    }
-
-                    // Check the position isn't vacant
-                    if(!mSnapshot.child("Bands/" + mBandId + "/positionFourMember").getValue().toString().equals("Vacant"))
-                    {
-                        String bandMemberUserID;
-                        String notificationID;
-                        String bandMemberName;
-
-                        // Get the band members user ID
-                        bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionFourMember").getValue().toString();
-
-                        // Generate a notification ID from the database
-                        notificationID = mDatabase.push().getKey();
-
-                        // Get the band members name using the ID
-                        bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
-                                mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
-
-                        Notification notification = new Notification(notificationID, bandMemberName + " has accepted a request at your band!", "BandSentMusicianRequestAccepted");
-
-                        mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
-                    }
-
-                    // Check the position isn't vacant
-                    if(!mSnapshot.child("Bands/" + mBandId + "/positionFiveMember").getValue().toString().equals("Vacant"))
-                    {
-                        String bandMemberUserID;
-                        String notificationID;
-                        String bandMemberName;
-
-                        // Get the band members user ID
-                        bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionFiveMember").getValue().toString();
-
-                        // Generate a notification ID from the database
-                        notificationID = mDatabase.push().getKey();
-
-                        // Get the band members name using the ID
-                        bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
-                                mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
-
-                        Notification notification = new Notification(notificationID, bandMemberName + " has accepted a request at your band!", "BandSentMusicianRequestAccepted");
-
-                        mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
-                    }
-                }
-
-                // A dialog is then shown to alert the user that the changes have been made
-                final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setTitle("Confirmation");
-                builder.setMessage("Band Joined!");
-                builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
-                {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i)
-                    {
-                        ReturnToRequests();
-                    }
-                });
-                builder.setCancelable(false);
-                builder.show();
             }
         });
 
@@ -738,349 +766,368 @@ public class MusicianUserBandRequestsNotInBandReceivedDetailsFragment extends Fr
             @Override
             public void onClick(DialogInterface dialogInterface, int i)
             {
-                mDatabase.child("BandSentMusicianRequests/" + mBandId + "/" + mAuth.getCurrentUser().getUid() + "/requestStatus").setValue("Rejected");
-                mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/inBand").setValue(true);
-                mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/bandID").setValue(mBandId);
-                mDatabase.child("Bands/" + mBandId + "/" + mBandPosition + "Member").setValue(mAuth.getCurrentUser().getUid());
-
-                // Check how many people in the band need notifications sent
-                if (mSnapshot.child("Bands/" + mBandId + "/numberOfPositions").getValue().toString().equals("2"))
+                if(mSnapshot.child("BandSentMusicianRequests/" + mBandId + "/" + mAuth.getCurrentUser().getUid() + "/requestStatus").getValue().toString().equals("Pending"))
                 {
-                    // Check the position isn't vacant
-                    if(!mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString().equals("Vacant"))
+                    mDatabase.child("BandSentMusicianRequests/" + mBandId + "/" + mAuth.getCurrentUser().getUid() + "/requestStatus").setValue("Rejected");
+                    mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/inBand").setValue(true);
+                    mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/bandID").setValue(mBandId);
+                    mDatabase.child("Bands/" + mBandId + "/" + mBandPosition + "Member").setValue(mAuth.getCurrentUser().getUid());
+
+                    // Check how many people in the band need notifications sent
+                    if (mSnapshot.child("Bands/" + mBandId + "/numberOfPositions").getValue().toString().equals("2"))
                     {
-                        String bandMemberUserID;
-                        String notificationID;
-                        String bandMemberName;
+                        // Check the position isn't vacant
+                        if(!mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString().equals("Vacant"))
+                        {
+                            String bandMemberUserID;
+                            String notificationID;
+                            String bandMemberName;
 
-                        // Get the band members user ID
-                        bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString();
+                            // Get the band members user ID
+                            bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString();
 
-                        // Generate a notification ID from the database
-                        notificationID = mDatabase.push().getKey();
+                            // Generate a notification ID from the database
+                            notificationID = mDatabase.push().getKey();
 
-                        // Get the band members name using the ID
-                        bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
-                                mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
+                            // Get the band members name using the ID
+                            bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
+                                    mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
 
-                        Notification notification = new Notification(notificationID, bandMemberName + " has rejected a request at your band!", "BandSentMusicianRequestRejected");
+                            Notification notification = new Notification(notificationID, bandMemberName + " has rejected a request at your band!", "BandSentMusicianRequestRejected");
 
-                        mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
+                            mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
+                        }
+
+                        // Check the position isn't vacant
+                        if(!mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString().equals("Vacant"))
+                        {
+                            String bandMemberUserID;
+                            String notificationID;
+                            String bandMemberName;
+
+                            // Get the band members user ID
+                            bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString();
+
+                            // Generate a notification ID from the database
+                            notificationID = mDatabase.push().getKey();
+
+                            // Get the band members name using the ID
+                            bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
+                                    mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
+
+                            Notification notification = new Notification(notificationID, bandMemberName + " has rejected a request at your band!", "BandSentMusicianRequestRejected");
+
+                            mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
+                        }
                     }
 
-                    // Check the position isn't vacant
-                    if(!mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString().equals("Vacant"))
+                    // Check how many people in the band need notifications sent
+                    else if (mSnapshot.child("Bands/" + mBandId + "/numberOfPositions").getValue().toString().equals("3"))
                     {
-                        String bandMemberUserID;
-                        String notificationID;
-                        String bandMemberName;
+                        // Check the position isn't vacant
+                        if(!mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString().equals("Vacant"))
+                        {
+                            String bandMemberUserID;
+                            String notificationID;
+                            String bandMemberName;
 
-                        // Get the band members user ID
-                        bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString();
+                            // Get the band members user ID
+                            bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString();
 
-                        // Generate a notification ID from the database
-                        notificationID = mDatabase.push().getKey();
+                            // Generate a notification ID from the database
+                            notificationID = mDatabase.push().getKey();
 
-                        // Get the band members name using the ID
-                        bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
-                                mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
+                            // Get the band members name using the ID
+                            bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
+                                    mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
 
-                        Notification notification = new Notification(notificationID, bandMemberName + " has rejected a request at your band!", "BandSentMusicianRequestRejected");
+                            Notification notification = new Notification(notificationID, bandMemberName + " has rejected a request at your band!", "BandSentMusicianRequestRejected");
 
-                        mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
+                            mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
+                        }
+
+                        // Check the position isn't vacant
+                        if(!mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString().equals("Vacant"))
+                        {
+                            String bandMemberUserID;
+                            String notificationID;
+                            String bandMemberName;
+
+                            // Get the band members user ID
+                            bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString();
+
+                            // Generate a notification ID from the database
+                            notificationID = mDatabase.push().getKey();
+
+                            // Get the band members name using the ID
+                            bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
+                                    mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
+
+                            Notification notification = new Notification(notificationID, bandMemberName + " has rejected a request at your band!", "BandSentMusicianRequestRejected");
+
+                            mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
+                        }
+
+                        // Check the position isn't vacant
+                        if(!mSnapshot.child("Bands/" + mBandId + "/positionThreeMember").getValue().toString().equals("Vacant"))
+                        {
+                            String bandMemberUserID;
+                            String notificationID;
+                            String bandMemberName;
+
+                            // Get the band members user ID
+                            bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionThreeMember").getValue().toString();
+
+                            // Generate a notification ID from the database
+                            notificationID = mDatabase.push().getKey();
+
+                            // Get the band members name using the ID
+                            bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
+                                    mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
+
+                            Notification notification = new Notification(notificationID, bandMemberName + " has rejected a request at your band!", "BandSentMusicianRequestRejected");
+
+                            mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
+                        }
                     }
+
+                    // Check how many people in the band need notifications sent
+                    else if (mSnapshot.child("Bands/" + mBandId + "/numberOfPositions").getValue().toString().equals("4"))
+                    {
+                        // Check the position isn't vacant
+                        if(!mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString().equals("Vacant"))
+                        {
+                            String bandMemberUserID;
+                            String notificationID;
+                            String bandMemberName;
+
+                            // Get the band members user ID
+                            bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString();
+
+                            // Generate a notification ID from the database
+                            notificationID = mDatabase.push().getKey();
+
+                            // Get the band members name using the ID
+                            bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
+                                    mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
+
+                            Notification notification = new Notification(notificationID, bandMemberName + " has rejected a request at your band!", "BandSentMusicianRequestRejected");
+
+                            mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
+                        }
+
+                        // Check the position isn't vacant
+                        if(!mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString().equals("Vacant"))
+                        {
+                            String bandMemberUserID;
+                            String notificationID;
+                            String bandMemberName;
+
+                            // Get the band members user ID
+                            bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString();
+
+                            // Generate a notification ID from the database
+                            notificationID = mDatabase.push().getKey();
+
+                            // Get the band members name using the ID
+                            bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
+                                    mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
+
+                            Notification notification = new Notification(notificationID, bandMemberName + " has rejected a request at your band!", "BandSentMusicianRequestRejected");
+
+                            mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
+                        }
+
+                        // Check the position isn't vacant
+                        if(!mSnapshot.child("Bands/" + mBandId + "/positionThreeMember").getValue().toString().equals("Vacant"))
+                        {
+                            String bandMemberUserID;
+                            String notificationID;
+                            String bandMemberName;
+
+                            // Get the band members user ID
+                            bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionThreeMember").getValue().toString();
+
+                            // Generate a notification ID from the database
+                            notificationID = mDatabase.push().getKey();
+
+                            // Get the band members name using the ID
+                            bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
+                                    mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
+
+                            Notification notification = new Notification(notificationID, bandMemberName + " has rejected a request at your band!", "BandSentMusicianRequestRejected");
+
+                            mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
+                        }
+
+                        // Check the position isn't vacant
+                        if(!mSnapshot.child("Bands/" + mBandId + "/positionFourMember").getValue().toString().equals("Vacant"))
+                        {
+                            String bandMemberUserID;
+                            String notificationID;
+                            String bandMemberName;
+
+                            // Get the band members user ID
+                            bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionFourMember").getValue().toString();
+
+                            // Generate a notification ID from the database
+                            notificationID = mDatabase.push().getKey();
+
+                            // Get the band members name using the ID
+                            bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
+                                    mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
+
+                            Notification notification = new Notification(notificationID, bandMemberName + " has rejected a request at your band!", "BandSentMusicianRequestRejected");
+
+                            mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
+                        }
+                    }
+
+                    // Check how many people in the band need notifications sent
+                    else if (mSnapshot.child("Bands/" + mBandId + "/numberOfPositions").getValue().toString().equals("5"))
+                    {
+                        // Check the position isn't vacant
+                        if (!mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString().equals("Vacant"))
+                        {
+                            String bandMemberUserID;
+                            String notificationID;
+                            String bandMemberName;
+
+                            // Get the band members user ID
+                            bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString();
+
+                            // Generate a notification ID from the database
+                            notificationID = mDatabase.push().getKey();
+
+                            // Get the band members name using the ID
+                            bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
+                                    mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
+
+                            Notification notification = new Notification(notificationID, bandMemberName + " has rejected a request at your band!", "BandSentMusicianRequestRejected");
+
+                            mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
+                        }
+
+                        // Check the position isn't vacant
+                        if (!mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString().equals("Vacant"))
+                        {
+                            String bandMemberUserID;
+                            String notificationID;
+                            String bandMemberName;
+
+                            // Get the band members user ID
+                            bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString();
+
+                            // Generate a notification ID from the database
+                            notificationID = mDatabase.push().getKey();
+
+                            // Get the band members name using the ID
+                            bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
+                                    mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
+
+                            Notification notification = new Notification(notificationID, bandMemberName + " has rejected a request at your band!", "BandSentMusicianRequestRejected");
+
+                            mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
+                        }
+
+                        // Check the position isn't vacant
+                        if (!mSnapshot.child("Bands/" + mBandId + "/positionThreeMember").getValue().toString().equals("Vacant"))
+                        {
+                            String bandMemberUserID;
+                            String notificationID;
+                            String bandMemberName;
+
+                            // Get the band members user ID
+                            bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionThreeMember").getValue().toString();
+
+                            // Generate a notification ID from the database
+                            notificationID = mDatabase.push().getKey();
+
+                            // Get the band members name using the ID
+                            bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
+                                    mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
+
+                            Notification notification = new Notification(notificationID, bandMemberName + " has rejected a request at your band!", "BandSentMusicianRequestRejected");
+
+                            mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
+                        }
+
+                        // Check the position isn't vacant
+                        if (!mSnapshot.child("Bands/" + mBandId + "/positionFourMember").getValue().toString().equals("Vacant"))
+                        {
+                            String bandMemberUserID;
+                            String notificationID;
+                            String bandMemberName;
+
+                            // Get the band members user ID
+                            bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionFourMember").getValue().toString();
+
+                            // Generate a notification ID from the database
+                            notificationID = mDatabase.push().getKey();
+
+                            // Get the band members name using the ID
+                            bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
+                                    mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
+
+                            Notification notification = new Notification(notificationID, bandMemberName + " has rejected a request at your band!", "BandSentMusicianRequestRejected");
+
+                            mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
+                        }
+
+                        // Check the position isn't vacant
+                        if (!mSnapshot.child("Bands/" + mBandId + "/positionFiveMember").getValue().toString().equals("Vacant"))
+                        {
+                            String bandMemberUserID;
+                            String notificationID;
+                            String bandMemberName;
+
+                            // Get the band members user ID
+                            bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionFiveMember").getValue().toString();
+
+                            // Generate a notification ID from the database
+                            notificationID = mDatabase.push().getKey();
+
+                            // Get the band members name using the ID
+                            bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
+                                    mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
+
+                            Notification notification = new Notification(notificationID, bandMemberName + " has rejected a request at your band!", "BandSentMusicianRequestRejected");
+
+                            mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
+                        }
+                    }
+
+                    // A dialog is then shown to alert the user that the changes have been made
+                    final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    builder.setTitle("Confirmation");
+                    builder.setMessage("Offer Rejected!");
+                    builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i)
+                        {
+                            ReturnToRequests();
+                        }
+                    });
+                    builder.setCancelable(false);
+                    builder.show();
                 }
 
-                // Check how many people in the band need notifications sent
-                else if (mSnapshot.child("Bands/" + mBandId + "/numberOfPositions").getValue().toString().equals("3"))
+                else
                 {
-                    // Check the position isn't vacant
-                    if(!mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString().equals("Vacant"))
+                    // A dialog is then shown to alert the user that the changes have been made
+                    final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    builder.setTitle("Error!");
+                    builder.setMessage("You cannot change a request that has already been handled!");
+                    builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
                     {
-                        String bandMemberUserID;
-                        String notificationID;
-                        String bandMemberName;
-
-                        // Get the band members user ID
-                        bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString();
-
-                        // Generate a notification ID from the database
-                        notificationID = mDatabase.push().getKey();
-
-                        // Get the band members name using the ID
-                        bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
-                                mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
-
-                        Notification notification = new Notification(notificationID, bandMemberName + " has rejected a request at your band!", "BandSentMusicianRequestRejected");
-
-                        mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
-                    }
-
-                    // Check the position isn't vacant
-                    if(!mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString().equals("Vacant"))
-                    {
-                        String bandMemberUserID;
-                        String notificationID;
-                        String bandMemberName;
-
-                        // Get the band members user ID
-                        bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString();
-
-                        // Generate a notification ID from the database
-                        notificationID = mDatabase.push().getKey();
-
-                        // Get the band members name using the ID
-                        bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
-                                mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
-
-                        Notification notification = new Notification(notificationID, bandMemberName + " has rejected a request at your band!", "BandSentMusicianRequestRejected");
-
-                        mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
-                    }
-
-                    // Check the position isn't vacant
-                    if(!mSnapshot.child("Bands/" + mBandId + "/positionThreeMember").getValue().toString().equals("Vacant"))
-                    {
-                        String bandMemberUserID;
-                        String notificationID;
-                        String bandMemberName;
-
-                        // Get the band members user ID
-                        bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionThreeMember").getValue().toString();
-
-                        // Generate a notification ID from the database
-                        notificationID = mDatabase.push().getKey();
-
-                        // Get the band members name using the ID
-                        bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
-                                mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
-
-                        Notification notification = new Notification(notificationID, bandMemberName + " has rejected a request at your band!", "BandSentMusicianRequestRejected");
-
-                        mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
-                    }
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i)
+                        {
+                        }
+                    });
+                    builder.show();
                 }
-
-                // Check how many people in the band need notifications sent
-                else if (mSnapshot.child("Bands/" + mBandId + "/numberOfPositions").getValue().toString().equals("4"))
-                {
-                    // Check the position isn't vacant
-                    if(!mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString().equals("Vacant"))
-                    {
-                        String bandMemberUserID;
-                        String notificationID;
-                        String bandMemberName;
-
-                        // Get the band members user ID
-                        bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString();
-
-                        // Generate a notification ID from the database
-                        notificationID = mDatabase.push().getKey();
-
-                        // Get the band members name using the ID
-                        bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
-                                mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
-
-                        Notification notification = new Notification(notificationID, bandMemberName + " has rejected a request at your band!", "BandSentMusicianRequestRejected");
-
-                        mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
-                    }
-
-                    // Check the position isn't vacant
-                    if(!mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString().equals("Vacant"))
-                    {
-                        String bandMemberUserID;
-                        String notificationID;
-                        String bandMemberName;
-
-                        // Get the band members user ID
-                        bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString();
-
-                        // Generate a notification ID from the database
-                        notificationID = mDatabase.push().getKey();
-
-                        // Get the band members name using the ID
-                        bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
-                                mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
-
-                        Notification notification = new Notification(notificationID, bandMemberName + " has rejected a request at your band!", "BandSentMusicianRequestRejected");
-
-                        mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
-                    }
-
-                    // Check the position isn't vacant
-                    if(!mSnapshot.child("Bands/" + mBandId + "/positionThreeMember").getValue().toString().equals("Vacant"))
-                    {
-                        String bandMemberUserID;
-                        String notificationID;
-                        String bandMemberName;
-
-                        // Get the band members user ID
-                        bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionThreeMember").getValue().toString();
-
-                        // Generate a notification ID from the database
-                        notificationID = mDatabase.push().getKey();
-
-                        // Get the band members name using the ID
-                        bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
-                                mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
-
-                        Notification notification = new Notification(notificationID, bandMemberName + " has rejected a request at your band!", "BandSentMusicianRequestRejected");
-
-                        mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
-                    }
-
-                    // Check the position isn't vacant
-                    if(!mSnapshot.child("Bands/" + mBandId + "/positionFourMember").getValue().toString().equals("Vacant"))
-                    {
-                        String bandMemberUserID;
-                        String notificationID;
-                        String bandMemberName;
-
-                        // Get the band members user ID
-                        bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionFourMember").getValue().toString();
-
-                        // Generate a notification ID from the database
-                        notificationID = mDatabase.push().getKey();
-
-                        // Get the band members name using the ID
-                        bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
-                                mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
-
-                        Notification notification = new Notification(notificationID, bandMemberName + " has rejected a request at your band!", "BandSentMusicianRequestRejected");
-
-                        mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
-                    }
-                }
-
-                // Check how many people in the band need notifications sent
-                else if (mSnapshot.child("Bands/" + mBandId + "/numberOfPositions").getValue().toString().equals("5"))
-                {
-                    // Check the position isn't vacant
-                    if (!mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString().equals("Vacant"))
-                    {
-                        String bandMemberUserID;
-                        String notificationID;
-                        String bandMemberName;
-
-                        // Get the band members user ID
-                        bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString();
-
-                        // Generate a notification ID from the database
-                        notificationID = mDatabase.push().getKey();
-
-                        // Get the band members name using the ID
-                        bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
-                                mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
-
-                        Notification notification = new Notification(notificationID, bandMemberName + " has rejected a request at your band!", "BandSentMusicianRequestRejected");
-
-                        mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
-                    }
-
-                    // Check the position isn't vacant
-                    if (!mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString().equals("Vacant"))
-                    {
-                        String bandMemberUserID;
-                        String notificationID;
-                        String bandMemberName;
-
-                        // Get the band members user ID
-                        bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString();
-
-                        // Generate a notification ID from the database
-                        notificationID = mDatabase.push().getKey();
-
-                        // Get the band members name using the ID
-                        bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
-                                mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
-
-                        Notification notification = new Notification(notificationID, bandMemberName + " has rejected a request at your band!", "BandSentMusicianRequestRejected");
-
-                        mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
-                    }
-
-                    // Check the position isn't vacant
-                    if (!mSnapshot.child("Bands/" + mBandId + "/positionThreeMember").getValue().toString().equals("Vacant"))
-                    {
-                        String bandMemberUserID;
-                        String notificationID;
-                        String bandMemberName;
-
-                        // Get the band members user ID
-                        bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionThreeMember").getValue().toString();
-
-                        // Generate a notification ID from the database
-                        notificationID = mDatabase.push().getKey();
-
-                        // Get the band members name using the ID
-                        bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
-                                mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
-
-                        Notification notification = new Notification(notificationID, bandMemberName + " has rejected a request at your band!", "BandSentMusicianRequestRejected");
-
-                        mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
-                    }
-
-                    // Check the position isn't vacant
-                    if (!mSnapshot.child("Bands/" + mBandId + "/positionFourMember").getValue().toString().equals("Vacant"))
-                    {
-                        String bandMemberUserID;
-                        String notificationID;
-                        String bandMemberName;
-
-                        // Get the band members user ID
-                        bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionFourMember").getValue().toString();
-
-                        // Generate a notification ID from the database
-                        notificationID = mDatabase.push().getKey();
-
-                        // Get the band members name using the ID
-                        bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
-                                mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
-
-                        Notification notification = new Notification(notificationID, bandMemberName + " has rejected a request at your band!", "BandSentMusicianRequestRejected");
-
-                        mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
-                    }
-
-                    // Check the position isn't vacant
-                    if (!mSnapshot.child("Bands/" + mBandId + "/positionFiveMember").getValue().toString().equals("Vacant"))
-                    {
-                        String bandMemberUserID;
-                        String notificationID;
-                        String bandMemberName;
-
-                        // Get the band members user ID
-                        bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionFiveMember").getValue().toString();
-
-                        // Generate a notification ID from the database
-                        notificationID = mDatabase.push().getKey();
-
-                        // Get the band members name using the ID
-                        bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
-                                mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
-
-                        Notification notification = new Notification(notificationID, bandMemberName + " has rejected a request at your band!", "BandSentMusicianRequestRejected");
-
-                        mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
-                    }
-                }
-
-                // A dialog is then shown to alert the user that the changes have been made
-                final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setTitle("Confirmation");
-                builder.setMessage("Offer Rejected!");
-                builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
-                {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i)
-                    {
-                        ReturnToRequests();
-                    }
-                });
-                builder.setCancelable(false);
-                builder.show();
             }
         });
 

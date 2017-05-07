@@ -809,7 +809,7 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
         multipleGigSelectorDialog.setContentView(R.layout.multiple_gig_dialog_list);
 
         // Initialise the list view
-        ListView mMultipleGigsListView = (ListView) multipleGigSelectorDialog.findViewById(R.id.multipleGigListDialogList);
+        final ListView mMultipleGigsListView = (ListView) multipleGigSelectorDialog.findViewById(R.id.multipleGigListDialogList);
 
         // Set the adapter and pass in the list of multiple gigs at the venue chosen
         MusicianUserMultipleGigsAdapter adapter = new MusicianUserMultipleGigsAdapter(getActivity(), R.layout.multiple_gig_dialog_layout, mListOfMultipleGigs);
@@ -829,7 +829,7 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
                     multipleGigSelectorDialog.dismiss();
 
                     // This returns the selected gig from the list view
-                    Gig selectedGig = (Gig) mGigsListView.getItemAtPosition(position);
+                    Gig selectedGig = (Gig) mMultipleGigsListView.getItemAtPosition(position);
 
                     MusicianUserGigDetailsFragment fragment = new MusicianUserGigDetailsFragment();
                     Bundle arguments = new Bundle();

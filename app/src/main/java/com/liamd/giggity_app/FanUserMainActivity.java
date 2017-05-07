@@ -1,9 +1,14 @@
 package com.liamd.giggity_app;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -84,6 +89,12 @@ public class FanUserMainActivity extends AppCompatActivity
             fragmentTransaction.replace(R.id.frame, fragment
                     , "FanUserHomeFragment");
             fragmentTransaction.commit();
+        }
+
+        // If the network is unavailable display the dialog to prevent unauthorised navigation drawer selections
+        if(!IsNetworkAvailable())
+        {
+            DisplayNetworkAlertDialog();
         }
     }
 
@@ -267,5 +278,43 @@ public class FanUserMainActivity extends AppCompatActivity
         fragmentTransaction.replace(R.id.frame, fragment
                 , "FanUserHomeFragment");
         fragmentTransaction.commit();
+    }
+
+    // This method checks whether an internet connection is present
+    private boolean IsNetworkAvailable()
+    {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
+    // If there is no network connection an undismissable dialog is displayed as at least one database read is required to check which navigation options to display
+    // Once the connection is restored the user can continue
+    private void DisplayNetworkAlertDialog()
+    {
+        // A dialog is then shown to alert the user that the changes have been made
+        final AlertDialog.Builder builder = new AlertDialog.Builder(FanUserMainActivity.this);
+        builder.setTitle("Error!");
+        builder.setMessage("It seems you've lost your internet connection! Some parts of Giggity require this to function correctly. When your connection is restored you will be able to continue.");
+        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i)
+            {
+                if(!IsNetworkAvailable())
+                {
+                    DisplayNetworkAlertDialog();
+                }
+
+                else
+                {
+                    dialogInterface.dismiss();
+                    finish();
+                    startActivity(getIntent());
+                }
+            }
+        });
+        builder.show();
+        builder.setCancelable(false);
     }
 }

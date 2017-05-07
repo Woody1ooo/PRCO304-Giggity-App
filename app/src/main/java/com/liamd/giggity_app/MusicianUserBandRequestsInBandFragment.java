@@ -212,16 +212,19 @@ public class MusicianUserBandRequestsInBandFragment extends Fragment
 
         for (int i = 0; i < mListOfUserRequestsReceived.size(); i++)
         {
-            if(mListOfUserRequestsReceived.get(i).getBandID().equals(mBandId))
+            if (mListOfUserRequestsReceived.get(i).getBandID().equals(mBandId))
             {
                 mListOfFilteredUserRequestsReceived.add(mListOfUserRequestsReceived.get(i));
             }
         }
 
-        mSentUserRequestsAdapter = new MusicianUserRequestsAdapter(getActivity(), R.layout.musician_user_user_requests_list, mListOfUserRequestsSent);
-        mReceivedUserRequestsAdapter = new MusicianUserRequestsAdapter(getActivity(), R.layout.musician_user_user_requests_list, mListOfUserRequestsReceived);
+        if (getActivity() != null)
+        {
+            mSentUserRequestsAdapter = new MusicianUserRequestsAdapter(getActivity(), R.layout.musician_user_user_requests_list, mListOfUserRequestsSent);
+            mReceivedUserRequestsAdapter = new MusicianUserRequestsAdapter(getActivity(), R.layout.musician_user_user_requests_list, mListOfUserRequestsReceived);
 
-        mSentUserRequestsListView.setAdapter(mSentUserRequestsAdapter);
-        mReceivedUserRequestsListView.setAdapter(mReceivedUserRequestsAdapter);
+            mSentUserRequestsListView.setAdapter(mSentUserRequestsAdapter);
+            mReceivedUserRequestsListView.setAdapter(mReceivedUserRequestsAdapter);
+        }
     }
 }

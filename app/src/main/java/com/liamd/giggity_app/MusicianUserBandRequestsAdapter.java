@@ -89,7 +89,7 @@ public class MusicianUserBandRequestsAdapter extends ArrayAdapter<BandRequest>
             mBandRequestStatusTextView.setTextColor(Color.parseColor("#ff6100"));
         }
 
-        else if(bandRequest.getRequestStatus().equals("Denied"))
+        else if(bandRequest.getRequestStatus().equals("Rejected"))
         {
             mBandRequestStatusTextView.setTextColor(Color.RED);
         }

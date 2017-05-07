@@ -33,6 +33,8 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -40,7 +42,7 @@ import com.squareup.picasso.Picasso;
 public class MusicianUserBandRequestsNotInBandSentDetailsFragment extends Fragment
 {
     // Declare visual components
-    private ImageView mBandImageView;
+    private CircleImageView mBandImageView;
     private TextView mBandNameTextView;
     private TextView mBandGenresTextView;
     private TextView mPositionAppliedForTextView;
@@ -73,7 +75,7 @@ public class MusicianUserBandRequestsNotInBandSentDetailsFragment extends Fragme
         View fragmentView = inflater.inflate(R.layout.musician_user_fragment_band_requests_not_in_band_sent_details, container, false);
 
         // Initialise visual components
-        mBandImageView = (ImageView) fragmentView.findViewById(R.id.bandImageView);
+        mBandImageView = (CircleImageView) fragmentView.findViewById(R.id.bandImageView);
         mBandNameTextView = (TextView) fragmentView.findViewById(R.id.bandNameTextView);
         mBandGenresTextView = (TextView) fragmentView.findViewById(R.id.bandGenresTextView);
         mPositionAppliedForTextView = (TextView) fragmentView.findViewById(R.id.positionAppliedForTextView);
@@ -154,7 +156,7 @@ public class MusicianUserBandRequestsNotInBandSentDetailsFragment extends Fragme
                 // The caching and memory features have been disabled to allow only the latest image to display
                 Glide.with(getContext()).using(new FirebaseImageLoader()).load
                         (mBandProfileImageReference.child("BandProfileImages/" + mBandId + "/profileImage"))
-                        .diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).into(mBandImageView);
+                        .diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).override(500, 500).into(mBandImageView);
             }
         });
     }
@@ -171,22 +173,41 @@ public class MusicianUserBandRequestsNotInBandSentDetailsFragment extends Fragme
             @Override
             public void onClick(DialogInterface dialogInterface, int i)
             {
-                mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).removeValue();
-
-                // A dialog is then shown to alert the user that the changes have been made
-                final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setTitle("Confirmation");
-                builder.setMessage("Request Deleted!");
-                builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                if(mRequestStatus.equals("Pending"))
                 {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i)
+                    mDatabase.child("MusicianSentBandRequests/" + mAuth.getCurrentUser().getUid() + "/" + mBandId).removeValue();
+
+                    // A dialog is then shown to alert the user that the changes have been made
+                    final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    builder.setTitle("Confirmation");
+                    builder.setMessage("Request Deleted!");
+                    builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
                     {
-                        ReturnToRequests();
-                    }
-                });
-                builder.setCancelable(false);
-                builder.show();
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i)
+                        {
+                            ReturnToRequests();
+                        }
+                    });
+                    builder.setCancelable(false);
+                    builder.show();
+                }
+
+                else
+                {
+                    // A dialog is then shown to alert the user that the changes have been made
+                    final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    builder.setTitle("Error!");
+                    builder.setMessage("You cannot change a request that has already been handled!");
+                    builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i)
+                        {
+                        }
+                    });
+                    builder.show();
+                }
             }
         });
 
