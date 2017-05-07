@@ -49,30 +49,33 @@ public class NotificationService extends Service
         // Creates a reference to Firebase's authentication
         mAuth = FirebaseAuth.getInstance();
 
-        mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/notifications").addValueEventListener(new ValueEventListener()
+        if(mAuth.getCurrentUser() != null)
         {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot)
+            mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/notifications").addValueEventListener(new ValueEventListener()
             {
-                if (mAuth.getCurrentUser() != null)
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot)
                 {
-                    Iterable<DataSnapshot> notifications = dataSnapshot.getChildren();
-                    for (DataSnapshot child : notifications)
+                    if (mAuth.getCurrentUser() != null)
                     {
-                        com.liamd.giggity_app.Notification notification;
-                        notification = child.getValue(com.liamd.giggity_app.Notification.class);
-                        SendNotification(notification.getNotificationMessage(), "Click here to view details", 1);
-                        mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/notifications/" + notification.getNotificationId()).removeValue();
+                        Iterable<DataSnapshot> notifications = dataSnapshot.getChildren();
+                        for (DataSnapshot child : notifications)
+                        {
+                            com.liamd.giggity_app.Notification notification;
+                            notification = child.getValue(com.liamd.giggity_app.Notification.class);
+                            SendNotification(notification.getNotificationMessage(), "Click here to view details", 1);
+                            mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/notifications/" + notification.getNotificationID()).removeValue();
+                        }
                     }
                 }
-            }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError)
-            {
+                @Override
+                public void onCancelled(DatabaseError databaseError)
+                {
 
-            }
-        });
+                }
+            });
+        }
     }
 
     @Override

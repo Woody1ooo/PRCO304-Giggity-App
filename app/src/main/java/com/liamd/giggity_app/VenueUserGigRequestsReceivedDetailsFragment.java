@@ -432,6 +432,15 @@ public class VenueUserGigRequestsReceivedDetailsFragment extends Fragment implem
                         info.setMemberConfirmedRequest("False");
 
                         mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId).setValue(info);
+
+                        String notificationID;
+
+                        // Generate a notification ID from the database
+                        notificationID = mDatabase.push().getKey();
+
+                        Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has accepted your request to play their gig!", "BandSentGigRequestAccepted");
+
+                        mDatabase.child("Users/" + bandMemberUserId + "/notifications/" + notificationID + "/").setValue(notification);
                     }
 
                     if(!mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString().equals("Vacant"))
@@ -444,6 +453,15 @@ public class VenueUserGigRequestsReceivedDetailsFragment extends Fragment implem
                         info.setMemberConfirmedRequest("False");
 
                         mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId).setValue(info);
+
+                        String notificationID;
+
+                        // Generate a notification ID from the database
+                        notificationID = mDatabase.push().getKey();
+
+                        Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has accepted your request to play their gig!", "BandSentGigRequestAccepted");
+
+                        mDatabase.child("Users/" + bandMemberUserId + "/notifications/" + notificationID + "/").setValue(notification);
                     }
                 }
 
@@ -459,6 +477,15 @@ public class VenueUserGigRequestsReceivedDetailsFragment extends Fragment implem
                         info.setMemberConfirmedRequest("False");
 
                         mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId).setValue(info);
+
+                        String notificationID;
+
+                        // Generate a notification ID from the database
+                        notificationID = mDatabase.push().getKey();
+
+                        Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has accepted your request to play their gig!", "BandSentGigRequestAccepted");
+
+                        mDatabase.child("Users/" + bandMemberUserId + "/notifications/" + notificationID + "/").setValue(notification);
                     }
 
                     if(!mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString().equals("Vacant"))
@@ -471,6 +498,15 @@ public class VenueUserGigRequestsReceivedDetailsFragment extends Fragment implem
                         info.setMemberConfirmedRequest("False");
 
                         mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId).setValue(info);
+
+                        String notificationID;
+
+                        // Generate a notification ID from the database
+                        notificationID = mDatabase.push().getKey();
+
+                        Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has accepted your request to play their gig!", "BandSentGigRequestAccepted");
+
+                        mDatabase.child("Users/" + bandMemberUserId + "/notifications/" + notificationID + "/").setValue(notification);
                     }
 
                     if(!mSnapshot.child("Bands/" + mBandId + "/positionThreeMember").getValue().toString().equals("Vacant"))
@@ -483,6 +519,15 @@ public class VenueUserGigRequestsReceivedDetailsFragment extends Fragment implem
                         info.setMemberConfirmedRequest("False");
 
                         mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId).setValue(info);
+
+                        String notificationID;
+
+                        // Generate a notification ID from the database
+                        notificationID = mDatabase.push().getKey();
+
+                        Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has accepted your request to play their gig!", "BandSentGigRequestAccepted");
+
+                        mDatabase.child("Users/" + bandMemberUserId + "/notifications/" + notificationID + "/").setValue(notification);
                     }
                 }
 
@@ -498,6 +543,15 @@ public class VenueUserGigRequestsReceivedDetailsFragment extends Fragment implem
                         info.setMemberConfirmedRequest("False");
 
                         mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId).setValue(info);
+
+                        String notificationID;
+
+                        // Generate a notification ID from the database
+                        notificationID = mDatabase.push().getKey();
+
+                        Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has accepted your request to play their gig!", "BandSentGigRequestAccepted");
+
+                        mDatabase.child("Users/" + bandMemberUserId + "/notifications/" + notificationID + "/").setValue(notification);
                     }
 
                     if(!mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString().equals("Vacant"))
@@ -510,6 +564,15 @@ public class VenueUserGigRequestsReceivedDetailsFragment extends Fragment implem
                         info.setMemberConfirmedRequest("False");
 
                         mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId).setValue(info);
+
+                        String notificationID;
+
+                        // Generate a notification ID from the database
+                        notificationID = mDatabase.push().getKey();
+
+                        Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has accepted your request to play their gig!", "BandSentGigRequestAccepted");
+
+                        mDatabase.child("Users/" + bandMemberUserId + "/notifications/" + notificationID + "/").setValue(notification);
                     }
 
                     if(!mSnapshot.child("Bands/" + mBandId + "/positionThreeMember").getValue().toString().equals("Vacant"))
@@ -522,6 +585,15 @@ public class VenueUserGigRequestsReceivedDetailsFragment extends Fragment implem
                         info.setMemberConfirmedRequest("False");
 
                         mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId).setValue(info);
+
+                        String notificationID;
+
+                        // Generate a notification ID from the database
+                        notificationID = mDatabase.push().getKey();
+
+                        Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has accepted your request to play their gig!", "BandSentGigRequestAccepted");
+
+                        mDatabase.child("Users/" + bandMemberUserId + "/notifications/" + notificationID + "/").setValue(notification);
                     }
 
                     if(!mSnapshot.child("Bands/" + mBandId + "/positionFourMember").getValue().toString().equals("Vacant"))
@@ -534,6 +606,15 @@ public class VenueUserGigRequestsReceivedDetailsFragment extends Fragment implem
                         info.setMemberConfirmedRequest("False");
 
                         mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId).setValue(info);
+
+                        String notificationID;
+
+                        // Generate a notification ID from the database
+                        notificationID = mDatabase.push().getKey();
+
+                        Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has accepted your request to play their gig!", "BandSentGigRequestAccepted");
+
+                        mDatabase.child("Users/" + bandMemberUserId + "/notifications/" + notificationID + "/").setValue(notification);
                     }
                 }
 
@@ -549,6 +630,15 @@ public class VenueUserGigRequestsReceivedDetailsFragment extends Fragment implem
                         info.setMemberConfirmedRequest("False");
 
                         mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId).setValue(info);
+
+                        String notificationID;
+
+                        // Generate a notification ID from the database
+                        notificationID = mDatabase.push().getKey();
+
+                        Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has accepted your request to play their gig!", "BandSentGigRequestAccepted");
+
+                        mDatabase.child("Users/" + bandMemberUserId + "/notifications/" + notificationID + "/").setValue(notification);
                     }
 
                     if(!mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString().equals("Vacant"))
@@ -561,6 +651,15 @@ public class VenueUserGigRequestsReceivedDetailsFragment extends Fragment implem
                         info.setMemberConfirmedRequest("False");
 
                         mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId).setValue(info);
+
+                        String notificationID;
+
+                        // Generate a notification ID from the database
+                        notificationID = mDatabase.push().getKey();
+
+                        Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has accepted your request to play their gig!", "BandSentGigRequestAccepted");
+
+                        mDatabase.child("Users/" + bandMemberUserId + "/notifications/" + notificationID + "/").setValue(notification);
                     }
 
                     if(!mSnapshot.child("Bands/" + mBandId + "/positionThreeMember").getValue().toString().equals("Vacant"))
@@ -573,6 +672,15 @@ public class VenueUserGigRequestsReceivedDetailsFragment extends Fragment implem
                         info.setMemberConfirmedRequest("False");
 
                         mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId).setValue(info);
+
+                        String notificationID;
+
+                        // Generate a notification ID from the database
+                        notificationID = mDatabase.push().getKey();
+
+                        Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has accepted your request to play their gig!", "BandSentGigRequestAccepted");
+
+                        mDatabase.child("Users/" + bandMemberUserId + "/notifications/" + notificationID + "/").setValue(notification);
                     }
 
                     if(!mSnapshot.child("Bands/" + mBandId + "/positionFourMember").getValue().toString().equals("Vacant"))
@@ -585,6 +693,15 @@ public class VenueUserGigRequestsReceivedDetailsFragment extends Fragment implem
                         info.setMemberConfirmedRequest("False");
 
                         mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId).setValue(info);
+
+                        String notificationID;
+
+                        // Generate a notification ID from the database
+                        notificationID = mDatabase.push().getKey();
+
+                        Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has accepted your request to play their gig!", "BandSentGigRequestAccepted");
+
+                        mDatabase.child("Users/" + bandMemberUserId + "/notifications/" + notificationID + "/").setValue(notification);
                     }
 
                     if(!mSnapshot.child("Bands/" + mBandId + "/positionFiveMember").getValue().toString().equals("Vacant"))
@@ -597,6 +714,15 @@ public class VenueUserGigRequestsReceivedDetailsFragment extends Fragment implem
                         info.setMemberConfirmedRequest("False");
 
                         mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId).setValue(info);
+
+                        String notificationID;
+
+                        // Generate a notification ID from the database
+                        notificationID = mDatabase.push().getKey();
+
+                        Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has accepted your request to play their gig!", "BandSentGigRequestAccepted");
+
+                        mDatabase.child("Users/" + bandMemberUserId + "/notifications/" + notificationID + "/").setValue(notification);
                     }
                 }
             }

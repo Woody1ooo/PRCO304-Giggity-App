@@ -6,9 +6,9 @@ package com.liamd.giggity_app;
 
 public class Notification
 {
-    String notificationID;
-    String notificationMessage;
-    String notificationType;
+    private String notificationID;
+    private String notificationMessage;
+    private String notificationType;
 
     public Notification()
     {
@@ -22,12 +22,12 @@ public class Notification
         this.notificationType = notificationType;
     }
 
-    public String getNotificationId()
+    public String getNotificationID()
     {
         return notificationID;
     }
 
-    public void setNotificationId(String notificationId)
+    public void setNotificationID(String notificationID)
     {
         this.notificationID = notificationID;
     }

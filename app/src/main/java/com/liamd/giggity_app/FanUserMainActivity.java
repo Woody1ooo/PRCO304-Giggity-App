@@ -236,6 +236,9 @@ public class FanUserMainActivity extends AppCompatActivity
 
     private void Logout()
     {
+        // Stop the notification service when the user logs out
+        stopService(new Intent(this.getBaseContext(), NotificationService.class));
+
         // Will log the user out of Gmail or email/password login
         FirebaseAuth.getInstance().signOut();
 

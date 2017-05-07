@@ -345,7 +345,7 @@ public class MusicianUserMusicianDetailsFragment extends Fragment implements OnM
                     // Generate a notification ID from the database
                     notificationID = mDatabase.push().getKey();
 
-                    Notification notification = new Notification(notificationID, mSnapshot.child("Bands/" + mBandId + "/name").getValue().toString() + " has invited you to join their band!", "BandSentBandRequestPending");
+                    Notification notification = new Notification(notificationID, mSnapshot.child("Bands/" + mBandId + "/name").getValue().toString() + " has invited you to join their band!", "BandSentMusicianRequestPending");
                     mDatabase.child("Users/" + mUserId + "/notifications/" + notificationID + "/").setValue(notification);
 
                     ConfirmDialog();

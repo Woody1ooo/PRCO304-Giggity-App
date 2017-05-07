@@ -369,7 +369,7 @@ public class MusicianUserBandRequestsNotInBandReceivedDetailsFragment extends Fr
             @Override
             public void onClick(DialogInterface dialogInterface, int i)
             {
-                mDatabase.child("BandSentBandRequests/" + mBandId + "/" + mAuth.getCurrentUser().getUid() + "/requestStatus").setValue("Accepted");
+                mDatabase.child("BandSentMusicianRequests/" + mBandId + "/" + mAuth.getCurrentUser().getUid() + "/requestStatus").setValue("Accepted");
                 mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/inBand").setValue(true);
                 mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/bandID").setValue(mBandId);
                 mDatabase.child("Bands/" + mBandId + "/" + mBandPosition + "Member").setValue(mAuth.getCurrentUser().getUid());
@@ -739,8 +739,6 @@ public class MusicianUserBandRequestsNotInBandReceivedDetailsFragment extends Fr
             public void onClick(DialogInterface dialogInterface, int i)
             {
                 mDatabase.child("BandSentMusicianRequests/" + mBandId + "/" + mAuth.getCurrentUser().getUid() + "/requestStatus").setValue("Rejected");
-
-                mDatabase.child("BandSentBandRequests/" + mBandId + "/" + mAuth.getCurrentUser().getUid() + "/requestStatus").setValue("Accepted");
                 mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/inBand").setValue(true);
                 mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/bandID").setValue(mBandId);
                 mDatabase.child("Bands/" + mBandId + "/" + mBandPosition + "Member").setValue(mAuth.getCurrentUser().getUid());
