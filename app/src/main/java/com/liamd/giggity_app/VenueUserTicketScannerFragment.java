@@ -124,48 +124,55 @@ public class VenueUserTicketScannerFragment extends Fragment
                             // For each ticket in list of tickets check that the gig id, ticket id, quantity, and venue Id all match
                             for (Ticket databaseTicket : mListOfTickets)
                             {
-                                if (databaseTicket.getGigId().equals(gigIdFromScan)
-                                        && databaseTicket.getTicketId().equals(ticketIdFromScan)
+                                if (databaseTicket.getGigID().equals(gigIdFromScan)
+                                        && databaseTicket.getTicketID().equals(ticketIdFromScan)
                                         && databaseTicket.getAdmissionQuantity() == quantityFromScan
-                                        && dataSnapshot.child("Gigs/" + databaseTicket.getGigId() + "/venueID").getValue().equals(mVenueId))
+                                        && dataSnapshot.child("Gigs/" + databaseTicket.getGigID() + "/venueID").getValue().equals(mVenueId))
                                 {
-                                    // If this is the case show it's a valid ticket and ask the user to confirm
-                                    final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                                    builder.setTitle("Valid Ticket!");
-                                    builder.setMessage("This ticket grants " + quantityFromScan + " person(s) entry to the following gig: \n\n" + gigName +
-                                            "\n\nAre you sure you wish to confirm this ticket?");
-                                    builder.setPositiveButton("Confirm", new DialogInterface.OnClickListener()
+                                    if(databaseTicket.getTicketStatus().equals("Valid"))
                                     {
-                                        // If the user confirms this the ticket is removed from the database to prevent it from being used multiple times
-                                        @Override
-                                        public void onClick(DialogInterface dialogInterface, int i)
+                                        // If this is the case show it's a valid ticket and ask the user to confirm
+                                        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                                        builder.setTitle("Valid Ticket!");
+                                        builder.setMessage("This ticket grants " + quantityFromScan + " person(s) entry to the following gig: \n\n" + gigName +
+                                                "\n\nAre you sure you wish to confirm this ticket?");
+                                        builder.setPositiveButton("Confirm", new DialogInterface.OnClickListener()
                                         {
-                                            mDatabase.child("Tickets/" + gigIdFromScan + "/" + userId[0]).removeValue();
-                                            mListOfTickets.clear();
-
-                                            final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                                            builder.setTitle("Confirmation");
-                                            builder.setMessage("Ticket Processed!");
-                                            builder.setPositiveButton("Confirm", new DialogInterface.OnClickListener()
+                                            // If the user confirms this the ticket is removed from the database to prevent it from being used multiple times
+                                            @Override
+                                            public void onClick(DialogInterface dialogInterface, int i)
                                             {
-                                                @Override
-                                                public void onClick(DialogInterface dialogInterface, int i)
+                                                mDatabase.child("Tickets/" + gigIdFromScan + "/" + userId[0] + "/ticketStatus").setValue("Expired");
+                                                mListOfTickets.clear();
+
+                                                final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                                                builder.setTitle("Confirmation");
+                                                builder.setMessage("Ticket Processed!");
+                                                builder.setPositiveButton("Confirm", new DialogInterface.OnClickListener()
                                                 {
-
-                                                }
-                                            });
-                                            builder.show();
-                                        }
-                                    });
-                                    builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener()
-                                    {
-                                        @Override
-                                        public void onClick(DialogInterface dialogInterface, int i)
+                                                    @Override
+                                                    public void onClick(DialogInterface dialogInterface, int i)
+                                                    {
+                                                    }
+                                                });
+                                                builder.show();
+                                                builder.setCancelable(false);
+                                            }
+                                        });
+                                        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener()
                                         {
+                                            @Override
+                                            public void onClick(DialogInterface dialogInterface, int i)
+                                            {
 
-                                        }
-                                    });
-                                    builder.show();
+                                            }
+                                        });
+                                        builder.show();
+                                    }
+                                    else
+                                    {
+                                        Toast.makeText(getActivity(), "Error! This ticket has already been scanned.", Toast.LENGTH_SHORT).show();
+                                    }
                                 }
 
                                 else
@@ -185,7 +192,7 @@ public class VenueUserTicketScannerFragment extends Fragment
                 catch(IndexOutOfBoundsException e)
                 {
                     System.out.println(e);
-                    Toast.makeText(getActivity(), "Something went wrong! Are you sure this gig is at your venue?", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), "Something went wrong! Are you sure this is a valid Giggity ticket?", Toast.LENGTH_LONG).show();
                 }
             }
         }

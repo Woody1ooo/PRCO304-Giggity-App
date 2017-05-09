@@ -366,7 +366,7 @@ public class FanUserGigDetailsFragment extends Fragment implements OnMapReadyCal
                         {
                             // This creates a ticket object and posts it to the database under the generated push key
                             String ticketId = mDatabase.child("Tickets").push().getKey();
-                            Ticket ticket = new Ticket(ticketId, mTicketQuantity, mGigId);
+                            Ticket ticket = new Ticket(ticketId, mTicketQuantity, mGigId, "Valid");
                             mDatabase.child("Tickets/" + mGigId + "/" + mAuth.getCurrentUser().getUid() + "/").setValue(ticket);
                             mDatabase.child("Gigs/" + mGigId + "/ticketQuantity").setValue(mTicketQuantityAvailable - mTicketQuantity);
 

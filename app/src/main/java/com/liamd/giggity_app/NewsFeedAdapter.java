@@ -90,7 +90,6 @@ public class NewsFeedAdapter extends ArrayAdapter<NewsFeedItem>
         }
 
         // Initialise visual components
-
         mFeaturedImageView = (ImageView)newsFeedListView.findViewById(R.id.featuredImageView);
         mUserNameTextView = (TextView)newsFeedListView.findViewById(R.id.userNameTextView);
         mNewsFeedMessageTextView = (TextView)newsFeedListView.findViewById(R.id.newsFeedMessageTextView);

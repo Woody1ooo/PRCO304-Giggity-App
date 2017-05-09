@@ -166,35 +166,6 @@ public class MusicianUserMainActivity extends AppCompatActivity implements Navig
                                 menu.findItem(R.id.nav_requests_musician).setVisible(true);
                             }
                         }
-
-                        // First check if the user needs to complete the pre setup
-                        // If not, then the pre setup activity is launched
-                        // When the user returns to this point, it should skip to the else statement
-                        if(dataSnapshot.child(mAuth.getCurrentUser().getUid() + "/hasCompletedSetup").getValue() == null)
-                        {
-                            Intent startPreSetupActivity = new Intent(MusicianUserMainActivity.this, PreSetupActivity.class);
-                            startActivity(startPreSetupActivity);
-                            finish();
-                        }
-
-                        // This checks the account type that the user has. If the account is a musician account
-                        // then no intents need to be fired as this activity has already been created
-                        else
-                        {
-                            if (dataSnapshot.child(mAuth.getCurrentUser().getUid() + "/accountType").getValue().equals("Venue"))
-                            {
-                                finish();
-                                Intent startVenueUserMainActivity= new Intent(MusicianUserMainActivity.this, VenueUserMainActivity.class);
-                                startActivity(startVenueUserMainActivity);
-                            }
-
-                            else if (dataSnapshot.child(mAuth.getCurrentUser().getUid() + "/accountType").getValue().equals("Fan"))
-                            {
-                                finish();
-                                Intent startFanUserMainActivity= new Intent(MusicianUserMainActivity.this, FanUserMainActivity.class);
-                                startActivity(startFanUserMainActivity);
-                            }
-                        }
                     }
                 }
 
@@ -260,6 +231,44 @@ public class MusicianUserMainActivity extends AppCompatActivity implements Navig
             fragmentTransaction.replace(R.id.frame, fragment
                     , "MusicianUserHomeFragment");
             fragmentTransaction.commit();
+        }
+
+        String fragmentToOpen = getIntent().getStringExtra("FragmentToOpenExtra");
+
+        if(fragmentToOpen != null)
+        {
+            if(fragmentToOpen.equals("MusicianUserBandRequestsInBandFragment"))
+            {
+                // This ensures that whenever the back button is pressed there is never a blank home screen shown
+                setTitle("Band Requests");
+                MusicianUserBandRequestsInBandFragment fragment = new MusicianUserBandRequestsInBandFragment();
+                FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+                fragmentTransaction.replace(R.id.frame, fragment
+                        , "MusicianUserBandRequestsInBandFragment");
+                fragmentTransaction.commit();
+            }
+
+            else if(fragmentToOpen.equals("MusicianUserBandRequestsNotInBandFragment"))
+            {
+                // This ensures that whenever the back button is pressed there is never a blank home screen shown
+                setTitle("Band Requests");
+                MusicianUserBandRequestsNotInBandFragment fragment = new MusicianUserBandRequestsNotInBandFragment();
+                FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+                fragmentTransaction.replace(R.id.frame, fragment
+                        , "MusicianUserBandRequestsNotInBandFragment");
+                fragmentTransaction.commit();
+            }
+
+            else if(fragmentToOpen.equals("MusicianUserGigRequestsFragment"))
+            {
+                // This ensures that whenever the back button is pressed there is never a blank home screen shown
+                setTitle("Gig Requests");
+                MusicianUserGigRequestsFragment fragment = new MusicianUserGigRequestsFragment();
+                FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+                fragmentTransaction.replace(R.id.frame, fragment
+                        , "MusicianUserGigRequestsFragment");
+                fragmentTransaction.commit();
+            }
         }
     }
 
@@ -570,9 +579,14 @@ public class MusicianUserMainActivity extends AppCompatActivity implements Navig
         // Will log the user out of facebook
         LoginManager.getInstance().logOut();
 
-        // Returns to the login activity
-
         finish();
+
+        if(!isFinishing())
+        {
+            finish();
+        }
+
+        // Returns to the login activity
         Intent returnToLoginActivity= new Intent(MusicianUserMainActivity.this, LoginActivity.class);
         returnToLoginActivity.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         startActivity(returnToLoginActivity);

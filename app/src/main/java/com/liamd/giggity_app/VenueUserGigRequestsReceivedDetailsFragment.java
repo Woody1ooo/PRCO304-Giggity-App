@@ -731,21 +731,35 @@ public class VenueUserGigRequestsReceivedDetailsFragment extends Fragment implem
                         }
                     }
 
-                    else
+                    // A dialog is then shown to alert the user that the changes have been made
+                    final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    builder.setTitle("Confirmation");
+                    builder.setMessage("Request Accepted!");
+                    builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
                     {
-                        // A dialog is then shown to alert the user that the changes have been made
-                        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                        builder.setTitle("Error!");
-                        builder.setMessage("You cannot change a request that has already been handled!");
-                        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i)
                         {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i)
-                            {
-                            }
-                        });
-                        builder.show();
-                    }
+                            ReturnToRequests();
+                        }
+                    });
+                    builder.setCancelable(false);
+                    builder.show();
+                }
+                else
+                {
+                    // A dialog is then shown to alert the user that the changes have been made
+                    final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    builder.setTitle("Error!");
+                    builder.setMessage("You cannot change a request that has already been handled!");
+                    builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i)
+                        {
+                        }
+                    });
+                    builder.show();
                 }
             }
         });
@@ -776,6 +790,316 @@ public class VenueUserGigRequestsReceivedDetailsFragment extends Fragment implem
                 if(mRequestStatus.equals("Pending"))
                 {
                     mDatabase.child("BandSentGigRequests/" + mBandId + "/" + mGigId + "/requestStatus").setValue("Rejected");
+
+                    // Depending on the number of positions in the band and which of those are vacant, an entry for each member is entered into the database
+                    // to then be picked up when they login to find out whether they want to add it to their calendar
+                    String numberOfBandPositions = mSnapshot.child("Bands/" + mBandId + "/numberOfPositions").getValue().toString();
+
+                    if(numberOfBandPositions.equals("2"))
+                    {
+                        if(!mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString().equals("Vacant"))
+                        {
+                            String bandMemberUserId = mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString();
+
+                            UserGigInformation info = new UserGigInformation();
+                            info.setGigID(mGigId);
+                            info.setCalendarEventID("Pending");
+                            info.setMemberConfirmedRequest("False");
+
+                            mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId).setValue(info);
+
+                            String notificationID;
+
+                            // Generate a notification ID from the database
+                            notificationID = mDatabase.push().getKey();
+
+                            Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has rejected your request to play their gig!", "BandSentGigRequestRejected");
+
+                            mDatabase.child("Users/" + bandMemberUserId + "/notifications/" + notificationID + "/").setValue(notification);
+                        }
+
+                        if(!mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString().equals("Vacant"))
+                        {
+                            String bandMemberUserId = mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString();
+
+                            UserGigInformation info = new UserGigInformation();
+                            info.setGigID(mGigId);
+                            info.setCalendarEventID("Pending");
+                            info.setMemberConfirmedRequest("False");
+
+                            mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId).setValue(info);
+
+                            String notificationID;
+
+                            // Generate a notification ID from the database
+                            notificationID = mDatabase.push().getKey();
+
+                            Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has rejected your request to play their gig!", "BandSentGigRequestRejected");
+
+                            mDatabase.child("Users/" + bandMemberUserId + "/notifications/" + notificationID + "/").setValue(notification);
+                        }
+                    }
+
+                    if(numberOfBandPositions.equals("3"))
+                    {
+                        if(!mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString().equals("Vacant"))
+                        {
+                            String bandMemberUserId = mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString();
+
+                            UserGigInformation info = new UserGigInformation();
+                            info.setGigID(mGigId);
+                            info.setCalendarEventID("Pending");
+                            info.setMemberConfirmedRequest("False");
+
+                            mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId).setValue(info);
+
+                            String notificationID;
+
+                            // Generate a notification ID from the database
+                            notificationID = mDatabase.push().getKey();
+
+                            Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has rejected your request to play their gig!", "BandSentGigRequestRejected");
+
+                            mDatabase.child("Users/" + bandMemberUserId + "/notifications/" + notificationID + "/").setValue(notification);
+                        }
+
+                        if(!mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString().equals("Vacant"))
+                        {
+                            String bandMemberUserId = mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString();
+
+                            UserGigInformation info = new UserGigInformation();
+                            info.setGigID(mGigId);
+                            info.setCalendarEventID("Pending");
+                            info.setMemberConfirmedRequest("False");
+
+                            mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId).setValue(info);
+
+                            String notificationID;
+
+                            // Generate a notification ID from the database
+                            notificationID = mDatabase.push().getKey();
+
+                            Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has rejected your request to play their gig!", "BandSentGigRequestRejected");
+
+                            mDatabase.child("Users/" + bandMemberUserId + "/notifications/" + notificationID + "/").setValue(notification);
+                        }
+
+                        if(!mSnapshot.child("Bands/" + mBandId + "/positionThreeMember").getValue().toString().equals("Vacant"))
+                        {
+                            String bandMemberUserId = mSnapshot.child("Bands/" + mBandId + "/positionThreeMember").getValue().toString();
+
+                            UserGigInformation info = new UserGigInformation();
+                            info.setGigID(mGigId);
+                            info.setCalendarEventID("Pending");
+                            info.setMemberConfirmedRequest("False");
+
+                            mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId).setValue(info);
+
+                            String notificationID;
+
+                            // Generate a notification ID from the database
+                            notificationID = mDatabase.push().getKey();
+
+                            Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has rejected your request to play their gig!", "BandSentGigRequestRejected");
+
+                            mDatabase.child("Users/" + bandMemberUserId + "/notifications/" + notificationID + "/").setValue(notification);
+                        }
+                    }
+
+                    if(numberOfBandPositions.equals("4"))
+                    {
+                        if(!mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString().equals("Vacant"))
+                        {
+                            String bandMemberUserId = mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString();
+
+                            UserGigInformation info = new UserGigInformation();
+                            info.setGigID(mGigId);
+                            info.setCalendarEventID("Pending");
+                            info.setMemberConfirmedRequest("False");
+
+                            mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId).setValue(info);
+
+                            String notificationID;
+
+                            // Generate a notification ID from the database
+                            notificationID = mDatabase.push().getKey();
+
+                            Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has rejected your request to play their gig!", "BandSentGigRequestRejected");
+
+                            mDatabase.child("Users/" + bandMemberUserId + "/notifications/" + notificationID + "/").setValue(notification);
+                        }
+
+                        if(!mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString().equals("Vacant"))
+                        {
+                            String bandMemberUserId = mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString();
+
+                            UserGigInformation info = new UserGigInformation();
+                            info.setGigID(mGigId);
+                            info.setCalendarEventID("Pending");
+                            info.setMemberConfirmedRequest("False");
+
+                            mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId).setValue(info);
+
+                            String notificationID;
+
+                            // Generate a notification ID from the database
+                            notificationID = mDatabase.push().getKey();
+
+                            Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has rejected your request to play their gig!", "BandSentGigRequestRejected");
+
+                            mDatabase.child("Users/" + bandMemberUserId + "/notifications/" + notificationID + "/").setValue(notification);
+                        }
+
+                        if(!mSnapshot.child("Bands/" + mBandId + "/positionThreeMember").getValue().toString().equals("Vacant"))
+                        {
+                            String bandMemberUserId = mSnapshot.child("Bands/" + mBandId + "/positionThreeMember").getValue().toString();
+
+                            UserGigInformation info = new UserGigInformation();
+                            info.setGigID(mGigId);
+                            info.setCalendarEventID("Pending");
+                            info.setMemberConfirmedRequest("False");
+
+                            mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId).setValue(info);
+
+                            String notificationID;
+
+                            // Generate a notification ID from the database
+                            notificationID = mDatabase.push().getKey();
+
+                            Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has rejected your request to play their gig!", "BandSentGigRequestRejected");
+
+                            mDatabase.child("Users/" + bandMemberUserId + "/notifications/" + notificationID + "/").setValue(notification);
+                        }
+
+                        if(!mSnapshot.child("Bands/" + mBandId + "/positionFourMember").getValue().toString().equals("Vacant"))
+                        {
+                            String bandMemberUserId = mSnapshot.child("Bands/" + mBandId + "/positionFourMember").getValue().toString();
+
+                            UserGigInformation info = new UserGigInformation();
+                            info.setGigID(mGigId);
+                            info.setCalendarEventID("Pending");
+                            info.setMemberConfirmedRequest("False");
+
+                            mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId).setValue(info);
+
+                            String notificationID;
+
+                            // Generate a notification ID from the database
+                            notificationID = mDatabase.push().getKey();
+
+                            Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has rejected your request to play their gig!", "BandSentGigRequestRejected");
+
+                            mDatabase.child("Users/" + bandMemberUserId + "/notifications/" + notificationID + "/").setValue(notification);
+                        }
+                    }
+
+                    if(numberOfBandPositions.equals("5"))
+                    {
+                        if (!mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString().equals("Vacant"))
+                        {
+                            String bandMemberUserId = mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString();
+
+                            UserGigInformation info = new UserGigInformation();
+                            info.setGigID(mGigId);
+                            info.setCalendarEventID("Pending");
+                            info.setMemberConfirmedRequest("False");
+
+                            mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId).setValue(info);
+
+                            String notificationID;
+
+                            // Generate a notification ID from the database
+                            notificationID = mDatabase.push().getKey();
+
+                            Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has rejected your request to play their gig!", "BandSentGigRequestRejected");
+
+                            mDatabase.child("Users/" + bandMemberUserId + "/notifications/" + notificationID + "/").setValue(notification);
+                        }
+
+                        if (!mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString().equals("Vacant"))
+                        {
+                            String bandMemberUserId = mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString();
+
+                            UserGigInformation info = new UserGigInformation();
+                            info.setGigID(mGigId);
+                            info.setCalendarEventID("Pending");
+                            info.setMemberConfirmedRequest("False");
+
+                            mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId).setValue(info);
+
+                            String notificationID;
+
+                            // Generate a notification ID from the database
+                            notificationID = mDatabase.push().getKey();
+
+                            Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has rejected your request to play their gig!", "BandSentGigRequestRejected");
+
+                            mDatabase.child("Users/" + bandMemberUserId + "/notifications/" + notificationID + "/").setValue(notification);
+                        }
+
+                        if (!mSnapshot.child("Bands/" + mBandId + "/positionThreeMember").getValue().toString().equals("Vacant"))
+                        {
+                            String bandMemberUserId = mSnapshot.child("Bands/" + mBandId + "/positionThreeMember").getValue().toString();
+
+                            UserGigInformation info = new UserGigInformation();
+                            info.setGigID(mGigId);
+                            info.setCalendarEventID("Pending");
+                            info.setMemberConfirmedRequest("False");
+
+                            mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId).setValue(info);
+
+                            String notificationID;
+
+                            // Generate a notification ID from the database
+                            notificationID = mDatabase.push().getKey();
+
+                            Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has rejected your request to play their gig!", "BandSentGigRequestRejected");
+
+                            mDatabase.child("Users/" + bandMemberUserId + "/notifications/" + notificationID + "/").setValue(notification);
+                        }
+
+                        if (!mSnapshot.child("Bands/" + mBandId + "/positionFourMember").getValue().toString().equals("Vacant"))
+                        {
+                            String bandMemberUserId = mSnapshot.child("Bands/" + mBandId + "/positionFourMember").getValue().toString();
+
+                            UserGigInformation info = new UserGigInformation();
+                            info.setGigID(mGigId);
+                            info.setCalendarEventID("Pending");
+                            info.setMemberConfirmedRequest("False");
+
+                            mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId).setValue(info);
+
+                            String notificationID;
+
+                            // Generate a notification ID from the database
+                            notificationID = mDatabase.push().getKey();
+
+                            Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has rejected your request to play their gig!", "BandSentGigRequestRejected");
+
+                            mDatabase.child("Users/" + bandMemberUserId + "/notifications/" + notificationID + "/").setValue(notification);
+                        }
+
+                        if (!mSnapshot.child("Bands/" + mBandId + "/positionFiveMember").getValue().toString().equals("Vacant"))
+                        {
+                            String bandMemberUserId = mSnapshot.child("Bands/" + mBandId + "/positionFiveMember").getValue().toString();
+
+                            UserGigInformation info = new UserGigInformation();
+                            info.setGigID(mGigId);
+                            info.setCalendarEventID("Pending");
+                            info.setMemberConfirmedRequest("False");
+
+                            mDatabase.child("UserGigInformation/" + bandMemberUserId + "/" + mGigId).setValue(info);
+
+                            String notificationID;
+
+                            // Generate a notification ID from the database
+                            notificationID = mDatabase.push().getKey();
+
+                            Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has rejected your request to play their gig!", "BandSentGigRequestRejected");
+
+                            mDatabase.child("Users/" + bandMemberUserId + "/notifications/" + notificationID + "/").setValue(notification);
+                        }
+                    }
 
                     // A dialog is then shown to alert the user that the changes have been made
                     final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());

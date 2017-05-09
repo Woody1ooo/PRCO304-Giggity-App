@@ -107,6 +107,9 @@ public class VenueUserMainActivity extends AppCompatActivity implements Navigati
         mStorage = FirebaseStorage.getInstance();
         mVenueImageReference = mStorage.getReference();
 
+        // When the app is loaded this service is started
+        startService(new Intent(this, NotificationService.class));
+
         // Initialise visual components
         setTitle("Home");
 
@@ -122,6 +125,22 @@ public class VenueUserMainActivity extends AppCompatActivity implements Navigati
             fragmentTransaction.replace(R.id.frame, fragment
                     , "VenueUserHomeFragment");
             fragmentTransaction.commit();
+        }
+
+        String fragmentToOpen = getIntent().getStringExtra("FragmentToOpenExtra");
+
+        if(fragmentToOpen != null)
+        {
+            if(fragmentToOpen.equals("VenueUserGigRequestsFragment"))
+            {
+                // This ensures that whenever the back button is pressed there is never a blank home screen shown
+                setTitle("Gig Requests");
+                VenueUserGigRequestsFragment fragment = new VenueUserGigRequestsFragment();
+                FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+                fragmentTransaction.replace(R.id.frame, fragment
+                        , "VenueUserGigRequestsFragment");
+                fragmentTransaction.commit();
+            }
         }
     }
 
@@ -336,9 +355,14 @@ public class VenueUserMainActivity extends AppCompatActivity implements Navigati
         // Will log the user out of facebook
         LoginManager.getInstance().logOut();
 
-        // Returns to the login activity
-
         finish();
+
+        if(!isFinishing())
+        {
+            finish();
+        }
+
+        // Returns to the login activity
         Intent returnToLoginActivity= new Intent(VenueUserMainActivity.this, LoginActivity.class);
         returnToLoginActivity.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         startActivity(returnToLoginActivity);

@@ -208,8 +208,11 @@ public class VenueUserGigRequestsFragment extends Fragment
             }
         }
 
-        mReceivedGigRequestsAdapter = new VenueUserGigRequestsAdapter(getActivity(), R.layout.venue_user_gig_requests_list, mListOfFilteredGigRequestsReceived , mDataSnapshot);
-        mReceivedGigRequestsListView.setAdapter(mReceivedGigRequestsAdapter);
+        if(getActivity() != null)
+        {
+            mReceivedGigRequestsAdapter = new VenueUserGigRequestsAdapter(getActivity(), R.layout.venue_user_gig_requests_list, mListOfFilteredGigRequestsReceived , mDataSnapshot);
+            mReceivedGigRequestsListView.setAdapter(mReceivedGigRequestsAdapter);
+        }
 
         mPassedThrough = false;
 
@@ -250,7 +253,10 @@ public class VenueUserGigRequestsFragment extends Fragment
             }
         }
 
-        mSentGigRequestsAdapter = new VenueUserGigRequestsAdapter(getActivity(), R.layout.venue_user_gig_requests_list, mListOfFilteredGigRequestsSent , mDataSnapshot);
-        mSentGigRequestsListView.setAdapter(mSentGigRequestsAdapter);
+        if(getActivity() != null)
+        {
+            mSentGigRequestsAdapter = new VenueUserGigRequestsAdapter(getActivity(), R.layout.venue_user_gig_requests_list, mListOfFilteredGigRequestsSent, mDataSnapshot);
+            mSentGigRequestsListView.setAdapter(mSentGigRequestsAdapter);
+        }
     }
 }

@@ -6,30 +6,32 @@ package com.liamd.giggity_app;
 
 public class Ticket
 {
-    private String ticketId;
+    private String ticketID;
     private long admissionQuantity;
-    private String gigId;
+    private String gigID;
+    private String ticketStatus;
 
     public Ticket()
     {
 
     }
 
-    public Ticket(String ticketId, long admissionQuantity, String gigId)
+    public Ticket(String ticketID, long admissionQuantity, String gigID, String ticketStatus)
     {
-        this.ticketId = ticketId;
+        this.ticketID = ticketID;
         this.admissionQuantity = admissionQuantity;
-        this.gigId = gigId;
+        this.gigID = gigID;
+        this.ticketStatus = ticketStatus;
     }
 
-    public String getTicketId()
+    public String getTicketID()
     {
-        return ticketId;
+        return ticketID;
     }
 
-    public void setTicketId(String ticketId)
+    public void setTicketID(String ticketID)
     {
-        this.ticketId = ticketId;
+        this.ticketID = ticketID;
     }
 
     public long getAdmissionQuantity()
@@ -42,13 +44,23 @@ public class Ticket
         this.admissionQuantity = admissionQuantity;
     }
 
-    public String getGigId()
+    public String getGigID()
     {
-        return gigId;
+        return gigID;
     }
 
-    public void setGigId(String gigId)
+    public void setGigID(String gigID)
     {
-        this.gigId = gigId;
+        this.gigID = gigID;
+    }
+
+    public String getTicketStatus()
+    {
+        return ticketStatus;
+    }
+
+    public void setTicketStatus(String ticketStatus)
+    {
+        this.ticketStatus = ticketStatus;
     }
 }

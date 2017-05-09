@@ -9,6 +9,7 @@ import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -63,6 +64,7 @@ public class MusicianUserViewGigsDetailsFragment extends Fragment implements OnM
     private MapView mMapView;
     private GoogleMap mGoogleMap;
 
+
     // Declare general variables
     private String mVenueId;
     private String mBandId;
@@ -71,6 +73,7 @@ public class MusicianUserViewGigsDetailsFragment extends Fragment implements OnM
     private String mGigStartDate;
     private String mGigEndDate;
     private boolean mIsFanAccount;
+    private String ticketStatus;
 
     // Declare Firebase specific variables
     private FirebaseAuth mAuth;
@@ -371,12 +374,39 @@ public class MusicianUserViewGigsDetailsFragment extends Fragment implements OnM
         final Dialog viewTicketDialog = new Dialog(getActivity());
         viewTicketDialog.setContentView(R.layout.ticket_display_dialog_layout);
 
-        // By obtaining the ticket ID and admission quantity these can then be set against the ticket
-        String ticketId = mSnapshot.child("Tickets/" + mGigId + "/" + mAuth.getCurrentUser().getUid() + "/ticketId").getValue().toString();
-        long admissionQuantity = Long.parseLong(mSnapshot.child("Tickets/" + mGigId + "/" + mAuth.getCurrentUser().getUid() + "/admissionQuantity").getValue().toString());
-
         // Initialise dialog visual components
-        ImageView mTicketImageView = (ImageView) viewTicketDialog.findViewById(R.id.ticketImageView);
+        final ImageView mTicketImageView = (ImageView) viewTicketDialog.findViewById(R.id.ticketImageView);
+        final TextView mTicketStatusTextView = (TextView) viewTicketDialog.findViewById(R.id.ticketStatusTextView);
+
+        mDatabase.child("Tickets/" + mGigId + "/" + mAuth.getCurrentUser().getUid() + "/ticketStatus").addValueEventListener(new ValueEventListener()
+        {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot)
+            {
+                ticketStatus = dataSnapshot.getValue().toString();
+                mTicketStatusTextView.setText(ticketStatus);
+
+                if(mTicketStatusTextView.getText().toString().equals("Valid"))
+                {
+                    mTicketStatusTextView.setTextColor(Color.GREEN);
+                }
+
+                else
+                {
+                    mTicketStatusTextView.setTextColor(Color.RED);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError)
+            {
+
+            }
+        });
+
+        // By obtaining the ticket ID and admission quantity these can then be set against the ticket
+        String ticketId = mSnapshot.child("Tickets/" + mGigId + "/" + mAuth.getCurrentUser().getUid() + "/ticketID").getValue().toString();
+        long admissionQuantity = Long.parseLong(mSnapshot.child("Tickets/" + mGigId + "/" + mAuth.getCurrentUser().getUid() + "/admissionQuantity").getValue().toString());
 
         MultiFormatWriter multiFormatWriter = new MultiFormatWriter();
 
@@ -391,6 +421,16 @@ public class MusicianUserViewGigsDetailsFragment extends Fragment implements OnM
         catch (WriterException e)
         {
             e.printStackTrace();
+        }
+
+        if(mTicketStatusTextView.getText().toString().equals("Valid"))
+        {
+            mTicketStatusTextView.setTextColor(Color.GREEN);
+        }
+
+        else
+        {
+            mTicketStatusTextView.setTextColor(Color.RED);
         }
 
         viewTicketDialog.show();

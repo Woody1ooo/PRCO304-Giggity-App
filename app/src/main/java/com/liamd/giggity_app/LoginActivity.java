@@ -77,9 +77,11 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth)
             {
-                FirebaseUser user = firebaseAuth.getCurrentUser();
-                if(user != null)
+                if(mAuth.getCurrentUser() != null)
                 {
+                    mProgressDialog.setMessage("Signing In...");
+                    mProgressDialog.show();
+
                     // User is already signed in, therefore go straight to the homepage
                     LoadMainActivity();
                 }
@@ -288,41 +290,6 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                             Toast.makeText(LoginActivity.this, "Gmail sign in successful!",
                                     Toast.LENGTH_SHORT).show();
 
-                            // To determine whether this is an account creation or a login,
-                            // the database is queried at "Users/%CurrentUserID%.
-                            mDatabase.child("Users/" + mAuth.getCurrentUser().getUid())
-                                    .addListenerForSingleValueEvent(new ValueEventListener()
-                            {
-                                @Override
-                                public void onDataChange(DataSnapshot dataSnapshot)
-                                {
-                                    // If the snapshot at that location returns null, it means
-                                    // it's an account creation, as there isn't an instance of
-                                    // the account stored in the database.
-                                    if(dataSnapshot.getValue() == null)
-                                    {
-                                        // Therefore a new user object is created using the information
-                                        // from the Firebase authentication store
-                                        final User newUser = new User();
-                                        newUser.setEmail(mAuth.getCurrentUser().getEmail());
-                                        newUser.setUserID(mAuth.getCurrentUser().getUid());
-
-                                        // This is then inserted into the database using the UID
-                                        // as the key.
-                                        mDatabase.child("Users").child(mAuth.getCurrentUser()
-                                                .getUid()).setValue(newUser);
-                                        mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/inBand").setValue(false);
-                                        mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/accountType").setValue("Pending");
-                                    }
-                                }
-
-                                @Override
-                                public void onCancelled(DatabaseError databaseError)
-                                {
-
-                                }
-                            });
-
                             LoadMainActivity();
                         }
 
@@ -361,40 +328,6 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                             Toast.makeText(LoginActivity.this, "Facebook sign in successful!",
                                     Toast.LENGTH_SHORT).show();
 
-                            // To determine whether this is an account creation or a login,
-                            // the database is queried at "Users/%CurrentUserID%.
-                            mDatabase.child("Users/" + mAuth.getCurrentUser().getUid())
-                                    .addListenerForSingleValueEvent(new ValueEventListener()
-                                    {
-                                        @Override
-                                        public void onDataChange(DataSnapshot dataSnapshot)
-                                        {
-                                            // If the snapshot at that location returns null, it means
-                                            // it's an account creation, as there isn't an instance of
-                                            // the account stored in the database.
-                                            if(dataSnapshot.getValue() == null)
-                                            {
-                                                // Therefore a new user object is created using the information
-                                                // from the Firebase authentication store
-                                                final User newUser = new User();
-                                                newUser.setEmail(mAuth.getCurrentUser().getEmail());
-                                                newUser.setUserID(mAuth.getCurrentUser().getUid());
-
-                                                // This is then inserted into the database using the UID
-                                                // as the key.
-                                                mDatabase.child("Users").child(mAuth.getCurrentUser().getUid()).setValue(newUser);
-                                                mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/inBand").setValue(false);
-                                                mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/accountType").setValue("Pending");
-                                            }
-                                        }
-
-                                        @Override
-                                        public void onCancelled(DatabaseError databaseError)
-                                        {
-
-                                        }
-                                    });
-
                             LoadMainActivity();
                         }
 
@@ -422,9 +355,76 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     // Method to load the home activity. Only called if the user is signed in.
     private void LoadMainActivity()
     {
-        finish();
-        Intent intent = new Intent(this, MusicianUserMainActivity.class);
-        startActivity(intent);
+        mDatabase.child("Users/" + mAuth.getCurrentUser().getUid()).addListenerForSingleValueEvent(new ValueEventListener()
+        {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot)
+            {
+                if(dataSnapshot.child("accountType").getValue() != null)
+                {
+                    if(dataSnapshot.child("accountType").getValue().toString().equals("Musician"))
+                    {
+                        mProgressDialog.hide();
+                        finish();
+                        Intent intent = new Intent(LoginActivity.this, MusicianUserMainActivity.class);
+                        startActivity(intent);
+                    }
+
+                    else if(dataSnapshot.child("accountType").getValue().toString().equals("Venue"))
+                    {
+                        mProgressDialog.hide();
+                        finish();
+                        Intent intent = new Intent(LoginActivity.this, VenueUserMainActivity.class);
+                        startActivity(intent);
+                    }
+
+                    else if(dataSnapshot.child("accountType").getValue().toString().equals("Fan"))
+                    {
+                        mProgressDialog.hide();
+                        finish();
+                        Intent intent = new Intent(LoginActivity.this, FanUserMainActivity.class);
+                        startActivity(intent);
+                    }
+
+                    else if(dataSnapshot.child("accountType").getValue().toString().equals("Pending"))
+                    {
+                        mProgressDialog.hide();
+                        finish();
+                        Intent intent = new Intent(LoginActivity.this, PreSetupActivity.class);
+                        startActivity(intent);
+                    }
+                }
+
+                // If the snapshot at that location returns null, it means
+                // it's an account creation, as there isn't an instance of
+                // the account stored in the database.
+                else
+                {
+                    // Therefore a new user object is created using the information
+                    // from the Firebase authentication store
+                    final User newUser = new User();
+                    newUser.setEmail(mAuth.getCurrentUser().getEmail());
+                    newUser.setUserID(mAuth.getCurrentUser().getUid());
+
+                    // This is then inserted into the database using the UID
+                    // as the key.
+                    mDatabase.child("Users").child(mAuth.getCurrentUser().getUid()).setValue(newUser);
+                    mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/inBand").setValue(false);
+                    mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/accountType").setValue("Pending");
+
+                    mProgressDialog.hide();
+                    finish();
+                    Intent intent = new Intent(LoginActivity.this, PreSetupActivity.class);
+                    startActivity(intent);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError)
+            {
+
+            }
+        });
     }
 
     // Method to load the register activity. Called when the register button is clicked

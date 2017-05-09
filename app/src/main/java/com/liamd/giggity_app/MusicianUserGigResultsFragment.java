@@ -314,14 +314,17 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
                     final com.google.android.gms.maps.model.LatLng convertedGigLocation = new com.google.android.gms.maps.model.LatLng(gigLocation.getLatitude(),
                                     gigLocation.getLongitude());
 
-                    // The marker is then added to the map
-                    int height = 125;
-                    int width = 125;
-                    BitmapDrawable bitMapDraw = (BitmapDrawable)getResources().getDrawable(R.drawable.ic_pin);
-                    Bitmap b = bitMapDraw.getBitmap();
-                    Bitmap smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
+                    if(getActivity() != null)
+                    {
+                        // The marker is then added to the map
+                        int height = 125;
+                        int width = 125;
+                        BitmapDrawable bitMapDraw = (BitmapDrawable)getResources().getDrawable(R.drawable.ic_pin);
+                        Bitmap b = bitMapDraw.getBitmap();
+                        Bitmap smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
 
-                    mMarker = mGoogleMap.addMarker(new MarkerOptions().position(convertedGigLocation).icon(BitmapDescriptorFactory.fromBitmap(smallMarker)));
+                        mMarker = mGoogleMap.addMarker(new MarkerOptions().position(convertedGigLocation).icon(BitmapDescriptorFactory.fromBitmap(smallMarker)));
+                    }
 
                     // A new GigMarkerInfo object is created to store the information about the marker.
                     // This needs to be done because a standard marker can only hold a title and snippet

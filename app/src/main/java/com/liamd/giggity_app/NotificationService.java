@@ -29,7 +29,6 @@ public class NotificationService extends Service
     // Declare firebase variables
     private DatabaseReference mDatabase;
     private FirebaseAuth mAuth;
-    private String mBandId;
 
     @Nullable
     @Override
@@ -58,12 +57,55 @@ public class NotificationService extends Service
                 {
                     if (mAuth.getCurrentUser() != null)
                     {
+                        int notificationTypeId = 0;
+
                         Iterable<DataSnapshot> notifications = dataSnapshot.getChildren();
                         for (DataSnapshot child : notifications)
                         {
                             com.liamd.giggity_app.Notification notification;
                             notification = child.getValue(com.liamd.giggity_app.Notification.class);
-                            SendNotification(notification.getNotificationMessage(), "Click here to view details", 1);
+
+                            switch (notification.getNotificationType())
+                            {
+                                case "MusicianSentBandRequestPending":
+                                    notificationTypeId = 0;
+                                    break;
+                                case "MusicianSentBandRequestAccepted":
+                                    notificationTypeId = 1;
+                                    break;
+                                case "MusicianSentBandRequestRejected":
+                                    notificationTypeId = 2;
+                                    break;
+                                case "BandSentMusicianRequestPending":
+                                    notificationTypeId = 3;
+                                    break;
+                                case "BandSentMusicianRequestAccepted":
+                                    notificationTypeId = 4;
+                                    break;
+                                case "BandSentMusicianRequestRejected":
+                                    notificationTypeId = 5;
+                                    break;
+                                case "BandSentGigRequestPending":
+                                    notificationTypeId = 6;
+                                    break;
+                                case "BandSentGigRequestAccepted":
+                                    notificationTypeId = 7;
+                                    break;
+                                case "BandSentGigRequestRejected":
+                                    notificationTypeId = 8;
+                                    break;
+                                case "VenueSentGigRequestPending":
+                                    notificationTypeId = 9;
+                                    break;
+                                case "VenueSentGigRequestAccepted":
+                                    notificationTypeId = 10;
+                                    break;
+                                case "VenueSentGigRequestRejected":
+                                    notificationTypeId = 11;
+                                    break;
+                            }
+
+                            SendNotification(notification.getNotificationMessage(), "Click here to view details", notificationTypeId);
                             mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/notifications/" + notification.getNotificationID()).removeValue();
                         }
                     }
@@ -111,6 +153,102 @@ public class NotificationService extends Service
                 .setDefaults(Notification.DEFAULT_SOUND)
                 .setAutoCancel(true)
                 .setSmallIcon(R.drawable.ic_info_outline_black_24px);
+
+        if(notificationTypeId == 0)
+        {
+            Intent notificationIntent = new Intent(this, MusicianUserMainActivity.class);
+            notificationIntent.putExtra("FragmentToOpenExtra", "MusicianUserBandRequestsInBandFragment");
+            PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            builder.setContentIntent(resultPendingIntent);
+        }
+
+        else if(notificationTypeId == 1)
+        {
+            Intent notificationIntent = new Intent(this, MusicianUserMainActivity.class);
+            notificationIntent.putExtra("FragmentToOpenExtra", "MusicianUserBandRequestsInBandFragment");
+            PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            builder.setContentIntent(resultPendingIntent);
+        }
+
+        else if(notificationTypeId == 2)
+        {
+            Intent notificationIntent = new Intent(this, MusicianUserMainActivity.class);
+            notificationIntent.putExtra("FragmentToOpenExtra", "MusicianUserBandRequestsInBandFragment");
+            PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            builder.setContentIntent(resultPendingIntent);
+        }
+
+        else if(notificationTypeId == 3)
+        {
+            Intent notificationIntent = new Intent(this, MusicianUserMainActivity.class);
+            notificationIntent.putExtra("FragmentToOpenExtra", "MusicianUserBandRequestsNotInBandFragment");
+            PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            builder.setContentIntent(resultPendingIntent);
+        }
+
+        else if(notificationTypeId == 4)
+        {
+            Intent notificationIntent = new Intent(this, MusicianUserMainActivity.class);
+            notificationIntent.putExtra("FragmentToOpenExtra", "MusicianUserBandRequestsNotInBandFragment");
+            PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            builder.setContentIntent(resultPendingIntent);
+        }
+
+        else if(notificationTypeId == 5)
+        {
+            Intent notificationIntent = new Intent(this, MusicianUserMainActivity.class);
+            notificationIntent.putExtra("FragmentToOpenExtra", "MusicianUserBandRequestsNotInBandFragment");
+            PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            builder.setContentIntent(resultPendingIntent);
+        }
+
+        else if(notificationTypeId == 6)
+        {
+            Intent notificationIntent = new Intent(this, VenueUserMainActivity.class);
+            notificationIntent.putExtra("FragmentToOpenExtra", "VenueUserGigRequestsFragment");
+            PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            builder.setContentIntent(resultPendingIntent);
+        }
+
+        else if(notificationTypeId == 7)
+        {
+            Intent notificationIntent = new Intent(this, MusicianUserMainActivity.class);
+            notificationIntent.putExtra("FragmentToOpenExtra", "MusicianUserGigRequestsFragment");
+            PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            builder.setContentIntent(resultPendingIntent);
+        }
+
+        else if(notificationTypeId == 8)
+        {
+            Intent notificationIntent = new Intent(this, MusicianUserMainActivity.class);
+            notificationIntent.putExtra("FragmentToOpenExtra", "MusicianUserGigRequestsFragment");
+            PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            builder.setContentIntent(resultPendingIntent);
+        }
+
+        else if(notificationTypeId == 9)
+        {
+            Intent notificationIntent = new Intent(this, MusicianUserMainActivity.class);
+            notificationIntent.putExtra("FragmentToOpenExtra", "MusicianUserGigRequestsFragment");
+            PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            builder.setContentIntent(resultPendingIntent);
+        }
+
+        else if(notificationTypeId == 10)
+        {
+            Intent notificationIntent = new Intent(this, VenueUserMainActivity.class);
+            notificationIntent.putExtra("FragmentToOpenExtra", "VenueUserGigRequestsFragment");
+            PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            builder.setContentIntent(resultPendingIntent);
+        }
+
+        else if(notificationTypeId == 11)
+        {
+            Intent notificationIntent = new Intent(this, VenueUserMainActivity.class);
+            notificationIntent.putExtra("FragmentToOpenExtra", "VenueUserGigRequestsFragment");
+            PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            builder.setContentIntent(resultPendingIntent);
+        }
 
         Notification notification = builder.build();
 

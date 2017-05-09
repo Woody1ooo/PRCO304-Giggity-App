@@ -270,7 +270,7 @@ public class MusicianUserGigDetailsFragment extends Fragment implements OnMapRea
                     // Get the band's name
                     bandName = mSnapshot.child("Bands/" + mBandId + "/name").getValue().toString();
 
-                    Notification notification = new Notification(notificationID, bandName + " has requested to play at " + mGigNameTextView.getText().toString() + "!", "MusicianSentGigRequestPending");
+                    Notification notification = new Notification(notificationID, bandName + " has requested to play at " + mGigNameTextView.getText().toString() + "!", "BandSentGigRequestPending");
                     mDatabase.child("Users/" + mSnapshot.child("Venues/" + mVenueId + "/userID").getValue().toString() + "/notifications/" + notificationID + "/").setValue(notification);
 
                     ConfirmDialog();

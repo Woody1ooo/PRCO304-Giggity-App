@@ -221,28 +221,31 @@ public class FanUserMainActivity extends AppCompatActivity
         profileImageView = (CircleImageView) navigationView.getHeaderView(0).findViewById(R.id.profileImageView);
         navigationProfileEmailTextView = (TextView) navigationView.getHeaderView(0).findViewById(R.id.userEmailTextView);
 
-        mProfileImageReference.child("ProfileImages/" + mAuth.getCurrentUser().getUid() + "/profileImage")
-                .getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>()
+        if(getApplicationContext() != null && mAuth.getCurrentUser() != null)
         {
-            @Override
-            public void onSuccess(Uri uri)
+            mProfileImageReference.child("ProfileImages/" + mAuth.getCurrentUser().getUid() + "/profileImage")
+                    .getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>()
             {
-                Glide.with(getApplicationContext()).using(new FirebaseImageLoader()).load
-                        (mProfileImageReference.child("ProfileImages/" + mAuth.getCurrentUser().getUid() + "/profileImage"))
-                        .diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).override(220, 220).into(profileImageView);
-            }
+                @Override
+                public void onSuccess(Uri uri)
+                {
+                    Glide.with(getApplicationContext()).using(new FirebaseImageLoader()).load
+                            (mProfileImageReference.child("ProfileImages/" + mAuth.getCurrentUser().getUid() + "/profileImage"))
+                            .diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).override(220, 220).into(profileImageView);
+                }
 
-        }).addOnFailureListener(new OnFailureListener()
-        {
-            @Override
-            public void onFailure(@NonNull Exception e)
+            }).addOnFailureListener(new OnFailureListener()
             {
-                Picasso.with(getApplicationContext()).load(R.drawable.com_facebook_profile_picture_blank_portrait).resize(220, 220).into(profileImageView);
-            }
-        });
+                @Override
+                public void onFailure(@NonNull Exception e)
+                {
+                    Picasso.with(getApplicationContext()).load(R.drawable.com_facebook_profile_picture_blank_portrait).resize(220, 220).into(profileImageView);
+                }
+            });
 
-        mUserEmail = FirebaseAuth.getInstance().getCurrentUser().getEmail();
-        navigationProfileEmailTextView.setText(mUserEmail);
+            mUserEmail = FirebaseAuth.getInstance().getCurrentUser().getEmail();
+            navigationProfileEmailTextView.setText(mUserEmail);
+        }
     }
 
     private void Logout()
@@ -256,12 +259,10 @@ public class FanUserMainActivity extends AppCompatActivity
         // Will log the user out of facebook
         LoginManager.getInstance().logOut();
 
-        // Returns to the login activity
-
-        finish();
-        Intent returnToLoginActivity= new Intent(FanUserMainActivity.this, LoginActivity.class);
-        returnToLoginActivity.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-        startActivity(returnToLoginActivity);
+        Intent intent = new Intent(this, LoginActivity.class);// New activity
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+        finish(); // Call once you redirect to another activity
     }
 
     // This clears the back stack of fragments and adds a home fragment
