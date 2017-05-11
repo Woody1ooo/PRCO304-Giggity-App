@@ -1,5 +1,7 @@
 package com.liamd.giggity_app;
 
+import java.util.Date;
+
 /**
  * Created by liamd on 24/04/2017.
  */
@@ -15,13 +17,14 @@ public class NewsFeedItem
     private int likeCount;
     private boolean featured;
     private int featuredWeeksQuantity;
+    private Date postDate;
 
     public NewsFeedItem()
     {
 
     }
 
-    public NewsFeedItem(String itemID, String userName, String message, String gigID, boolean featured, int featuredWeeksQuantity)
+    public NewsFeedItem(String itemID, String userName, String message, String gigID, boolean featured, int featuredWeeksQuantity, Date postDate)
     {
         this.itemID = itemID;
         this.userName = userName;
@@ -29,23 +32,26 @@ public class NewsFeedItem
         this.gigID = gigID;
         this.featured = featured;
         this.featuredWeeksQuantity = featuredWeeksQuantity;
+        this.postDate = postDate;
     }
 
-    public NewsFeedItem(String itemID, String userName, String message, String gigID, String bandID)
+    public NewsFeedItem(String itemID, String userName, String message, String gigID, String bandID, Date postDate)
     {
         this.itemID = itemID;
         this.userName = userName;
         this.message = message;
         this.gigID = gigID;
         this.bandID = bandID;
+        this.postDate = postDate;
     }
 
-    public NewsFeedItem(String itemID, String userName, String message, String bandID)
+    public NewsFeedItem(String itemID, String userName, String message, String bandID, Date postDate)
     {
         this.itemID = itemID;
         this.userName = userName;
         this.message = message;
         this.bandID = bandID;
+        this.postDate = postDate;
     }
 
     public String getItemID()
@@ -136,5 +142,15 @@ public class NewsFeedItem
     public void setFeaturedWeeksQuantity(int featuredWeeksQuantity)
     {
         this.featuredWeeksQuantity = featuredWeeksQuantity;
+    }
+
+    public Date getPostDate()
+    {
+        return postDate;
+    }
+
+    public void setPostDate(Date postDate)
+    {
+        this.postDate = postDate;
     }
 }

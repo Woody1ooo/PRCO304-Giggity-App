@@ -106,7 +106,7 @@ public class VenueUserViewGigsFragment extends Fragment
                 }
 
                 // This sorts the list of gigs by date
-                Collections.sort(mListOfUsersGigs, new CustomComparator());
+                Collections.sort(mListOfUsersGigs, new CustomGigComparator());
 
                 if(mListOfUsersGigs.isEmpty() && getActivity() != null)
                 {

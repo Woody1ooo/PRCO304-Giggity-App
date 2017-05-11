@@ -94,6 +94,9 @@ public class MusicianUserMainActivity extends AppCompatActivity implements Navig
         final NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        // When the app is loaded this service is started
+        startService(new Intent(this, NotificationService.class));
+
         // Creates a reference to Firebase
         mAuth = FirebaseAuth.getInstance();
 
@@ -103,9 +106,6 @@ public class MusicianUserMainActivity extends AppCompatActivity implements Navig
         // Creates a reference to the storage element of firebase
         mStorage = FirebaseStorage.getInstance();
         mProfileImageReference = mStorage.getReference();
-
-        // When the app is loaded this service is started
-        startService(new Intent(this, NotificationService.class));
 
         if(savedInstanceState == null)
         {

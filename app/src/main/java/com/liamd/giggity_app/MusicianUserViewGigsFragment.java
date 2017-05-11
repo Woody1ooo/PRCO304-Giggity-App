@@ -175,7 +175,7 @@ public class MusicianUserViewGigsFragment extends Fragment
     private void PopulateListView()
     {
         // This sorts the list of gigs by date
-        Collections.sort(mListOfGigs, new CustomComparator());
+        Collections.sort(mListOfGigs, new CustomGigComparator());
 
         // Using the custom VenueUserGigsAdapter, the list of users gigs can be displayed
         if(getActivity() != null)

@@ -58,7 +58,7 @@ public class MusicianUserGigRequestsSentDetailsFragment extends Fragment impleme
     private String mGigStartDate;
     private String mGigEndDate;
     private com.google.android.gms.maps.model.LatLng mVenueLocation;
-
+    private String mRequestStatus;
 
     public MusicianUserGigRequestsSentDetailsFragment()
     {
@@ -157,6 +157,21 @@ public class MusicianUserGigRequestsSentDetailsFragment extends Fragment impleme
         mGigEndDate = getArguments().getString("GigEndDate");
         mRequestStatusTextView.setText(getArguments().getString("RequestStatus"));
 
+        mDatabase.child("BandSentGigRequests/" + mBandId + "/" + mGigId + "/requestStatus").addValueEventListener(new ValueEventListener()
+        {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot)
+            {
+                mRequestStatus = dataSnapshot.getValue().toString();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError)
+            {
+
+            }
+        });
+
         // These blocks set the colour of the text depending on the status
         if(mRequestStatusTextView.getText().equals("Pending"))
         {
@@ -211,7 +226,7 @@ public class MusicianUserGigRequestsSentDetailsFragment extends Fragment impleme
             @Override
             public void onClick(DialogInterface dialogInterface, int i)
             {
-                if(mRequestStatusTextView.getText().toString().equals("Pending"))
+                if(mRequestStatus.equals("Pending"))
                 {
                     mDatabase.child("BandSentGigRequests/" + mBandId + "/" + mGigId).removeValue();
 

@@ -106,40 +106,6 @@ public class RegisterActivity extends AppCompatActivity
                             Toast.makeText(RegisterActivity.this, "Sign in successful!",
                                     Toast.LENGTH_SHORT).show();
 
-                            // To determine whether this is an account creation or a login,
-                            // the database is queried at "Users/%CurrentUserID%.
-                            mDatabase.child("Users/" + mAuth.getCurrentUser().getUid())
-                                    .addListenerForSingleValueEvent(new ValueEventListener()
-                                    {
-                                        @Override
-                                        public void onDataChange(DataSnapshot dataSnapshot)
-                                        {
-                                            // If the snapshot at that location returns null, it means
-                                            // it's an account creation, as there isn't an instance of
-                                            // the account stored in the database.
-                                            if(dataSnapshot.getValue() == null)
-                                            {
-                                                // Therefore a new user object is created using the information
-                                                // from the Firebase authentication store
-                                                final User newUser = new User();
-                                                newUser.setEmail(mAuth.getCurrentUser().getEmail());
-                                                newUser.setUserID(mAuth.getCurrentUser().getUid());
-
-                                                // This is then inserted into the database using the UID
-                                                // as the key.
-                                                mDatabase.child("Users").child(mAuth.getCurrentUser().getUid()).setValue(newUser);
-                                                mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/inBand").setValue(false);
-                                                mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/accountType").setValue("Pending");
-                                            }
-                                        }
-
-                                        @Override
-                                        public void onCancelled(DatabaseError databaseError)
-                                        {
-
-                                        }
-                                    });
-
                             LoadMainActivity();
                         }
 
@@ -168,8 +134,42 @@ public class RegisterActivity extends AppCompatActivity
     // Method to load the home activity. Only called if the user is signed in.
     private void LoadMainActivity()
     {
-        finish();
-        Intent intent = new Intent(this, MusicianUserMainActivity.class);
-        startActivity(intent);
+        // To determine whether this is an account creation or a login,
+        // the database is queried at "Users/%CurrentUserID%.
+        mDatabase.child("Users/" + mAuth.getCurrentUser().getUid()).addListenerForSingleValueEvent(new ValueEventListener()
+        {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot)
+            {
+                // If the snapshot at that location returns null, it means
+                // it's an account creation, as there isn't an instance of
+                // the account stored in the database.
+                if(dataSnapshot.getValue() == null)
+                {
+                    // Therefore a new user object is created using the information
+                    // from the Firebase authentication store
+                    final User newUser = new User();
+                    newUser.setEmail(mAuth.getCurrentUser().getEmail());
+                    newUser.setUserID(mAuth.getCurrentUser().getUid());
+
+                    // This is then inserted into the database using the UID
+                    // as the key.
+                    mDatabase.child("Users").child(mAuth.getCurrentUser().getUid()).setValue(newUser);
+                    mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/inBand").setValue(false);
+                    mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/accountType").setValue("Pending");
+
+                    mProgressDialog.hide();
+                    finish();
+                    Intent intent = new Intent(RegisterActivity.this, PreSetupActivity.class);
+                    startActivity(intent);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError)
+            {
+
+            }
+        });
     }
 }

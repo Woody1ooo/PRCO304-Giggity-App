@@ -603,7 +603,7 @@ public class MusicianUserBandDetailsFragment extends Fragment implements YouTube
                 mApplyForPositionTwoButton.setBackgroundColor(getResources().getColor(R.color.buttonDisabledColor));
 
                 Glide.with(getContext()).using(new FirebaseImageLoader()).load
-                        (mBandProfileImageReference.child("ProfileImages/" + positionOneUserID + "/profileImage"))
+                        (mBandProfileImageReference.child("ProfileImages/" + positionTwoUserID + "/profileImage"))
                         .diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).override(350, 350).into(mPositionTwoProfileImageView);
             }
 

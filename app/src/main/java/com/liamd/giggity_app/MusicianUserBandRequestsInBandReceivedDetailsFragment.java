@@ -46,6 +46,8 @@ import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -86,6 +88,7 @@ public class MusicianUserBandRequestsInBandReceivedDetailsFragment extends Fragm
     private com.google.android.gms.maps.model.LatLng mUserConvertedLatLng;
     private String mYoutubeUrlEntered;
     private String mBandPosition;
+    private String mRequestStatus;
 
     // Location variables
     private double mDistance;
@@ -161,6 +164,25 @@ public class MusicianUserBandRequestsInBandReceivedDetailsFragment extends Fragm
 
         // Set the fragment title
         getActivity().setTitle("Band Requests");
+
+        // This value event listener gets the latest request status state so that a decision can never be overriden by two band users at the same time
+        if(getActivity() != null)
+        {
+            mDatabase.child("MusicianSentBandRequests/" + mUserId + "/" + mBandId + "/requestStatus").addValueEventListener(new ValueEventListener()
+            {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot)
+                {
+                    mRequestStatus = dataSnapshot.getValue().toString();
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError)
+                {
+
+                }
+            });
+        }
 
         return fragmentView;
     }
@@ -394,7 +416,7 @@ public class MusicianUserBandRequestsInBandReceivedDetailsFragment extends Fragm
             public void onClick(DialogInterface dialogInterface, int i)
             {
                 // If a decision hasn't yet been made allow the user to confirm this request
-                if(mSnapshot.child("MusicianSentBandRequests/" + mUserId + "/" + mBandId + "/requestStatus").getValue().toString().equals("Pending"))
+                if(mRequestStatus.equals("Pending"))
                 {
                     mDatabase.child("MusicianSentBandRequests/" + mUserId + "/" + mBandId + "/requestStatus").setValue("Accepted");
                     mDatabase.child("Users/" + mUserId + "/inBand").setValue(true);
@@ -414,13 +436,17 @@ public class MusicianUserBandRequestsInBandReceivedDetailsFragment extends Fragm
                     Notification notification = new Notification(notificationID, bandName + " has accepted your request to join their band!", "MusicianSentBandRequestAccepted");
                     mDatabase.child("Users/" + mUserId + "/notifications/" + notificationID + "/").setValue(notification);
 
+                    // Get the current date time for the news items
+                    Calendar calendar = Calendar.getInstance();
+                    Date date = calendar.getTime();
+
                     // This posts a news feed item
                     String newsFeedPushKey = mDatabase.child("NewsFeedItems/").push().getKey();
 
                     NewsFeedItem item = new NewsFeedItem(newsFeedPushKey,
                             mSnapshot.child("Users/" + mUserId + "/firstName").getValue().toString() + " " +
                                     mSnapshot.child("Users/" + mUserId + "/lastName").getValue().toString(),
-                            "has just joined " + mSnapshot.child("Bands/" + mBandId + "/name").getValue().toString() + ".", mBandId);
+                            "has just joined " + mSnapshot.child("Bands/" + mBandId + "/name").getValue().toString() + ".", mBandId, date);
 
                     item.setUserID(mUserId);
 
@@ -483,7 +509,7 @@ public class MusicianUserBandRequestsInBandReceivedDetailsFragment extends Fragm
             public void onClick(DialogInterface dialogInterface, int i)
             {
                 // If a decision hasn't yet been made allow the user to reject this request
-                if(mSnapshot.child("MusicianSentBandRequests/" + mUserId + "/" + mBandId + "/requestStatus").getValue().toString().equals("Pending"))
+                if(mRequestStatus.equals("Pending"))
                 {
                     mDatabase.child("MusicianSentBandRequests/" + mUserId + "/" + mBandId + "/requestStatus").setValue("Rejected");
 

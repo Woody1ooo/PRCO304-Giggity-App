@@ -8,7 +8,7 @@ import java.util.Comparator;
  * allow the list of gig objects to be sorted by date.
  */
 
-public class CustomComparator implements Comparator<Gig>
+public class CustomGigComparator implements Comparator<Gig>
 {
     @Override
     public int compare(Gig gig1, Gig gig2)

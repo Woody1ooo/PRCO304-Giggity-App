@@ -72,6 +72,9 @@ public class VenueUserMainActivity extends AppCompatActivity implements Navigati
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        // When the app is loaded this service is started
+        startService(new Intent(this, NotificationService.class));
+
         // Creates a reference to Firebase
         mAuth = FirebaseAuth.getInstance();
 
@@ -106,9 +109,6 @@ public class VenueUserMainActivity extends AppCompatActivity implements Navigati
         // Creates a reference to the storage element of firebase
         mStorage = FirebaseStorage.getInstance();
         mVenueImageReference = mStorage.getReference();
-
-        // When the app is loaded this service is started
-        startService(new Intent(this, NotificationService.class));
 
         // Initialise visual components
         setTitle("Home");

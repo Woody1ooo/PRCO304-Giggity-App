@@ -600,10 +600,17 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
                                 mDatabase.child("Gigs/" + mGigId).child("ticketCost").setValue(mTicketCost);
                                 mDatabase.child("Gigs/" + mGigId).child("ticketQuantity").setValue(mTicketQuantity);
 
-                                // This creates a ticket object and posts it to the database under the generated push key
-                                String newsItemId = mDatabase.child("NewsFeedItems").push().getKey();
-                                NewsFeedItem newsFeedItem = new NewsFeedItem(newsItemId, mVenueName, "has just posted a gig at their venue! Musicians wanted!", mGigId, mIsFeatured, mFeaturedWeekQuantity);
-                                mDatabase.child("NewsFeedItems/" + newsItemId + "/").setValue(newsFeedItem);
+                                // Get the current date time for the news items
+                                Calendar calendar = Calendar.getInstance();
+                                Date date = calendar.getTime();
+
+                                if(!mIsFeatured)
+                                {
+                                    // This creates a ticket object and posts it to the database under the generated push key
+                                    String newsItemId = mDatabase.child("NewsFeedItems").push().getKey();
+                                    NewsFeedItem newsFeedItem = new NewsFeedItem(newsItemId, mVenueName, "has just posted a gig at their venue! Musicians wanted!", mGigId, mIsFeatured, mFeaturedWeekQuantity, date);
+                                    mDatabase.child("NewsFeedItems/" + newsItemId + "/").setValue(newsFeedItem);
+                                }
 
                                 // A dialog is then shown to alert the user that the changes have been made
                                 final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -888,9 +895,13 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
 
                         mIsFeatured = true;
 
+                        // Get the current date time for the news items
+                        Calendar calendar = Calendar.getInstance();
+                        Date date = calendar.getTime();
+
                         // This creates a ticket object and posts it to the database under the generated push key
                         String newsItemId = mDatabase.child("NewsFeedItems").push().getKey();
-                        NewsFeedItem newsFeedItem = new NewsFeedItem(newsItemId, mVenueName, "has just posted a gig at their venue! Musicians wanted!", mGigId, mIsFeatured, mFeaturedWeekQuantity);
+                        NewsFeedItem newsFeedItem = new NewsFeedItem(newsItemId, mVenueName, "has just posted a gig at their venue! Musicians wanted!", mGigId, mIsFeatured, mFeaturedWeekQuantity, date);
                         mDatabase.child("NewsFeedItems/" + newsItemId + "/").setValue(newsFeedItem);
 
                         // This dialog is created to confirm that the users want to purchase the tickets

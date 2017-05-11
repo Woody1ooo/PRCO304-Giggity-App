@@ -75,6 +75,7 @@ public class MusicianUserGigRequestsReceivedDetailsFragment extends Fragment imp
     private com.google.android.gms.maps.model.LatLng mVenueLocation;
     private final static int MY_PERMISSIONS_REQUEST_WRITE_CALENDAR = 1;
     private boolean hasPermission = true;
+    private String mRequestStatus;
 
     public MusicianUserGigRequestsReceivedDetailsFragment()
     {
@@ -129,7 +130,6 @@ public class MusicianUserGigRequestsReceivedDetailsFragment extends Fragment imp
 
         // Set the fragment title
         getActivity().setTitle("Gig Requests");
-
 
         return fragmentView;
     }
@@ -186,6 +186,21 @@ public class MusicianUserGigRequestsReceivedDetailsFragment extends Fragment imp
         mGigStartDate = getArguments().getString("GigStartDate");
         mGigEndDate = getArguments().getString("GigEndDate");
 
+        mDatabase.child("VenueSentGigRequests/" + mVenueId + "/" + mGigId + "/" + mBandId + "/requestStatus").addValueEventListener(new ValueEventListener()
+        {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot)
+            {
+                mRequestStatus = dataSnapshot.getValue().toString();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError)
+            {
+
+            }
+        });
+
         // This takes the start and end dates and reformats them to look more visually appealing
         String formattedStartDateSectionOne = mGigStartDate.split(" ")[0];
         String formattedStartDateSectionTwo = mGigStartDate.split(" ")[1];
@@ -224,7 +239,7 @@ public class MusicianUserGigRequestsReceivedDetailsFragment extends Fragment imp
             @Override
             public void onClick(DialogInterface dialogInterface, int i)
             {
-                if(mSnapshot.child("VenueSentGigRequests/" + mVenueId + "/" + mGigId + "/" + mBandId + "/requestStatus").getValue().toString().equals("Pending"))
+                if(mRequestStatus.equals("Pending"))
                 {
                     mDatabase.child("VenueSentGigRequests/" + mVenueId + "/" + mGigId + "/" + mBandId + "/requestStatus").setValue("Accepted");
                     mDatabase.child("Gigs/" + mGigId + "/bookedAct").setValue(mBandId);
@@ -681,7 +696,7 @@ public class MusicianUserGigRequestsReceivedDetailsFragment extends Fragment imp
             @Override
             public void onClick(DialogInterface dialogInterface, int i)
             {
-                if(mSnapshot.child("VenueSentGigRequests/" + mVenueId + "/" + mGigId + "/" + mBandId + "/requestStatus").getValue().toString().equals("Pending"))
+                if(mRequestStatus.equals("Pending"))
                 {
                     mDatabase.child("VenueSentGigRequests/" + mVenueId + "/" + mGigId + "/" + mBandId + "/requestStatus").setValue("Rejected");
 

@@ -15,6 +15,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 
 /**
@@ -68,30 +69,32 @@ public class VenueUserHomeFragment extends Fragment
                     item = child.getValue(NewsFeedItem.class);
 
                     mListOfItems.add(item);
+                }
 
-                    // Loop through the items and determine whether it's a featured item. If so move it to the top of the list
-                    for (int i = 0; i < mListOfItems.size(); i++)
+                Collections.sort(mListOfItems, new CustomNewsItemComparator());
+
+                // Loop through the items and determine whether it's a featured item. If so move it to the top of the list
+                for (int i = 0; i < mListOfItems.size(); i++)
+                {
+                    if(mListOfItems.get(i).isFeatured())
                     {
-                        if(mListOfItems.get(i).isFeatured())
-                        {
-                            NewsFeedItem newsFeedItem;
-                            newsFeedItem = mListOfItems.get(i);
+                        NewsFeedItem newsFeedItem;
+                        newsFeedItem = mListOfItems.get(i);
 
-                            mListOfItems.remove(i);
-                            mListOfItems.add(0, newsFeedItem);
-                        }
+                        mListOfItems.remove(i);
+                        mListOfItems.add(0, newsFeedItem);
                     }
+                }
 
-                    if(getActivity() != null && adapter == null)
-                    {
-                        adapter = new NewsFeedAdapter(getActivity(), R.layout.news_feed_list, mListOfItems, dataSnapshot);
-                        mNewsFeedListView.setAdapter(adapter);
-                    }
+                if(getActivity() != null && adapter == null)
+                {
+                    adapter = new NewsFeedAdapter(getActivity(), R.layout.news_feed_list, mListOfItems, dataSnapshot);
+                    mNewsFeedListView.setAdapter(adapter);
+                }
 
-                    else if (getActivity() != null && adapter != null)
-                    {
-                        adapter.notifyDataSetChanged();
-                    }
+                else if (getActivity() != null && adapter != null)
+                {
+                    adapter.notifyDataSetChanged();
                 }
             }
 
