@@ -97,8 +97,7 @@
                 android:inputType="textPersonName"
                 android:ems="10"
                 android:id="@+id/lastNameTxt"
-                android:paddingLeft="10dp"
-                />
+                android:paddingLeft="10dp"/>
 
             <TextView
                 android:text="Genres"
@@ -211,6 +210,29 @@
 
             <NumberPicker
                 android:id="@+id/venueCapacityNumberPicker"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:id="@+id/userAgeHeadingTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="10dp"
+                android:paddingTop="20dp"
+                android:text="Age"
+                android:textColor="@color/cast_expanded_controller_background_color"
+                android:textSize="16sp"/>
+
+            <TextView
+                android:id="@+id/userAgeSelectedTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="10dp"
+                android:paddingTop="20dp"
+                android:text="No age selected!"/>
+
+            <NumberPicker
+                android:id="@+id/userAgeNumberPicker"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
 

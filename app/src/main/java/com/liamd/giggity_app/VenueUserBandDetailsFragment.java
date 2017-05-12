@@ -320,6 +320,8 @@ public class VenueUserBandDetailsFragment extends Fragment implements OnMapReady
             @Override
             public void onClick(DialogInterface dialogInterface, int i)
             {
+                boolean canCreateRequest = true;
+
                 // If the user has already submitted a request for this band then inform them and cancel the request
                 if(mSnapshot.child("VenueSentGigRequests/" + mVenueId + "/" + mGigId + "/" + mBandId).exists())
                 {
@@ -328,291 +330,636 @@ public class VenueUserBandDetailsFragment extends Fragment implements OnMapReady
 
                 else
                 {
-                    mDatabase.child("VenueSentGigRequests/" + mVenueId + "/" + mGigId + "/" + mBandId).child("bandID").setValue(mBandId);
-                    mDatabase.child("VenueSentGigRequests/" + mVenueId + "/" + mGigId + "/" + mBandId).child("bandName").setValue(mBandName);
-                    mDatabase.child("VenueSentGigRequests/" + mVenueId + "/" + mGigId + "/" + mBandId).child("gigStartDate").setValue(mSnapshot.child("Gigs/" + mGigId + "/startDate").getValue());
-                    mDatabase.child("VenueSentGigRequests/" + mVenueId + "/" + mGigId + "/" + mBandId).child("gigEndDate").setValue(mSnapshot.child("Gigs/" + mGigId + "/endDate").getValue());
-                    mDatabase.child("VenueSentGigRequests/" + mVenueId + "/" + mGigId + "/" + mBandId).child("gigName").setValue(mSnapshot.child("Gigs/" + mGigId + "/title").getValue().toString());
-                    mDatabase.child("VenueSentGigRequests/" + mVenueId + "/" + mGigId + "/" + mBandId).child("gigID").setValue(mGigId);
-                    mDatabase.child("VenueSentGigRequests/" + mVenueId + "/" + mGigId + "/" + mBandId).child("venueID").setValue(mVenueId);
-                    mDatabase.child("VenueSentGigRequests/" + mVenueId + "/" + mGigId + "/" + mBandId).child("venueName").setValue(mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString());
-                    mDatabase.child("VenueSentGigRequests/" + mVenueId + "/" + mGigId + "/" + mBandId).child("requestStatus").setValue("Pending");
+                    int gigAgeRestriction = Integer.parseInt(mSnapshot.child("Venues/" + mVenueId + "/minimumPerformerAge").getValue().toString());
+                    String numberOfBandPositions = mSnapshot.child("Bands/" + mBandId + "/numberOfPositions").getValue().toString();
 
-                    if(mSnapshot.child("Bands/" + mBandId + "/numberOfPositions").getValue().toString().equals("1"))
+                    if (numberOfBandPositions.equals("1"))
                     {
-                        // Check the position isn't vacant
-                        if (!mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString().equals("Vacant"))
+                        String positionOneUserId = mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString();
+
+                        if (Integer.parseInt(mSnapshot.child("Users/" + positionOneUserId + "/age").getValue().toString()) < gigAgeRestriction)
                         {
-                            String bandMemberUserID;
-                            String notificationID;
+                            canCreateRequest = false;
 
-                            // Get the band members user ID
-                            bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString();
+                            // A dialog is then shown to alert the user that the request cannot be made
+                            final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                            builder.setTitle("Error!");
+                            builder.setMessage("You cannot send a request to this band as one or more of their members are under the performing age restriction!");
+                            builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                            {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i)
+                                {
 
-                            // Generate a notification ID from the database
-                            notificationID = mDatabase.push().getKey();
+                                }
+                            });
+                            builder.setCancelable(false);
+                            builder.show();
+                        }
+                    } else if (numberOfBandPositions.equals("2"))
+                    {
+                        String positionOneUserId = mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString();
+                        String positionTwoUserId = mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString();
 
-                            Notification notification = new Notification(notificationID, mBandName + " has invited you to play at their gig!", "VenueSentGigRequestPending");
+                        if (!positionOneUserId.equals("Vacant"))
+                        {
+                            if (Integer.parseInt(mSnapshot.child("Users/" + positionOneUserId + "/age").getValue().toString()) < gigAgeRestriction)
+                            {
+                                canCreateRequest = false;
 
-                            mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
+                                // A dialog is then shown to alert the user that the request cannot be made
+                                final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                                builder.setTitle("Error!");
+                                builder.setMessage("You cannot send a request to this band as one or more of their members are under the performing age restriction!");
+                                builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                                {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i)
+                                    {
+
+                                    }
+                                });
+                                builder.setCancelable(false);
+                                builder.show();
+                            }
+                        } else if (!positionTwoUserId.equals("Vacant"))
+                        {
+                            if (Integer.parseInt(mSnapshot.child("Users/" + positionTwoUserId + "/age").getValue().toString()) < gigAgeRestriction)
+                            {
+                                canCreateRequest = false;
+
+                                // A dialog is then shown to alert the user that the request cannot be made
+                                final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                                builder.setTitle("Error!");
+                                builder.setMessage("You cannot send a request to this band as one or more of their members are under the performing age restriction!");
+                                builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                                {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i)
+                                    {
+                                    }
+                                });
+                                builder.setCancelable(false);
+                                builder.show();
+                            }
+                        }
+                    } else if (numberOfBandPositions.equals("3"))
+                    {
+                        String positionOneUserId = mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString();
+                        String positionTwoUserId = mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString();
+                        String positionThreeUserId = mSnapshot.child("Bands/" + mBandId + "/positionThreeMember").getValue().toString();
+
+                        if (!positionOneUserId.equals("Vacant"))
+                        {
+                            if (Integer.parseInt(mSnapshot.child("Users/" + positionOneUserId + "/age").getValue().toString()) < gigAgeRestriction)
+                            {
+                                canCreateRequest = false;
+
+                                // A dialog is then shown to alert the user that the request cannot be made
+                                final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                                builder.setTitle("Error!");
+                                builder.setMessage("You cannot send a request to this band as one or more of their members are under the performing age restriction!");
+                                builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                                {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i)
+                                    {
+
+                                    }
+                                });
+                                builder.setCancelable(false);
+                                builder.show();
+                            }
+                        } else if (!positionTwoUserId.equals("Vacant"))
+                        {
+                            if (Integer.parseInt(mSnapshot.child("Users/" + positionTwoUserId + "/age").getValue().toString()) < gigAgeRestriction)
+                            {
+                                canCreateRequest = false;
+
+                                // A dialog is then shown to alert the user that the request cannot be made
+                                final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                                builder.setTitle("Error!");
+                                builder.setMessage("You cannot send a request to this band as one or more of their members are under the performing age restriction!");
+                                builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                                {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i)
+                                    {
+                                    }
+                                });
+                                builder.setCancelable(false);
+                                builder.show();
+                            }
+                        } else if (!positionThreeUserId.equals("Vacant"))
+                        {
+                            if (Integer.parseInt(mSnapshot.child("Users/" + positionThreeUserId + "/age").getValue().toString()) < gigAgeRestriction)
+                            {
+                                canCreateRequest = false;
+
+                                // A dialog is then shown to alert the user that the request cannot be made
+                                final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                                builder.setTitle("Error!");
+                                builder.setMessage("You cannot send a request to this band as one or more of their members are under the performing age restriction!");
+                                builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                                {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i)
+                                    {
+                                    }
+                                });
+                                builder.setCancelable(false);
+                                builder.show();
+                            }
+                        }
+                    } else if (numberOfBandPositions.equals("4"))
+                    {
+                        String positionOneUserId = mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString();
+                        String positionTwoUserId = mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString();
+                        String positionThreeUserId = mSnapshot.child("Bands/" + mBandId + "/positionThreeMember").getValue().toString();
+                        String positionFourUserId = mSnapshot.child("Bands/" + mBandId + "/positionFourMember").getValue().toString();
+
+                        if (!positionOneUserId.equals("Vacant"))
+                        {
+                            if (Integer.parseInt(mSnapshot.child("Users/" + positionOneUserId + "/age").getValue().toString()) < gigAgeRestriction)
+                            {
+                                canCreateRequest = false;
+
+                                // A dialog is then shown to alert the user that the request cannot be made
+                                final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                                builder.setTitle("Error!");
+                                builder.setMessage("You cannot send a request to this band as one or more of their members are under the performing age restriction!");
+                                builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                                {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i)
+                                    {
+
+                                    }
+                                });
+                                builder.setCancelable(false);
+                                builder.show();
+                            }
+                        } else if (!positionTwoUserId.equals("Vacant"))
+                        {
+                            if (Integer.parseInt(mSnapshot.child("Users/" + positionTwoUserId + "/age").getValue().toString()) < gigAgeRestriction)
+                            {
+                                canCreateRequest = false;
+
+                                // A dialog is then shown to alert the user that the request cannot be made
+                                final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                                builder.setTitle("Error!");
+                                builder.setMessage("You cannot send a request to this band as one or more of their members are under the performing age restriction!");
+                                builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                                {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i)
+                                    {
+                                    }
+                                });
+                                builder.setCancelable(false);
+                                builder.show();
+                            }
+                        } else if (!positionThreeUserId.equals("Vacant"))
+                        {
+                            if (Integer.parseInt(mSnapshot.child("Users/" + positionThreeUserId + "/age").getValue().toString()) < gigAgeRestriction)
+                            {
+                                canCreateRequest = false;
+
+                                // A dialog is then shown to alert the user that the changes have been made
+                                final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                                builder.setTitle("Error!");
+                                builder.setMessage("You cannot send a request to this band as one or more of their members are under the performing age restriction!");
+                                builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                                {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i)
+                                    {
+                                    }
+                                });
+                                builder.setCancelable(false);
+                                builder.show();
+                            }
+                        } else if (!positionFourUserId.equals("Vacant"))
+                        {
+                            if (Integer.parseInt(mSnapshot.child("Users/" + positionFourUserId + "/age").getValue().toString()) < gigAgeRestriction)
+                            {
+                                canCreateRequest = false;
+
+                                // A dialog is then shown to alert the user that the changes have been made
+                                final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                                builder.setTitle("Error!");
+                                builder.setMessage("You cannot send a request to this band as one or more of their members are under the performing age restriction!");
+                                builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                                {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i)
+                                    {
+                                    }
+                                });
+                                builder.setCancelable(false);
+                                builder.show();
+                            }
+                        }
+                    } else if (numberOfBandPositions.equals("5"))
+                    {
+                        String positionOneUserId = mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString();
+                        String positionTwoUserId = mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString();
+                        String positionThreeUserId = mSnapshot.child("Bands/" + mBandId + "/positionThreeMember").getValue().toString();
+                        String positionFourUserId = mSnapshot.child("Bands/" + mBandId + "/positionFourMember").getValue().toString();
+                        String positionFiveUserId = mSnapshot.child("Bands/" + mBandId + "/positionFiveMember").getValue().toString();
+
+                        if (!positionOneUserId.equals("Vacant"))
+                        {
+                            if (Integer.parseInt(mSnapshot.child("Users/" + positionOneUserId + "/age").getValue().toString()) < gigAgeRestriction)
+                            {
+                                canCreateRequest = false;
+
+                                // A dialog is then shown to alert the user that the changes have been made
+                                final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                                builder.setTitle("Error!");
+                                builder.setMessage("You cannot send a request to this band as one or more of their members are under the performing age restriction!");
+                                builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                                {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i)
+                                    {
+
+                                    }
+                                });
+                                builder.setCancelable(false);
+                                builder.show();
+                            }
+                        } else if (!positionTwoUserId.equals("Vacant"))
+                        {
+                            if (Integer.parseInt(mSnapshot.child("Users/" + positionTwoUserId + "/age").getValue().toString()) < gigAgeRestriction)
+                            {
+                                canCreateRequest = false;
+
+                                // A dialog is then shown to alert the user that the changes have been made
+                                final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                                builder.setTitle("Error!");
+                                builder.setMessage("You cannot send a request to this band as one or more of their members are under the performing age restriction!");
+                                builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                                {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i)
+                                    {
+                                    }
+                                });
+                                builder.setCancelable(false);
+                                builder.show();
+                            }
+                        } else if (!positionThreeUserId.equals("Vacant"))
+                        {
+                            if (Integer.parseInt(mSnapshot.child("Users/" + positionThreeUserId + "/age").getValue().toString()) < gigAgeRestriction)
+                            {
+                                canCreateRequest = false;
+
+                                // A dialog is then shown to alert the user that the changes have been made
+                                final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                                builder.setTitle("Error!");
+                                builder.setMessage("You cannot send a request to this band as one or more of their members are under the performing age restriction!");
+                                builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                                {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i)
+                                    {
+                                    }
+                                });
+                                builder.setCancelable(false);
+                                builder.show();
+                            }
+                        } else if (!positionFourUserId.equals("Vacant"))
+                        {
+                            if (Integer.parseInt(mSnapshot.child("Users/" + positionFourUserId + "/age").getValue().toString()) < gigAgeRestriction)
+                            {
+                                canCreateRequest = false;
+
+                                // A dialog is then shown to alert the user that the changes have been made
+                                final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                                builder.setTitle("Error!");
+                                builder.setMessage("You cannot send a request to this band as one or more of their members are under the performing age restriction!");
+                                builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                                {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i)
+                                    {
+                                    }
+                                });
+                                builder.setCancelable(false);
+                                builder.show();
+                            }
+                        } else if (!positionFiveUserId.equals("Vacant"))
+                        {
+                            if (Integer.parseInt(mSnapshot.child("Users/" + positionFiveUserId + "/age").getValue().toString()) < gigAgeRestriction)
+                            {
+                                canCreateRequest = false;
+
+                                // A dialog is then shown to alert the user that the changes have been made
+                                final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                                builder.setTitle("Error!");
+                                builder.setMessage("You cannot send a request to this band as one or more of their members are under the performing age restriction!");
+                                builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                                {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i)
+                                    {
+                                    }
+                                });
+                                builder.setCancelable(false);
+                                builder.show();
+                            }
                         }
                     }
 
-                    // Check how many people in the band need notifications sent
-                    else if (mSnapshot.child("Bands/" + mBandId + "/numberOfPositions").getValue().toString().equals("2"))
+                    if(canCreateRequest)
                     {
-                        // Check the position isn't vacant
-                        if (!mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString().equals("Vacant"))
+                        mDatabase.child("VenueSentGigRequests/" + mVenueId + "/" + mGigId + "/" + mBandId).child("bandID").setValue(mBandId);
+                        mDatabase.child("VenueSentGigRequests/" + mVenueId + "/" + mGigId + "/" + mBandId).child("bandName").setValue(mBandName);
+                        mDatabase.child("VenueSentGigRequests/" + mVenueId + "/" + mGigId + "/" + mBandId).child("gigStartDate").setValue(mSnapshot.child("Gigs/" + mGigId + "/startDate").getValue());
+                        mDatabase.child("VenueSentGigRequests/" + mVenueId + "/" + mGigId + "/" + mBandId).child("gigEndDate").setValue(mSnapshot.child("Gigs/" + mGigId + "/endDate").getValue());
+                        mDatabase.child("VenueSentGigRequests/" + mVenueId + "/" + mGigId + "/" + mBandId).child("gigName").setValue(mSnapshot.child("Gigs/" + mGigId + "/title").getValue().toString());
+                        mDatabase.child("VenueSentGigRequests/" + mVenueId + "/" + mGigId + "/" + mBandId).child("gigID").setValue(mGigId);
+                        mDatabase.child("VenueSentGigRequests/" + mVenueId + "/" + mGigId + "/" + mBandId).child("venueID").setValue(mVenueId);
+                        mDatabase.child("VenueSentGigRequests/" + mVenueId + "/" + mGigId + "/" + mBandId).child("venueName").setValue(mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString());
+                        mDatabase.child("VenueSentGigRequests/" + mVenueId + "/" + mGigId + "/" + mBandId).child("requestStatus").setValue("Pending");
+
+                        if(mSnapshot.child("Bands/" + mBandId + "/numberOfPositions").getValue().toString().equals("1"))
                         {
-                            String bandMemberUserID;
-                            String notificationID;
+                            // Check the position isn't vacant
+                            if (!mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString().equals("Vacant"))
+                            {
+                                String bandMemberUserID;
+                                String notificationID;
 
-                            // Get the band members user ID
-                            bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString();
+                                // Get the band members user ID
+                                bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString();
 
-                            // Generate a notification ID from the database
-                            notificationID = mDatabase.push().getKey();
+                                // Generate a notification ID from the database
+                                notificationID = mDatabase.push().getKey();
 
-                            Notification notification = new Notification(notificationID, mBandName + " has invited you to play at their gig!", "VenueSentGigRequestPending");
+                                Notification notification = new Notification(notificationID, mBandName + " has invited you to play at their gig!", "VenueSentGigRequestPending");
 
-                            mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
+                                mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
+                            }
                         }
 
-                        // Check the position isn't vacant
-                        if (!mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString().equals("Vacant"))
+                        // Check how many people in the band need notifications sent
+                        else if (mSnapshot.child("Bands/" + mBandId + "/numberOfPositions").getValue().toString().equals("2"))
                         {
-                            String bandMemberUserID;
-                            String notificationID;
+                            // Check the position isn't vacant
+                            if (!mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString().equals("Vacant"))
+                            {
+                                String bandMemberUserID;
+                                String notificationID;
 
-                            // Get the band members user ID
-                            bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString();
+                                // Get the band members user ID
+                                bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString();
 
-                            // Generate a notification ID from the database
-                            notificationID = mDatabase.push().getKey();
+                                // Generate a notification ID from the database
+                                notificationID = mDatabase.push().getKey();
 
-                            Notification notification = new Notification(notificationID, mBandName + " has invited you to play at their gig!", "VenueSentGigRequestPending");
+                                Notification notification = new Notification(notificationID, mBandName + " has invited you to play at their gig!", "VenueSentGigRequestPending");
 
-                            mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
+                                mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
+                            }
+
+                            // Check the position isn't vacant
+                            if (!mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString().equals("Vacant"))
+                            {
+                                String bandMemberUserID;
+                                String notificationID;
+
+                                // Get the band members user ID
+                                bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString();
+
+                                // Generate a notification ID from the database
+                                notificationID = mDatabase.push().getKey();
+
+                                Notification notification = new Notification(notificationID, mBandName + " has invited you to play at their gig!", "VenueSentGigRequestPending");
+
+                                mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
+                            }
                         }
+
+                        // Check how many people in the band need notifications sent
+                        else if (mSnapshot.child("Bands/" + mBandId + "/numberOfPositions").getValue().toString().equals("3"))
+                        {
+                            // Check the position isn't vacant
+                            if (!mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString().equals("Vacant"))
+                            {
+                                String bandMemberUserID;
+                                String notificationID;
+
+                                // Get the band members user ID
+                                bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString();
+
+                                // Generate a notification ID from the database
+                                notificationID = mDatabase.push().getKey();
+
+                                Notification notification = new Notification(notificationID, mBandName + " has invited you to play at their gig!", "VenueSentGigRequestPending");
+
+                                mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
+                            }
+
+                            // Check the position isn't vacant
+                            if (!mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString().equals("Vacant"))
+                            {
+                                String bandMemberUserID;
+                                String notificationID;
+
+                                // Get the band members user ID
+                                bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString();
+
+                                // Generate a notification ID from the database
+                                notificationID = mDatabase.push().getKey();
+
+                                Notification notification = new Notification(notificationID, mBandName + " has invited you to play at their gig!", "VenueSentGigRequestPending");
+
+                                mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
+                            }
+
+                            // Check the position isn't vacant
+                            if (!mSnapshot.child("Bands/" + mBandId + "/positionThreeMember").getValue().toString().equals("Vacant"))
+                            {
+                                String bandMemberUserID;
+                                String notificationID;
+
+                                // Get the band members user ID
+                                bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionThreeMember").getValue().toString();
+
+                                // Generate a notification ID from the database
+                                notificationID = mDatabase.push().getKey();
+
+                                Notification notification = new Notification(notificationID, mBandName + " has invited you to play at their gig!", "VenueSentGigRequestPending");
+
+                                mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
+                            }
+                        }
+
+                        // Check how many people in the band need notifications sent
+                        else if (mSnapshot.child("Bands/" + mBandId + "/numberOfPositions").getValue().toString().equals("4"))
+                        {
+                            // Check the position isn't vacant
+                            if (!mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString().equals("Vacant"))
+                            {
+                                String bandMemberUserID;
+                                String notificationID;
+
+                                // Get the band members user ID
+                                bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString();
+
+                                // Generate a notification ID from the database
+                                notificationID = mDatabase.push().getKey();
+
+                                Notification notification = new Notification(notificationID, mBandName + " has invited you to play at their gig!", "VenueSentGigRequestPending");
+
+                                mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
+                            }
+
+                            // Check the position isn't vacant
+                            if (!mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString().equals("Vacant"))
+                            {
+                                String bandMemberUserID;
+                                String notificationID;
+
+                                // Get the band members user ID
+                                bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString();
+
+                                // Generate a notification ID from the database
+                                notificationID = mDatabase.push().getKey();
+
+                                Notification notification = new Notification(notificationID, mBandName + " has invited you to play at their gig!", "VenueSentGigRequestPending");
+
+                                mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
+                            }
+
+                            // Check the position isn't vacant
+                            if (!mSnapshot.child("Bands/" + mBandId + "/positionThreeMember").getValue().toString().equals("Vacant"))
+                            {
+                                String bandMemberUserID;
+                                String notificationID;
+
+                                // Get the band members user ID
+                                bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionThreeMember").getValue().toString();
+
+                                // Generate a notification ID from the database
+                                notificationID = mDatabase.push().getKey();
+
+                                Notification notification = new Notification(notificationID, mBandName + " has invited you to play at their gig!", "VenueSentGigRequestPending");
+
+                                mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
+                            }
+
+                            // Check the position isn't vacant
+                            if (!mSnapshot.child("Bands/" + mBandId + "/positionFourMember").getValue().toString().equals("Vacant"))
+                            {
+                                String bandMemberUserID;
+                                String notificationID;
+
+                                // Get the band members user ID
+                                bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionFourMember").getValue().toString();
+
+                                // Generate a notification ID from the database
+                                notificationID = mDatabase.push().getKey();
+
+                                Notification notification = new Notification(notificationID, mBandName + " has invited you to play at their gig!", "VenueSentGigRequestPending");
+
+                                mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
+                            }
+                        }
+
+                        // Check how many people in the band need notifications sent
+                        else if (mSnapshot.child("Bands/" + mBandId + "/numberOfPositions").getValue().toString().equals("5"))
+                        {
+                            // Check the position isn't vacant
+                            if (!mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString().equals("Vacant"))
+                            {
+                                String bandMemberUserID;
+                                String notificationID;
+
+                                // Get the band members user ID
+                                bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString();
+
+                                // Generate a notification ID from the database
+                                notificationID = mDatabase.push().getKey();
+
+                                Notification notification = new Notification(notificationID, mBandName + " has invited you to play at their gig!", "VenueSentGigRequestPending");
+
+                                mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
+                            }
+
+                            // Check the position isn't vacant
+                            if (!mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString().equals("Vacant"))
+                            {
+                                String bandMemberUserID;
+                                String notificationID;
+
+                                // Get the band members user ID
+                                bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString();
+
+                                // Generate a notification ID from the database
+                                notificationID = mDatabase.push().getKey();
+
+                                Notification notification = new Notification(notificationID, mBandName + " has invited you to play at their gig!", "VenueSentGigRequestPending");
+
+                                mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
+                            }
+
+                            // Check the position isn't vacant
+                            if (!mSnapshot.child("Bands/" + mBandId + "/positionThreeMember").getValue().toString().equals("Vacant"))
+                            {
+                                String bandMemberUserID;
+                                String notificationID;
+
+                                // Get the band members user ID
+                                bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionThreeMember").getValue().toString();
+
+                                // Generate a notification ID from the database
+                                notificationID = mDatabase.push().getKey();
+
+                                Notification notification = new Notification(notificationID, mBandName + " has invited you to play at their gig!", "VenueSentGigRequestPending");
+
+                                mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
+                            }
+
+                            // Check the position isn't vacant
+                            if (!mSnapshot.child("Bands/" + mBandId + "/positionFourMember").getValue().toString().equals("Vacant"))
+                            {
+                                String bandMemberUserID;
+                                String notificationID;
+
+                                // Get the band members user ID
+                                bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionFourMember").getValue().toString();
+
+                                // Generate a notification ID from the database
+                                notificationID = mDatabase.push().getKey();
+
+                                Notification notification = new Notification(notificationID, mBandName + " has invited you to play at their gig!", "VenueSentGigRequestPending");
+
+                                mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
+                            }
+
+                            // Check the position isn't vacant
+                            if (!mSnapshot.child("Bands/" + mBandId + "/positionFiveMember").getValue().toString().equals("Vacant"))
+                            {
+                                String bandMemberUserID;
+                                String notificationID;
+
+                                // Get the band members user ID
+                                bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionFiveMember").getValue().toString();
+
+                                // Generate a notification ID from the database
+                                notificationID = mDatabase.push().getKey();
+
+                                Notification notification = new Notification(notificationID, mBandName + " has invited you to play at their gig!", "VenueSentGigRequestPending");
+
+                                mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
+                            }
+                        }
+
+                        ConfirmDialog();
                     }
-
-                    // Check how many people in the band need notifications sent
-                    else if (mSnapshot.child("Bands/" + mBandId + "/numberOfPositions").getValue().toString().equals("3"))
-                    {
-                        // Check the position isn't vacant
-                        if (!mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString().equals("Vacant"))
-                        {
-                            String bandMemberUserID;
-                            String notificationID;
-
-                            // Get the band members user ID
-                            bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString();
-
-                            // Generate a notification ID from the database
-                            notificationID = mDatabase.push().getKey();
-
-                            Notification notification = new Notification(notificationID, mBandName + " has invited you to play at their gig!", "VenueSentGigRequestPending");
-
-                            mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
-                        }
-
-                        // Check the position isn't vacant
-                        if (!mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString().equals("Vacant"))
-                        {
-                            String bandMemberUserID;
-                            String notificationID;
-
-                            // Get the band members user ID
-                            bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString();
-
-                            // Generate a notification ID from the database
-                            notificationID = mDatabase.push().getKey();
-
-                            Notification notification = new Notification(notificationID, mBandName + " has invited you to play at their gig!", "VenueSentGigRequestPending");
-
-                            mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
-                        }
-
-                        // Check the position isn't vacant
-                        if (!mSnapshot.child("Bands/" + mBandId + "/positionThreeMember").getValue().toString().equals("Vacant"))
-                        {
-                            String bandMemberUserID;
-                            String notificationID;
-
-                            // Get the band members user ID
-                            bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionThreeMember").getValue().toString();
-
-                            // Generate a notification ID from the database
-                            notificationID = mDatabase.push().getKey();
-
-                            Notification notification = new Notification(notificationID, mBandName + " has invited you to play at their gig!", "VenueSentGigRequestPending");
-
-                            mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
-                        }
-                    }
-
-                    // Check how many people in the band need notifications sent
-                    else if (mSnapshot.child("Bands/" + mBandId + "/numberOfPositions").getValue().toString().equals("4"))
-                    {
-                        // Check the position isn't vacant
-                        if (!mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString().equals("Vacant"))
-                        {
-                            String bandMemberUserID;
-                            String notificationID;
-
-                            // Get the band members user ID
-                            bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString();
-
-                            // Generate a notification ID from the database
-                            notificationID = mDatabase.push().getKey();
-
-                            Notification notification = new Notification(notificationID, mBandName + " has invited you to play at their gig!", "VenueSentGigRequestPending");
-
-                            mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
-                        }
-
-                        // Check the position isn't vacant
-                        if (!mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString().equals("Vacant"))
-                        {
-                            String bandMemberUserID;
-                            String notificationID;
-
-                            // Get the band members user ID
-                            bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString();
-
-                            // Generate a notification ID from the database
-                            notificationID = mDatabase.push().getKey();
-
-                            Notification notification = new Notification(notificationID, mBandName + " has invited you to play at their gig!", "VenueSentGigRequestPending");
-
-                            mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
-                        }
-
-                        // Check the position isn't vacant
-                        if (!mSnapshot.child("Bands/" + mBandId + "/positionThreeMember").getValue().toString().equals("Vacant"))
-                        {
-                            String bandMemberUserID;
-                            String notificationID;
-
-                            // Get the band members user ID
-                            bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionThreeMember").getValue().toString();
-
-                            // Generate a notification ID from the database
-                            notificationID = mDatabase.push().getKey();
-
-                            Notification notification = new Notification(notificationID, mBandName + " has invited you to play at their gig!", "VenueSentGigRequestPending");
-
-                            mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
-                        }
-
-                        // Check the position isn't vacant
-                        if (!mSnapshot.child("Bands/" + mBandId + "/positionFourMember").getValue().toString().equals("Vacant"))
-                        {
-                            String bandMemberUserID;
-                            String notificationID;
-
-                            // Get the band members user ID
-                            bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionFourMember").getValue().toString();
-
-                            // Generate a notification ID from the database
-                            notificationID = mDatabase.push().getKey();
-
-                            Notification notification = new Notification(notificationID, mBandName + " has invited you to play at their gig!", "VenueSentGigRequestPending");
-
-                            mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
-                        }
-                    }
-
-                    // Check how many people in the band need notifications sent
-                    else if (mSnapshot.child("Bands/" + mBandId + "/numberOfPositions").getValue().toString().equals("5"))
-                    {
-                        // Check the position isn't vacant
-                        if (!mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString().equals("Vacant"))
-                        {
-                            String bandMemberUserID;
-                            String notificationID;
-
-                            // Get the band members user ID
-                            bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString();
-
-                            // Generate a notification ID from the database
-                            notificationID = mDatabase.push().getKey();
-
-                            Notification notification = new Notification(notificationID, mBandName + " has invited you to play at their gig!", "VenueSentGigRequestPending");
-
-                            mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
-                        }
-
-                        // Check the position isn't vacant
-                        if (!mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString().equals("Vacant"))
-                        {
-                            String bandMemberUserID;
-                            String notificationID;
-
-                            // Get the band members user ID
-                            bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString();
-
-                            // Generate a notification ID from the database
-                            notificationID = mDatabase.push().getKey();
-
-                            Notification notification = new Notification(notificationID, mBandName + " has invited you to play at their gig!", "VenueSentGigRequestPending");
-
-                            mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
-                        }
-
-                        // Check the position isn't vacant
-                        if (!mSnapshot.child("Bands/" + mBandId + "/positionThreeMember").getValue().toString().equals("Vacant"))
-                        {
-                            String bandMemberUserID;
-                            String notificationID;
-
-                            // Get the band members user ID
-                            bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionThreeMember").getValue().toString();
-
-                            // Generate a notification ID from the database
-                            notificationID = mDatabase.push().getKey();
-
-                            Notification notification = new Notification(notificationID, mBandName + " has invited you to play at their gig!", "VenueSentGigRequestPending");
-
-                            mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
-                        }
-
-                        // Check the position isn't vacant
-                        if (!mSnapshot.child("Bands/" + mBandId + "/positionFourMember").getValue().toString().equals("Vacant"))
-                        {
-                            String bandMemberUserID;
-                            String notificationID;
-
-                            // Get the band members user ID
-                            bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionFourMember").getValue().toString();
-
-                            // Generate a notification ID from the database
-                            notificationID = mDatabase.push().getKey();
-
-                            Notification notification = new Notification(notificationID, mBandName + " has invited you to play at their gig!", "VenueSentGigRequestPending");
-
-                            mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
-                        }
-
-                        // Check the position isn't vacant
-                        if (!mSnapshot.child("Bands/" + mBandId + "/positionFiveMember").getValue().toString().equals("Vacant"))
-                        {
-                            String bandMemberUserID;
-                            String notificationID;
-
-                            // Get the band members user ID
-                            bandMemberUserID = mSnapshot.child("Bands/" + mBandId + "/positionFiveMember").getValue().toString();
-
-                            // Generate a notification ID from the database
-                            notificationID = mDatabase.push().getKey();
-
-                            Notification notification = new Notification(notificationID, mBandName + " has invited you to play at their gig!", "VenueSentGigRequestPending");
-
-                            mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
-                        }
-                    }
-
-                    ConfirmDialog();
                 }
             }
         });

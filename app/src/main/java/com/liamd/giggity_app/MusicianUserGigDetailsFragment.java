@@ -242,6 +242,8 @@ public class MusicianUserGigDetailsFragment extends Fragment implements OnMapRea
             @Override
             public void onClick(DialogInterface dialogInterface, int i)
             {
+                boolean canCreateRequest = true;
+
                 // If the user has already submitted a request for this gig then inform them and cancel the request
                 if(mSnapshot.child("BandSentGigRequests/" + mBandId + "/" + mGigId).exists())
                 {
@@ -250,30 +252,403 @@ public class MusicianUserGigDetailsFragment extends Fragment implements OnMapRea
 
                 else
                 {
-                    mDatabase.child("BandSentGigRequests/" + mBandId + "/" + mGigId).child("bandID").setValue(mBandId);
-                    mDatabase.child("BandSentGigRequests/" + mBandId + "/" + mGigId).child("bandName").setValue(mSnapshot.child("Bands/" + mBandId + "/name").getValue().toString());
-                    mDatabase.child("BandSentGigRequests/" + mBandId + "/" + mGigId).child("venueName").setValue(mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString());
-                    mDatabase.child("BandSentGigRequests/" + mBandId + "/" + mGigId).child("gigStartDate").setValue(mSnapshot.child("Gigs/" + mGigId + "/startDate").getValue());
-                    mDatabase.child("BandSentGigRequests/" + mBandId + "/" + mGigId).child("gigEndDate").setValue(mSnapshot.child("Gigs/" + mGigId + "/endDate").getValue());
-                    mDatabase.child("BandSentGigRequests/" + mBandId + "/" + mGigId).child("gigName").setValue(mSnapshot.child("Gigs/" + mGigId + "/title").getValue());
-                    mDatabase.child("BandSentGigRequests/" + mBandId + "/" + mGigId).child("gigID").setValue(mGigId);
-                    mDatabase.child("BandSentGigRequests/" + mBandId + "/" + mGigId).child("venueID").setValue(mVenueId);
-                    mDatabase.child("BandSentGigRequests/" + mBandId + "/" + mGigId).child("requestStatus").setValue("Pending");
+                    int gigAgeRestriction = Integer.parseInt(mSnapshot.child("Venues/" + mVenueId + "/minimumPerformerAge").getValue().toString());
+                    String numberOfBandPositions = mSnapshot.child("Bands/" + mBandId + "/numberOfPositions").getValue().toString();
 
-                    // This posts a notification to the database to be picked up by the user who submitted the request
-                    String notificationID;
-                    String bandName;
+                    if(numberOfBandPositions.equals("1"))
+                    {
+                        String positionOneUserId = mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString();
 
-                    // Generate a notification ID from the database
-                    notificationID = mDatabase.push().getKey();
+                        if(Integer.parseInt(mSnapshot.child("Users/" + positionOneUserId + "/age").getValue().toString()) < gigAgeRestriction)
+                        {
+                            canCreateRequest = false;
 
-                    // Get the band's name
-                    bandName = mSnapshot.child("Bands/" + mBandId + "/name").getValue().toString();
+                            // A dialog is then shown to alert the user that the request cannot be made
+                            final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                            builder.setTitle("Error!");
+                            builder.setMessage("You cannot apply for this gig as one or more of your band members are under the age restriction placed on this gig!");
+                            builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                            {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i)
+                                {
 
-                    Notification notification = new Notification(notificationID, bandName + " has requested to play at " + mGigNameTextView.getText().toString() + "!", "BandSentGigRequestPending");
-                    mDatabase.child("Users/" + mSnapshot.child("Venues/" + mVenueId + "/userID").getValue().toString() + "/notifications/" + notificationID + "/").setValue(notification);
+                                }
+                            });
+                            builder.setCancelable(false);
+                            builder.show();
+                        }
+                    }
 
-                    ConfirmDialog();
+                    else if(numberOfBandPositions.equals("2"))
+                    {
+                       String positionOneUserId = mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString();
+                       String positionTwoUserId = mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString();
+
+                        if(!positionOneUserId.equals("Vacant"))
+                        {
+                            if(Integer.parseInt(mSnapshot.child("Users/" + positionOneUserId + "/age").getValue().toString()) < gigAgeRestriction)
+                            {
+                                canCreateRequest = false;
+
+                                // A dialog is then shown to alert the user that the request cannot be made
+                                final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                                builder.setTitle("Error!");
+                                builder.setMessage("You cannot apply for this as one or more of your band members are under the age restriction placed by this gig!");
+                                builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                                {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i)
+                                    {
+
+                                    }
+                                });
+                                builder.setCancelable(false);
+                                builder.show();
+                            }
+                        }
+
+                        else if(!positionTwoUserId.equals("Vacant"))
+                        {
+                            if(Integer.parseInt(mSnapshot.child("Users/" + positionTwoUserId + "/age").getValue().toString()) < gigAgeRestriction)
+                            {
+                                canCreateRequest = false;
+
+                                // A dialog is then shown to alert the user that the request cannot be made
+                                final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                                builder.setTitle("Error!");
+                                builder.setMessage("You cannot apply for this as one or more of your band members are under the age restriction placed by this gig!");
+                                builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                                {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i)
+                                    {
+                                    }
+                                });
+                                builder.setCancelable(false);
+                                builder.show();
+                            }
+                        }
+                    }
+
+                    else if(numberOfBandPositions.equals("3"))
+                    {
+                        String positionOneUserId = mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString();
+                        String positionTwoUserId = mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString();
+                        String positionThreeUserId = mSnapshot.child("Bands/" + mBandId + "/positionThreeMember").getValue().toString();
+
+                        if(!positionOneUserId.equals("Vacant"))
+                        {
+                            if(Integer.parseInt(mSnapshot.child("Users/" + positionOneUserId + "/age").getValue().toString()) < gigAgeRestriction)
+                            {
+                                canCreateRequest = false;
+
+                                // A dialog is then shown to alert the user that the request cannot be made
+                                final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                                builder.setTitle("Error!");
+                                builder.setMessage("You cannot apply for this as one or more of your band members are under the age restriction placed by this gig!");
+                                builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                                {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i)
+                                    {
+
+                                    }
+                                });
+                                builder.setCancelable(false);
+                                builder.show();
+                            }
+                        }
+
+                        else if(!positionTwoUserId.equals("Vacant"))
+                        {
+                            if(Integer.parseInt(mSnapshot.child("Users/" + positionTwoUserId + "/age").getValue().toString()) < gigAgeRestriction)
+                            {
+                                canCreateRequest = false;
+
+                                // A dialog is then shown to alert the user that the request cannot be made
+                                final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                                builder.setTitle("Error!");
+                                builder.setMessage("You cannot apply for this as one or more of your band members are under the age restriction placed by this gig!");
+                                builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                                {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i)
+                                    {
+                                    }
+                                });
+                                builder.setCancelable(false);
+                                builder.show();
+                            }
+                        }
+
+                        else if(!positionThreeUserId.equals("Vacant"))
+                        {
+                            if(Integer.parseInt(mSnapshot.child("Users/" + positionThreeUserId + "/age").getValue().toString()) < gigAgeRestriction)
+                            {
+                                canCreateRequest = false;
+
+                                // A dialog is then shown to alert the user that the request cannot be made
+                                final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                                builder.setTitle("Error!");
+                                builder.setMessage("You cannot apply for this as one or more of your band members are under the age restriction placed by this gig!");
+                                builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                                {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i)
+                                    {
+                                    }
+                                });
+                                builder.setCancelable(false);
+                                builder.show();
+                            }
+                        }
+                    }
+
+                    else if(numberOfBandPositions.equals("4"))
+                    {
+                        String positionOneUserId = mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString();
+                        String positionTwoUserId = mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString();
+                        String positionThreeUserId = mSnapshot.child("Bands/" + mBandId + "/positionThreeMember").getValue().toString();
+                        String positionFourUserId = mSnapshot.child("Bands/" + mBandId + "/positionFourMember").getValue().toString();
+
+                        if(!positionOneUserId.equals("Vacant"))
+                        {
+                            if(Integer.parseInt(mSnapshot.child("Users/" + positionOneUserId + "/age").getValue().toString()) < gigAgeRestriction)
+                            {
+                                canCreateRequest = false;
+
+                                // A dialog is then shown to alert the user that the request cannot be made
+                                final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                                builder.setTitle("Error!");
+                                builder.setMessage("You cannot apply for this as one or more of your band members are under the age restriction placed by this gig!");
+                                builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                                {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i)
+                                    {
+
+                                    }
+                                });
+                                builder.setCancelable(false);
+                                builder.show();
+                            }
+                        }
+
+                        else if(!positionTwoUserId.equals("Vacant"))
+                        {
+                            if(Integer.parseInt(mSnapshot.child("Users/" + positionTwoUserId + "/age").getValue().toString()) < gigAgeRestriction)
+                            {
+                                canCreateRequest = false;
+
+                                // A dialog is then shown to alert the user that the request cannot be made
+                                final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                                builder.setTitle("Error!");
+                                builder.setMessage("You cannot apply for this as one or more of your band members are under the age restriction placed by this gig!");
+                                builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                                {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i)
+                                    {
+                                    }
+                                });
+                                builder.setCancelable(false);
+                                builder.show();
+                            }
+                        }
+
+                        else if(!positionThreeUserId.equals("Vacant"))
+                        {
+                            if(Integer.parseInt(mSnapshot.child("Users/" + positionThreeUserId + "/age").getValue().toString()) < gigAgeRestriction)
+                            {
+                                canCreateRequest = false;
+
+                                // A dialog is then shown to alert the user that the changes have been made
+                                final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                                builder.setTitle("Error!");
+                                builder.setMessage("You cannot apply for this as one or more of your band members are under the age restriction placed by this gig!");
+                                builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                                {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i)
+                                    {
+                                    }
+                                });
+                                builder.setCancelable(false);
+                                builder.show();
+                            }
+                        }
+
+                        else if(!positionFourUserId.equals("Vacant"))
+                        {
+                            if(Integer.parseInt(mSnapshot.child("Users/" + positionFourUserId + "/age").getValue().toString()) < gigAgeRestriction)
+                            {
+                                canCreateRequest = false;
+
+                                // A dialog is then shown to alert the user that the changes have been made
+                                final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                                builder.setTitle("Error!");
+                                builder.setMessage("You cannot apply for this as one or more of your band members are under the age restriction placed by this gig!");
+                                builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                                {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i)
+                                    {
+                                    }
+                                });
+                                builder.setCancelable(false);
+                                builder.show();
+                            }
+                        }
+                    }
+
+                    else if(numberOfBandPositions.equals("5"))
+                    {
+                        String positionOneUserId = mSnapshot.child("Bands/" + mBandId + "/positionOneMember").getValue().toString();
+                        String positionTwoUserId = mSnapshot.child("Bands/" + mBandId + "/positionTwoMember").getValue().toString();
+                        String positionThreeUserId = mSnapshot.child("Bands/" + mBandId + "/positionThreeMember").getValue().toString();
+                        String positionFourUserId = mSnapshot.child("Bands/" + mBandId + "/positionFourMember").getValue().toString();
+                        String positionFiveUserId = mSnapshot.child("Bands/" + mBandId + "/positionFiveMember").getValue().toString();
+
+                        if(!positionOneUserId.equals("Vacant"))
+                        {
+                            if(Integer.parseInt(mSnapshot.child("Users/" + positionOneUserId + "/age").getValue().toString()) < gigAgeRestriction)
+                            {
+                                canCreateRequest = false;
+
+                                // A dialog is then shown to alert the user that the changes have been made
+                                final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                                builder.setTitle("Error!");
+                                builder.setMessage("You cannot apply for this as one or more of your band members are under the age restriction placed by this gig!");
+                                builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                                {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i)
+                                    {
+
+                                    }
+                                });
+                                builder.setCancelable(false);
+                                builder.show();
+                            }
+                        }
+
+                        else if(!positionTwoUserId.equals("Vacant"))
+                        {
+                            if(Integer.parseInt(mSnapshot.child("Users/" + positionTwoUserId + "/age").getValue().toString()) < gigAgeRestriction)
+                            {
+                                canCreateRequest = false;
+
+                                // A dialog is then shown to alert the user that the changes have been made
+                                final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                                builder.setTitle("Error!");
+                                builder.setMessage("You cannot apply for this as one or more of your band members are under the age restriction placed by this gig!");
+                                builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                                {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i)
+                                    {
+                                    }
+                                });
+                                builder.setCancelable(false);
+                                builder.show();
+                            }
+                        }
+
+                        else if(!positionThreeUserId.equals("Vacant"))
+                        {
+                            if(Integer.parseInt(mSnapshot.child("Users/" + positionThreeUserId + "/age").getValue().toString()) < gigAgeRestriction)
+                            {
+                                canCreateRequest = false;
+
+                                // A dialog is then shown to alert the user that the changes have been made
+                                final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                                builder.setTitle("Error!");
+                                builder.setMessage("You cannot apply for this as one or more of your band members are under the age restriction placed by this gig!");
+                                builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                                {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i)
+                                    {
+                                    }
+                                });
+                                builder.setCancelable(false);
+                                builder.show();
+                            }
+                        }
+
+                        else if(!positionFourUserId.equals("Vacant"))
+                        {
+                            if(Integer.parseInt(mSnapshot.child("Users/" + positionFourUserId + "/age").getValue().toString()) < gigAgeRestriction)
+                            {
+                                canCreateRequest = false;
+
+                                // A dialog is then shown to alert the user that the changes have been made
+                                final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                                builder.setTitle("Error!");
+                                builder.setMessage("You cannot apply for this as one or more of your band members are under the age restriction placed by this gig!");
+                                builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                                {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i)
+                                    {
+                                    }
+                                });
+                                builder.setCancelable(false);
+                                builder.show();
+                            }
+                        }
+
+                        else if(!positionFiveUserId.equals("Vacant"))
+                        {
+                            if(Integer.parseInt(mSnapshot.child("Users/" + positionFiveUserId + "/age").getValue().toString()) < gigAgeRestriction)
+                            {
+                                canCreateRequest = false;
+
+                                // A dialog is then shown to alert the user that the changes have been made
+                                final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                                builder.setTitle("Error!");
+                                builder.setMessage("You cannot apply for this as one or more of your band members are under the age restriction placed by this gig!");
+                                builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                                {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i)
+                                    {
+                                    }
+                                });
+                                builder.setCancelable(false);
+                                builder.show();
+                            }
+                        }
+                    }
+
+                    if(canCreateRequest)
+                    {
+                        mDatabase.child("BandSentGigRequests/" + mBandId + "/" + mGigId).child("bandID").setValue(mBandId);
+                        mDatabase.child("BandSentGigRequests/" + mBandId + "/" + mGigId).child("bandName").setValue(mSnapshot.child("Bands/" + mBandId + "/name").getValue().toString());
+                        mDatabase.child("BandSentGigRequests/" + mBandId + "/" + mGigId).child("venueName").setValue(mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString());
+                        mDatabase.child("BandSentGigRequests/" + mBandId + "/" + mGigId).child("gigStartDate").setValue(mSnapshot.child("Gigs/" + mGigId + "/startDate").getValue());
+                        mDatabase.child("BandSentGigRequests/" + mBandId + "/" + mGigId).child("gigEndDate").setValue(mSnapshot.child("Gigs/" + mGigId + "/endDate").getValue());
+                        mDatabase.child("BandSentGigRequests/" + mBandId + "/" + mGigId).child("gigName").setValue(mSnapshot.child("Gigs/" + mGigId + "/title").getValue());
+                        mDatabase.child("BandSentGigRequests/" + mBandId + "/" + mGigId).child("gigID").setValue(mGigId);
+                        mDatabase.child("BandSentGigRequests/" + mBandId + "/" + mGigId).child("venueID").setValue(mVenueId);
+                        mDatabase.child("BandSentGigRequests/" + mBandId + "/" + mGigId).child("requestStatus").setValue("Pending");
+
+                        // This posts a notification to the database to be picked up by the user who submitted the request
+                        String notificationID;
+                        String bandName;
+
+                        // Generate a notification ID from the database
+                        notificationID = mDatabase.push().getKey();
+
+                        // Get the band's name
+                        bandName = mSnapshot.child("Bands/" + mBandId + "/name").getValue().toString();
+
+                        Notification notification = new Notification(notificationID, bandName + " has requested to play at " + mGigNameTextView.getText().toString() + "!", "BandSentGigRequestPending");
+                        mDatabase.child("Users/" + mSnapshot.child("Venues/" + mVenueId + "/userID").getValue().toString() + "/notifications/" + notificationID + "/").setValue(notification);
+
+                        ConfirmDialog();
+                    }
                 }
             }
         });

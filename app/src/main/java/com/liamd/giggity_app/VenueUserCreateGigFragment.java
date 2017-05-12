@@ -78,6 +78,8 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
     private CheckBox mMatchVenueCapacityCheckBox;
     private NumberPicker mTicketQuantityNumberPicker;
     private CheckBox mFeaturedItemCheckBox;
+    private TextView mEntryAgeSelectedTextView;
+    private NumberPicker mEntryAgeSelectedNumberPicker;
     private Button mCreateGigButton;
 
     // Declare Firebase specific variables
@@ -159,6 +161,11 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
         mTicketQuantityNumberPicker.setMinValue(1);
 
         mFeaturedItemCheckBox = (CheckBox) fragmentView.findViewById(R.id.featuredItemCheckBox);
+
+        mEntryAgeSelectedTextView = (TextView) fragmentView.findViewById(R.id.entryAgeSelectedTextView);
+        mEntryAgeSelectedNumberPicker = (NumberPicker) fragmentView.findViewById(R.id.entryAgeNumberPicker);
+        mEntryAgeSelectedNumberPicker.setMinValue(0);
+        mEntryAgeSelectedNumberPicker.setMaxValue(100);
 
         mCreateGigButton = (Button) fragmentView.findViewById(R.id.createGigButton);
 
@@ -354,6 +361,15 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
             public void onCancelled(DatabaseError databaseError)
             {
 
+            }
+        });
+
+        mEntryAgeSelectedNumberPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener()
+        {
+            @Override
+            public void onValueChange(NumberPicker numberPicker, int oldValue, int newValue)
+            {
+                mEntryAgeSelectedTextView.setText(newValue + " years");
             }
         });
 
@@ -589,6 +605,12 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
                                         mVenueId,
                                         mGigId);
 
+                                // Set the age restriction against the gig if one has been set
+                                if(mEntryAgeSelectedNumberPicker.getValue() != 0)
+                                {
+                                    gigToInsert.setAgeRestriction(mEntryAgeSelectedNumberPicker.getValue());
+                                }
+
                                 // This is then inserted into the database using a push
                                 // command to generate a new random identifier
                                 mDatabase.child("Gigs/" + mGigId).setValue(gigToInsert);
@@ -697,6 +719,12 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
                                             mVenueId,
                                             mGigId);
 
+                                    // Set the age restriction against the gig if one has been set
+                                    if(mEntryAgeSelectedNumberPicker.getValue() != 0)
+                                    {
+                                        gigToInsert.setAgeRestriction(mEntryAgeSelectedNumberPicker.getValue());
+                                    }
+
                                     // This is then inserted into the database using a push
                                     // command to generate a new random identifier
                                     mDatabase.child("Gigs/" + mGigId).setValue(gigToInsert);
@@ -764,8 +792,6 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
         });
         builder.show();
     }
-
-
 
     // This method takes a snapshot of the database as a parameter and returns a
     // list of trimmed strings to populate the list of genres that the user selected
@@ -915,6 +941,7 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
                             {
                                 dialogInterface.dismiss();
                                 mFeaturedItemCheckBox.setEnabled(false);
+                                mFeaturedItemCheckBox.setChecked(true);
                                 ticketPickerDialog.dismiss();
                             }
                         });

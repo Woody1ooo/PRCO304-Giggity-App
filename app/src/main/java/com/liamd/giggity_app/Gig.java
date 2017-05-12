@@ -17,6 +17,7 @@ public class Gig
     private String bookedAct;
     private int ticketCost;
     private int ticketQuantity;
+    private int ageRestriction;
 
     public Gig()
     {
@@ -150,5 +151,15 @@ public class Gig
     public void setTicketQuantity(int ticketQuantity)
     {
         this.ticketQuantity = ticketQuantity;
+    }
+
+    public int getAgeRestriction()
+    {
+        return ageRestriction;
+    }
+
+    public void setAgeRestriction(int ageRestriction)
+    {
+        this.ageRestriction = ageRestriction;
     }
 }

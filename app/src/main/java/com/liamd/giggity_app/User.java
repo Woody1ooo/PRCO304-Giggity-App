@@ -19,6 +19,7 @@ public class User
     private String homeAddress;
     private double musicianDistance;
     private boolean isInBand;
+    private int age;
 
     public User()
     {
@@ -177,5 +178,15 @@ public class User
     public void setInBand(boolean inBand)
     {
         isInBand = inBand;
+    }
+
+    public int getAge()
+    {
+        return age;
+    }
+
+    public void setAge(int age)
+    {
+        this.age = age;
     }
 }

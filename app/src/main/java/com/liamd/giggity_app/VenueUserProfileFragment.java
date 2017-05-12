@@ -1,18 +1,15 @@
 package com.liamd.giggity_app;
-import android.*;
 import android.Manifest;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -67,6 +64,8 @@ public class VenueUserProfileFragment extends Fragment
     private TextView venueCapacityTextView;
     private NumberPicker venueCapacityNumberPicker;
     private Button saveButton;
+    private TextView minimumPerformerAgeTextView;
+    private NumberPicker minimumPerformerAgeNumberPicker;
     private ProgressDialog mProgressDialog;
 
     // Declare Firebase specific variables
@@ -126,6 +125,10 @@ public class VenueUserProfileFragment extends Fragment
         venueCapacityNumberPicker = (NumberPicker) fragmentView.findViewById(R.id.venueCapacityNumberPicker);
         venueCapacityNumberPicker.setMinValue(1);
         venueCapacityNumberPicker.setMaxValue(1000);
+        minimumPerformerAgeTextView = (TextView) fragmentView.findViewById(R.id.minimumAgeSelectedTextView);
+        minimumPerformerAgeNumberPicker = (NumberPicker) fragmentView.findViewById(R.id.minimumAgeNumberPicker);
+        minimumPerformerAgeNumberPicker.setMinValue(1);
+        minimumPerformerAgeNumberPicker.setMaxValue(100);
         saveButton = (Button) fragmentView.findViewById(R.id.saveButton);
         mProgressDialog = new ProgressDialog(getContext());
 
@@ -191,6 +194,15 @@ public class VenueUserProfileFragment extends Fragment
             }
         });
 
+        minimumPerformerAgeNumberPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener()
+        {
+            @Override
+            public void onValueChange(NumberPicker numberPicker, int oldValue, int newValue)
+            {
+                minimumPerformerAgeTextView.setText(newValue + " years");
+            }
+        });
+
         // Pull the existing information from the database to populate the various fields
         mDatabase.addListenerForSingleValueEvent(new ValueEventListener()
         {
@@ -236,6 +248,10 @@ public class VenueUserProfileFragment extends Fragment
                 mVenueLatLng = new LatLng();
                 mVenueLatLng.setLatitude(latitude);
                 mVenueLatLng.setLongitude(longitude);
+
+                // Set the minimum performer age components to those from the database
+                minimumPerformerAgeNumberPicker.setValue(Integer.parseInt(dataSnapshot.child("Venues/" + mVenueId + "/minimumPerformerAge").getValue().toString()));
+                minimumPerformerAgeTextView.setText(dataSnapshot.child("Venues/" + mVenueId + "/minimumPerformerAge").getValue().toString() + " years");
             }
 
             @Override
@@ -574,6 +590,7 @@ public class VenueUserProfileFragment extends Fragment
                     mDatabase.child("Venues/" + mVenueId).child("/genre").setValue(genreList);
                     mDatabase.child("Venues/" + mVenueId).child("/name").setValue(mVenueName);
                     mDatabase.child("Venues/" + mVenueId).child("/venueLocation").setValue(mVenueLatLng);
+                    mDatabase.child("Venues/" + mVenueId).child("/minimumPerformerAge").setValue(minimumPerformerAgeNumberPicker.getValue());
 
                     // A dialog is then shown to alert the user that the changes have been made
                     final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -609,7 +626,7 @@ public class VenueUserProfileFragment extends Fragment
         getActivity().finish();
         getActivity().overridePendingTransition(0,0);
 
-        Intent intent = new Intent(getActivity(), MusicianUserMainActivity.class);
+        Intent intent = new Intent(getActivity(), VenueUserMainActivity.class);
         startActivity(intent);
 
         getFragmentManager().popBackStackImmediate();
