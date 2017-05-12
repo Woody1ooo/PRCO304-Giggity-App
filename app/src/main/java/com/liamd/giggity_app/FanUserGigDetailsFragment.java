@@ -344,50 +344,73 @@ public class FanUserGigDetailsFragment extends Fragment implements OnMapReadyCal
                     {
                         dialogInterface.dismiss();
 
-                        // If the user has selected more tickets than there are available then a message is displayed
-                        if(mTicketQuantityAvailable < mTicketQuantity)
-                        {
-                            // This dialog is created to confirm that the users want to purchase the tickets
-                            final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                            builder.setTitle("Error!");
-                            builder.setMessage("You've selected more tickets than there are available! Please amend your order.");
-                            builder.setPositiveButton("Confirm", new DialogInterface.OnClickListener()
-                            {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i)
-                                {
+                        int gigAgeRestriction = Integer.parseInt(mSnapshot.child("Gigs/" + mGigId + "/ageRestriction").getValue().toString());
 
-                                }
-                            });
-                            builder.show();
+                        if(Integer.parseInt(mSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/age").getValue().toString()) >= gigAgeRestriction)
+                        {
+                            // If the user has selected more tickets than there are available then a message is displayed
+                            if(mTicketQuantityAvailable < mTicketQuantity)
+                            {
+                                // This dialog is created to confirm that the users want to purchase the tickets
+                                final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                                builder.setTitle("Error!");
+                                builder.setMessage("You've selected more tickets than there are available! Please amend your order.");
+                                builder.setPositiveButton("Confirm", new DialogInterface.OnClickListener()
+                                {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i)
+                                    {
+
+                                    }
+                                });
+                                builder.show();
+                            }
+
+                            else
+                            {
+                                // This creates a ticket object and posts it to the database under the generated push key
+                                String ticketId = mDatabase.child("Tickets").push().getKey();
+                                Ticket ticket = new Ticket(ticketId, mTicketQuantity, mGigId, "Valid");
+                                mDatabase.child("Tickets/" + mGigId + "/" + mAuth.getCurrentUser().getUid() + "/").setValue(ticket);
+                                mDatabase.child("Gigs/" + mGigId + "/ticketQuantity").setValue(mTicketQuantityAvailable - mTicketQuantity);
+
+                                // This dialog is created to confirm that the users want to purchase the tickets
+                                final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                                builder.setTitle("Confirmation");
+                                builder.setMessage("Tickets Purchased! To access your ticket please navigate to 'My Gigs' > View Ticket'.");
+                                builder.setPositiveButton("Confirm", new DialogInterface.OnClickListener()
+                                {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i)
+                                    {
+                                        dialogInterface.dismiss();
+
+                                        getActivity().finish();
+                                        getActivity().overridePendingTransition(0,0);
+
+                                        Intent intent = new Intent(getActivity(), FanUserMainActivity.class);
+                                        startActivity(intent);
+
+                                        getFragmentManager().popBackStackImmediate();
+                                    }
+                                });
+                                builder.show();
+                                builder.setCancelable(false);
+                            }
                         }
 
                         else
                         {
-                            // This creates a ticket object and posts it to the database under the generated push key
-                            String ticketId = mDatabase.child("Tickets").push().getKey();
-                            Ticket ticket = new Ticket(ticketId, mTicketQuantity, mGigId, "Valid");
-                            mDatabase.child("Tickets/" + mGigId + "/" + mAuth.getCurrentUser().getUid() + "/").setValue(ticket);
-                            mDatabase.child("Gigs/" + mGigId + "/ticketQuantity").setValue(mTicketQuantityAvailable - mTicketQuantity);
-
-                            // This dialog is created to confirm that the users want to purchase the tickets
+                            // This dialog is displayed to explain that the user cannot purchase the tickets
                             final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                            builder.setTitle("Confirmation");
-                            builder.setMessage("Tickets Purchased! To access your ticket please navigate to 'My Gigs' > View Ticket'.");
+                            builder.setTitle("Error!");
+                            builder.setMessage("You cannot purchase these tickets as you are under the age restriction set by the venue!");
                             builder.setPositiveButton("Confirm", new DialogInterface.OnClickListener()
                             {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i)
                                 {
-                                    dialogInterface.dismiss();
 
-                                    getActivity().finish();
-                                    getActivity().overridePendingTransition(0,0);
-
-                                    Intent intent = new Intent(getActivity(), FanUserMainActivity.class);
-                                    startActivity(intent);
-
-                                    getFragmentManager().popBackStackImmediate();
                                 }
                             });
                             builder.show();
