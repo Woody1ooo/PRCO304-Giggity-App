@@ -49,11 +49,14 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import de.hdodenhof.circleimageview.CircleImageView;
 import me.everything.providers.android.calendar.CalendarProvider;
 
 import static com.google.android.gms.maps.model.BitmapDescriptorFactory.HUE_RED;
@@ -65,7 +68,7 @@ import static com.google.android.gms.maps.model.BitmapDescriptorFactory.HUE_RED;
 public class VenueUserGigRequestsReceivedDetailsFragment extends Fragment implements OnMapReadyCallback, YouTubePlayer.OnInitializedListener
 {
     // Declare visual components
-    private ImageView mBandImageView;
+    private CircleImageView mBandImageView;
     private TextView mGigNameTextView;
     private TextView mGigStartDateTextView;
     private TextView mGigEndDateTextView;
@@ -122,7 +125,7 @@ public class VenueUserGigRequestsReceivedDetailsFragment extends Fragment implem
         mGigNameTextView = (TextView) fragmentView.findViewById(R.id.gigNameTextView);
         mGigStartDateTextView = (TextView) fragmentView.findViewById(R.id.gigStartDateTextView);
         mGigEndDateTextView = (TextView) fragmentView.findViewById(R.id.gigFinishDateTextView);
-        mBandImageView = (ImageView) fragmentView.findViewById(R.id.bandImageView);
+        mBandImageView = (CircleImageView) fragmentView.findViewById(R.id.bandImageView);
         mBandNameTextView = (TextView) fragmentView.findViewById(R.id.bandNameTextView);
         mBandGenresTextView = (TextView) fragmentView.findViewById(R.id.bandGenresTextView);
         mBandDistanceTextView = (TextView) fragmentView.findViewById(R.id.bandDistanceTextView);
@@ -298,7 +301,7 @@ public class VenueUserGigRequestsReceivedDetailsFragment extends Fragment implem
                     // The caching and memory features have been disabled to allow only the latest image to display
                     Glide.with(getContext()).using(new FirebaseImageLoader()).load
                             (mBandImageReference.child("BandProfileImages/" + mBandId + "/profileImage"))
-                            .diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).into(mBandImageView);
+                            .diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).override(500, 500).into(mBandImageView);
                 }
 
                 // If the user doesn't have an image the default image is loaded
@@ -420,6 +423,16 @@ public class VenueUserGigRequestsReceivedDetailsFragment extends Fragment implem
                 {
                     mDatabase.child("BandSentGigRequests/" + mBandId + "/" + mGigId + "/requestStatus").setValue("Accepted");
                     mDatabase.child("Gigs/" + mGigId + "/bookedAct").setValue(mBandId);
+
+                    // Get the current date time for the news items
+                    Calendar calendar = Calendar.getInstance();
+                    Date date = calendar.getTime();
+
+                    // This posts a news feed item
+                    String newsFeedPushKey = mDatabase.child("NewsFeedItems/").push().getKey();
+                    NewsFeedItem item = new NewsFeedItem(newsFeedPushKey, mSnapshot.child("Bands/" + mBandId + "/name").getValue().toString() + " ",
+                            "are now booked to play a gig at " + mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + "!", mBandId, date);
+                    mDatabase.child("NewsFeedItems/" + newsFeedPushKey).setValue(item);
 
                     // Depending on the number of positions in the band and which of those are vacant, an entry for each member is entered into the database
                     // to then be picked up when they login to find out whether they want to add it to their calendar

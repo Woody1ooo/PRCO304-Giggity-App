@@ -165,7 +165,7 @@ public class NotificationService extends Service
         else if(notificationTypeId == 1)
         {
             Intent notificationIntent = new Intent(this, MusicianUserMainActivity.class);
-            notificationIntent.putExtra("FragmentToOpenExtra", "MusicianUserBandRequestsInBandFragment");
+            notificationIntent.putExtra("FragmentToOpenExtra", "MusicianUserBandMembersFragment");
             PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
             builder.setContentIntent(resultPendingIntent);
         }

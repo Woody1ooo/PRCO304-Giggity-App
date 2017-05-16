@@ -73,6 +73,13 @@
 
     </LinearLayout>
 
+    <TextView
+        android:id="@+id/dateTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:textAlignment="textEnd"/>
+
     <ImageView
         android:id="@+id/featuredImageView"
         android:layout_width="81dp"
@@ -81,4 +88,5 @@
         app:srcCompat="@drawable/logonew"
         android:layout_marginLeft="10dp"
         android:layout_marginBottom="10dp"/>
+
 </LinearLayout>

@@ -45,6 +45,8 @@ import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -384,6 +386,19 @@ public class MusicianUserBandRequestsNotInBandReceivedDetailsFragment extends Fr
                     mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/inBand").setValue(true);
                     mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/bandID").setValue(mBandId);
                     mDatabase.child("Bands/" + mBandId + "/" + mBandPosition + "Member").setValue(mAuth.getCurrentUser().getUid());
+
+                    // Get the current date time for the news items
+                    Calendar calendar = Calendar.getInstance();
+                    Date date = calendar.getTime();
+
+                    // This posts a news feed item
+                    String newsFeedPushKey = mDatabase.child("NewsFeedItems/").push().getKey();
+                    NewsFeedItem item = new NewsFeedItem(newsFeedPushKey,
+                            mSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/firstName").getValue().toString() + " " +
+                                    mSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/lastName").getValue().toString(),
+                            "has just joined " + mSnapshot.child("Bands/" + mBandId + "/name").getValue().toString() + ".", mBandId, date);
+                    item.setUserID(mAuth.getCurrentUser().getUid());
+                    mDatabase.child("NewsFeedItems/" + newsFeedPushKey).setValue(item);
 
                     // Check how many people in the band need notifications sent
                     if (mSnapshot.child("Bands/" + mBandId + "/numberOfPositions").getValue().toString().equals("2"))

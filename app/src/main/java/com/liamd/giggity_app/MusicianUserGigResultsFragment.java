@@ -78,6 +78,7 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
     // Declare variables to be stored to pass to the next fragment
     private String mGigId;
     private String mGigName;
+    private String mGigGenres;
     private String mVenueName;
     private String mVenueId;
     private Date mGigStartDate;
@@ -292,6 +293,7 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
             mGigStartDate = mListOfGigs.get(i).getStartDate();
             mGigFinishDate = mListOfGigs.get(i).getEndDate();
             mVenueName = mVenueDataSnapshot.child(mVenueId + "/name").getValue().toString();
+            mGigGenres = mListOfGigs.get(i).getGenres();
 
             // It then iterates through the list of venues to check for a match.
             for(int j = 0; j < mListOfVenues.size(); j++)
@@ -323,7 +325,7 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
                     // A new GigMarkerInfo object is created to store the information about the marker.
                     // This needs to be done because a standard marker can only hold a title and snippet
                     GigMarkerInfo marker = new GigMarkerInfo(mGigFinishDate, mGigId, mGigName, mGigStartDate,
-                            mMarker.getId(), mVenueId, mVenueName);
+                            mMarker.getId(), mVenueId, mVenueName, mGigGenres);
                     mListOfGigMarkerInfo.add(marker);
 
                     // This sets the custom window adapter (gig_window_layout)
@@ -464,6 +466,7 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
                         arguments.putString("GigStartDate", selectedGig.getStartDate().toString());
                         arguments.putString("GigEndDate", selectedGig.getEndDate().toString());
                         arguments.putString("GigVenueID", selectedGig.getVenueID());
+                        arguments.putString("GigGenres", selectedGig.getGenres());
                         fragment.setArguments(arguments);
 
                         // Creates a new fragment transaction to display the details of the selected
@@ -523,6 +526,7 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
                     arguments.putString("GigStartDate", selectedGig.getStartDate().toString());
                     arguments.putString("GigEndDate", selectedGig.getEndDate().toString());
                     arguments.putString("GigVenueID", selectedGig.getVenueID());
+                    arguments.putString("GigGenres", selectedGig.getGenres());
                     fragment.setArguments(arguments);
 
                     // Creates a new fragment transaction to display the details of the selected
@@ -582,6 +586,7 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
                                 arguments.putString("GigStartDate", mListOfGigMarkerInfo.get(i).getGigStartDate().toString());
                                 arguments.putString("GigEndDate", mListOfGigMarkerInfo.get(i).getGigEndDate().toString());
                                 arguments.putString("GigVenueID", mListOfGigMarkerInfo.get(i).getVenueId());
+                                arguments.putString("GigGenres", mListOfGigMarkerInfo.get(i).getGigGenres());
                             }
                         }
 
@@ -669,6 +674,7 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
                             arguments.putString("GigStartDate", mListOfGigMarkerInfo.get(i).getGigStartDate().toString());
                             arguments.putString("GigEndDate", mListOfGigMarkerInfo.get(i).getGigEndDate().toString());
                             arguments.putString("GigVenueID", mListOfGigMarkerInfo.get(i).getVenueId());
+                            arguments.putString("GigGenres", mListOfGigMarkerInfo.get(i).getGigGenres());
                         }
                     }
 
@@ -836,6 +842,7 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
                     arguments.putString("GigStartDate", selectedGig.getStartDate().toString());
                     arguments.putString("GigEndDate", selectedGig.getEndDate().toString());
                     arguments.putString("GigVenueID", selectedGig.getVenueID());
+                    arguments.putString("GigGenres", selectedGig.getGenres());
 
                     fragment.setArguments(arguments);
 
@@ -863,6 +870,7 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
                     arguments.putString("GigStartDate", selectedGig.getStartDate().toString());
                     arguments.putString("GigEndDate", selectedGig.getEndDate().toString());
                     arguments.putString("GigVenueID", selectedGig.getVenueID());
+                    arguments.putString("GigGenres", selectedGig.getGenres());
 
                     fragment.setArguments(arguments);
 

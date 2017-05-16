@@ -26,6 +26,12 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.facebook.login.LoginManager;
 import com.firebase.ui.storage.images.FirebaseImageLoader;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.location.places.PlacePhotoMetadataBuffer;
+import com.google.android.gms.location.places.PlacePhotoMetadataResult;
+import com.google.android.gms.location.places.PlacePhotoResult;
+import com.google.android.gms.location.places.Places;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -54,6 +60,7 @@ public class VenueUserMainActivity extends AppCompatActivity implements Navigati
 
     // Declare general variables
     private String mVenueId;
+    private GoogleApiClient mGoogleApiClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -315,23 +322,30 @@ public class VenueUserMainActivity extends AppCompatActivity implements Navigati
         mProfileImageView = (CircleImageView) navigationView.getHeaderView(0).findViewById(R.id.navDrawerImageView);
         mNavigationProfileEmailTextView = (TextView) navigationView.getHeaderView(0).findViewById(R.id.userEmailTextView);
 
+        mGoogleApiClient = new GoogleApiClient.Builder(this).addApi(Places.GEO_DATA_API).addApi(Places.PLACE_DETECTION_API).build();
+        mGoogleApiClient.connect();
+
+        // This reference looks at the Firebase storage and works out whether the current user has an image
         mVenueImageReference.child("VenueProfileImages/" + mVenueId + "/profileImage")
                 .getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>()
         {
+            // If the venue has an image this is loaded into the image view
             @Override
             public void onSuccess(Uri uri)
             {
+                // The caching and memory features have been disabled to allow only the latest image to display
                 Glide.with(getApplicationContext()).using(new FirebaseImageLoader()).load
                         (mVenueImageReference.child("VenueProfileImages/" + mVenueId + "/profileImage"))
                         .diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).override(220, 220).into(mProfileImageView);
             }
 
+            // If the venue doesn't have an image then attempt to load the Google images
         }).addOnFailureListener(new OnFailureListener()
         {
             @Override
             public void onFailure(@NonNull Exception e)
             {
-                Picasso.with(getApplicationContext()).load(R.drawable.com_facebook_profile_picture_blank_portrait).resize(220, 220).into(mProfileImageView);
+                placePhotosAsync();
             }
         });
 
@@ -368,22 +382,6 @@ public class VenueUserMainActivity extends AppCompatActivity implements Navigati
         startActivity(returnToLoginActivity);
     }
 
-    // This clears the back stack of fragments and adds a home fragment
-    private static void ClearBackStack(Activity activity)
-    {
-        FragmentManager fragmentManager = activity.getFragmentManager();
-        for(int i = 0; i < fragmentManager.getBackStackEntryCount(); ++i)
-        {
-            fragmentManager.popBackStack();
-        }
-
-        VenueUserHomeFragment fragment = new VenueUserHomeFragment();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.frame, fragment
-                , "VenueUserHomeFragment");
-        fragmentTransaction.commit();
-    }
-
     // This method checks whether an internet connection is present
     private boolean IsNetworkAvailable()
     {
@@ -392,7 +390,7 @@ public class VenueUserMainActivity extends AppCompatActivity implements Navigati
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
-    // If there is no network connection an undismissable dialog is displayed as at least one database read is required to check which navigation options to display
+    // If there is no network connection an un-dismissable dialog is displayed as at least one database read is required to check which navigation options to display
     // Once the connection is restored the user can continue
     private void DisplayNetworkAlertDialog()
     {
@@ -420,5 +418,78 @@ public class VenueUserMainActivity extends AppCompatActivity implements Navigati
         });
         builder.show();
         builder.setCancelable(false);
+    }
+
+    private ResultCallback<PlacePhotoResult> mDisplayPhotoResultCallback = new ResultCallback<PlacePhotoResult>()
+    {
+        @Override
+        public void onResult(PlacePhotoResult placePhotoResult)
+        {
+            if (!placePhotoResult.getStatus().isSuccess())
+            {
+                return;
+            }
+
+            mProfileImageView.setImageBitmap(placePhotoResult.getBitmap());
+        }
+    };
+
+    /**
+     * Load a bitmap from the photos API asynchronously
+     * by using buffers and result callbacks.
+     */
+    private void placePhotosAsync()
+    {
+        final String placeId = mVenueId;
+        Places.GeoDataApi.getPlacePhotos(mGoogleApiClient, placeId)
+                .setResultCallback(new ResultCallback<PlacePhotoMetadataResult>()
+                {
+                    @Override
+                    public void onResult(PlacePhotoMetadataResult photos)
+                    {
+                        if (!photos.getStatus().isSuccess())
+                        {
+                            return;
+                        }
+
+                        PlacePhotoMetadataBuffer photoMetadataBuffer = photos.getPhotoMetadata();
+                        if (photoMetadataBuffer.getCount() > 0)
+                        {
+                            // Display the first bitmap in an ImageView in the size of the view
+                            photoMetadataBuffer.get(0)
+                                    .getScaledPhoto(mGoogleApiClient, mProfileImageView.getWidth(),
+                                            mProfileImageView.getHeight())
+                                    .setResultCallback(mDisplayPhotoResultCallback);
+                        }
+
+                        else
+                        {
+                            // This reference looks at the Firebase storage and works out whether the current venue has an image
+                            mVenueImageReference.child("VenueProfileImages/" + mVenueId + "/profileImage")
+                                    .getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>()
+                            {
+                                // If the venue has an image this is loaded into the image view
+                                @Override
+                                public void onSuccess(Uri uri)
+                                {
+                                    // The caching and memory features have been disabled to allow only the latest image to display
+                                    Glide.with(getApplicationContext()).using(new FirebaseImageLoader()).load
+                                            (mVenueImageReference.child("VenueProfileImages/" + mVenueId + "/profileImage"))
+                                            .diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).override(220, 220).into(mProfileImageView);
+                                }
+
+                                // If the venue doesn't have an image the default image is loaded
+                            }).addOnFailureListener(new OnFailureListener()
+                            {
+                                @Override
+                                public void onFailure(@NonNull Exception e)
+                                {
+                                    Picasso.with(getApplicationContext()).load(R.drawable.com_facebook_profile_picture_blank_portrait).resize(220, 220).into(mProfileImageView);
+                                }
+                            });
+                        }
+                        photoMetadataBuffer.release();
+                    }
+                });
     }
 }

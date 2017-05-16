@@ -50,6 +50,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 import static com.google.android.gms.maps.model.BitmapDescriptorFactory.HUE_RED;
 
 
@@ -59,7 +61,7 @@ import static com.google.android.gms.maps.model.BitmapDescriptorFactory.HUE_RED;
 public class VenueUserGigRequestsSentDetailsFragment extends Fragment implements OnMapReadyCallback, YouTubePlayer.OnInitializedListener
 {
     // Declare visual components
-    private ImageView mBandImageView;
+    private CircleImageView mBandImageView;
     private TextView mGigNameTextView;
     private TextView mGigStartDateTextView;
     private TextView mGigEndDateTextView;
@@ -115,7 +117,7 @@ public class VenueUserGigRequestsSentDetailsFragment extends Fragment implements
         mGigNameTextView = (TextView) fragmentView.findViewById(R.id.gigNameTextView);
         mGigStartDateTextView = (TextView) fragmentView.findViewById(R.id.gigStartDateTextView);
         mGigEndDateTextView = (TextView) fragmentView.findViewById(R.id.gigFinishDateTextView);
-        mBandImageView = (ImageView) fragmentView.findViewById(R.id.bandImageView);
+        mBandImageView = (CircleImageView) fragmentView.findViewById(R.id.bandImageView);
         mBandNameTextView = (TextView) fragmentView.findViewById(R.id.bandNameTextView);
         mBandGenresTextView = (TextView) fragmentView.findViewById(R.id.bandGenresTextView);
         mBandDistanceTextView = (TextView) fragmentView.findViewById(R.id.bandDistanceTextView);
@@ -283,7 +285,7 @@ public class VenueUserGigRequestsSentDetailsFragment extends Fragment implements
                 // The caching and memory features have been disabled to allow only the latest image to display
                 Glide.with(getContext()).using(new FirebaseImageLoader()).load
                         (mBandImageReference.child("BandProfileImages/" + mBandId + "/profileImage"))
-                        .diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).into(mBandImageView);
+                        .diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).override(500, 500).into(mBandImageView);
             }
 
             // If the user doesn't have an image the default image is loaded

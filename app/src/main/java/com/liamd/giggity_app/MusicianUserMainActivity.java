@@ -233,6 +233,7 @@ public class MusicianUserMainActivity extends AppCompatActivity implements Navig
             fragmentTransaction.commit();
         }
 
+        // This determines the type of notification intent received to then open the corresponding fragment
         String fragmentToOpen = getIntent().getStringExtra("FragmentToOpenExtra");
 
         if(fragmentToOpen != null)
@@ -267,6 +268,17 @@ public class MusicianUserMainActivity extends AppCompatActivity implements Navig
                 FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
                 fragmentTransaction.replace(R.id.frame, fragment
                         , "MusicianUserGigRequestsFragment");
+                fragmentTransaction.commit();
+            }
+
+            else if(fragmentToOpen.equals("MusicianUserBandMembersFragment"))
+            {
+                // This ensures that whenever the back button is pressed there is never a blank home screen shown
+                setTitle("Band Members");
+                MusicianUserBandMembersFragment fragment = new MusicianUserBandMembersFragment();
+                FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+                fragmentTransaction.replace(R.id.frame, fragment
+                        , "MusicianUserBandMembersFragment");
                 fragmentTransaction.commit();
             }
         }

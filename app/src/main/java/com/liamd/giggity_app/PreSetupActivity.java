@@ -652,7 +652,7 @@ public class PreSetupActivity extends AppCompatActivity
     //Depending on the account type selected, launch the relevant activity
     private void ReturnToMusicianUserMainActivity()
     {
-        finish();
+        this.finish();
         Intent startMusicianUserMainActivity = new Intent(PreSetupActivity.this, MusicianUserMainActivity.class);
         startActivity(startMusicianUserMainActivity);
     }
@@ -660,14 +660,14 @@ public class PreSetupActivity extends AppCompatActivity
     //Depending on the account type selected, launch the relevant activity
     private void ReturnToVenueUserMainActivity()
     {
-        finish();
+        this.finish();
         Intent startVenueUserMainActivity = new Intent(PreSetupActivity.this, VenueUserMainActivity.class);
         startActivity(startVenueUserMainActivity);
     }
 
     private void ReturnToFanUserMainActivity()
     {
-        finish();
+        this.finish();
         Intent startFanUserMainActivity = new Intent(PreSetupActivity.this, FanUserMainActivity.class);
         startActivity(startFanUserMainActivity);
     }

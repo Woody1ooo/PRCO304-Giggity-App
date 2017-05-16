@@ -39,6 +39,8 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -581,6 +583,16 @@ public class MusicianUserBandCreatorFragment extends Fragment implements YouTube
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i)
                                 {
+                                    // Get the current date time for the news items
+                                    Calendar calendar = Calendar.getInstance();
+                                    Date date = calendar.getTime();
+
+                                    // This posts a news feed item
+                                    String newsFeedPushKey = mDatabase.child("NewsFeedItems/").push().getKey();
+                                    NewsFeedItem item = new NewsFeedItem(newsFeedPushKey, mBandName,
+                                            "are a new band on Giggity! Be sure to keep an eye out for them!", mBandID, date);
+                                    mDatabase.child("NewsFeedItems/" + newsFeedPushKey).setValue(item);
+
                                     ReturnToHome();
                                 }
                             });
@@ -648,6 +660,16 @@ public class MusicianUserBandCreatorFragment extends Fragment implements YouTube
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i)
                                 {
+                                    // Get the current date time for the news items
+                                    Calendar calendar = Calendar.getInstance();
+                                    Date date = calendar.getTime();
+
+                                    // This posts a news feed item
+                                    String newsFeedPushKey = mDatabase.child("NewsFeedItems/").push().getKey();
+                                    NewsFeedItem item = new NewsFeedItem(newsFeedPushKey, mBandName,
+                                            "are a new band on Giggity! Be sure to keep an eye out for them!", mBandID, date);
+                                    mDatabase.child("NewsFeedItems/" + newsFeedPushKey).setValue(item);
+
                                     ReturnToHome();
                                 }
                             });
@@ -723,6 +745,16 @@ public class MusicianUserBandCreatorFragment extends Fragment implements YouTube
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i)
                                 {
+                                    // Get the current date time for the news items
+                                    Calendar calendar = Calendar.getInstance();
+                                    Date date = calendar.getTime();
+
+                                    // This posts a news feed item
+                                    String newsFeedPushKey = mDatabase.child("NewsFeedItems/").push().getKey();
+                                    NewsFeedItem item = new NewsFeedItem(newsFeedPushKey, mBandName,
+                                            "are a new band on Giggity! Be sure to keep an eye out for them!", mBandID, date);
+                                    mDatabase.child("NewsFeedItems/" + newsFeedPushKey).setValue(item);
+
                                     ReturnToHome();
                                 }
                             });
@@ -805,6 +837,16 @@ public class MusicianUserBandCreatorFragment extends Fragment implements YouTube
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i)
                                 {
+                                    // Get the current date time for the news items
+                                    Calendar calendar = Calendar.getInstance();
+                                    Date date = calendar.getTime();
+
+                                    // This posts a news feed item
+                                    String newsFeedPushKey = mDatabase.child("NewsFeedItems/").push().getKey();
+                                    NewsFeedItem item = new NewsFeedItem(newsFeedPushKey, mBandName,
+                                            "are a new band on Giggity! Be sure to keep an eye out for them!", mBandID, date);
+                                    mDatabase.child("NewsFeedItems/" + newsFeedPushKey).setValue(item);
+
                                     ReturnToHome();
                                 }
                             });
@@ -898,6 +940,16 @@ public class MusicianUserBandCreatorFragment extends Fragment implements YouTube
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i)
                                 {
+                                    // Get the current date time for the news items
+                                    Calendar calendar = Calendar.getInstance();
+                                    Date date = calendar.getTime();
+
+                                    // This posts a news feed item
+                                    String newsFeedPushKey = mDatabase.child("NewsFeedItems/").push().getKey();
+                                    NewsFeedItem item = new NewsFeedItem(newsFeedPushKey, mBandName,
+                                            "are a new band on Giggity! Be sure to keep an eye out for them!", mBandID, date);
+                                    mDatabase.child("NewsFeedItems/" + newsFeedPushKey).setValue(item);
+
                                     ReturnToHome();
                                 }
                             });

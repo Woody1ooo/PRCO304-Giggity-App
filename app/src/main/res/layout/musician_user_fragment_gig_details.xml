@@ -15,16 +15,16 @@
             android:orientation="vertical">
 
             <de.hdodenhof.circleimageview.CircleImageView
-            android:layout_width="200dp"
-            android:layout_height="200dp"
-            android:id="@+id/venueImage"
-            app:civ_border_width="2dp"
-            app:civ_border_color="#FF000000"
-            android:layout_marginTop="15dp"
-            app:srcCompat="@drawable/com_facebook_profile_picture_blank_portrait"
-            android:layout_weight="1"
-            android:layout_gravity="center_horizontal"
-            android:foregroundGravity="center_horizontal"/>
+                android:id="@+id/venueImage"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="15dp"
+                android:layout_weight="1"
+                android:foregroundGravity="center_horizontal"
+                app:civ_border_color="#FF000000"
+                app:civ_border_width="2dp"
+                app:srcCompat="@drawable/com_facebook_profile_picture_blank_portrait"/>
 
             <TextView
                 android:id="@+id/textView18"
@@ -65,6 +65,23 @@
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
                 android:layout_marginTop="10dp"/>
+
+            <TextView
+                android:id="@+id/textView22"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:paddingTop="20dp"
+                android:text="Gig Genres"
+                android:textColor="@color/colorAccent"
+                android:textSize="16sp"/>
+
+            <TextView
+                android:id="@+id/gigGenresTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:paddingTop="20dp"/>
 
             <TextView
                 android:id="@+id/textView19"

@@ -1,7 +1,12 @@
 package com.liamd.giggity_app;
 
 
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.view.LayoutInflater;
@@ -177,20 +182,96 @@ public class MusicianUserViewGigsFragment extends Fragment
         // This sorts the list of gigs by date
         Collections.sort(mListOfGigs, new CustomGigComparator());
 
-        // Using the custom VenueUserGigsAdapter, the list of users gigs can be displayed
-        if(getActivity() != null)
+        // If the list has elements display them
+        if(mListOfGigs.size() > 0)
         {
-            if(!mIsFanAccount)
+            // Using the custom VenueUserGigsAdapter, the list of users gigs can be displayed
+            if(getActivity() != null)
             {
-                adapter = new MusicianUserViewGigsAdapter(getActivity(), R.layout.musician_user_gig_list, mListOfGigs, mSnapshot, mBandId, mIsFanAccount);
-            }
+                if(!mIsFanAccount)
+                {
+                    adapter = new MusicianUserViewGigsAdapter(getActivity(), R.layout.musician_user_gig_list, mListOfGigs, mSnapshot, mBandId, mIsFanAccount);
+                }
 
-            else
+                else
+                {
+                    adapter = new MusicianUserViewGigsAdapter(getActivity(), R.layout.musician_user_gig_list, mListOfGigs, mSnapshot, mAuth.getCurrentUser().getUid(), mIsFanAccount);
+                }
+
+                mGigsListView.setAdapter(adapter);
+            }
+        }
+
+        // Otherwise display a dialog
+        else
+        {
+            if(getActivity() != null)
             {
-                adapter = new MusicianUserViewGigsAdapter(getActivity(), R.layout.musician_user_gig_list, mListOfGigs, mSnapshot, mAuth.getCurrentUser().getUid(), mIsFanAccount);
-            }
+                final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setIcon(R.drawable.ic_info_outline_black_24px);
+                builder.setTitle("No Gigs!");
+                builder.setMessage("You haven't got any gigs yet! Would you like to search for one?");
+                builder.setPositiveButton("Yes", new DialogInterface.OnClickListener()
+                {
+                    public void onClick(DialogInterface dialog, int which)
+                    {
+                        Bundle arguments = new Bundle();
+                        getActivity().setTitle("Gig Finder");
+                        MusicianUserGigFinderFragment fragment = new MusicianUserGigFinderFragment();
 
-            mGigsListView.setAdapter(adapter);
+                        if(mIsFanAccount)
+                        {
+                            arguments.putString("UserType", "Fan");
+                        }
+
+                        else
+                        {
+                            arguments.putString("UserType", "Musician");
+                        }
+
+                        fragment.setArguments(arguments);
+                        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+                        fragmentTransaction.replace(R.id.frame, fragment, "MusicianUserGigFinderFragment")
+                                .addToBackStack(null)
+                                .commit();
+                    }
+                });
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i)
+                    {
+                        ReturnToHome();
+                    }
+                });
+                builder.setCancelable(false);
+                builder.show();
+            }
+        }
+    }
+
+    private void ReturnToHome()
+    {
+        if(mIsFanAccount)
+        {
+            getActivity().finish();
+            getActivity().overridePendingTransition(0, 0);
+
+            Intent intent = new Intent(getActivity(), FanUserMainActivity.class);
+            startActivity(intent);
+
+            getFragmentManager().popBackStackImmediate();
+        }
+
+        else
+        {
+            getActivity().finish();
+            getActivity().overridePendingTransition(0, 0);
+
+            Intent intent = new Intent(getActivity(), MusicianUserMainActivity.class);
+            startActivity(intent);
+
+            getFragmentManager().popBackStackImmediate();
         }
     }
 }

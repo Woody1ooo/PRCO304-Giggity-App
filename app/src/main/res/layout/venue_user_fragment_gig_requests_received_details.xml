@@ -2,6 +2,7 @@
              xmlns:tools="http://schemas.android.com/tools"
              android:layout_width="match_parent"
              android:layout_height="match_parent"
+             xmlns:app="http://schemas.android.com/apk/res-auto"
              tools:context="com.liamd.giggity_app.VenueUserGigRequestsReceivedDetailsFragment">
 
     <ScrollView
@@ -13,13 +14,17 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <ImageView
+            <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/bandImageView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="15dp"
                 android:layout_weight="1"
-                android:scaleType="fitCenter"/>
+                android:foregroundGravity="center_horizontal"
+                app:civ_border_color="#FF000000"
+                app:civ_border_width="2dp"
+                app:srcCompat="@drawable/com_facebook_profile_picture_blank_portrait"/>
 
             <TextView
                 android:id="@+id/textView18"

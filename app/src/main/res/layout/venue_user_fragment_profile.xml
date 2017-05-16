@@ -15,16 +15,16 @@
             android:orientation="vertical">
 
             <de.hdodenhof.circleimageview.CircleImageView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
                 android:id="@+id/venueImage"
-                app:civ_border_width="2dp"
-                app:civ_border_color="#FF000000"
-                android:layout_marginTop="15dp"
-                app:srcCompat="@drawable/com_facebook_profile_picture_blank_portrait"
-                android:layout_weight="1"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
                 android:layout_gravity="center_horizontal"
-                android:foregroundGravity="center_horizontal"/>
+                android:layout_marginTop="15dp"
+                android:layout_weight="1"
+                android:foregroundGravity="center_horizontal"
+                app:civ_border_color="#FF000000"
+                app:civ_border_width="2dp"
+                app:srcCompat="@drawable/com_facebook_profile_picture_blank_portrait"/>
 
             <LinearLayout
                 android:layout_width="wrap_content"

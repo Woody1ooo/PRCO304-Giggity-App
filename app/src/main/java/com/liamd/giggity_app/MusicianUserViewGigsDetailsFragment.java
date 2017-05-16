@@ -15,6 +15,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.provider.CalendarContract;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,6 +25,15 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.firebase.ui.storage.images.FirebaseImageLoader;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.location.places.PlacePhotoMetadataBuffer;
+import com.google.android.gms.location.places.PlacePhotoMetadataResult;
+import com.google.android.gms.location.places.PlacePhotoResult;
+import com.google.android.gms.location.places.Places;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -31,20 +41,27 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
+import com.squareup.picasso.Picasso;
 
 import java.util.Arrays;
 import java.util.List;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 import static com.google.android.gms.maps.model.BitmapDescriptorFactory.HUE_RED;
 
@@ -55,6 +72,7 @@ import static com.google.android.gms.maps.model.BitmapDescriptorFactory.HUE_RED;
 public class MusicianUserViewGigsDetailsFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnInfoWindowClickListener
 {
     // Declare visual components
+    private CircleImageView mVenueImage;
     private TextView mGigNameTextView;
     private TextView mGigStartDateTextView;
     private TextView mGigEndDateTextView;
@@ -74,11 +92,14 @@ public class MusicianUserViewGigsDetailsFragment extends Fragment implements OnM
     private String mGigEndDate;
     private boolean mIsFanAccount;
     private String ticketStatus;
+    private GoogleApiClient mGoogleApiClient;
 
     // Declare Firebase specific variables
     private FirebaseAuth mAuth;
     private DatabaseReference mDatabase;
     private DataSnapshot mSnapshot;
+    private FirebaseStorage mStorage;
+    private StorageReference mProfileImageReference;
 
     public MusicianUserViewGigsDetailsFragment()
     {
@@ -104,7 +125,12 @@ public class MusicianUserViewGigsDetailsFragment extends Fragment implements OnM
         // Creates a reference to the Firebase database
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
+        // Creates a reference to the storage element of firebase
+        mStorage = FirebaseStorage.getInstance();
+        mProfileImageReference = mStorage.getReference();
+
         // Initialise visual components
+        mVenueImage = (CircleImageView) fragmentView.findViewById(R.id.venueImage);
         mGigNameTextView = (TextView) fragmentView.findViewById(R.id.gigNameTextView);
         mGigStartDateTextView = (TextView) fragmentView.findViewById(R.id.startDateTextView);
         mGigEndDateTextView = (TextView) fragmentView.findViewById(R.id.finishDateTextView);
@@ -246,6 +272,33 @@ public class MusicianUserViewGigsDetailsFragment extends Fragment implements OnM
         {
             mBandId = mSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/bandID").getValue().toString();
         }
+
+        mGoogleApiClient = new GoogleApiClient.Builder(getContext()).addApi(Places.GEO_DATA_API).addApi(Places.PLACE_DETECTION_API).build();
+        mGoogleApiClient.connect();
+
+        // This reference looks at the Firebase storage and works out whether the current user has an image
+        mProfileImageReference.child("VenueProfileImages/" + mVenueId + "/profileImage")
+                .getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>()
+        {
+            // If the venue has an image this is loaded into the image view
+            @Override
+            public void onSuccess(Uri uri)
+            {
+                // The caching and memory features have been disabled to allow only the latest image to display
+                Glide.with(getContext()).using(new FirebaseImageLoader()).load
+                        (mProfileImageReference.child("VenueProfileImages/" + mVenueId + "/profileImage"))
+                        .diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).override(500, 500).into(mVenueImage);
+            }
+
+            // If the venue doesn't have an image then attempt to load the Google images
+        }).addOnFailureListener(new OnFailureListener()
+        {
+            @Override
+            public void onFailure(@NonNull Exception e)
+            {
+                placePhotosAsync();
+            }
+        });
     }
 
     @Override
@@ -463,5 +516,78 @@ public class MusicianUserViewGigsDetailsFragment extends Fragment implements OnM
         startActivity(intent);
 
         getFragmentManager().popBackStackImmediate();
+    }
+
+    private ResultCallback<PlacePhotoResult> mDisplayPhotoResultCallback = new ResultCallback<PlacePhotoResult>()
+    {
+        @Override
+        public void onResult(PlacePhotoResult placePhotoResult)
+        {
+            if (!placePhotoResult.getStatus().isSuccess())
+            {
+                return;
+            }
+
+            mVenueImage.setImageBitmap(placePhotoResult.getBitmap());
+        }
+    };
+
+    /**
+     * Load a bitmap from the photos API asynchronously
+     * by using buffers and result callbacks.
+     */
+    private void placePhotosAsync()
+    {
+        final String placeId = mVenueId;
+        Places.GeoDataApi.getPlacePhotos(mGoogleApiClient, placeId)
+                .setResultCallback(new ResultCallback<PlacePhotoMetadataResult>()
+                {
+                    @Override
+                    public void onResult(PlacePhotoMetadataResult photos)
+                    {
+                        if (!photos.getStatus().isSuccess())
+                        {
+                            return;
+                        }
+
+                        PlacePhotoMetadataBuffer photoMetadataBuffer = photos.getPhotoMetadata();
+                        if (photoMetadataBuffer.getCount() > 0)
+                        {
+                            // Display the first bitmap in an ImageView in the size of the view
+                            photoMetadataBuffer.get(0)
+                                    .getScaledPhoto(mGoogleApiClient, mVenueImage.getWidth(),
+                                            mVenueImage.getHeight())
+                                    .setResultCallback(mDisplayPhotoResultCallback);
+                        }
+
+                        else
+                        {
+                            // This reference looks at the Firebase storage and works out whether the current venue has an image
+                            mProfileImageReference.child("VenueProfileImages/" + mVenueId + "/profileImage")
+                                    .getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>()
+                            {
+                                // If the venue has an image this is loaded into the image view
+                                @Override
+                                public void onSuccess(Uri uri)
+                                {
+                                    // The caching and memory features have been disabled to allow only the latest image to display
+                                    Glide.with(getContext()).using(new FirebaseImageLoader()).load
+                                            (mProfileImageReference.child("VenueProfileImages/" + mVenueId + "/profileImage"))
+                                            .diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).override(500, 500).into(mVenueImage);
+                                }
+
+                                // If the venue doesn't have an image the default image is loaded
+                            }).addOnFailureListener(new OnFailureListener()
+                            {
+                                @Override
+                                public void onFailure(@NonNull Exception e)
+                                {
+                                    Picasso.with(getContext()).load(R.drawable.com_facebook_profile_picture_blank_portrait).resize(500, 500).into(mVenueImage);
+                                }
+                            });
+                        }
+                        photoMetadataBuffer.release();
+                    }
+                });
     }
 }

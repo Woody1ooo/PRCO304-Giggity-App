@@ -62,6 +62,7 @@ public class MusicianUserGigDetailsFragment extends Fragment implements OnMapRea
     // Declare visual components
     private CircleImageView mVenueImage;
     private TextView mGigNameTextView;
+    private TextView mGigGenresTextView;
     private TextView mGigStartDateTextView;
     private TextView mGigEndDateTextView;
     private TextView mGigVenueTextView;
@@ -77,6 +78,7 @@ public class MusicianUserGigDetailsFragment extends Fragment implements OnMapRea
     private String mGigStartDate;
     private String mGigEndDate;
     private GoogleApiClient mGoogleApiClient;
+    private String mGigGenres;
 
     // Declare Firebase specific variables
     private FirebaseAuth mAuth;
@@ -110,6 +112,7 @@ public class MusicianUserGigDetailsFragment extends Fragment implements OnMapRea
         // Initialise visual components
         mVenueImage = (CircleImageView) fragmentView.findViewById(R.id.venueImage);
         mGigNameTextView = (TextView) fragmentView.findViewById(R.id.gigNameTextView);
+        mGigGenresTextView = (TextView) fragmentView.findViewById(R.id.gigGenresTextView);
         mGigStartDateTextView = (TextView) fragmentView.findViewById(R.id.startDateTextView);
         mGigEndDateTextView = (TextView) fragmentView.findViewById(R.id.finishDateTextView);
         mGigVenueTextView = (TextView) fragmentView.findViewById(R.id.venueTextView);
@@ -118,6 +121,7 @@ public class MusicianUserGigDetailsFragment extends Fragment implements OnMapRea
         // Retrieve variables from the previous fragment
         mVenueId = getArguments().getString("GigVenueID");
         mGigId = getArguments().getString("GigID");
+        mGigGenres = getArguments().getString("GigGenres");
 
         // Initialise the map
         mMapView = (MapView) fragmentView.findViewById(R.id.venueMapView);
@@ -190,6 +194,7 @@ public class MusicianUserGigDetailsFragment extends Fragment implements OnMapRea
         mGigNameTextView.setText(getArguments().getString("GigTitle"));
         mGigStartDate = getArguments().getString("GigStartDate");
         mGigEndDate = getArguments().getString("GigEndDate");
+        mGigGenresTextView.setText(mGigGenres);
 
         // This takes the start and end dates and reformats them to look more visually appealing
         String formattedStartDateSectionOne = mGigStartDate.split(" ")[0];
@@ -220,8 +225,29 @@ public class MusicianUserGigDetailsFragment extends Fragment implements OnMapRea
         mGoogleApiClient = new GoogleApiClient.Builder(getContext()).addApi(Places.GEO_DATA_API).addApi(Places.PLACE_DETECTION_API).build();
         mGoogleApiClient.connect();
 
-        // This calls the method to load the photos, though it doesn't work at the moment...
-        placePhotosAsync();
+        // This reference looks at the Firebase storage and works out whether the current user has an image
+        mProfileImageReference.child("VenueProfileImages/" + mVenueId + "/profileImage")
+                .getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>()
+        {
+            // If the venue has an image this is loaded into the image view
+            @Override
+            public void onSuccess(Uri uri)
+            {
+                // The caching and memory features have been disabled to allow only the latest image to display
+                Glide.with(getContext()).using(new FirebaseImageLoader()).load
+                        (mProfileImageReference.child("VenueProfileImages/" + mVenueId + "/profileImage"))
+                        .diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).override(500, 500).into(mVenueImage);
+            }
+
+            // If the venue doesn't have an image then attempt to load the Google images
+        }).addOnFailureListener(new OnFailureListener()
+        {
+            @Override
+            public void onFailure(@NonNull Exception e)
+            {
+                placePhotosAsync();
+            }
+        });
     }
 
     @Override
@@ -710,8 +736,7 @@ public class MusicianUserGigDetailsFragment extends Fragment implements OnMapRea
         getFragmentManager().popBackStackImmediate();
     }
 
-    private ResultCallback<PlacePhotoResult> mDisplayPhotoResultCallback
-            = new ResultCallback<PlacePhotoResult>()
+    private ResultCallback<PlacePhotoResult> mDisplayPhotoResultCallback = new ResultCallback<PlacePhotoResult>()
     {
         @Override
         public void onResult(PlacePhotoResult placePhotoResult)
@@ -731,7 +756,7 @@ public class MusicianUserGigDetailsFragment extends Fragment implements OnMapRea
      */
     private void placePhotosAsync()
     {
-        final String placeId = mVenueId; // Australian Cruise Group
+        final String placeId = mVenueId;
         Places.GeoDataApi.getPlacePhotos(mGoogleApiClient, placeId)
                 .setResultCallback(new ResultCallback<PlacePhotoMetadataResult>()
                 {
@@ -751,6 +776,33 @@ public class MusicianUserGigDetailsFragment extends Fragment implements OnMapRea
                                     .getScaledPhoto(mGoogleApiClient, mVenueImage.getWidth(),
                                             mVenueImage.getHeight())
                                     .setResultCallback(mDisplayPhotoResultCallback);
+                        }
+
+                        else
+                        {
+                            // This reference looks at the Firebase storage and works out whether the current venue has an image
+                            mProfileImageReference.child("VenueProfileImages/" + mVenueId + "/profileImage")
+                                    .getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>()
+                            {
+                                // If the venue has an image this is loaded into the image view
+                                @Override
+                                public void onSuccess(Uri uri)
+                                {
+                                    // The caching and memory features have been disabled to allow only the latest image to display
+                                    Glide.with(getContext()).using(new FirebaseImageLoader()).load
+                                            (mProfileImageReference.child("VenueProfileImages/" + mVenueId + "/profileImage"))
+                                            .diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).override(500, 500).into(mVenueImage);
+                                }
+
+                                // If the venue doesn't have an image the default image is loaded
+                            }).addOnFailureListener(new OnFailureListener()
+                            {
+                                @Override
+                                public void onFailure(@NonNull Exception e)
+                                {
+                                    Picasso.with(getContext()).load(R.drawable.com_facebook_profile_picture_blank_portrait).resize(500, 500).into(mVenueImage);
+                                }
+                            });
                         }
                         photoMetadataBuffer.release();
                     }

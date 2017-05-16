@@ -42,6 +42,7 @@ public class NewsFeedAdapter extends ArrayAdapter<NewsFeedItem>
     private boolean mInitialRead = true;
     private int mInitialReadCounter = 0;
     private List<Map> mListOfLikedItems = new ArrayList<>();
+    private String mPostDate;
 
     // Declare firebase variables
     private FirebaseStorage mStorage;
@@ -91,10 +92,20 @@ public class NewsFeedAdapter extends ArrayAdapter<NewsFeedItem>
         final ImageView mFeaturedImageView = (ImageView)newsFeedListView.findViewById(R.id.featuredImageView);
         final TextView mUserNameTextView = (TextView)newsFeedListView.findViewById(R.id.userNameTextView);
         final TextView mNewsFeedMessageTextView = (TextView)newsFeedListView.findViewById(R.id.newsFeedMessageTextView);
+        final TextView mPostDateTextView = (TextView)newsFeedListView.findViewById(R.id.dateTextView);
         final CircleImageView mImageView = (CircleImageView)newsFeedListView.findViewById(R.id.userImageView);
         final ImageButton mLikeButton = (ImageButton) newsFeedListView.findViewById(R.id.likeButton);
         final TextView mLikeCountTextView = (TextView)newsFeedListView.findViewById(R.id.likeCountTextView);
 
+        // This gets the date of the post and splits it into a more readable format
+        mPostDate = item.getPostDate().toString();
+        String formattedDateSectionTwo = mPostDate.split(" ")[1];
+        String formattedDateSectionThree = mPostDate.split(" ")[2];
+        String formattedDateSectionFour = mPostDate.split(" ")[3];
+
+        mPostDateTextView.setText(formattedDateSectionTwo + " " + formattedDateSectionThree + " " + formattedDateSectionFour);
+
+        // Load the user's image if that's relevant to the post
         Glide.with(getContext()).using(new FirebaseImageLoader()).load
                 (mProfileImageReference.child("ProfileImages/" +  item.getUserID() +  "/profileImage"))
                 .override(300, 300).into(mImageView);
@@ -102,6 +113,7 @@ public class NewsFeedAdapter extends ArrayAdapter<NewsFeedItem>
         mUserNameTextView.setText(item.getUserName());
         mUserNameTextView.setTypeface(null, Typeface.BOLD);
 
+        // Set the text view to the news feed message
         mNewsFeedMessageTextView.setText(item.getMessage());
 
         if(!item.isFeatured())
@@ -109,6 +121,7 @@ public class NewsFeedAdapter extends ArrayAdapter<NewsFeedItem>
             mFeaturedImageView.setVisibility(View.GONE);
         }
 
+        // Set the like count text view
         mLikeCountTextView.setText("Likes: " + item.getLikeCount());
 
         // Check if the user has already liked it and if so set it to the red one

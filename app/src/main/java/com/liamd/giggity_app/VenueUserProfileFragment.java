@@ -25,7 +25,13 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.firebase.ui.storage.images.FirebaseImageLoader;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.PlacePhotoMetadataBuffer;
+import com.google.android.gms.location.places.PlacePhotoMetadataResult;
+import com.google.android.gms.location.places.PlacePhotoResult;
+import com.google.android.gms.location.places.Places;
 import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -80,6 +86,7 @@ public class VenueUserProfileFragment extends Fragment
     private List<String> mGenreList;
     private String mVenueId;
     private String mVenueName;
+    private GoogleApiClient mGoogleApiClient;
 
     // This variable is the place information that is stored in the database.
     // This is required because when the location data is retrieved, the built-in
@@ -314,7 +321,10 @@ public class VenueUserProfileFragment extends Fragment
     // changed to pull the users chosen pictures
     private void LoadProfilePicture()
     {
-        // This reference looks at the Firebase storage and works out whether the current venue has an image
+        mGoogleApiClient = new GoogleApiClient.Builder(getContext()).addApi(Places.GEO_DATA_API).addApi(Places.PLACE_DETECTION_API).build();
+        mGoogleApiClient.connect();
+
+        // This reference looks at the Firebase storage and works out whether the current user has an image
         mProfileImageReference.child("VenueProfileImages/" + mVenueId + "/profileImage")
                 .getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>()
         {
@@ -328,13 +338,13 @@ public class VenueUserProfileFragment extends Fragment
                         .diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).override(500, 500).into(venueImageView);
             }
 
-            // If the venue doesn't have an image the default image is loaded
+            // If the venue doesn't have an image then attempt to load the Google images
         }).addOnFailureListener(new OnFailureListener()
         {
             @Override
             public void onFailure(@NonNull Exception e)
             {
-                Picasso.with(getContext()).load(R.drawable.com_facebook_profile_picture_blank_portrait).resize(500, 500).into(venueImageView);
+                placePhotosAsync();
             }
         });
     }
@@ -379,10 +389,13 @@ public class VenueUserProfileFragment extends Fragment
                 mProgressDialog.show();
                 mProgressDialog.setCancelable(false);
                 mProfileImageReference.child("VenueProfileImages/" + mVenueId + "/profileImage").delete();
-                Picasso.with(getContext()).load(R.drawable.com_facebook_profile_picture_blank_portrait).resize(500, 500).into(venueImageView);
+
+                // Load the Google photos to replace the deleted image
+                placePhotosAsync();
 
                 // This updates the image on the navigation drawer as well
-                Picasso.with(getContext()).load(R.drawable.com_facebook_profile_picture_blank_portrait).resize(220, 220).into(mainActivityImageView);
+                ((DrawerProfilePictureUpdater) getActivity()).UpdateDrawerProfilePicture();
+
                 mProgressDialog.hide();
             }
         });
@@ -630,5 +643,80 @@ public class VenueUserProfileFragment extends Fragment
         startActivity(intent);
 
         getFragmentManager().popBackStackImmediate();
+    }
+
+    private ResultCallback<PlacePhotoResult> mDisplayPhotoResultCallback = new ResultCallback<PlacePhotoResult>()
+    {
+        @Override
+        public void onResult(PlacePhotoResult placePhotoResult)
+        {
+            if (!placePhotoResult.getStatus().isSuccess())
+            {
+                return;
+            }
+
+            venueImageView.setImageBitmap(placePhotoResult.getBitmap());
+        }
+    };
+
+    /**
+     * Load a bitmap from the photos API asynchronously
+     * by using buffers and result callbacks.
+     */
+    private void placePhotosAsync()
+    {
+        final String placeId = mVenueId;
+        Places.GeoDataApi.getPlacePhotos(mGoogleApiClient, placeId)
+                .setResultCallback(new ResultCallback<PlacePhotoMetadataResult>()
+                {
+                    @Override
+                    public void onResult(PlacePhotoMetadataResult photos)
+                    {
+                        ((DrawerProfilePictureUpdater) getActivity()).UpdateDrawerProfilePicture();
+
+                        if (!photos.getStatus().isSuccess())
+                        {
+                            return;
+                        }
+
+                        PlacePhotoMetadataBuffer photoMetadataBuffer = photos.getPhotoMetadata();
+                        if (photoMetadataBuffer.getCount() > 0)
+                        {
+                            // Display the first bitmap in an ImageView in the size of the view
+                            photoMetadataBuffer.get(0)
+                                    .getScaledPhoto(mGoogleApiClient, venueImageView.getWidth(),
+                                            venueImageView.getHeight())
+                                    .setResultCallback(mDisplayPhotoResultCallback);
+                        }
+
+                        else
+                        {
+                            // This reference looks at the Firebase storage and works out whether the current venue has an image
+                            mProfileImageReference.child("VenueProfileImages/" + mVenueId + "/profileImage")
+                                    .getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>()
+                            {
+                                // If the venue has an image this is loaded into the image view
+                                @Override
+                                public void onSuccess(Uri uri)
+                                {
+                                    // The caching and memory features have been disabled to allow only the latest image to display
+                                    Glide.with(getContext()).using(new FirebaseImageLoader()).load
+                                            (mProfileImageReference.child("VenueProfileImages/" + mVenueId + "/profileImage"))
+                                            .diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).override(500, 500).into(venueImageView);
+                                }
+
+                                // If the venue doesn't have an image the default image is loaded
+                            }).addOnFailureListener(new OnFailureListener()
+                            {
+                                @Override
+                                public void onFailure(@NonNull Exception e)
+                                {
+                                    Picasso.with(getContext()).load(R.drawable.com_facebook_profile_picture_blank_portrait).resize(500, 500).into(venueImageView);
+                                }
+                            });
+                        }
+                        photoMetadataBuffer.release();
+                    }
+                });
     }
 }

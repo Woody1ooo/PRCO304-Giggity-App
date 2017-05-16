@@ -196,7 +196,7 @@ public class MusicianUserBandFinderFragment extends Fragment implements Location
 
                 mDistanceTextView.setText("Distance (km): " + mDistanceSelected);
 
-                if (mDistanceSelected == 100)
+                if (mDistanceSelected == 250)
                 {
                     mDistanceTextView.setText("Distance (km): National");
                 }

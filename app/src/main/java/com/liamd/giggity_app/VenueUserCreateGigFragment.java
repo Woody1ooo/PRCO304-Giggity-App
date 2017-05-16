@@ -736,6 +736,18 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
                                     mDatabase.child("Gigs/" + mGigId).child("ticketCost").setValue(mTicketCost);
                                     mDatabase.child("Gigs/" + mGigId).child("ticketQuantity").setValue(mTicketQuantity);
 
+                                    // Get the current date time for the news items
+                                    Calendar calendar = Calendar.getInstance();
+                                    Date date = calendar.getTime();
+
+                                    if(!mIsFeatured)
+                                    {
+                                        // This creates a news feed object and posts it to the database under the generated push key
+                                        String newsItemId = mDatabase.child("NewsFeedItems").push().getKey();
+                                        NewsFeedItem newsFeedItem = new NewsFeedItem(newsItemId, mVenueName, "has just posted a gig at their venue! Musicians wanted!", mGigId, mIsFeatured, mFeaturedWeekQuantity, date);
+                                        mDatabase.child("NewsFeedItems/" + newsItemId + "/").setValue(newsFeedItem);
+                                    }
+
                                     // A dialog is then shown to alert the user that the changes have been made
                                     final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                                     builder.setTitle("Confirmation");
@@ -933,7 +945,8 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
                         // This dialog is created to confirm that the users want to purchase the tickets
                         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                         builder.setTitle("Confirmation");
-                        builder.setMessage("Featured status purchased! This will now appear as a featured item at the top of the news feed for " + mFeaturedWeekQuantity + " weeks.");
+                        builder.setMessage("Featured status purchased! This will now appear as a featured item at the top of the news feed for " + mFeaturedWeekQuantity + " weeks." +
+                                "Please ensure that you still complete the creation of this gig at the bottom of the page.");
                         builder.setPositiveButton("Confirm", new DialogInterface.OnClickListener()
                         {
                             @Override

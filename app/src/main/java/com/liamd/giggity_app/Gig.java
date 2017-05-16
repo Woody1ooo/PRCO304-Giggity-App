@@ -18,6 +18,7 @@ public class Gig
     private int ticketCost;
     private int ticketQuantity;
     private int ageRestriction;
+    private String genres;
 
     public Gig()
     {
@@ -161,5 +162,15 @@ public class Gig
     public void setAgeRestriction(int ageRestriction)
     {
         this.ageRestriction = ageRestriction;
+    }
+
+    public String getGenres()
+    {
+        return genres;
+    }
+
+    public void setGenres(String genres)
+    {
+        this.genres = genres;
     }
 }
