@@ -29,9 +29,12 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import static android.content.Context.LOCATION_SERVICE;
@@ -40,7 +43,7 @@ import static android.content.Context.LOCATION_SERVICE;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MusicianUserGigFinderFragment extends Fragment implements LocationListener
+public class MusicianUserGigFinderFragment extends Fragment implements LocationListener, DatePickerDialog.OnDateSetListener
 {
     // Declare visual components
     private SeekBar mDistanceSeekbar;
@@ -48,6 +51,10 @@ public class MusicianUserGigFinderFragment extends Fragment implements LocationL
     private RadioButton mCurrentLocationRadio;
     private RadioButton mHomeLocationRadio;
     private MultiSelectSpinner mGenreSelectSpinner;
+    private TextView mEarliestDateSelectedTextView;
+    private Button mEarliestDateSelectorButton;
+    private TextView mLatestDateSelectedTextView;
+    private Button mLatestDateSelectorButton;
     private Button mSearchButton;
 
     // Declare Firebase specific variables
@@ -61,7 +68,9 @@ public class MusicianUserGigFinderFragment extends Fragment implements LocationL
     private LatLng mCurrentLocation;
     private LocationManager mLocationManager;
     private Location location;
-
+    private Date mEarliestDate;
+    private Date mLatestDate;
+    private boolean mIsEarliestDate;
     private boolean mIsInBand = true;
     private boolean mIsFanAccount;
 
@@ -86,7 +95,7 @@ public class MusicianUserGigFinderFragment extends Fragment implements LocationL
         View fragmentView = inflater.inflate(R.layout.musician_user_fragment_gig_finder, container, false);
 
         // If the user holds a fan account set the flag
-        if(getArguments().getString("UserType").equals("Fan"))
+        if (getArguments().getString("UserType").equals("Fan"))
         {
             mIsFanAccount = true;
         }
@@ -103,6 +112,10 @@ public class MusicianUserGigFinderFragment extends Fragment implements LocationL
         mCurrentLocationRadio = (RadioButton) fragmentView.findViewById(R.id.currentLocationRadio);
         mHomeLocationRadio = (RadioButton) fragmentView.findViewById(R.id.homeLocationRadio);
         mGenreSelectSpinner = (MultiSelectSpinner) fragmentView.findViewById(R.id.genreSpinner);
+        mEarliestDateSelectedTextView = (TextView) fragmentView.findViewById(R.id.EarliestDateSelectedTextView);
+        mEarliestDateSelectorButton = (Button) fragmentView.findViewById(R.id.SelectEarliestDateButton);
+        mLatestDateSelectedTextView = (TextView) fragmentView.findViewById(R.id.LatestDateSelectedTextView);
+        mLatestDateSelectorButton = (Button) fragmentView.findViewById(R.id.SelectLatestDateButton);
         mSearchButton = (Button) fragmentView.findViewById(R.id.searchButton);
 
         // Initialise various variables
@@ -137,8 +150,25 @@ public class MusicianUserGigFinderFragment extends Fragment implements LocationL
         mGenreList.add("Ska");
         mGenreList.add("Techno");
         mGenreList.add("Thrash Metal");
-
         mGenreSelectSpinner.setItems(mGenreList);
+
+        // Initialise the date values and UI components
+        Calendar calendar = Calendar.getInstance();
+        Date date = calendar.getTime();
+        mEarliestDate = new Date();
+        mLatestDate = new Date();
+
+        // Initialise the date variables
+        mEarliestDate.setDate(date.getDate());
+        mEarliestDate.setMonth(date.getMonth());
+        mEarliestDate.setYear(date.getYear());
+        mLatestDate.setDate(date.getDate());
+        mLatestDate.setMonth(date.getMonth());
+        mLatestDate.setYear(date.getYear());
+
+        // Set the visual components to the current date
+        mEarliestDateSelectedTextView.setText(date.getDate() + "/" + (date.getMonth() + 1) + "/" + (date.getYear() + 1900));
+        mLatestDateSelectedTextView.setText(date.getDate() + "/" + (date.getMonth() + 1) + "/" + (date.getYear() + 1900));
 
         // This method gets the users current/last known location
         GetUserCurrentLocation();
@@ -154,9 +184,9 @@ public class MusicianUserGigFinderFragment extends Fragment implements LocationL
 
                 // This checks the database to see if the user is currently a member of a band.
                 // If not inform them that they can't apply for gig opportunities.
-                if(dataSnapshot.child(mAuth.getCurrentUser().getUid() + "/inBand").getValue().equals(false))
+                if (dataSnapshot.child(mAuth.getCurrentUser().getUid() + "/inBand").getValue().equals(false))
                 {
-                    if(getActivity() != null && !mIsFanAccount)
+                    if (getActivity() != null && !mIsFanAccount)
                     {
                         // A dialog is then shown to alert the user that the changes have been made
                         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -219,6 +249,56 @@ public class MusicianUserGigFinderFragment extends Fragment implements LocationL
             }
         });
 
+        // When the date button is selected load the calendar widget
+        mEarliestDateSelectorButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                mIsEarliestDate = true;
+
+                // The calendar is then initialised with today's date
+                Calendar calendar = Calendar.getInstance();
+                DatePickerDialog dpd = DatePickerDialog.newInstance(
+                        MusicianUserGigFinderFragment.this,
+                        calendar.get(Calendar.YEAR),
+                        calendar.get(Calendar.MONTH),
+                        calendar.get(Calendar.DAY_OF_MONTH)
+                );
+
+                dpd.show(getActivity().getFragmentManager(), "DatePickerDialog");
+
+                // By setting the minimum date to today, it prevents gigs being
+                // searched for in the past
+                dpd.setMinDate(Calendar.getInstance());
+            }
+        });
+
+        // When the date button is selected load the calendar widget
+        mLatestDateSelectorButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                mIsEarliestDate = false;
+
+                // The calendar is then initialised with today's date
+                Calendar calendar = Calendar.getInstance();
+                DatePickerDialog dpd = DatePickerDialog.newInstance(
+                        MusicianUserGigFinderFragment.this,
+                        calendar.get(Calendar.YEAR),
+                        calendar.get(Calendar.MONTH),
+                        calendar.get(Calendar.DAY_OF_MONTH)
+                );
+
+                dpd.show(getActivity().getFragmentManager(), "DatePickerDialog");
+
+                // By setting the minimum date to today, it prevents gigs being
+                // searched for in the past
+                dpd.setMinDate(Calendar.getInstance());
+            }
+        });
+
         mSearchButton.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -245,9 +325,7 @@ public class MusicianUserGigFinderFragment extends Fragment implements LocationL
         {
             Toast.makeText(getActivity(), "Are you sure you have location services enabled?" +
                     " We can't find you!", Toast.LENGTH_SHORT).show();
-        }
-
-        else
+        } else
         {
             double latitude = location.getLatitude();
             double longitude = location.getLongitude();
@@ -275,9 +353,7 @@ public class MusicianUserGigFinderFragment extends Fragment implements LocationL
             if (!isGPSEnabled && !isNetworkEnabled)
             {
                 // no network provider is enabled
-            }
-
-            else
+            } else
             {
                 if (isNetworkEnabled)
                 {
@@ -288,9 +364,7 @@ public class MusicianUserGigFinderFragment extends Fragment implements LocationL
                             Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
                     {
                         requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
-                    }
-
-                    else
+                    } else
                     {
                         mLocationManager.requestLocationUpdates(
                                 LocationManager.NETWORK_PROVIDER,
@@ -324,9 +398,7 @@ public class MusicianUserGigFinderFragment extends Fragment implements LocationL
                 }
             }
 
-        }
-
-        catch (Exception e)
+        } catch (Exception e)
         {
             e.printStackTrace();
         }
@@ -346,9 +418,7 @@ public class MusicianUserGigFinderFragment extends Fragment implements LocationL
                     grantResults[0] == PackageManager.PERMISSION_GRANTED)
             {
                 GetUserCurrentLocation();
-            }
-
-            else
+            } else
             {
                 Toast.makeText(getActivity(), "If you wish to use your current location," +
                         " please ensure you have given the permission.", Toast.LENGTH_SHORT).show();
@@ -395,7 +465,7 @@ public class MusicianUserGigFinderFragment extends Fragment implements LocationL
 
         // The string array is then iterated through and added to a separate string
         // array and passed to the spinner.
-        for(int i = 0; i < splitUserPulledGenres.size(); i++)
+        for (int i = 0; i < splitUserPulledGenres.size(); i++)
         {
             String formattedGenreStringToAdd;
 
@@ -409,52 +479,86 @@ public class MusicianUserGigFinderFragment extends Fragment implements LocationL
 
     private void Search()
     {
-        String mGenreListString = mGenreSelectSpinner.getSelectedItemsAsString();
-
-        // This then stores the id of the selected gig in a bundle which is then
-        // passed to the result fragment to display the gig details
-        MusicianUserGigResultsFragment fragment = new MusicianUserGigResultsFragment();
-        Bundle arguments = new Bundle();
-
-        arguments.putString("Genres", mGenreListString);
-
-        if(mCurrentLocationRadio.isChecked())
+        if(!mEarliestDate.after(mLatestDate) || !mLatestDate.before(mEarliestDate))
         {
-            arguments.putDouble("CurrentLocationLatitude", mCurrentLocation.latitude);
-            arguments.putDouble("CurrentLocationLongitude", mCurrentLocation.longitude);
-            arguments.putBoolean("CurrentLocation", true);
+            String mGenreListString = mGenreSelectSpinner.getSelectedItemsAsString();
+
+            // This then stores the id of the selected gig in a bundle which is then
+            // passed to the result fragment to display the gig details
+            MusicianUserGigResultsFragment fragment = new MusicianUserGigResultsFragment();
+            Bundle arguments = new Bundle();
+
+            arguments.putString("Genres", mGenreListString);
+
+            if (mCurrentLocationRadio.isChecked())
+            {
+                arguments.putDouble("CurrentLocationLatitude", mCurrentLocation.latitude);
+                arguments.putDouble("CurrentLocationLongitude", mCurrentLocation.longitude);
+                arguments.putBoolean("CurrentLocation", true);
+            }
+
+            else
+            {
+                arguments.putDouble("HomeLocationLatitude", mHomeLocation.latitude);
+                arguments.putDouble("HomeLocationLongitude", mHomeLocation.longitude);
+                arguments.putBoolean("CurrentLocation", false);
+            }
+
+            arguments.putInt("DistanceSelected", mDistanceSelected);
+            arguments.putBoolean("IsInBand", mIsInBand);
+            arguments.putString("EarliestDate", mEarliestDate.toString());
+            arguments.putString("LatestDate", mLatestDate.toString());
+
+            // If the flag is set pass this value on
+            if (mIsFanAccount)
+            {
+                arguments.putString("UserType", "Fan");
+            } else
+            {
+                arguments.putString("UserType", "Musician");
+            }
+
+            fragment.setArguments(arguments);
+
+            // Creates a new fragment transaction to display the details of the selected
+            // preferences. Some custom animation has been added also.
+            FragmentTransaction fragmentTransaction = getActivity().getFragmentManager()
+                    .beginTransaction();
+            fragmentTransaction.setCustomAnimations(R.animator.enter_from_right, R.animator.enter_from_left);
+            fragmentTransaction.replace(R.id.frame, fragment, "GigResultsMapFragment")
+                    .addToBackStack(null).commit();
         }
 
         else
         {
-            arguments.putDouble("HomeLocationLatitude", mHomeLocation.latitude);
-            arguments.putDouble("HomeLocationLongitude", mHomeLocation.longitude);
-            arguments.putBoolean("CurrentLocation", false);
+            Toast.makeText(getActivity(), "Please ensure that the dates are set correctly!", Toast.LENGTH_SHORT).show();
         }
+    }
 
-        arguments.putInt("DistanceSelected", mDistanceSelected);
-        arguments.putBoolean("IsInBand", mIsInBand);
+    @Override
+    public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth)
+    {
+        // These variables store the dates selected on the picker
+        String mYearSelected = Integer.toString(year);
+        String mMonthSelected = Integer.toString(monthOfYear + 1);
+        String mDaySelected = Integer.toString(dayOfMonth);
 
-        // If the flag is set pass this value on
-        if(mIsFanAccount)
+        // if the isStartDate boolean is true, this means the start date button was selected, therefore the relevant variables are populated
+        if(mIsEarliestDate)
         {
-            arguments.putString("UserType", "Fan");
+            mEarliestDateSelectedTextView.setText(mDaySelected + "/" + mMonthSelected + "/" + mYearSelected);
+            mEarliestDate.setDate(dayOfMonth);
+            mEarliestDate.setMonth(monthOfYear);
+            mEarliestDate.setYear(year - 1900);
         }
 
         else
         {
-            arguments.putString("UserType", "Musician");
+            mLatestDateSelectedTextView.setText(mDaySelected + "/" + mMonthSelected + "/" + mYearSelected);
+            mLatestDate.setDate(dayOfMonth);
+            mLatestDate.setMonth(monthOfYear);
+            mLatestDate.setYear(year - 1900);
         }
-
-        fragment.setArguments(arguments);
-
-        // Creates a new fragment transaction to display the details of the selected
-        // preferences. Some custom animation has been added also.
-        FragmentTransaction fragmentTransaction = getActivity().getFragmentManager()
-                .beginTransaction();
-        fragmentTransaction.setCustomAnimations(R.animator.enter_from_right, R.animator.enter_from_left);
-        fragmentTransaction.replace(R.id.frame, fragment, "GigResultsMapFragment")
-                .addToBackStack(null).commit();
     }
 
     @Override

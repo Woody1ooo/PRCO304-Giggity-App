@@ -752,7 +752,6 @@ public class PreSetupActivity extends AppCompatActivity
     {
         PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
         startActivityForResult(builder.build(this), PLACE_PICKER_REQUEST);
-
     }
 
     // Takes the result of the activity and stores the data

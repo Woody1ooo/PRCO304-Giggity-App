@@ -97,15 +97,78 @@
                     android:paddingLeft="10dp"
                     android:layout_marginTop="22dp"/>
 
+                <TextView
+                    android:text="Earliest Date"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="20dp"
+                    android:paddingLeft="10dp"
+                    android:id="@+id/textView16"
+                    android:textSize="16sp"
+                    android:textColor="@color/cast_expanded_controller_background_color"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="20dp"
+                    android:paddingLeft="10dp"
+                    android:id="@+id/EarliestDateSelectedTextView"/>
+
+                <Button
+                    android:text="Select Earliest Date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/SelectEarliestDateButton"
+                    android:layout_marginTop="20dp"
+                    android:paddingRight="10dp"
+                    android:paddingLeft="10dp"
+                    android:background="@color/colorPrimaryDark"
+                    android:textColor="@color/cardview_light_background"
+                    android:layout_gravity="center"
+                    android:textSize="14sp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"/>
+
+                <TextView
+                    android:text="Latest Date"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="20dp"
+                    android:paddingLeft="10dp"
+                    android:textSize="16sp"
+                    android:textColor="@color/cast_expanded_controller_background_color"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="20dp"
+                    android:paddingLeft="10dp"
+                    android:id="@+id/LatestDateSelectedTextView"/>
+
+                <Button
+                    android:text="Select Latest Date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/SelectLatestDateButton"
+                    android:layout_marginTop="20dp"
+                    android:paddingRight="10dp"
+                    android:paddingLeft="10dp"
+                    android:background="@color/colorPrimaryDark"
+                    android:textColor="@color/cardview_light_background"
+                    android:layout_gravity="center"
+                    android:textSize="14sp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"/>
+
                 <Button
                     android:text="Search"
+                    android:layout_marginTop="10dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/searchButton"
                     android:layout_weight="1"
                     android:background="@color/colorPrimary"
                     android:textColor="@color/cardview_light_background"/>
-
             </LinearLayout>
         </ScrollView>
     </RelativeLayout>

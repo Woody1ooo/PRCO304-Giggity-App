@@ -34,6 +34,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -70,6 +72,10 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
     private int mGigDistanceSelected;
     private Boolean mIsInBand = false;
     private boolean mIsFanAccount;
+    private String mEarliestDateString;
+    private String mLatestDateString;
+    private Date mEarliestDate;
+    private Date mLatestDate;
 
     // Declare Visual Components
     private ListView mGigsListView;
@@ -134,6 +140,8 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
         // Initialise variables
         mLocationType = getArguments().getBoolean("CurrentLocation");
         mIsInBand = getArguments().getBoolean("IsInBand");
+        mEarliestDateString = getArguments().getString("EarliestDate");
+        mLatestDateString = getArguments().getString("LatestDate");
 
         // Initialise other variables required
         mGigLocation = new Location("");
@@ -208,6 +216,9 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
             float zoomLevel = 15;
             mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mLocation, zoomLevel));
             mGoogleMap.setOnInfoWindowClickListener(this);
+
+            // This method gets the date range set by the user
+            GetDatePreferences();
 
             // Once the map is ready, it can be set up using SetupMap()
             SetupMap();
@@ -761,17 +772,17 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
     // and the users chosen location is larger than the distance specified on the slider
     private void FilterByDistance(int listIndex)
     {
-        if(mListOfGigs.get(listIndex).getGigDistance() > mGigDistanceSelected)
+        if (mListOfGigs.get(listIndex).getGigDistance() > mGigDistanceSelected)
         {
             mFilteredGigsToRemove.add(listIndex);
         }
 
         // If the user is a musician filter out the non-vacant gigs
-        if(!mIsFanAccount)
+        if (!mIsFanAccount)
         {
-            if(!mListOfGigs.get(listIndex).getBookedAct().equals("Vacant"))
+            if (!mListOfGigs.get(listIndex).getBookedAct().equals("Vacant"))
             {
-                if(!mFilteredGigsToRemove.contains(listIndex))
+                if (!mFilteredGigsToRemove.contains(listIndex))
                 {
                     mFilteredGigsToRemove.add(listIndex);
                 }
@@ -781,12 +792,48 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
         // If the user is a fan only show gigs with acts
         else
         {
-            if(mListOfGigs.get(listIndex).getBookedAct().equals("Vacant"))
+            if (mListOfGigs.get(listIndex).getBookedAct().equals("Vacant"))
             {
-                if(!mFilteredGigsToRemove.contains(listIndex))
+                if (!mFilteredGigsToRemove.contains(listIndex))
                 {
                     mFilteredGigsToRemove.add(listIndex);
                 }
+            }
+        }
+
+        // If the gigs start date is before the earliest date set by the user remove it
+        if(mListOfGigs.get(listIndex).getStartDate().before(mEarliestDate))
+        {
+            if (!mFilteredGigsToRemove.contains(listIndex))
+            {
+                mFilteredGigsToRemove.add(listIndex);
+            }
+        }
+
+        // If the gigs start date is after the latest date set by the user remove it
+        else if(mListOfGigs.get(listIndex).getStartDate().after(mLatestDate))
+        {
+            if (!mFilteredGigsToRemove.contains(listIndex))
+            {
+                mFilteredGigsToRemove.add(listIndex);
+            }
+        }
+
+        // If the gigs finish date is after the latest date set by the user remove it
+        else if(mListOfGigs.get(listIndex).getEndDate().after(mLatestDate))
+        {
+            if (!mFilteredGigsToRemove.contains(listIndex))
+            {
+                mFilteredGigsToRemove.add(listIndex);
+            }
+        }
+
+        // If the gigs finish date is before the earliest start date set by the user remove it
+        else if(mListOfGigs.get(listIndex).getEndDate().before(mEarliestDate))
+        {
+            if (!mFilteredGigsToRemove.contains(listIndex))
+            {
+                mFilteredGigsToRemove.add(listIndex);
             }
         }
     }
@@ -884,6 +931,117 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
                 }
             }
         });
+    }
+
+    private void GetDatePreferences()
+    {
+        // These lines splits the existing dates into two string arrays
+        // so the individual date elements can be extracted and formatted into
+        // the correct format
+        String[] earliestDateSplit = mEarliestDateString.split("\\s+");
+        String[] latestDateSplit = mLatestDateString.split("\\s+");
+        String earliestDateMonth = "";
+        String latestDateMonth = "";
+
+        // These switch statements facilitate the conversion from
+        // Jan to 01 for example
+        switch (earliestDateSplit[1])
+        {
+            case "Jan":
+                earliestDateMonth = "01";
+                break;
+            case "Feb":
+                earliestDateMonth = "02";
+                break;
+            case "Mar":
+                earliestDateMonth = "03";
+                break;
+            case "Apr":
+                earliestDateMonth = "04";
+                break;
+            case "May":
+                earliestDateMonth = "05";
+                break;
+            case "Jun":
+                earliestDateMonth = "06";
+                break;
+            case "Jul":
+                earliestDateMonth = "07";
+                break;
+            case "Aug":
+                earliestDateMonth = "08";
+                break;
+            case "Sep":
+                earliestDateMonth = "09";
+                break;
+            case "Oct":
+                earliestDateMonth = "10";
+                break;
+            case "Nov":
+                earliestDateMonth = "11";
+                break;
+            case "Dec":
+                earliestDateMonth = "12";
+                break;
+        }
+
+        switch (latestDateSplit[1])
+        {
+            case "Jan":
+                latestDateMonth = "01";
+                break;
+            case "Feb":
+                latestDateMonth = "02";
+                break;
+            case "Mar":
+                latestDateMonth = "03";
+                break;
+            case "Apr":
+                latestDateMonth = "04";
+                break;
+            case "May":
+                latestDateMonth = "05";
+                break;
+            case "Jun":
+                latestDateMonth = "06";
+                break;
+            case "Jul":
+                latestDateMonth = "07";
+                break;
+            case "Aug":
+                latestDateMonth = "08";
+                break;
+            case "Sep":
+                latestDateMonth = "09";
+                break;
+            case "Oct":
+                latestDateMonth = "10";
+                break;
+            case "Nov":
+                latestDateMonth = "11";
+                break;
+            case "Dec":
+                latestDateMonth = "12";
+                break;
+        }
+
+        // This parses the dates from a String back into a Date object
+        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss.SSS");
+        try
+        {
+            // The elements of the split string are then concatenated together
+            // to form the correct date format where they are then converted into
+            // date objects and stored within mEarliestDate and mLatestDate
+            String startDateToParse = earliestDateSplit[2] + "/" + earliestDateMonth + "/" + earliestDateSplit[5] + " " + earliestDateSplit[3] + "." + "000";
+            String endDateToParse = latestDateSplit[2] + "/" + latestDateMonth + "/" + latestDateSplit[5] + " " + latestDateSplit[3] + "." + "000";
+            mEarliestDate = format.parse(startDateToParse);
+            mLatestDate = format.parse(endDateToParse);
+        }
+
+        catch (ParseException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     public static DataSnapshot getVenueSnapshot()
