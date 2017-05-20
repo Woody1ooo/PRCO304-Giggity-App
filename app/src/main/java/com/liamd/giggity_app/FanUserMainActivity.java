@@ -35,8 +35,7 @@ import com.squareup.picasso.Picasso;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class FanUserMainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener
+public class FanUserMainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, DrawerProfilePictureUpdater
 {
     // Declare visual components
     private CircleImageView profileImageView;
@@ -170,7 +169,35 @@ public class FanUserMainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if(id == R.id.nav_gig_finder)
+        // Each time a navigation item is selected this clears the users previous path as they are now entering a different section
+        if (id == R.id.nav_fan_home)
+        {
+            getFragmentManager().popBackStackImmediate();
+
+            setTitle("Home");
+            FanUserHomeFragment fragment = new FanUserHomeFragment();
+            FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.frame, fragment
+                    , "FanUserHomeFragment");
+            fragmentTransaction.commit();
+        }
+
+        else if(id == R.id.nav_profile)
+        {
+            ClearBackStack(this);
+
+            setTitle("My Fan Profile");
+            FanUserProfileFragment fragment = new FanUserProfileFragment();
+            Bundle arguments = new Bundle();
+            fragment.setArguments(arguments);
+            FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.frame, fragment
+                    , "FanUserProfileFragment")
+                    .addToBackStack(null)
+                    .commit();
+        }
+
+        else if(id == R.id.nav_gig_finder)
         {
             ClearBackStack(this);
 
@@ -317,5 +344,11 @@ public class FanUserMainActivity extends AppCompatActivity
         });
         builder.show();
         builder.setCancelable(false);
+    }
+
+    @Override
+    public void UpdateDrawerProfilePicture()
+    {
+        NavigationDrawerUserData();
     }
 }

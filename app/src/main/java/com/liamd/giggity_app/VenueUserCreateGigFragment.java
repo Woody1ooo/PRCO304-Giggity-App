@@ -998,9 +998,7 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
         if (requestCode == PERMISSION_ALL)
         {
             // If the permission has been accepted update hasPermission to reflect this
-            if (permissions.length == 2 && permissions[0].equals(Manifest.permission.READ_CALENDAR)
-                    && permissions[1].equals(Manifest.permission.WRITE_CALENDAR)
-                    && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+            if (permissions.length == 2 && permissions[0].equals(Manifest.permission.READ_CALENDAR) && permissions[1].equals(Manifest.permission.WRITE_CALENDAR) && grantResults[0] == PackageManager.PERMISSION_GRANTED)
             {
                 if (mIsEventWithoutEndDate)
                 {

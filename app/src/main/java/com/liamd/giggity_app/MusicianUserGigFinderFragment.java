@@ -353,7 +353,9 @@ public class MusicianUserGigFinderFragment extends Fragment implements LocationL
             if (!isGPSEnabled && !isNetworkEnabled)
             {
                 // no network provider is enabled
-            } else
+            }
+
+            else
             {
                 if (isNetworkEnabled)
                 {
@@ -364,12 +366,11 @@ public class MusicianUserGigFinderFragment extends Fragment implements LocationL
                             Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
                     {
                         requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
-                    } else
+                    }
+
+                    else
                     {
-                        mLocationManager.requestLocationUpdates(
-                                LocationManager.NETWORK_PROVIDER,
-                                MIN_TIME_BW_UPDATES,
-                                MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
+                        mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
                         Log.d("Network", "Network Enabled");
 
                         if (mLocationManager != null)
@@ -384,10 +385,7 @@ public class MusicianUserGigFinderFragment extends Fragment implements LocationL
                 {
                     if (location == null)
                     {
-                        mLocationManager.requestLocationUpdates(
-                                LocationManager.GPS_PROVIDER,
-                                MIN_TIME_BW_UPDATES,
-                                MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
+                        mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
                         Log.d("GPS", "GPS Enabled");
 
                         if (mLocationManager != null)
@@ -398,7 +396,9 @@ public class MusicianUserGigFinderFragment extends Fragment implements LocationL
                 }
             }
 
-        } catch (Exception e)
+        }
+
+        catch (Exception e)
         {
             e.printStackTrace();
         }
@@ -413,12 +413,12 @@ public class MusicianUserGigFinderFragment extends Fragment implements LocationL
     {
         if (requestCode == MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION)
         {
-            if (permissions.length == 1 &&
-                    permissions[0] == android.Manifest.permission.ACCESS_FINE_LOCATION &&
-                    grantResults[0] == PackageManager.PERMISSION_GRANTED)
+            if (permissions.length == 1 && permissions[0].equals(android.Manifest.permission.ACCESS_FINE_LOCATION) && grantResults[0] == PackageManager.PERMISSION_GRANTED)
             {
                 GetUserCurrentLocation();
-            } else
+            }
+
+            else
             {
                 Toast.makeText(getActivity(), "If you wish to use your current location," +
                         " please ensure you have given the permission.", Toast.LENGTH_SHORT).show();

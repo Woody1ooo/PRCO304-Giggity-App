@@ -81,6 +81,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 {
                     mProgressDialog.setMessage("Signing In...");
                     mProgressDialog.show();
+                    mProgressDialog.setCancelable(false);
 
                     // User is already signed in, therefore go straight to the homepage
                     LoadMainActivity();

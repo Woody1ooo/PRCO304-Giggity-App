@@ -33,17 +33,6 @@
         </menu>
     </item>
 
-    <item android:title="Bands">
-        <menu>
-            <group android:id="@+id/group_bands" android:checkableBehavior="single">
-                <item
-                    android:id="@+id/nav_fav_bands"
-                    android:icon="@drawable/ic_star_black_24px"
-                    android:title="My Favourite Bands"/>
-            </group>
-        </menu>
-    </item>
-
     <item android:title="App">
         <menu>
             <group android:id="@+id/group_app" android:checkableBehavior="single">
