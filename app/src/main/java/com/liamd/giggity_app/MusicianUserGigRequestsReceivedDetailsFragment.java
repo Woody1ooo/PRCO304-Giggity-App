@@ -189,7 +189,7 @@ public class MusicianUserGigRequestsReceivedDetailsFragment extends Fragment imp
                 mGoogleMap.addMarker(new MarkerOptions().position(mVenueLocation).icon(BitmapDescriptorFactory.fromBitmap(smallMarker)));
 
                 // This zooms the map in to a reasonable level (12) and centers it on the location provided
-                float zoomLevel = 15;
+                float zoomLevel = 8;
                 mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mVenueLocation, zoomLevel));
             }
 
@@ -626,7 +626,7 @@ public class MusicianUserGigRequestsReceivedDetailsFragment extends Fragment imp
                     // Generate a notification ID from the database
                     notificationID = mDatabase.push().getKey();
 
-                    Notification notification = new Notification(notificationID, mSnapshot.child("Bands/" + mBandId + "/name").getValue().toString() + " has accepted your request to play " + mGigNameTextView.getText().toString(), "VenueSentGigRequestRejected");
+                    Notification notification = new Notification(notificationID, mSnapshot.child("Bands/" + mBandId + "/name").getValue().toString() + " has accepted your request to play " + mGigNameTextView.getText().toString(), "VenueSentGigRequestRejected", mSnapshot.child("Venues/" + mVenueId + "/userID").getValue().toString());
                     mDatabase.child("Users/" + mSnapshot.child("Venues/" + mVenueId + "/userID").getValue().toString() + "/notifications/" + notificationID + "/").setValue(notification);
 
                     // A dialog is then shown to alert the user that the changes have been made
@@ -771,7 +771,7 @@ public class MusicianUserGigRequestsReceivedDetailsFragment extends Fragment imp
                     // Generate a notification ID from the database
                     notificationID = mDatabase.push().getKey();
 
-                    Notification notification = new Notification(notificationID, mSnapshot.child("Bands/" + mBandId + "/name").getValue().toString() + " has rejected your request to play " + mGigNameTextView.getText().toString(), "VenueSentGigRequestRejected");
+                    Notification notification = new Notification(notificationID, mSnapshot.child("Bands/" + mBandId + "/name").getValue().toString() + " has rejected your request to play " + mGigNameTextView.getText().toString(), "VenueSentGigRequestRejected", mSnapshot.child("Venues/" + mVenueId + "/userID").getValue().toString());
                     mDatabase.child("Users/" + mSnapshot.child("Venues/" + mVenueId + "/userID").getValue().toString() + "/notifications/" + notificationID + "/").setValue(notification);
 
                     // A dialog is then shown to alert the user that the changes have been made

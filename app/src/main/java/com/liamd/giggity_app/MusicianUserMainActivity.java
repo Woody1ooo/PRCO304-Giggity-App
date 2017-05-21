@@ -1,6 +1,7 @@
 package com.liamd.giggity_app;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.content.ContentResolver;
 import android.content.ContentUris;
@@ -82,6 +83,9 @@ public class MusicianUserMainActivity extends AppCompatActivity implements Navig
         super.onCreate(savedInstanceState);
         setContentView(musician_user_activity_main);
 
+        // When the app is loaded this service is started
+        startService(new Intent(this, NotificationService.class));
+
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -99,9 +103,6 @@ public class MusicianUserMainActivity extends AppCompatActivity implements Navig
 
         // Creates a reference to the Firebase database
         mDatabase = FirebaseDatabase.getInstance().getReference();
-
-        // When the app is loaded this service is started
-        startService(new Intent(this, NotificationService.class));
 
         // Creates a reference to the storage element of firebase
         mStorage = FirebaseStorage.getInstance();

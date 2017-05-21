@@ -27,6 +27,7 @@ import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -875,12 +876,15 @@ public class PreSetupActivity extends AppCompatActivity
     // this functionality
     private void PopulateNameFields()
     {
-        if(mAuth.getCurrentUser().getDisplayName() != null)
+        if(mAuth.getCurrentUser() != null)
         {
-            String nameFromAuth = mAuth.getCurrentUser().getDisplayName();
-            splitName = nameFromAuth.split("\\s+");
-            mFirstNameEditText.setText(splitName[0]);
-            mLastNameEditText.setText(splitName[1]);
+            if(mAuth.getCurrentUser().getDisplayName() != null)
+            {
+                String nameFromAuth = mAuth.getCurrentUser().getDisplayName();
+                splitName = nameFromAuth.split("\\s+");
+                mFirstNameEditText.setText(splitName[0]);
+                mLastNameEditText.setText(splitName[1]);
+            }
         }
     }
 
@@ -893,8 +897,9 @@ public class PreSetupActivity extends AppCompatActivity
         LoginManager.getInstance().logOut();
 
         // Returns to the login activity
-
         finish();
+
+        // Returns to the login activity
         Intent returnToLoginActivity= new Intent(PreSetupActivity.this, LoginActivity.class);
         returnToLoginActivity.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         startActivity(returnToLoginActivity);

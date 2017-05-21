@@ -221,7 +221,7 @@ public class VenueUserGigRequestsReceivedDetailsFragment extends Fragment implem
                 mGoogleMap.addMarker(new MarkerOptions().position(bandLocation).icon(BitmapDescriptorFactory.fromBitmap(smallMarker)));
 
                 // This zooms the map in to a reasonable level (12) and centers it on the location provided
-                float zoomLevel = 15;
+                float zoomLevel = 8;
                 mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(bandLocation, zoomLevel));
 
                 // These values are set so they can be compared with the gig location vales to calculate the distance
@@ -456,7 +456,7 @@ public class VenueUserGigRequestsReceivedDetailsFragment extends Fragment implem
                             // Generate a notification ID from the database
                             notificationID = mDatabase.push().getKey();
 
-                            Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has accepted your request to play their gig!", "BandSentGigRequestAccepted");
+                            Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has accepted your request to play their gig!", "BandSentGigRequestAccepted", bandMemberUserId);
 
                             mDatabase.child("Users/" + bandMemberUserId + "/notifications/" + notificationID + "/").setValue(notification);
                         }
@@ -477,7 +477,7 @@ public class VenueUserGigRequestsReceivedDetailsFragment extends Fragment implem
                             // Generate a notification ID from the database
                             notificationID = mDatabase.push().getKey();
 
-                            Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has accepted your request to play their gig!", "BandSentGigRequestAccepted");
+                            Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has accepted your request to play their gig!", "BandSentGigRequestAccepted", bandMemberUserId);
 
                             mDatabase.child("Users/" + bandMemberUserId + "/notifications/" + notificationID + "/").setValue(notification);
                         }
@@ -501,7 +501,7 @@ public class VenueUserGigRequestsReceivedDetailsFragment extends Fragment implem
                             // Generate a notification ID from the database
                             notificationID = mDatabase.push().getKey();
 
-                            Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has accepted your request to play their gig!", "BandSentGigRequestAccepted");
+                            Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has accepted your request to play their gig!", "BandSentGigRequestAccepted", bandMemberUserId);
 
                             mDatabase.child("Users/" + bandMemberUserId + "/notifications/" + notificationID + "/").setValue(notification);
                         }
@@ -522,7 +522,7 @@ public class VenueUserGigRequestsReceivedDetailsFragment extends Fragment implem
                             // Generate a notification ID from the database
                             notificationID = mDatabase.push().getKey();
 
-                            Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has accepted your request to play their gig!", "BandSentGigRequestAccepted");
+                            Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has accepted your request to play their gig!", "BandSentGigRequestAccepted", bandMemberUserId);
 
                             mDatabase.child("Users/" + bandMemberUserId + "/notifications/" + notificationID + "/").setValue(notification);
                         }
@@ -543,7 +543,7 @@ public class VenueUserGigRequestsReceivedDetailsFragment extends Fragment implem
                             // Generate a notification ID from the database
                             notificationID = mDatabase.push().getKey();
 
-                            Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has accepted your request to play their gig!", "BandSentGigRequestAccepted");
+                            Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has accepted your request to play their gig!", "BandSentGigRequestAccepted", bandMemberUserId);
 
                             mDatabase.child("Users/" + bandMemberUserId + "/notifications/" + notificationID + "/").setValue(notification);
                         }
@@ -567,7 +567,7 @@ public class VenueUserGigRequestsReceivedDetailsFragment extends Fragment implem
                             // Generate a notification ID from the database
                             notificationID = mDatabase.push().getKey();
 
-                            Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has accepted your request to play their gig!", "BandSentGigRequestAccepted");
+                            Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has accepted your request to play their gig!", "BandSentGigRequestAccepted", bandMemberUserId);
 
                             mDatabase.child("Users/" + bandMemberUserId + "/notifications/" + notificationID + "/").setValue(notification);
                         }
@@ -588,7 +588,7 @@ public class VenueUserGigRequestsReceivedDetailsFragment extends Fragment implem
                             // Generate a notification ID from the database
                             notificationID = mDatabase.push().getKey();
 
-                            Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has accepted your request to play their gig!", "BandSentGigRequestAccepted");
+                            Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has accepted your request to play their gig!", "BandSentGigRequestAccepted", bandMemberUserId);
 
                             mDatabase.child("Users/" + bandMemberUserId + "/notifications/" + notificationID + "/").setValue(notification);
                         }
@@ -609,7 +609,7 @@ public class VenueUserGigRequestsReceivedDetailsFragment extends Fragment implem
                             // Generate a notification ID from the database
                             notificationID = mDatabase.push().getKey();
 
-                            Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has accepted your request to play their gig!", "BandSentGigRequestAccepted");
+                            Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has accepted your request to play their gig!", "BandSentGigRequestAccepted", bandMemberUserId);
 
                             mDatabase.child("Users/" + bandMemberUserId + "/notifications/" + notificationID + "/").setValue(notification);
                         }
@@ -630,7 +630,7 @@ public class VenueUserGigRequestsReceivedDetailsFragment extends Fragment implem
                             // Generate a notification ID from the database
                             notificationID = mDatabase.push().getKey();
 
-                            Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has accepted your request to play their gig!", "BandSentGigRequestAccepted");
+                            Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has accepted your request to play their gig!", "BandSentGigRequestAccepted", bandMemberUserId);
 
                             mDatabase.child("Users/" + bandMemberUserId + "/notifications/" + notificationID + "/").setValue(notification);
                         }
@@ -654,7 +654,7 @@ public class VenueUserGigRequestsReceivedDetailsFragment extends Fragment implem
                             // Generate a notification ID from the database
                             notificationID = mDatabase.push().getKey();
 
-                            Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has accepted your request to play their gig!", "BandSentGigRequestAccepted");
+                            Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has accepted your request to play their gig!", "BandSentGigRequestAccepted", bandMemberUserId);
 
                             mDatabase.child("Users/" + bandMemberUserId + "/notifications/" + notificationID + "/").setValue(notification);
                         }
@@ -675,7 +675,7 @@ public class VenueUserGigRequestsReceivedDetailsFragment extends Fragment implem
                             // Generate a notification ID from the database
                             notificationID = mDatabase.push().getKey();
 
-                            Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has accepted your request to play their gig!", "BandSentGigRequestAccepted");
+                            Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has accepted your request to play their gig!", "BandSentGigRequestAccepted", bandMemberUserId);
 
                             mDatabase.child("Users/" + bandMemberUserId + "/notifications/" + notificationID + "/").setValue(notification);
                         }
@@ -696,7 +696,7 @@ public class VenueUserGigRequestsReceivedDetailsFragment extends Fragment implem
                             // Generate a notification ID from the database
                             notificationID = mDatabase.push().getKey();
 
-                            Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has accepted your request to play their gig!", "BandSentGigRequestAccepted");
+                            Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has accepted your request to play their gig!", "BandSentGigRequestAccepted", bandMemberUserId);
 
                             mDatabase.child("Users/" + bandMemberUserId + "/notifications/" + notificationID + "/").setValue(notification);
                         }
@@ -717,7 +717,7 @@ public class VenueUserGigRequestsReceivedDetailsFragment extends Fragment implem
                             // Generate a notification ID from the database
                             notificationID = mDatabase.push().getKey();
 
-                            Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has accepted your request to play their gig!", "BandSentGigRequestAccepted");
+                            Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has accepted your request to play their gig!", "BandSentGigRequestAccepted", bandMemberUserId);
 
                             mDatabase.child("Users/" + bandMemberUserId + "/notifications/" + notificationID + "/").setValue(notification);
                         }
@@ -738,7 +738,7 @@ public class VenueUserGigRequestsReceivedDetailsFragment extends Fragment implem
                             // Generate a notification ID from the database
                             notificationID = mDatabase.push().getKey();
 
-                            Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has accepted your request to play their gig!", "BandSentGigRequestAccepted");
+                            Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has accepted your request to play their gig!", "BandSentGigRequestAccepted", bandMemberUserId);
 
                             mDatabase.child("Users/" + bandMemberUserId + "/notifications/" + notificationID + "/").setValue(notification);
                         }
@@ -826,7 +826,7 @@ public class VenueUserGigRequestsReceivedDetailsFragment extends Fragment implem
                             // Generate a notification ID from the database
                             notificationID = mDatabase.push().getKey();
 
-                            Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has rejected your request to play their gig!", "BandSentGigRequestRejected");
+                            Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has rejected your request to play their gig!", "BandSentGigRequestRejected", bandMemberUserId);
 
                             mDatabase.child("Users/" + bandMemberUserId + "/notifications/" + notificationID + "/").setValue(notification);
                         }
@@ -847,7 +847,7 @@ public class VenueUserGigRequestsReceivedDetailsFragment extends Fragment implem
                             // Generate a notification ID from the database
                             notificationID = mDatabase.push().getKey();
 
-                            Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has rejected your request to play their gig!", "BandSentGigRequestRejected");
+                            Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has rejected your request to play their gig!", "BandSentGigRequestRejected", bandMemberUserId);
 
                             mDatabase.child("Users/" + bandMemberUserId + "/notifications/" + notificationID + "/").setValue(notification);
                         }
@@ -871,7 +871,7 @@ public class VenueUserGigRequestsReceivedDetailsFragment extends Fragment implem
                             // Generate a notification ID from the database
                             notificationID = mDatabase.push().getKey();
 
-                            Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has rejected your request to play their gig!", "BandSentGigRequestRejected");
+                            Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has rejected your request to play their gig!", "BandSentGigRequestRejected", bandMemberUserId);
 
                             mDatabase.child("Users/" + bandMemberUserId + "/notifications/" + notificationID + "/").setValue(notification);
                         }
@@ -892,7 +892,7 @@ public class VenueUserGigRequestsReceivedDetailsFragment extends Fragment implem
                             // Generate a notification ID from the database
                             notificationID = mDatabase.push().getKey();
 
-                            Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has rejected your request to play their gig!", "BandSentGigRequestRejected");
+                            Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has rejected your request to play their gig!", "BandSentGigRequestRejected", bandMemberUserId);
 
                             mDatabase.child("Users/" + bandMemberUserId + "/notifications/" + notificationID + "/").setValue(notification);
                         }
@@ -913,7 +913,7 @@ public class VenueUserGigRequestsReceivedDetailsFragment extends Fragment implem
                             // Generate a notification ID from the database
                             notificationID = mDatabase.push().getKey();
 
-                            Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has rejected your request to play their gig!", "BandSentGigRequestRejected");
+                            Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has rejected your request to play their gig!", "BandSentGigRequestRejected", bandMemberUserId);
 
                             mDatabase.child("Users/" + bandMemberUserId + "/notifications/" + notificationID + "/").setValue(notification);
                         }
@@ -937,7 +937,7 @@ public class VenueUserGigRequestsReceivedDetailsFragment extends Fragment implem
                             // Generate a notification ID from the database
                             notificationID = mDatabase.push().getKey();
 
-                            Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has rejected your request to play their gig!", "BandSentGigRequestRejected");
+                            Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has rejected your request to play their gig!", "BandSentGigRequestRejected", bandMemberUserId);
 
                             mDatabase.child("Users/" + bandMemberUserId + "/notifications/" + notificationID + "/").setValue(notification);
                         }
@@ -958,7 +958,7 @@ public class VenueUserGigRequestsReceivedDetailsFragment extends Fragment implem
                             // Generate a notification ID from the database
                             notificationID = mDatabase.push().getKey();
 
-                            Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has rejected your request to play their gig!", "BandSentGigRequestRejected");
+                            Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has rejected your request to play their gig!", "BandSentGigRequestRejected", bandMemberUserId);
 
                             mDatabase.child("Users/" + bandMemberUserId + "/notifications/" + notificationID + "/").setValue(notification);
                         }
@@ -979,7 +979,7 @@ public class VenueUserGigRequestsReceivedDetailsFragment extends Fragment implem
                             // Generate a notification ID from the database
                             notificationID = mDatabase.push().getKey();
 
-                            Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has rejected your request to play their gig!", "BandSentGigRequestRejected");
+                            Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has rejected your request to play their gig!", "BandSentGigRequestRejected", bandMemberUserId);
 
                             mDatabase.child("Users/" + bandMemberUserId + "/notifications/" + notificationID + "/").setValue(notification);
                         }
@@ -1000,7 +1000,7 @@ public class VenueUserGigRequestsReceivedDetailsFragment extends Fragment implem
                             // Generate a notification ID from the database
                             notificationID = mDatabase.push().getKey();
 
-                            Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has rejected your request to play their gig!", "BandSentGigRequestRejected");
+                            Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has rejected your request to play their gig!", "BandSentGigRequestRejected", bandMemberUserId);
 
                             mDatabase.child("Users/" + bandMemberUserId + "/notifications/" + notificationID + "/").setValue(notification);
                         }
@@ -1024,7 +1024,7 @@ public class VenueUserGigRequestsReceivedDetailsFragment extends Fragment implem
                             // Generate a notification ID from the database
                             notificationID = mDatabase.push().getKey();
 
-                            Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has rejected your request to play their gig!", "BandSentGigRequestRejected");
+                            Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has rejected your request to play their gig!", "BandSentGigRequestRejected", bandMemberUserId);
 
                             mDatabase.child("Users/" + bandMemberUserId + "/notifications/" + notificationID + "/").setValue(notification);
                         }
@@ -1045,7 +1045,7 @@ public class VenueUserGigRequestsReceivedDetailsFragment extends Fragment implem
                             // Generate a notification ID from the database
                             notificationID = mDatabase.push().getKey();
 
-                            Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has rejected your request to play their gig!", "BandSentGigRequestRejected");
+                            Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has rejected your request to play their gig!", "BandSentGigRequestRejected", bandMemberUserId);
 
                             mDatabase.child("Users/" + bandMemberUserId + "/notifications/" + notificationID + "/").setValue(notification);
                         }
@@ -1066,7 +1066,7 @@ public class VenueUserGigRequestsReceivedDetailsFragment extends Fragment implem
                             // Generate a notification ID from the database
                             notificationID = mDatabase.push().getKey();
 
-                            Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has rejected your request to play their gig!", "BandSentGigRequestRejected");
+                            Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has rejected your request to play their gig!", "BandSentGigRequestRejected", bandMemberUserId);
 
                             mDatabase.child("Users/" + bandMemberUserId + "/notifications/" + notificationID + "/").setValue(notification);
                         }
@@ -1087,7 +1087,7 @@ public class VenueUserGigRequestsReceivedDetailsFragment extends Fragment implem
                             // Generate a notification ID from the database
                             notificationID = mDatabase.push().getKey();
 
-                            Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has rejected your request to play their gig!", "BandSentGigRequestRejected");
+                            Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has rejected your request to play their gig!", "BandSentGigRequestRejected", bandMemberUserId);
 
                             mDatabase.child("Users/" + bandMemberUserId + "/notifications/" + notificationID + "/").setValue(notification);
                         }
@@ -1108,7 +1108,7 @@ public class VenueUserGigRequestsReceivedDetailsFragment extends Fragment implem
                             // Generate a notification ID from the database
                             notificationID = mDatabase.push().getKey();
 
-                            Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has rejected your request to play their gig!", "BandSentGigRequestRejected");
+                            Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has rejected your request to play their gig!", "BandSentGigRequestRejected", bandMemberUserId);
 
                             mDatabase.child("Users/" + bandMemberUserId + "/notifications/" + notificationID + "/").setValue(notification);
                         }

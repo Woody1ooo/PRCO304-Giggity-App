@@ -225,7 +225,7 @@ public class MusicianUserBandRequestsInBandReceivedDetailsFragment extends Fragm
                 mBandPosition = mSnapshot.child("MusicianSentBandRequests/" + mUserId + "/" + mBandId + "/bandPosition").getValue().toString();
 
                 // This zooms the map in to a reasonable level (12) and centers it on the location provided
-                float zoomLevel = 15;
+                float zoomLevel = 8;
                 mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mUserConvertedLatLng, zoomLevel));
             }
 
@@ -433,7 +433,7 @@ public class MusicianUserBandRequestsInBandReceivedDetailsFragment extends Fragm
                     // Get the band's name
                     bandName = mSnapshot.child("Bands/" + mBandId + "/name").getValue().toString();
 
-                    Notification notification = new Notification(notificationID, bandName + " has accepted your request to join their band!", "MusicianSentBandRequestAccepted");
+                    Notification notification = new Notification(notificationID, bandName + " has accepted your request to join their band!", "MusicianSentBandRequestAccepted", mUserId);
                     mDatabase.child("Users/" + mUserId + "/notifications/" + notificationID + "/").setValue(notification);
 
                     // Get the current date time for the news items
@@ -520,7 +520,7 @@ public class MusicianUserBandRequestsInBandReceivedDetailsFragment extends Fragm
                     // Get the band's name
                     bandName = mSnapshot.child("Bands/" + mBandId + "/name").getValue().toString();
 
-                    Notification notification = new Notification(notificationID, bandName + " has rejected your request to join their band!", "MusicianSentBandRequestRejected");
+                    Notification notification = new Notification(notificationID, bandName + " has rejected your request to join their band!", "MusicianSentBandRequestRejected", mUserId);
                     mDatabase.child("Users/" + mUserId + "/notifications/" + notificationID + "/").setValue(notification);
 
                     // A dialog is then shown to alert the user that the changes have been made

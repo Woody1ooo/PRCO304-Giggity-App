@@ -175,7 +175,7 @@ public class MusicianUserGigDetailsFragment extends Fragment implements OnMapRea
                 mGoogleMap.addMarker(new MarkerOptions().position(mVenueLocation).icon(BitmapDescriptorFactory.fromBitmap(smallMarker)));
 
                 // This zooms the map in to a reasonable level (12) and centers it on the location provided
-                float zoomLevel = 15;
+                float zoomLevel = 8;
                 mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mVenueLocation, zoomLevel));
             }
 
@@ -670,7 +670,7 @@ public class MusicianUserGigDetailsFragment extends Fragment implements OnMapRea
                         // Get the band's name
                         bandName = mSnapshot.child("Bands/" + mBandId + "/name").getValue().toString();
 
-                        Notification notification = new Notification(notificationID, bandName + " has requested to play at " + mGigNameTextView.getText().toString() + "!", "BandSentGigRequestPending");
+                        Notification notification = new Notification(notificationID, bandName + " has requested to play at " + mGigNameTextView.getText().toString() + "!", "BandSentGigRequestPending", mSnapshot.child("Venues/" + mVenueId + "/userID").getValue().toString());
                         mDatabase.child("Users/" + mSnapshot.child("Venues/" + mVenueId + "/userID").getValue().toString() + "/notifications/" + notificationID + "/").setValue(notification);
 
                         ConfirmDialog();

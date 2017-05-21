@@ -65,48 +65,52 @@ public class NotificationService extends Service
                             com.liamd.giggity_app.Notification notification;
                             notification = child.getValue(com.liamd.giggity_app.Notification.class);
 
-                            switch (notification.getNotificationType())
+                            // Only trigger the notification if the notification user ID matches the currently logged in user
+                            if(notification.getNotificationUserID().equals(mAuth.getCurrentUser().getUid()))
                             {
-                                case "MusicianSentBandRequestPending":
-                                    notificationTypeId = 0;
-                                    break;
-                                case "MusicianSentBandRequestAccepted":
-                                    notificationTypeId = 1;
-                                    break;
-                                case "MusicianSentBandRequestRejected":
-                                    notificationTypeId = 2;
-                                    break;
-                                case "BandSentMusicianRequestPending":
-                                    notificationTypeId = 3;
-                                    break;
-                                case "BandSentMusicianRequestAccepted":
-                                    notificationTypeId = 4;
-                                    break;
-                                case "BandSentMusicianRequestRejected":
-                                    notificationTypeId = 5;
-                                    break;
-                                case "BandSentGigRequestPending":
-                                    notificationTypeId = 6;
-                                    break;
-                                case "BandSentGigRequestAccepted":
-                                    notificationTypeId = 7;
-                                    break;
-                                case "BandSentGigRequestRejected":
-                                    notificationTypeId = 8;
-                                    break;
-                                case "VenueSentGigRequestPending":
-                                    notificationTypeId = 9;
-                                    break;
-                                case "VenueSentGigRequestAccepted":
-                                    notificationTypeId = 10;
-                                    break;
-                                case "VenueSentGigRequestRejected":
-                                    notificationTypeId = 11;
-                                    break;
-                            }
+                                switch (notification.getNotificationType())
+                                {
+                                    case "MusicianSentBandRequestPending":
+                                        notificationTypeId = 0;
+                                        break;
+                                    case "MusicianSentBandRequestAccepted":
+                                        notificationTypeId = 1;
+                                        break;
+                                    case "MusicianSentBandRequestRejected":
+                                        notificationTypeId = 2;
+                                        break;
+                                    case "BandSentMusicianRequestPending":
+                                        notificationTypeId = 3;
+                                        break;
+                                    case "BandSentMusicianRequestAccepted":
+                                        notificationTypeId = 4;
+                                        break;
+                                    case "BandSentMusicianRequestRejected":
+                                        notificationTypeId = 5;
+                                        break;
+                                    case "BandSentGigRequestPending":
+                                        notificationTypeId = 6;
+                                        break;
+                                    case "BandSentGigRequestAccepted":
+                                        notificationTypeId = 7;
+                                        break;
+                                    case "BandSentGigRequestRejected":
+                                        notificationTypeId = 8;
+                                        break;
+                                    case "VenueSentGigRequestPending":
+                                        notificationTypeId = 9;
+                                        break;
+                                    case "VenueSentGigRequestAccepted":
+                                        notificationTypeId = 10;
+                                        break;
+                                    case "VenueSentGigRequestRejected":
+                                        notificationTypeId = 11;
+                                        break;
+                                }
 
-                            SendNotification(notification.getNotificationMessage(), "Click here to view details", notificationTypeId);
-                            mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/notifications/" + notification.getNotificationID()).removeValue();
+                                SendNotification(notification.getNotificationMessage(), "Click here to view details", notificationTypeId);
+                                mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/notifications/" + notification.getNotificationID()).removeValue();
+                            }
                         }
                     }
                 }

@@ -114,7 +114,7 @@ public class RegisterActivity extends AppCompatActivity
                             mProgressDialog.hide();
                             Toast.makeText(RegisterActivity.this, "Registration failed! Please note" +
                                             " that if you have previously registered using a different method," +
-                                            " you will need to use this instead.",
+                                            " you will need to use this instead. Please also ensure that your password isn't too short",
                                     Toast.LENGTH_LONG).show();
                         }
                     }

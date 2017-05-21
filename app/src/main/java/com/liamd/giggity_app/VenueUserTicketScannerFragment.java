@@ -142,7 +142,7 @@ public class VenueUserTicketScannerFragment extends Fragment
                                             @Override
                                             public void onClick(DialogInterface dialogInterface, int i)
                                             {
-                                                mDatabase.child("Tickets/" + gigIdFromScan + "/" + userId[0] + "/ticketStatus").setValue("Expired");
+                                                mDatabase.child("Tickets/" + gigIdFromScan + "/" + userId[0] + "/ticketStatus").setValue("Redeemed");
                                                 mListOfTickets.clear();
 
                                                 final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());

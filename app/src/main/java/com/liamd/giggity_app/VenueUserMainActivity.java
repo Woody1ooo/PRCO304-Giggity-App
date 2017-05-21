@@ -68,6 +68,10 @@ public class VenueUserMainActivity extends AppCompatActivity implements Navigati
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.venue_user_activity_main);
+
+        // When the app is loaded this service is started
+        startService(new Intent(this, NotificationService.class));
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -85,9 +89,6 @@ public class VenueUserMainActivity extends AppCompatActivity implements Navigati
 
         // Creates a reference to the Firebase database
         mDatabase = FirebaseDatabase.getInstance().getReference();
-
-        // When the app is loaded this service is started
-        startService(new Intent(this, NotificationService.class));
 
         // If the network is unavailable display the dialog to prevent unauthorised navigation drawer selections
         if(!IsNetworkAvailable())

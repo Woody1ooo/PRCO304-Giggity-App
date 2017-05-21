@@ -9,6 +9,7 @@ public class Notification
     private String notificationID;
     private String notificationMessage;
     private String notificationType;
+    private String notificationUserID;
 
     public Notification()
     {
@@ -20,6 +21,14 @@ public class Notification
         this.notificationID = notificationID;
         this.notificationMessage = notificationMessage;
         this.notificationType = notificationType;
+    }
+
+    public Notification(String notificationID, String notificationMessage, String notificationType, String notificationUserID)
+    {
+        this.notificationID = notificationID;
+        this.notificationMessage = notificationMessage;
+        this.notificationType = notificationType;
+        this.notificationUserID = notificationUserID;
     }
 
     public String getNotificationID()
@@ -50,5 +59,15 @@ public class Notification
     public void setNotificationType(String notificationType)
     {
         this.notificationType = notificationType;
+    }
+
+    public String getNotificationUserID()
+    {
+        return notificationUserID;
+    }
+
+    public void setNotificationUserID(String notificationUserID)
+    {
+        this.notificationUserID = notificationUserID;
     }
 }

@@ -203,7 +203,7 @@ public class VenueUserGigRequestsSentDetailsFragment extends Fragment implements
                 mGoogleMap.addMarker(new MarkerOptions().position(bandLocation).icon(BitmapDescriptorFactory.fromBitmap(smallMarker)));
 
                 // This zooms the map in to a reasonable level (12) and centers it on the location provided
-                float zoomLevel = 15;
+                float zoomLevel = 8;
                 mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(bandLocation, zoomLevel));
 
                 // These values are set so they can be compared with the gig location vales to calculate the distance

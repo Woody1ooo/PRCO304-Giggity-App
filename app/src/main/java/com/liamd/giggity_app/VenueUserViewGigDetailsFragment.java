@@ -770,6 +770,8 @@ public class VenueUserViewGigDetailsFragment extends Fragment implements DatePic
                 {
                     mStartTimeSelectedTextView.setText(selectedHour + ":" + selectedMinute);
                 }
+
+                isStartTimeEdited = true;
             }
             // The 'false' value here determines whether the clock is 12 or 24 hours.
             // Currently this is 12 hour only, but this isn't final
@@ -812,6 +814,8 @@ public class VenueUserViewGigDetailsFragment extends Fragment implements DatePic
                 {
                     mFinishTimeSelectedTextView.setText(selectedHour + ":" + selectedMinute);
                 }
+
+                isFinishTimeEdited = true;
             }
         }, mHour, mMinute, false);
         mTimePicker.setTitle("Select Time");
@@ -1378,7 +1382,7 @@ public class VenueUserViewGigDetailsFragment extends Fragment implements DatePic
                             if(CheckDates(newStartTimeWithExistingDate, mParsedFinishDate))
                             {
                                 mDatabase.child("Gigs/" + mGigID + "/" + "title").setValue(mGigNameEditText.getText().toString());
-                                mDatabase.child("Gigs/" + mGigID + "/" + "endDate").setValue(newStartTimeWithExistingDate);
+                                mDatabase.child("Gigs/" + mGigID + "/" + "startDate").setValue(newStartTimeWithExistingDate);
                                 mDatabase.child("Gigs/" + mGigID + "/" + "venueID").setValue(mVenueId);
                                 mDatabase.child("Gigs/" + mGigID + "/" + "genres").setValue(mGenreSpinner.getSelectedItemsAsString());
                                 mDatabase.child("Gigs/" + mGigID + "/" + "ticketCost").setValue(mTicketCostNumberPicker.getValue());

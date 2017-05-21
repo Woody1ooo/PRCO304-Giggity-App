@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -16,6 +17,8 @@ import android.widget.Toast;
 import com.facebook.login.LoginManager;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -59,8 +62,21 @@ public class SettingsFragment extends Fragment
         mLanguageSpinner = (Spinner) fragmentView.findViewById(R.id.languageSpinner);
         mDeleteAccountButton = (Button) fragmentView.findViewById(R.id.deleteAccountButton);
 
-        // Display a message for the user
-        Toast.makeText(getActivity(), mLanguageSpinner.getSelectedItem().toString() + " chosen.", Toast.LENGTH_SHORT).show();
+        // Display a message for the user when a different language is chosen
+        mLanguageSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
+        {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l)
+            {
+                Toast.makeText(getActivity(), mLanguageSpinner.getSelectedItem().toString() + " chosen.", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView)
+            {
+
+            }
+        });
 
         // Check the database for data relating to this user
         mDeleteAccountButton.setOnClickListener(new View.OnClickListener()
@@ -81,56 +97,11 @@ public class SettingsFragment extends Fragment
                         mDatabase.addListenerForSingleValueEvent(new ValueEventListener()
                         {
                             @Override
-                            public void onDataChange(DataSnapshot dataSnapshot)
+                            public void onDataChange(final DataSnapshot dataSnapshot)
                             {
-                                String bandID;
-
-                                // Check if user is in a band
-                                if(dataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/inBand").getValue().toString().equals("true"))
-                                {
-                                    bandID = dataSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/bandID").getValue().toString();
-
-                                    Iterable<DataSnapshot> children = dataSnapshot.child("Bands/" + bandID).getChildren();
-                                    for (DataSnapshot child : children)
-                                    {
-                                        mUserBand = new Band();
-                                        mUserBand = child.getValue(Band.class);
-                                    }
-
-                                    if(mUserBand.getPositionOneMember().equals(mAuth.getCurrentUser().getUid()))
-                                    {
-                                        mDatabase.child("Bands/" + bandID + "/positionOneMember").setValue("Vacant");
-                                    }
-
-                                    else if(mUserBand.getPositionTwoMember().equals(mAuth.getCurrentUser().getUid()))
-                                    {
-                                        mDatabase.child("Bands/" + bandID + "/positionTwoMember").setValue("Vacant");
-                                    }
-
-                                    else if(mUserBand.getPositionThreeMember().equals(mAuth.getCurrentUser().getUid()))
-                                    {
-                                        mDatabase.child("Bands/" + bandID + "/positionThreeMember").setValue("Vacant");
-                                    }
-
-                                    else if(mUserBand.getPositionFourMember().equals(mAuth.getCurrentUser().getUid()))
-                                    {
-                                        mDatabase.child("Bands/" + bandID + "/positionFourMember").setValue("Vacant");
-                                    }
-
-                                    else if(mUserBand.getPositionFiveMember().equals(mAuth.getCurrentUser().getUid()))
-                                    {
-                                        mDatabase.child("Bands/" + bandID + "/positionFiveMember").setValue("Vacant");
-                                    }
-                                }
-
-                                // Delete any gig information associated with the user
-                                if(dataSnapshot.child("UserGigInformation/" + mAuth.getCurrentUser().getUid()).exists())
-                                {
-                                    mDatabase.child("UserGigInformation/" + mAuth.getCurrentUser().getUid()).removeValue();
-                                }
-
-                                // Delete user from database
-                                mDatabase.child("Users/" + mAuth.getCurrentUser().getUid()).removeValue();
+                                final String[] bandID = new String[1];
+                                final String[] venueID = new String[1];
+                                final String userID = mAuth.getCurrentUser().getUid();
 
                                 // Delete user from firebase
                                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -141,6 +112,63 @@ public class SettingsFragment extends Fragment
                                     {
                                         if (task.isSuccessful())
                                         {
+                                            // If the user is a venue user delete their venue
+                                            if(dataSnapshot.child("Users/" + userID + "/accountType").getValue().toString().equals("Venue"))
+                                            {
+                                                venueID[0] = dataSnapshot.child("Users/" + userID + "/venueID").getValue().toString();
+                                                mDatabase.child("Venues/" + venueID[0]).removeValue();
+                                            }
+
+                                            else if(dataSnapshot.child("Users/" + userID + "/accountType").getValue().toString().equals("Musician"))
+                                            {
+                                                // Check if user is in a band
+                                                if(dataSnapshot.child("Users/" + userID + "/inBand").getValue().toString().equals("true"))
+                                                {
+                                                    bandID[0] = dataSnapshot.child("Users/" + userID + "/bandID").getValue().toString();
+
+                                                    Iterable<DataSnapshot> children = dataSnapshot.child("Bands/" + bandID[0]).getChildren();
+                                                    for (DataSnapshot child : children)
+                                                    {
+                                                        mUserBand = new Band();
+                                                        mUserBand = child.getValue(Band.class);
+                                                    }
+
+                                                    if(mUserBand.getPositionOneMember().equals(userID))
+                                                    {
+                                                        mDatabase.child("Bands/" + bandID[0] + "/positionOneMember").setValue("Vacant");
+                                                    }
+
+                                                    else if(mUserBand.getPositionTwoMember().equals(userID))
+                                                    {
+                                                        mDatabase.child("Bands/" + bandID[0] + "/positionTwoMember").setValue("Vacant");
+                                                    }
+
+                                                    else if(mUserBand.getPositionThreeMember().equals(userID))
+                                                    {
+                                                        mDatabase.child("Bands/" + bandID[0] + "/positionThreeMember").setValue("Vacant");
+                                                    }
+
+                                                    else if(mUserBand.getPositionFourMember().equals(userID))
+                                                    {
+                                                        mDatabase.child("Bands/" + bandID[0] + "/positionFourMember").setValue("Vacant");
+                                                    }
+
+                                                    else if(mUserBand.getPositionFiveMember().equals(userID))
+                                                    {
+                                                        mDatabase.child("Bands/" + bandID[0] + "/positionFiveMember").setValue("Vacant");
+                                                    }
+                                                }
+
+                                                // Delete any gig information associated with the user
+                                                if(dataSnapshot.child("UserGigInformation/" + userID).exists())
+                                                {
+                                                    mDatabase.child("UserGigInformation/" + userID).removeValue();
+                                                }
+                                            }
+
+                                            // Delete user from database
+                                            mDatabase.child("Users/" + userID).removeValue();
+
                                             // A dialog is then shown to alert the user that the changes have been made
                                             final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                                             builder.setTitle("Confirmation");
@@ -155,6 +183,11 @@ public class SettingsFragment extends Fragment
                                             });
                                             builder.setCancelable(false);
                                             builder.show();
+                                        }
+
+                                        else
+                                        {
+                                            Toast.makeText(getActivity(), "Error! Action could not be completed. Please contact the Giggity admin team.", Toast.LENGTH_SHORT).show();
                                         }
                                     }
                                 });
