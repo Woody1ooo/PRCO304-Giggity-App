@@ -233,6 +233,17 @@ public class FanUserMainActivity extends AppCompatActivity implements Navigation
                     .commit();
         }
 
+        else if(id == R.id.nav_settings)
+        {
+            getFragmentManager().popBackStackImmediate();
+
+            setTitle("Settings");
+            SettingsFragment fragment = new SettingsFragment();
+            FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.frame, fragment, "SettingsFragment")
+                    .addToBackStack(null)
+                    .commit();
+        }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -277,10 +288,12 @@ public class FanUserMainActivity extends AppCompatActivity implements Navigation
 
     private void Logout()
     {
-        // Stop the notification service when the user logs out
-        stopService(new Intent(this.getBaseContext(), NotificationService.class));
+        // Stop the notification service on logout
+        stopService(new Intent(this, NotificationService.class));
 
         // Will log the user out of Gmail or email/password login
+        mAuth.signOut();
+
         FirebaseAuth.getInstance().signOut();
 
         // Will log the user out of facebook

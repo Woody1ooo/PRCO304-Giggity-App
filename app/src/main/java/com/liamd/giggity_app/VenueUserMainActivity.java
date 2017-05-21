@@ -35,6 +35,7 @@ import com.google.android.gms.location.places.Places;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -79,14 +80,14 @@ public class VenueUserMainActivity extends AppCompatActivity implements Navigati
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        // When the app is loaded this service is started
-        startService(new Intent(this, NotificationService.class));
-
         // Creates a reference to Firebase
         mAuth = FirebaseAuth.getInstance();
 
         // Creates a reference to the Firebase database
         mDatabase = FirebaseDatabase.getInstance().getReference();
+
+        // When the app is loaded this service is started
+        startService(new Intent(this, NotificationService.class));
 
         // If the network is unavailable display the dialog to prevent unauthorised navigation drawer selections
         if(!IsNetworkAvailable())
@@ -240,7 +241,7 @@ public class VenueUserMainActivity extends AppCompatActivity implements Navigati
 
         else if (id == R.id.nav_profile)
         {
-            //ClearBackStack(this);
+            ClearBackStack(this);
 
             getFragmentManager().popBackStackImmediate();
 
@@ -270,7 +271,7 @@ public class VenueUserMainActivity extends AppCompatActivity implements Navigati
 
         else if(id == R.id.nav_my_gigs)
         {
-            //ClearBackStack(this);
+            ClearBackStack(this);
 
             getFragmentManager().popBackStackImmediate();
 
@@ -304,6 +305,18 @@ public class VenueUserMainActivity extends AppCompatActivity implements Navigati
             VenueUserTicketScannerFragment fragment = new VenueUserTicketScannerFragment();
             FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
             fragmentTransaction.replace(R.id.frame, fragment, "VenueUserTicketScannerFragment")
+                    .addToBackStack(null)
+                    .commit();
+        }
+
+        else if(id == R.id.nav_settings)
+        {
+            getFragmentManager().popBackStackImmediate();
+
+            setTitle("Settings");
+            SettingsFragment fragment = new SettingsFragment();
+            FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.frame, fragment, "SettingsFragment")
                     .addToBackStack(null)
                     .commit();
         }
@@ -361,9 +374,11 @@ public class VenueUserMainActivity extends AppCompatActivity implements Navigati
     private void Logout()
     {
         // Stop the notification service when the user logs out
-        stopService(new Intent(this.getBaseContext(), NotificationService.class));
+        stopService(new Intent(this, NotificationService.class));
 
         // Will log the user out of Gmail or email/password login
+        mAuth.signOut();
+
         FirebaseAuth.getInstance().signOut();
 
         // Will log the user out of facebook
@@ -491,5 +506,21 @@ public class VenueUserMainActivity extends AppCompatActivity implements Navigati
                         photoMetadataBuffer.release();
                     }
                 });
+    }
+
+    // This clears the back stack of fragments and adds a home fragment
+    private static void ClearBackStack(Activity activity)
+    {
+        FragmentManager fragmentManager = activity.getFragmentManager();
+        for(int i = 0; i < fragmentManager.getBackStackEntryCount(); ++i)
+        {
+            fragmentManager.popBackStack();
+        }
+
+        VenueUserHomeFragment fragment = new VenueUserHomeFragment();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.frame, fragment
+                , "VenueUserHomeFragment");
+        fragmentTransaction.commit();
     }
 }

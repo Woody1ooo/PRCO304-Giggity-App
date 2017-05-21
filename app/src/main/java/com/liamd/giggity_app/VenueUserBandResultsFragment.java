@@ -1,7 +1,9 @@
 package com.liamd.giggity_app;
 
 
+import android.app.AlertDialog;
 import android.app.FragmentTransaction;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
@@ -339,10 +341,13 @@ public class VenueUserBandResultsFragment extends Fragment implements OnMapReady
     {
         GetBandLocation();
 
-        // Using the custom VenueUserGigsAdapter, the list of users gigs can be displayed
-        adapter = new VenueUserBandsAdapter(getActivity(), R.layout.venue_user_band_list, mListOfBands);
+        if(getActivity() != null)
+        {
+            // Using the custom VenueUserGigsAdapter, the list of users gigs can be displayed
+            adapter = new VenueUserBandsAdapter(getActivity(), R.layout.venue_user_band_list, mListOfBands);
 
-        mBandsListView.setAdapter(adapter);
+            mBandsListView.setAdapter(adapter);
+        }
     }
 
     private void GetBandLocation()
@@ -375,6 +380,25 @@ public class VenueUserBandResultsFragment extends Fragment implements OnMapReady
 
             itemToRemove = mFilteredBandsToRemove.get(i);
             mListOfBands.remove(itemToRemove);
+        }
+
+        // If there are no results inform the user
+        if(mListOfBands.size() == 0)
+        {
+            // A dialog is then shown to alert the user that the changes have been made
+            final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setTitle("No Results!");
+            builder.setMessage("Oh dear! No bands found. You might need to widen your search preferences.");
+            builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+            {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i)
+                {
+                    getFragmentManager().popBackStack();
+                }
+            });
+            builder.setCancelable(false);
+            builder.show();
         }
     }
 

@@ -271,7 +271,7 @@ public class VenueUserBandDetailsFragment extends Fragment implements OnMapReady
     // Using some REGEX this trims the youtube url entered to just get the video id at the end
     private String ParseURL(CharSequence youtubeURL)
     {
-        String videoIdPattern = "(?<=watch\\?v=|/videos/|embed\\/)[^#\\&\\?]*";
+        String videoIdPattern = "(?<=watch\\?v=|/videos/|embed/)[^#&?]*";
 
         Pattern compiledPattern = Pattern.compile(videoIdPattern);
         Matcher matcher = compiledPattern.matcher(youtubeURL);
@@ -285,13 +285,21 @@ public class VenueUserBandDetailsFragment extends Fragment implements OnMapReady
         // This block will determine this if it's the case
         else
         {
-            String URL;
-            String[] parsedURL;
+            try
+            {
+                String URL;
+                String[] parsedURL;
 
-            URL = youtubeURL.toString();
-            parsedURL = URL.split("/");
+                URL = youtubeURL.toString();
+                parsedURL = URL.split("/");
 
-            return parsedURL[3];
+                return parsedURL[3];
+            }
+
+            catch (ArrayIndexOutOfBoundsException e)
+            {
+                return null;
+            }
         }
     }
 
@@ -698,7 +706,7 @@ public class VenueUserBandDetailsFragment extends Fragment implements OnMapReady
                                 // Generate a notification ID from the database
                                 notificationID = mDatabase.push().getKey();
 
-                                Notification notification = new Notification(notificationID, mBandName + " has invited you to play at their gig!", "VenueSentGigRequestPending");
+                                Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has invited you to play at their gig!", "VenueSentGigRequestPending");
 
                                 mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
                             }
@@ -719,7 +727,7 @@ public class VenueUserBandDetailsFragment extends Fragment implements OnMapReady
                                 // Generate a notification ID from the database
                                 notificationID = mDatabase.push().getKey();
 
-                                Notification notification = new Notification(notificationID, mBandName + " has invited you to play at their gig!", "VenueSentGigRequestPending");
+                                Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has invited you to play at their gig!", "VenueSentGigRequestPending");
 
                                 mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
                             }
@@ -736,7 +744,7 @@ public class VenueUserBandDetailsFragment extends Fragment implements OnMapReady
                                 // Generate a notification ID from the database
                                 notificationID = mDatabase.push().getKey();
 
-                                Notification notification = new Notification(notificationID, mBandName + " has invited you to play at their gig!", "VenueSentGigRequestPending");
+                                Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has invited you to play at their gig!", "VenueSentGigRequestPending");
 
                                 mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
                             }
@@ -757,7 +765,7 @@ public class VenueUserBandDetailsFragment extends Fragment implements OnMapReady
                                 // Generate a notification ID from the database
                                 notificationID = mDatabase.push().getKey();
 
-                                Notification notification = new Notification(notificationID, mBandName + " has invited you to play at their gig!", "VenueSentGigRequestPending");
+                                Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has invited you to play at their gig!", "VenueSentGigRequestPending");
 
                                 mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
                             }
@@ -774,7 +782,7 @@ public class VenueUserBandDetailsFragment extends Fragment implements OnMapReady
                                 // Generate a notification ID from the database
                                 notificationID = mDatabase.push().getKey();
 
-                                Notification notification = new Notification(notificationID, mBandName + " has invited you to play at their gig!", "VenueSentGigRequestPending");
+                                Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has invited you to play at their gig!", "VenueSentGigRequestPending");
 
                                 mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
                             }
@@ -791,8 +799,7 @@ public class VenueUserBandDetailsFragment extends Fragment implements OnMapReady
                                 // Generate a notification ID from the database
                                 notificationID = mDatabase.push().getKey();
 
-                                Notification notification = new Notification(notificationID, mBandName + " has invited you to play at their gig!", "VenueSentGigRequestPending");
-
+                                Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has invited you to play at their gig!", "VenueSentGigRequestPending");
                                 mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
                             }
                         }
@@ -812,7 +819,7 @@ public class VenueUserBandDetailsFragment extends Fragment implements OnMapReady
                                 // Generate a notification ID from the database
                                 notificationID = mDatabase.push().getKey();
 
-                                Notification notification = new Notification(notificationID, mBandName + " has invited you to play at their gig!", "VenueSentGigRequestPending");
+                                Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has invited you to play at their gig!", "VenueSentGigRequestPending");
 
                                 mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
                             }
@@ -829,7 +836,7 @@ public class VenueUserBandDetailsFragment extends Fragment implements OnMapReady
                                 // Generate a notification ID from the database
                                 notificationID = mDatabase.push().getKey();
 
-                                Notification notification = new Notification(notificationID, mBandName + " has invited you to play at their gig!", "VenueSentGigRequestPending");
+                                Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has invited you to play at their gig!", "VenueSentGigRequestPending");
 
                                 mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
                             }
@@ -846,7 +853,7 @@ public class VenueUserBandDetailsFragment extends Fragment implements OnMapReady
                                 // Generate a notification ID from the database
                                 notificationID = mDatabase.push().getKey();
 
-                                Notification notification = new Notification(notificationID, mBandName + " has invited you to play at their gig!", "VenueSentGigRequestPending");
+                                Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has invited you to play at their gig!", "VenueSentGigRequestPending");
 
                                 mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
                             }
@@ -863,7 +870,7 @@ public class VenueUserBandDetailsFragment extends Fragment implements OnMapReady
                                 // Generate a notification ID from the database
                                 notificationID = mDatabase.push().getKey();
 
-                                Notification notification = new Notification(notificationID, mBandName + " has invited you to play at their gig!", "VenueSentGigRequestPending");
+                                Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has invited you to play at their gig!", "VenueSentGigRequestPending");
 
                                 mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
                             }
@@ -884,7 +891,7 @@ public class VenueUserBandDetailsFragment extends Fragment implements OnMapReady
                                 // Generate a notification ID from the database
                                 notificationID = mDatabase.push().getKey();
 
-                                Notification notification = new Notification(notificationID, mBandName + " has invited you to play at their gig!", "VenueSentGigRequestPending");
+                                Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has invited you to play at their gig!", "VenueSentGigRequestPending");
 
                                 mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
                             }
@@ -901,7 +908,7 @@ public class VenueUserBandDetailsFragment extends Fragment implements OnMapReady
                                 // Generate a notification ID from the database
                                 notificationID = mDatabase.push().getKey();
 
-                                Notification notification = new Notification(notificationID, mBandName + " has invited you to play at their gig!", "VenueSentGigRequestPending");
+                                Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has invited you to play at their gig!", "VenueSentGigRequestPending");
 
                                 mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
                             }
@@ -918,7 +925,7 @@ public class VenueUserBandDetailsFragment extends Fragment implements OnMapReady
                                 // Generate a notification ID from the database
                                 notificationID = mDatabase.push().getKey();
 
-                                Notification notification = new Notification(notificationID, mBandName + " has invited you to play at their gig!", "VenueSentGigRequestPending");
+                                Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has invited you to play at their gig!", "VenueSentGigRequestPending");
 
                                 mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
                             }
@@ -935,7 +942,7 @@ public class VenueUserBandDetailsFragment extends Fragment implements OnMapReady
                                 // Generate a notification ID from the database
                                 notificationID = mDatabase.push().getKey();
 
-                                Notification notification = new Notification(notificationID, mBandName + " has invited you to play at their gig!", "VenueSentGigRequestPending");
+                                Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has invited you to play at their gig!", "VenueSentGigRequestPending");
 
                                 mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
                             }
@@ -952,7 +959,7 @@ public class VenueUserBandDetailsFragment extends Fragment implements OnMapReady
                                 // Generate a notification ID from the database
                                 notificationID = mDatabase.push().getKey();
 
-                                Notification notification = new Notification(notificationID, mBandName + " has invited you to play at their gig!", "VenueSentGigRequestPending");
+                                Notification notification = new Notification(notificationID, mSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString() + " has invited you to play at their gig!", "VenueSentGigRequestPending");
 
                                 mDatabase.child("Users/" + bandMemberUserID + "/notifications/" + notificationID + "/").setValue(notification);
                             }

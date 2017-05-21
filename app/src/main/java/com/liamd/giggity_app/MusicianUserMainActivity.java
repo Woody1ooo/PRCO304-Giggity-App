@@ -94,14 +94,14 @@ public class MusicianUserMainActivity extends AppCompatActivity implements Navig
         final NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        // When the app is loaded this service is started
-        startService(new Intent(this, NotificationService.class));
-
         // Creates a reference to Firebase
         mAuth = FirebaseAuth.getInstance();
 
         // Creates a reference to the Firebase database
         mDatabase = FirebaseDatabase.getInstance().getReference();
+
+        // When the app is loaded this service is started
+        startService(new Intent(this, NotificationService.class));
 
         // Creates a reference to the storage element of firebase
         mStorage = FirebaseStorage.getInstance();
@@ -582,10 +582,12 @@ public class MusicianUserMainActivity extends AppCompatActivity implements Navig
 
     private void Logout()
     {
-        // Stop the notification service when the user logs out
-        stopService(new Intent(this.getBaseContext(), NotificationService.class));
+        // Stop the notification service on logout
+        stopService(new Intent(this, NotificationService.class));
 
         // Will log the user out of Gmail or email/password login
+        mAuth.signOut();
+
         FirebaseAuth.getInstance().signOut();
 
         // Will log the user out of facebook

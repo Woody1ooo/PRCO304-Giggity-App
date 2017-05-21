@@ -15,4 +15,16 @@
         <item>5 Weeks</item>
         <item>6 Weeks</item>
     </string-array>
+
+    <string-array name="languageSpinnerItems">
+        <item>English (Default)</item>
+        <item>French</item>
+        <item>Spanish</item>
+        <item>Italian</item>
+        <item>German</item>
+        <item>Portuguese</item>
+        <item>Chinese</item>
+        <item>Japanese</item>
+        <item>Korean</item>
+    </string-array>
 </resources>

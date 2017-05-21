@@ -130,13 +130,13 @@
                 android:paddingLeft="10dp"/>
 
             <TextView
-                android:text="Find Your Location"
+                android:id="@+id/locationFinderHeadingTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/locationFinderHeadingTextView"
-                android:textAppearance="@style/TextAppearance.AppCompat.Menu"
                 android:layout_marginTop="22dp"
-                android:paddingLeft="10dp"/>
+                android:paddingLeft="10dp"
+                android:text="Your Location"
+                android:textAppearance="@style/TextAppearance.AppCompat.Menu"/>
 
             <TextView
                 android:text="No Location Chosen!"

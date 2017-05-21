@@ -136,13 +136,13 @@
                 android:paddingLeft="10dp"/>
 
             <TextView
-                android:text="Find Your Venue"
+                android:id="@+id/venueFinderHeadingTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/venueFinderHeadingTextView"
-                android:textAppearance="@style/TextAppearance.AppCompat.Menu"
                 android:layout_marginTop="22dp"
-                android:paddingLeft="10dp"/>
+                android:paddingLeft="10dp"
+                android:text="Your Venue"
+                android:textAppearance="@style/TextAppearance.AppCompat.Menu"/>
 
             <TextView
                 android:text="No Venue Chosen!"
@@ -200,18 +200,13 @@
                 android:textColor="@color/cast_expanded_controller_background_color"
                 android:textSize="16sp"/>
 
-            <TextView
-                android:id="@+id/VenueCapacitySelectedTextView"
+            <EditText
+                android:id="@+id/venueCapacityEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingLeft="10dp"
-                android:paddingTop="20dp"
-                android:text="No capacity selected!"/>
-
-            <NumberPicker
-                android:id="@+id/venueCapacityNumberPicker"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:ems="10"
+                android:inputType="number"
+                android:paddingLeft="10dp"/>
 
             <TextView
                 android:id="@+id/userAgeHeadingTextView"
@@ -223,18 +218,13 @@
                 android:textColor="@color/cast_expanded_controller_background_color"
                 android:textSize="16sp"/>
 
-            <TextView
-                android:id="@+id/userAgeSelectedTextView"
+            <EditText
+                android:id="@+id/venueAgeEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingLeft="10dp"
-                android:paddingTop="20dp"
-                android:text="No age selected!"/>
-
-            <NumberPicker
-                android:id="@+id/userAgeNumberPicker"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:ems="10"
+                android:inputType="number"
+                android:paddingLeft="10dp"/>
 
             <Button
                 android:text="Save"

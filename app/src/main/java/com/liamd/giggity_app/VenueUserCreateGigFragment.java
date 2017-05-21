@@ -21,6 +21,8 @@ import android.app.Fragment;
 import android.provider.CalendarContract;
 import android.support.v13.app.FragmentCompat;
 import android.support.v4.app.ActivityCompat;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -74,12 +76,10 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
     private TextView mFinishTimeSelectedTextView;
     private NumberPicker mTicketCostNumberPicker;
     private TextView mTicketCostSelectedTextView;
-    private TextView mTicketQuantitySelectedTextView;
     private CheckBox mMatchVenueCapacityCheckBox;
-    private NumberPicker mTicketQuantityNumberPicker;
+    private EditText mTicketQuantityEditText;
     private CheckBox mFeaturedItemCheckBox;
-    private TextView mEntryAgeSelectedTextView;
-    private NumberPicker mEntryAgeSelectedNumberPicker;
+    private EditText mEntryAgeEditText;
     private Button mCreateGigButton;
 
     // Declare Firebase specific variables
@@ -89,7 +89,6 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
     // Declare general variables required
     private List<Gig> mListOfVenueGigs = new ArrayList<>();
     private List<Date> mListOfGigDates = new ArrayList<>();
-    private List<String> mGenreList;
     private String mVenueId;
     private String mVenueName;
     private Date mStartDate;
@@ -110,6 +109,7 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
     private int mTicketCost;
     private int mVenueCapacity;
     private int mTicketQuantity;
+    private int mAge;
 
     private Boolean isStartDate;
 
@@ -155,51 +155,12 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
         mTicketCostNumberPicker.setMinValue(0);
         mTicketCostNumberPicker.setMaxValue(100);
 
-        mTicketQuantitySelectedTextView = (TextView) fragmentView.findViewById(R.id.TicketQuantitySelectedTextView);
         mMatchVenueCapacityCheckBox = (CheckBox) fragmentView.findViewById(R.id.matchVenueCapacityItemCheckBox);
-        mTicketQuantityNumberPicker = (NumberPicker) fragmentView.findViewById(R.id.ticketQuantityNumberPicker);
-        mTicketQuantityNumberPicker.setMinValue(1);
-
+        mTicketQuantityEditText = (EditText) fragmentView.findViewById(R.id.ticketQuantityEditText);
         mFeaturedItemCheckBox = (CheckBox) fragmentView.findViewById(R.id.featuredItemCheckBox);
-
-        mEntryAgeSelectedTextView = (TextView) fragmentView.findViewById(R.id.entryAgeSelectedTextView);
-        mEntryAgeSelectedNumberPicker = (NumberPicker) fragmentView.findViewById(R.id.entryAgeNumberPicker);
-        mEntryAgeSelectedNumberPicker.setMinValue(0);
-        mEntryAgeSelectedNumberPicker.setMaxValue(100);
+        mEntryAgeEditText = (EditText) fragmentView.findViewById(R.id.entryAgeEditText);
 
         mCreateGigButton = (Button) fragmentView.findViewById(R.id.createGigButton);
-
-        // Add items to the genre list, and set the spinner to use these
-        mGenreList = new ArrayList<>();
-        mGenreList.add("Acoustic");
-        mGenreList.add("Alternative Rock");
-        mGenreList.add("Blues");
-        mGenreList.add("Classic Rock");
-        mGenreList.add("Classical");
-        mGenreList.add("Country");
-        mGenreList.add("Death Metal");
-        mGenreList.add("Disco");
-        mGenreList.add("Electronic");
-        mGenreList.add("Folk");
-        mGenreList.add("Funk");
-        mGenreList.add("Garage");
-        mGenreList.add("Grunge");
-        mGenreList.add("Hip-Hop");
-        mGenreList.add("House");
-        mGenreList.add("Indie");
-        mGenreList.add("Jazz");
-        mGenreList.add("Metal");
-        mGenreList.add("Pop");
-        mGenreList.add("Psychedelic Rock");
-        mGenreList.add("Punk");
-        mGenreList.add("Rap");
-        mGenreList.add("Reggae");
-        mGenreList.add("R&B");
-        mGenreList.add("Ska");
-        mGenreList.add("Techno");
-        mGenreList.add("Thrash Metal");
-
-        mGenresSpinner.setItems(mGenreList);
 
         // Creates a reference to Firebase
         mAuth = FirebaseAuth.getInstance();
@@ -226,22 +187,11 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
 
                 // This populates the ticket quantity picker's maximum value with the capacity set when the venue was created
                 mVenueCapacity = Integer.parseInt(dataSnapshot.child("Venues/" + mVenueId + "/capacity").getValue().toString());
-                mTicketQuantityNumberPicker.setMaxValue(mVenueCapacity);
-
-                // As the ticket quantities are changed the display is updated
-                mTicketQuantityNumberPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener()
-                {
-                    @Override
-                    public void onValueChange(NumberPicker numberPicker, int oldValue, int newValue)
-                    {
-                        mTicketQuantitySelectedTextView.setText(newValue + " ticket(s)");
-                        mTicketQuantity = newValue;
-                    }
-                });
 
                 // This method populates the genre spinner with the genres the user
                 // selected when setting up their account
-                mGenresSpinner.setSelection(PopulateUserGenreData(dataSnapshot));
+                mGenresSpinner.setItems(PopulateUserGenreData(dataSnapshot));
+                mGenresSpinner.setSelection(0);
 
                 // Each gig is then iterated through and added to an
                 // array list of gigs (mListOfVenueGigs)
@@ -319,15 +269,14 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
                     {
                         if(isChecked)
                         {
-                            mTicketQuantityNumberPicker.setValue(mVenueCapacity);
-                            mTicketQuantityNumberPicker.setEnabled(false);
-                            mTicketQuantitySelectedTextView.setText(mVenueCapacity + " ticket(s)");
+                            mTicketQuantityEditText.setText(String.valueOf(mVenueCapacity));
+                            mTicketQuantityEditText.setEnabled(false);
                             mTicketQuantity = mVenueCapacity;
                         }
 
                         else
                         {
-                            mTicketQuantityNumberPicker.setEnabled(true);
+                            mTicketQuantityEditText.setEnabled(true);
                         }
                     }
                 });
@@ -364,12 +313,61 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
             }
         });
 
-        mEntryAgeSelectedNumberPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener()
+        mTicketQuantityEditText.addTextChangedListener(new TextWatcher()
         {
             @Override
-            public void onValueChange(NumberPicker numberPicker, int oldValue, int newValue)
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2)
             {
-                mEntryAgeSelectedTextView.setText(newValue + " years");
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2)
+            {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable)
+            {
+                if(!mTicketQuantityEditText.getText().toString().equals(""))
+                {
+                    mTicketQuantity = Integer.parseInt(mTicketQuantityEditText.getText().toString());
+                }
+
+                else
+                {
+                    mTicketQuantity = 0;
+                }
+            }
+        });
+
+        mEntryAgeEditText.addTextChangedListener(new TextWatcher()
+        {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2)
+            {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2)
+            {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable)
+            {
+                if(!mEntryAgeEditText.getText().toString().equals(""))
+                {
+                   mAge = Integer.parseInt(mEntryAgeEditText.getText().toString());
+                }
+
+                else
+                {
+                    mAge = 0;
+                }
             }
         });
 
@@ -411,10 +409,7 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
         // The calendar is then initialised with today's date
         Calendar now = Calendar.getInstance();
         DatePickerDialog dpd = DatePickerDialog.newInstance(
-                VenueUserCreateGigFragment.this,
-                now.get(Calendar.YEAR),
-                now.get(Calendar.MONTH),
-                now.get(Calendar.DAY_OF_MONTH)
+                VenueUserCreateGigFragment.this, now.get(Calendar.YEAR), now.get(Calendar.MONTH), now.get(Calendar.DAY_OF_MONTH)
         );
 
         // The disabled days are then set against the calendar
@@ -449,9 +444,9 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
     // the gig start time to be selected
     private void StartTimeShowTimePicker()
     {
-        Calendar mNow = Calendar.getInstance();
-        int mHour = mNow.get(Calendar.HOUR_OF_DAY);
-        int mMinute = mNow.get(Calendar.MINUTE);
+        // Defaults the time picker to midnight
+        int mHour = 0;
+        int mMinute = 0;
         TimePickerDialog mTimePicker;
         mTimePicker = new TimePickerDialog(getActivity(), new TimePickerDialog.OnTimeSetListener()
         {
@@ -462,7 +457,26 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
                 // these global variables so they can be accessed by the CreateGig() method
                 mStartHour = selectedHour;
                 mStartMinute = selectedMinute;
-                mStartTimeSelectedTextView.setText(selectedHour + ":" + selectedMinute);
+
+                if(selectedMinute < 10 && selectedHour < 10)
+                {
+                    mStartTimeSelectedTextView.setText("0" + String.valueOf(selectedHour) + ":" + "0" + (String.valueOf(selectedMinute)));
+                }
+
+                else if(selectedMinute < 10)
+                {
+                    mStartTimeSelectedTextView.setText(String.valueOf(selectedHour) + ":" + "0" + (String.valueOf(selectedMinute)));
+                }
+
+                else if(selectedHour < 10)
+                {
+                    mStartTimeSelectedTextView.setText("0" + String.valueOf(selectedHour) + ":" + (String.valueOf(selectedMinute)));
+                }
+
+                else
+                {
+                    mStartTimeSelectedTextView.setText(selectedHour + ":" + selectedMinute);
+                }
             }
             // The 'false' value here determines whether the clock is 12 or 24 hours.
             // Currently this is 12 hour only, but this isn't final
@@ -474,9 +488,9 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
     // This method is the same as the above but with the gig finish times
     private void FinishTimeShowTimePicker()
     {
-        Calendar mCurrentTime = Calendar.getInstance();
-        int mHour = mCurrentTime.get(Calendar.HOUR_OF_DAY);
-        int mMinute = mCurrentTime.get(Calendar.MINUTE);
+        // Defaults the time picker to midnight
+        int mHour = 0;
+        int mMinute = 0;
         TimePickerDialog mTimePicker;
         mTimePicker = new TimePickerDialog(getActivity(), new TimePickerDialog.OnTimeSetListener()
         {
@@ -485,7 +499,26 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
             {
                 mFinishHour = selectedHour;
                 mFinishMinute = selectedMinute;
-                mFinishTimeSelectedTextView.setText(selectedHour + ":" + selectedMinute);
+
+                if(selectedMinute < 10 && selectedHour < 10)
+                {
+                    mFinishTimeSelectedTextView.setText("0" + String.valueOf(selectedHour) + ":" + "0" + (String.valueOf(selectedMinute)));
+                }
+
+                else if(selectedMinute < 10)
+                {
+                    mFinishTimeSelectedTextView.setText(String.valueOf(selectedHour) + ":" + "0" + (String.valueOf(selectedMinute)));
+                }
+
+                else if(selectedHour < 10)
+                {
+                    mFinishTimeSelectedTextView.setText("0" + String.valueOf(selectedHour) + ":" + (String.valueOf(selectedMinute)));
+                }
+
+                else
+                {
+                    mFinishTimeSelectedTextView.setText(selectedHour + ":" + selectedMinute);
+                }
             }
         }, mHour, mMinute, false);
         mTimePicker.setTitle("Select Time");
@@ -548,7 +581,7 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
                         || mStartTimeSelectedTextView.getText().equals("No time selected!")
                         || mFinishTimeSelectedTextView.getText().equals("No time selected")
                         || mTicketCostSelectedTextView.getText().equals("No cost selected!")
-                        || mTicketQuantitySelectedTextView.getText().equals("No tickets selected!"))
+                        || mTicketQuantityEditText.getText().toString().equals(""))
                 {
                     Toast.makeText(getActivity(),
                             "Please ensure you have given a value for all the required fields!",
@@ -606,9 +639,9 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
                                         mGigId);
 
                                 // Set the age restriction against the gig if one has been set
-                                if(mEntryAgeSelectedNumberPicker.getValue() != 0)
+                                if(mAge != 0)
                                 {
-                                    gigToInsert.setAgeRestriction(mEntryAgeSelectedNumberPicker.getValue());
+                                    gigToInsert.setAgeRestriction(mAge);
                                 }
 
                                 // This is then inserted into the database using a push
@@ -720,9 +753,9 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
                                             mGigId);
 
                                     // Set the age restriction against the gig if one has been set
-                                    if(mEntryAgeSelectedNumberPicker.getValue() != 0)
+                                    if(mAge != 0)
                                     {
-                                        gigToInsert.setAgeRestriction(mEntryAgeSelectedNumberPicker.getValue());
+                                        gigToInsert.setAgeRestriction(mAge);
                                     }
 
                                     // This is then inserted into the database using a push

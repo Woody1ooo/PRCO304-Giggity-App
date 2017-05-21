@@ -11,7 +11,9 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.support.v4.content.res.TypedArrayUtils;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -75,6 +77,7 @@ public class MusicianUserBandCreatorFragment extends Fragment implements YouTube
     private MultiSelectSpinner mPositionFiveSpinner;
     private Spinner mUserChosenPositionSpinner;
     private EditText youtubeUrlEditText;
+    private TextView mYoutubeHelpTextView;
 
     // Declare general variables
     private List<String> mGenreList;
@@ -136,6 +139,7 @@ public class MusicianUserBandCreatorFragment extends Fragment implements YouTube
         mPositionFiveSpinner = (MultiSelectSpinner) fragmentView.findViewById(R.id.bandPositionFiveSpinner);
         mUserChosenPositionSpinner = (Spinner) fragmentView.findViewById(R.id.userPositionSpinner);
         youtubeUrlEditText = (EditText) fragmentView.findViewById(R.id.youtubeUrlEditText);
+        mYoutubeHelpTextView = (TextView) fragmentView.findViewById(R.id.youtubeHelpTextView);
 
         // Initially hide all the position spinners/text views until the number chosen is selected from the spinner
         mPositionOneTitle.setVisibility(View.GONE);
@@ -203,6 +207,13 @@ public class MusicianUserBandCreatorFragment extends Fragment implements YouTube
         mInstrumentList.add("Synthesiser");
         mInstrumentList.add("Trumpet");
         mInstrumentList.add("Violin");
+
+        // Initialise the youtube URL text box
+        if(youtubeUrlEditText.getText().toString().equals(""))
+        {
+            checkUrlButton.setEnabled(false);
+            checkUrlButton.setTextColor(getResources().getColor(R.color.blackButtonDisabledTextColor));
+        }
 
         // This gets the number from the band positions spinner and then displays/hides the relevant components as needed
         mPositionsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
@@ -418,6 +429,29 @@ public class MusicianUserBandCreatorFragment extends Fragment implements YouTube
             }
         });
 
+        mYoutubeHelpTextView.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                // Creates a new dialog to display when the save button is clicked
+                new AlertDialog.Builder(getActivity())
+                        .setTitle("What should I input here?")
+                        .setMessage("To help your band get noticed, Giggity allows you to display your band's best YouTube video on your profile!" +
+                                " To use this feature, simply copy the URL of your YouTube video into the text field above and hit the 'Submit URL' button." +
+                                " If your video loads it means you're good to go! If not, check the URL to make sure it's correct.")
+                        .setNeutralButton(android.R.string.ok, new DialogInterface.OnClickListener()
+                        {
+                            public void onClick(DialogInterface dialog, int which)
+                            {
+                                dialog.dismiss();
+                            }
+                        })
+                        .setIcon(R.drawable.ic_info_outline_black_24px)
+                        .show();
+            }
+        });
+
         // When clicked this displays a message helping the user
         mHelpTextView.setOnClickListener(new View.OnClickListener()
         {
@@ -459,7 +493,16 @@ public class MusicianUserBandCreatorFragment extends Fragment implements YouTube
                 if (!TextUtils.isEmpty(youtubeUrlEditText.getText()))
                 {
                     youtubeUrlEntered = ParseURL(youtubeUrlEditText.getText());
-                    LoadYoutubePlayer();
+
+                    if(youtubeUrlEntered != null)
+                    {
+                        LoadYoutubePlayer();
+                    }
+
+                    else
+                    {
+                        Toast.makeText(getActivity(), "Youtube URL invalid!", Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
         });
@@ -474,6 +517,38 @@ public class MusicianUserBandCreatorFragment extends Fragment implements YouTube
 
             @Override
             public void onNothingSelected(AdapterView<?> adapterView)
+            {
+
+            }
+        });
+
+        // If the text box is empty the button to submit the url is disabled
+        youtubeUrlEditText.addTextChangedListener(new TextWatcher()
+        {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2)
+            {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2)
+            {
+                if(charSequence.length() == 0)
+                {
+                    checkUrlButton.setEnabled(false);
+                    checkUrlButton.setTextColor(getResources().getColor(R.color.blackButtonDisabledTextColor));
+                }
+
+                else
+                {
+                    checkUrlButton.setEnabled(true);
+                    checkUrlButton.setTextColor(getResources().getColor(R.color.mdtp_white));
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable)
             {
 
             }
@@ -999,7 +1074,7 @@ public class MusicianUserBandCreatorFragment extends Fragment implements YouTube
     // Using some REGEX this trims the youtube url entered to just get the video id at the end
     private String ParseURL(CharSequence youtubeURL)
     {
-        String videoIdPattern = "(?<=watch\\?v=|/videos/|embed\\/)[^#\\&\\?]*";
+        String videoIdPattern = "(?<=watch\\?v=|/videos/|embed/)[^#&?]*";
 
         Pattern compiledPattern = Pattern.compile(videoIdPattern);
         Matcher matcher = compiledPattern.matcher(youtubeURL);
@@ -1013,13 +1088,21 @@ public class MusicianUserBandCreatorFragment extends Fragment implements YouTube
         // This block will determine this if it's the case
         else
         {
-            String URL;
-            String[] parsedURL;
+            try
+            {
+                String URL;
+                String[] parsedURL;
 
-            URL = youtubeURL.toString();
-            parsedURL = URL.split("/");
+                URL = youtubeURL.toString();
+                parsedURL = URL.split("/");
 
-            return parsedURL[3];
+                return parsedURL[3];
+            }
+
+            catch (ArrayIndexOutOfBoundsException e)
+            {
+                return null;
+            }
         }
     }
 

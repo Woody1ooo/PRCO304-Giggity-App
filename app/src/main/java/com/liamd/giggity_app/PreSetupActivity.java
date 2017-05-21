@@ -6,7 +6,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -50,11 +52,12 @@ public class PreSetupActivity extends AppCompatActivity
     private TextView mFirstNameHeadingTextView;
     private TextView mLastNameHeadingTextView;
     private TextView mAgeHeadingTextView;
-    private TextView mAgeSelectedTextView;
-    private NumberPicker mAgeNumberPicker;
+    private EditText mAgeEditText;
 
     // Declare general user variables
     private String[] splitName;
+    private int mAge = 0;
+    private int mCapacity = 0;
 
     // Declare Musician specific visual components
     private MultiSelectSpinner mGenreSelectSpinner;
@@ -68,8 +71,7 @@ public class PreSetupActivity extends AppCompatActivity
     private TextView mVenueDetailsTextView;
     private Button mPlaceFinderButton;
     private TextView mVenueCapacityHeadingTextView;
-    private TextView mVenueCapacitySelectedTextView;
-    private NumberPicker mVenueCapacityNumberPicker;
+    private EditText mVenueCapacityEditText;
 
     // Declare Firebase specific variables
     private FirebaseAuth mAuth;
@@ -131,15 +133,9 @@ public class PreSetupActivity extends AppCompatActivity
         mFirstNameHeadingTextView = (TextView) findViewById(R.id.firstNameHeadingTextView);
         mLastNameHeadingTextView = (TextView) findViewById(R.id.lastNameHeadingTextView);
         mVenueCapacityHeadingTextView = (TextView) findViewById(R.id.venueCapacityHeadingTextView);
-        mVenueCapacitySelectedTextView = (TextView) findViewById(R.id.VenueCapacitySelectedTextView);
-        mVenueCapacityNumberPicker = (NumberPicker) findViewById(R.id.venueCapacityNumberPicker);
-        mVenueCapacityNumberPicker.setMinValue(1);
-        mVenueCapacityNumberPicker.setMaxValue(1000);
+        mVenueCapacityEditText = (EditText) findViewById(R.id.venueCapacityEditText);
         mAgeHeadingTextView = (TextView) findViewById(R.id.userAgeHeadingTextView);
-        mAgeSelectedTextView = (TextView) findViewById(R.id.userAgeSelectedTextView);
-        mAgeNumberPicker = (NumberPicker) findViewById(R.id.userAgeNumberPicker);
-        mAgeNumberPicker.setMinValue(1);
-        mAgeNumberPicker.setMaxValue(100);
+        mAgeEditText = (EditText) findViewById(R.id.venueAgeEditText);
 
         // Add items to the genre list, and set the spinner to use these
         mGenreList = new ArrayList<>();
@@ -170,7 +166,6 @@ public class PreSetupActivity extends AppCompatActivity
         mGenreList.add("Ska");
         mGenreList.add("Techno");
         mGenreList.add("Thrash Metal");
-
         mGenreSelectSpinner.setItems(mGenreList);
 
         // Add items to the instrument list, and set the spinner to use these
@@ -195,7 +190,6 @@ public class PreSetupActivity extends AppCompatActivity
         mInstrumentList.add("Synthesiser");
         mInstrumentList.add("Trumpet");
         mInstrumentList.add("Violin");
-
         mInstrumentSelectSpinner.setItems(mInstrumentList);
 
         // Hide/Show specific visual components
@@ -263,25 +257,6 @@ public class PreSetupActivity extends AppCompatActivity
             }
         });
 
-        mAgeNumberPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener()
-        {
-            @Override
-            public void onValueChange(NumberPicker numberPicker, int oldValue, int newValue)
-            {
-                mAgeSelectedTextView.setText(newValue + " years");
-            }
-        });
-
-        // This updates the venue capacity text view as the number picker is updated
-        mVenueCapacityNumberPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener()
-        {
-            @Override
-            public void onValueChange(NumberPicker numberPicker, int oldValue, int newValue)
-            {
-                mVenueCapacitySelectedTextView.setText(newValue + " person(s)");
-            }
-        });
-
         // If the venue finder button is selected, call the LaunchPlacePicker to start
         // the place picker activity
         mPlaceFinderButton.setOnClickListener(new View.OnClickListener()
@@ -342,6 +317,64 @@ public class PreSetupActivity extends AppCompatActivity
                         .show();
             }
         });
+
+        mAgeEditText.addTextChangedListener(new TextWatcher()
+        {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2)
+            {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2)
+            {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable)
+            {
+                if(!mAgeEditText.getText().toString().equals(""))
+                {
+                    mAge = Integer.parseInt(mAgeEditText.getText().toString());
+                }
+
+                else
+                {
+                    mAge = 0;
+                }
+            }
+        });
+
+        mVenueCapacityEditText.addTextChangedListener(new TextWatcher()
+        {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2)
+            {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2)
+            {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable)
+            {
+                if(!mVenueCapacityEditText.getText().toString().equals(""))
+                {
+                    mCapacity = Integer.parseInt(mVenueCapacityEditText.getText().toString());
+                }
+
+                else
+                {
+                    mCapacity = 0;
+                }
+            }
+        });
     }
 
     // Method called when the save button is selected
@@ -368,7 +401,7 @@ public class PreSetupActivity extends AppCompatActivity
                                         , Toast.LENGTH_SHORT).show();
                             }
 
-                            else if(mAgeNumberPicker.getValue() < 16)
+                            else if(mAge < 16)
                             {
                                 Toast.makeText(PreSetupActivity.this,
                                         "The minimum required age to use Giggity is 16!"
@@ -402,7 +435,18 @@ public class PreSetupActivity extends AppCompatActivity
                                         userToInsert.setUserID(mAuth.getCurrentUser().getUid());
                                         userToInsert.setMusicianDistance(0);
                                         userToInsert.setInBand(false);
-                                        userToInsert.setAge(mAgeNumberPicker.getValue());
+
+                                        // If the user enters a stupid number this is then set to 99
+                                        if(mAge >= 100)
+                                        {
+                                            userToInsert.setAge(99);
+                                        }
+
+                                        else
+                                        {
+                                            userToInsert.setAge(mAge);
+                                        }
+
                                         mDatabase.child("Users/" + mAuth.getCurrentUser().getUid()).setValue(userToInsert);
 
                                         // A dialog is then shown to alert the user that the changes have been made
@@ -451,7 +495,17 @@ public class PreSetupActivity extends AppCompatActivity
                                         userToInsert.setEmail(mAuth.getCurrentUser().getEmail());
                                         userToInsert.setUserID(mAuth.getCurrentUser().getUid());
                                         userToInsert.setMusicianDistance(0);
-                                        userToInsert.setAge(mAgeNumberPicker.getValue());
+
+                                        // If the user enters a stupid number this is then set to 99
+                                        if(mAge >= 100)
+                                        {
+                                            userToInsert.setAge(99);
+                                        }
+
+                                        else
+                                        {
+                                            userToInsert.setAge(mAge);
+                                        }
                                         mDatabase.child("Users/" + mAuth.getCurrentUser().getUid()).setValue(userToInsert);
 
                                         // A dialog is then shown to alert the user that the changes have been made
@@ -529,7 +583,7 @@ public class PreSetupActivity extends AppCompatActivity
                                             // to each place through Google My Business
                                             if(!dataSnapshot.hasChild(mVenueID))
                                             {
-                                                if(!mGenreListToString.equals("") || !mVenueCapacitySelectedTextView.getText().equals("No capacity selected!"))
+                                                if(!mGenreListToString.equals("") && mCapacity > 0)
                                                 {
                                                     // If the place hasn't already been taken by another
                                                     // user, update the user's entry in the database
@@ -550,13 +604,23 @@ public class PreSetupActivity extends AppCompatActivity
                                                             .setValue(mPlaceToStoreLatLng);
 
                                                     mDatabase.child("Venues/" + mVenueID + "/capacity")
-                                                            .setValue(mVenueCapacityNumberPicker.getValue());
+                                                            .setValue(mCapacity);
 
                                                     mDatabase.child("Users/" + mAuth.getCurrentUser().getUid()
                                                             +"/venueID").setValue(mVenueID);
 
-                                                    mDatabase.child("Venues/" + mVenueID + "/"
-                                                            +"/minimumPerformerAge").setValue(mAgeNumberPicker.getValue());
+                                                    // If the user enters a stupid number this is then set to 99
+                                                    if(mAge >= 100)
+                                                    {
+                                                        mDatabase.child("Venues/" + mVenueID + "/"
+                                                                +"/minimumPerformerAge").setValue(99);
+                                                    }
+
+                                                    else
+                                                    {
+                                                        mDatabase.child("Venues/" + mVenueID + "/"
+                                                                +"/minimumPerformerAge").setValue(mAge);
+                                                    }
 
                                                     // The inBand value is removed as this is no longer relevant
                                                     mDatabase.child("Users/" + mAuth.getCurrentUser().getUid()
@@ -677,7 +741,7 @@ public class PreSetupActivity extends AppCompatActivity
     {
         mInstrumentSelectSpinner.setVisibility(View.VISIBLE);
         mInstrumentHeadingTextView.setVisibility(View.VISIBLE);
-        mVenueFinderHeadingTextView.setText("Find Your Home Location");
+        mVenueFinderHeadingTextView.setText("Your Home Location");
         mVenueDetailsTextView.setText("No Location Chosen");
         mPlaceFinderButton.setText("Launch Location Finder");
         mVenueNameEditText.setVisibility(View.GONE);
@@ -704,12 +768,11 @@ public class PreSetupActivity extends AppCompatActivity
     {
         // Show venue specific visual components
         mCantFindVenueText.setVisibility(View.VISIBLE);
-        mVenueFinderHeadingTextView.setText("Find Your Venue");
+        mVenueFinderHeadingTextView.setText("Your Venue");
         mVenueDetailsTextView.setText("No Venue Chosen");
         mPlaceFinderButton.setText("Launch Venue Finder");
         mVenueCapacityHeadingTextView.setVisibility(View.VISIBLE);
-        mVenueCapacitySelectedTextView.setVisibility(View.VISIBLE);
-        mVenueCapacityNumberPicker.setVisibility(View.VISIBLE);
+        mVenueCapacityEditText.setVisibility(View.VISIBLE);
         mVenueNameEditText.setVisibility(View.VISIBLE);
         mVenueNameHeadingTextView.setVisibility(View.VISIBLE);
         mAgeHeadingTextView.setText("Minimum Performer Age");
@@ -722,8 +785,7 @@ public class PreSetupActivity extends AppCompatActivity
         mVenueNameHeadingTextView.setVisibility(View.GONE);
         mCantFindVenueText.setVisibility(View.GONE);
         mVenueCapacityHeadingTextView.setVisibility(View.GONE);
-        mVenueCapacitySelectedTextView.setVisibility(View.GONE);
-        mVenueCapacityNumberPicker.setVisibility(View.GONE);
+        mVenueCapacityEditText.setVisibility(View.GONE);
         mAgeHeadingTextView.setText("Age");
     }
 
@@ -738,12 +800,11 @@ public class PreSetupActivity extends AppCompatActivity
         mInstrumentSelectSpinner.setVisibility(View.GONE);
         mInstrumentHeadingTextView.setVisibility(View.GONE);
         mCantFindVenueText.setVisibility(View.GONE);
-        mVenueFinderHeadingTextView.setText("Find Your Home Location");
+        mVenueFinderHeadingTextView.setText("Your Home Location");
         mVenueDetailsTextView.setText("No Location Chosen");
         mPlaceFinderButton.setText("Launch Location Finder");
         mAgeHeadingTextView.setVisibility(View.VISIBLE);
-        mAgeSelectedTextView.setVisibility(View.VISIBLE);
-        mAgeNumberPicker.setVisibility(View.VISIBLE);
+        mAgeEditText.setVisibility(View.VISIBLE);
     }
 
     // Method to create a new instance of the place picker intent builder

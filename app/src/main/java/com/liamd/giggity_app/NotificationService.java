@@ -130,7 +130,6 @@ public class NotificationService extends Service
     public void onDestroy()
     {
         Intent intent = new Intent("com.liamd.giggity_app");
-        intent.putExtra("yourvalue", "torestore");
         sendBroadcast(intent);
     }
 

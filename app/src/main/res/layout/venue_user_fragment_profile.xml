@@ -29,16 +29,16 @@
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
+                android:layout_gravity="center"
                 android:layout_weight="1"
-                android:orientation="horizontal"
-                android:layout_gravity="center">
+                android:orientation="horizontal">
 
                 <ImageButton
                     android:id="@+id/changeImageButton"
                     android:layout_width="35dp"
                     android:layout_height="35dp"
-                    android:layout_marginEnd="75dp"
                     android:layout_gravity="start"
+                    android:layout_marginEnd="75dp"
                     android:background="@null"
                     android:scaleType="fitCenter"
                     app:srcCompat="@drawable/ic_insert_photo_black_24px"/>
@@ -47,8 +47,8 @@
                     android:id="@+id/removeImageButton"
                     android:layout_width="35dp"
                     android:layout_height="35dp"
-                    android:layout_marginStart="75dp"
                     android:layout_gravity="end"
+                    android:layout_marginStart="75dp"
                     android:background="@null"
                     android:scaleType="fitCenter"
                     app:srcCompat="@drawable/ic_delete_black_24px"/>
@@ -56,14 +56,14 @@
             </LinearLayout>
 
             <TextView
-                android:text="Venue Name"
+                android:id="@+id/venueNameHeadingTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/venueNameHeadingTextView"
-                android:layout_weight="1"
-                android:textAppearance="@style/TextAppearance.AppCompat.Menu"
                 android:layout_marginTop="22dp"
-                android:paddingLeft="10dp"/>
+                android:layout_weight="1"
+                android:paddingLeft="10dp"
+                android:text="Venue Name"
+                android:textAppearance="@style/TextAppearance.AppCompat.Menu"/>
 
             <EditText
                 android:id="@+id/venueNameEditText"
@@ -74,40 +74,40 @@
                 android:paddingLeft="10dp"/>
 
             <TextView
-                android:text="Email"
+                android:id="@+id/textView13"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/textView13"
-                android:layout_weight="1"
-                android:textAppearance="@style/TextAppearance.AppCompat.Menu"
                 android:layout_marginTop="22dp"
-                android:paddingLeft="10dp"/>
+                android:layout_weight="1"
+                android:paddingLeft="10dp"
+                android:text="Email"
+                android:textAppearance="@style/TextAppearance.AppCompat.Menu"/>
 
             <EditText
+                android:id="@+id/emailEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textPersonName"
                 android:ems="10"
-                android:id="@+id/emailEditText"
                 android:enabled="false"
+                android:inputType="textPersonName"
                 android:paddingLeft="10dp"/>
 
             <TextView
-                android:text="Genres"
+                android:id="@+id/genreHeadingTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/genreHeadingTextView"
-                android:textAppearance="@style/TextAppearance.AppCompat.Menu"
                 android:layout_marginTop="22dp"
-                android:paddingLeft="10dp"/>
+                android:paddingLeft="10dp"
+                android:text="Genres"
+                android:textAppearance="@style/TextAppearance.AppCompat.Menu"/>
 
             <com.liamd.giggity_app.MultiSelectSpinner
                 android:id="@+id/genreSpinner"
                 android:layout_width="fill_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="0.15"
                 android:layout_marginBottom="22dp"
                 android:layout_marginTop="22dp"
+                android:layout_weight="0.15"
                 android:paddingLeft="10dp"/>
 
             <TextView
@@ -116,7 +116,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="22dp"
                 android:paddingLeft="10dp"
-                android:text="Find Your Venue"
+                android:text="Your Venue"
                 android:textAppearance="@style/TextAppearance.AppCompat.Menu"/>
 
             <TextView
@@ -128,13 +128,13 @@
                 android:text="No Venue Chosen!"/>
 
             <Button
-                android:text="Launch Location Finder"
+                android:id="@+id/placeFinderButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/placeFinderButton"
+                android:layout_marginTop="32dp"
                 android:background="@color/colorPrimaryDark"
-                android:textColor="@color/cardview_light_background"
-                android:layout_marginTop="32dp"/>
+                android:text="Launch Location Finder"
+                android:textColor="@color/cardview_light_background"/>
 
             <TextView
                 android:id="@+id/venueCapacityHeadingTextView"
@@ -146,21 +146,16 @@
                 android:textColor="@color/cast_expanded_controller_background_color"
                 android:textSize="16sp"/>
 
-            <TextView
-                android:id="@+id/VenueCapacitySelectedTextView"
+            <EditText
+                android:id="@+id/venueCapacityEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingLeft="10dp"
-                android:paddingTop="20dp"
-                android:text="No capacity selected!"/>
-
-            <NumberPicker
-                android:id="@+id/venueCapacityNumberPicker"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:ems="10"
+                android:inputType="number"
+                android:paddingLeft="10dp"/>
 
             <TextView
-                android:id="@+id/minimumAgeHeadingTextView"
+                android:id="@+id/userAgeHeadingTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingLeft="10dp"
@@ -169,28 +164,23 @@
                 android:textColor="@color/cast_expanded_controller_background_color"
                 android:textSize="16sp"/>
 
-            <TextView
-                android:id="@+id/minimumAgeSelectedTextView"
+            <EditText
+                android:id="@+id/venueAgeEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingLeft="10dp"
-                android:paddingTop="20dp"
-                android:text="No age selected!"/>
-
-            <NumberPicker
-                android:id="@+id/minimumAgeNumberPicker"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:ems="10"
+                android:inputType="number"
+                android:paddingLeft="10dp"/>
 
             <Button
-                android:text="Save"
+                android:id="@+id/saveButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/saveButton"
-                android:background="@color/colorPrimary"
-                android:textColor="@color/cardview_light_background"
                 android:layout_alignParentBottom="true"
-                android:layout_alignParentEnd="true"/>
+                android:layout_alignParentEnd="true"
+                android:background="@color/colorPrimary"
+                android:text="Save"
+                android:textColor="@color/cardview_light_background"/>
         </LinearLayout>
     </ScrollView>
 

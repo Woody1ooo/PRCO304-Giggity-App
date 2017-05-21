@@ -749,6 +749,25 @@ public class MusicianUserGigResultsFragment extends Fragment implements OnMapRea
             itemToRemove = mFilteredGigsToRemove.get(i);
             mListOfGigs.remove(itemToRemove);
         }
+
+        // If there are no results inform the user
+        if(mListOfGigs.size() == 0)
+        {
+            // A dialog is then shown to alert the user that the changes have been made
+            final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setTitle("No Results!");
+            builder.setMessage("Oh dear! No gigs found. You might need to widen your search preferences.");
+            builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+            {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i)
+                {
+                    getFragmentManager().popBackStack();
+                }
+            });
+            builder.setCancelable(false);
+            builder.show();
+        }
     }
 
     // This method takes the gig location and the user's location and calculates the distance between the two

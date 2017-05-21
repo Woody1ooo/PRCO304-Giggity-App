@@ -447,7 +447,7 @@ public class MusicianUserBandDetailsFragment extends Fragment implements YouTube
     // Using some REGEX this trims the youtube url entered to just get the video id at the end
     private String ParseURL(CharSequence youtubeURL)
     {
-        String videoIdPattern = "(?<=watch\\?v=|/videos/|embed\\/)[^#\\&\\?]*";
+        String videoIdPattern = "(?<=watch\\?v=|/videos/|embed/)[^#&?]*";
 
         Pattern compiledPattern = Pattern.compile(videoIdPattern);
         Matcher matcher = compiledPattern.matcher(youtubeURL);
@@ -461,13 +461,21 @@ public class MusicianUserBandDetailsFragment extends Fragment implements YouTube
         // This block will determine this if it's the case
         else
         {
-            String URL;
-            String[] parsedURL;
+            try
+            {
+                String URL;
+                String[] parsedURL;
 
-            URL = youtubeURL.toString();
-            parsedURL = URL.split("/");
+                URL = youtubeURL.toString();
+                parsedURL = URL.split("/");
 
-            return parsedURL[3];
+                return parsedURL[3];
+            }
+
+            catch (ArrayIndexOutOfBoundsException e)
+            {
+                return null;
+            }
         }
     }
 

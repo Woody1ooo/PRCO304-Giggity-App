@@ -10,6 +10,8 @@ import android.os.Bundle;
 import android.app.Fragment;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -67,11 +69,9 @@ public class VenueUserProfileFragment extends Fragment
     private MultiSelectSpinner genreSpinner;
     private TextView chosenVenueTextView;
     private Button launchVenueFinderButton;
-    private TextView venueCapacityTextView;
-    private NumberPicker venueCapacityNumberPicker;
     private Button saveButton;
-    private TextView minimumPerformerAgeTextView;
-    private NumberPicker minimumPerformerAgeNumberPicker;
+    private EditText mVenueCapacityEditText;
+    private EditText mAgeEditText;
     private ProgressDialog mProgressDialog;
 
     // Declare Firebase specific variables
@@ -87,6 +87,8 @@ public class VenueUserProfileFragment extends Fragment
     private String mVenueId;
     private String mVenueName;
     private GoogleApiClient mGoogleApiClient;
+    private int mAge = 0;
+    private int mCapacity = 0;
 
     // This variable is the place information that is stored in the database.
     // This is required because when the location data is retrieved, the built-in
@@ -128,14 +130,8 @@ public class VenueUserProfileFragment extends Fragment
         genreSpinner = (MultiSelectSpinner) fragmentView.findViewById(R.id.genreSpinner);
         chosenVenueTextView = (TextView) fragmentView.findViewById(R.id.locationDetailsTextView);
         launchVenueFinderButton = (Button) fragmentView.findViewById(R.id.placeFinderButton);
-        venueCapacityTextView = (TextView) fragmentView.findViewById(R.id.VenueCapacitySelectedTextView);
-        venueCapacityNumberPicker = (NumberPicker) fragmentView.findViewById(R.id.venueCapacityNumberPicker);
-        venueCapacityNumberPicker.setMinValue(1);
-        venueCapacityNumberPicker.setMaxValue(1000);
-        minimumPerformerAgeTextView = (TextView) fragmentView.findViewById(R.id.minimumAgeSelectedTextView);
-        minimumPerformerAgeNumberPicker = (NumberPicker) fragmentView.findViewById(R.id.minimumAgeNumberPicker);
-        minimumPerformerAgeNumberPicker.setMinValue(1);
-        minimumPerformerAgeNumberPicker.setMaxValue(100);
+        mVenueCapacityEditText = (EditText) fragmentView.findViewById(R.id.venueCapacityEditText);
+        mAgeEditText = (EditText) fragmentView.findViewById(R.id.venueAgeEditText);
         saveButton = (Button) fragmentView.findViewById(R.id.saveButton);
         mProgressDialog = new ProgressDialog(getContext());
 
@@ -201,15 +197,6 @@ public class VenueUserProfileFragment extends Fragment
             }
         });
 
-        minimumPerformerAgeNumberPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener()
-        {
-            @Override
-            public void onValueChange(NumberPicker numberPicker, int oldValue, int newValue)
-            {
-                minimumPerformerAgeTextView.setText(newValue + " years");
-            }
-        });
-
         // Pull the existing information from the database to populate the various fields
         mDatabase.addListenerForSingleValueEvent(new ValueEventListener()
         {
@@ -231,8 +218,12 @@ public class VenueUserProfileFragment extends Fragment
                 venueNameEditText.setText(dataSnapshot.child("Venues/" + mVenueId + "/name").getValue().toString());
 
                 // This gets the venue capacity set against the venue and sets it as the value
-                venueCapacityNumberPicker.setValue(Integer.parseInt(dataSnapshot.child("Venues/" + mVenueId + "/capacity").getValue().toString()));
-                venueCapacityTextView.setText(venueCapacityNumberPicker.getValue() + " person(s)");
+                mVenueCapacityEditText.setText(dataSnapshot.child("Venues/" + mVenueId + "/capacity").getValue().toString());
+                mCapacity = Integer.parseInt(mVenueCapacityEditText.getText().toString());
+
+                // Set the minimum performer age components to those from the database
+                mAgeEditText.setText(dataSnapshot.child("Venues/" + mVenueId + "/minimumPerformerAge").getValue().toString());
+                mAge = Integer.parseInt(mAgeEditText.getText().toString());
 
                 // This method populates the genre spinner with the genres the user
                 // selected when setting up their account
@@ -255,10 +246,6 @@ public class VenueUserProfileFragment extends Fragment
                 mVenueLatLng = new LatLng();
                 mVenueLatLng.setLatitude(latitude);
                 mVenueLatLng.setLongitude(longitude);
-
-                // Set the minimum performer age components to those from the database
-                minimumPerformerAgeNumberPicker.setValue(Integer.parseInt(dataSnapshot.child("Venues/" + mVenueId + "/minimumPerformerAge").getValue().toString()));
-                minimumPerformerAgeTextView.setText(dataSnapshot.child("Venues/" + mVenueId + "/minimumPerformerAge").getValue().toString() + " years");
             }
 
             @Override
@@ -292,22 +279,70 @@ public class VenueUserProfileFragment extends Fragment
             }
         });
 
-        // As the venue capacity is chosen the text view is updated to reflect this
-        venueCapacityNumberPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener()
-        {
-            @Override
-            public void onValueChange(NumberPicker numberPicker, int oldValue, int newValue)
-            {
-                venueCapacityTextView.setText(newValue + " person(s)");
-            }
-        });
-
         saveButton.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View view)
             {
                 Save();
+            }
+        });
+
+        mAgeEditText.addTextChangedListener(new TextWatcher()
+        {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2)
+            {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2)
+            {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable)
+            {
+                if(!mAgeEditText.getText().toString().equals(""))
+                {
+                    mAge = Integer.parseInt(mAgeEditText.getText().toString());
+                }
+
+                else
+                {
+                    mAge = 0;
+                }
+            }
+        });
+
+        mVenueCapacityEditText.addTextChangedListener(new TextWatcher()
+        {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2)
+            {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2)
+            {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable)
+            {
+                if(!mVenueCapacityEditText.getText().toString().equals(""))
+                {
+                    mCapacity = Integer.parseInt(mVenueCapacityEditText.getText().toString());
+                }
+
+                else
+                {
+                    mCapacity = 0;
+                }
             }
         });
 
@@ -582,7 +617,6 @@ public class VenueUserProfileFragment extends Fragment
             public void onClick(DialogInterface dialogInterface, int i)
             {
                 String genreList = genreSpinner.getSelectedItemsAsString();
-                int venueCapacity = venueCapacityNumberPicker.getValue();
 
                 // If the venue name edit text is not empty then use this as the venue name
                 if(!venueNameEditText.getText().toString().equals(""))
@@ -599,26 +633,34 @@ public class VenueUserProfileFragment extends Fragment
                 // If the fields are correct then the relevant database nodes are updated
                 else
                 {
-                    mDatabase.child("Venues/" + mVenueId).child("/capacity").setValue(venueCapacity);
-                    mDatabase.child("Venues/" + mVenueId).child("/genre").setValue(genreList);
-                    mDatabase.child("Venues/" + mVenueId).child("/name").setValue(mVenueName);
-                    mDatabase.child("Venues/" + mVenueId).child("/venueLocation").setValue(mVenueLatLng);
-                    mDatabase.child("Venues/" + mVenueId).child("/minimumPerformerAge").setValue(minimumPerformerAgeNumberPicker.getValue());
-
-                    // A dialog is then shown to alert the user that the changes have been made
-                    final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                    builder.setTitle("Confirmation");
-                    builder.setMessage("Fields Updated!");
-                    builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                    if(mCapacity > 0 && mAge > 0)
                     {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i)
+                        mDatabase.child("Venues/" + mVenueId).child("/capacity").setValue(mCapacity);
+                        mDatabase.child("Venues/" + mVenueId).child("/genre").setValue(genreList);
+                        mDatabase.child("Venues/" + mVenueId).child("/name").setValue(mVenueName);
+                        mDatabase.child("Venues/" + mVenueId).child("/venueLocation").setValue(mVenueLatLng);
+                        mDatabase.child("Venues/" + mVenueId).child("/minimumPerformerAge").setValue(mAge);
+
+                        // A dialog is then shown to alert the user that the changes have been made
+                        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                        builder.setTitle("Confirmation");
+                        builder.setMessage("Fields Updated!");
+                        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
                         {
-                            ReturnToHome();
-                        }
-                    });
-                    builder.setCancelable(false);
-                    builder.show();
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i)
+                            {
+                                ReturnToHome();
+                            }
+                        });
+                        builder.setCancelable(false);
+                        builder.show();
+                    }
+
+                    else
+                    {
+                        Toast.makeText(getActivity(), "Please ensure you have set your capacity and minimum performer age correctly!", Toast.LENGTH_LONG).show();
+                    }
                 }
             }
         });
@@ -665,58 +707,61 @@ public class VenueUserProfileFragment extends Fragment
      */
     private void placePhotosAsync()
     {
-        final String placeId = mVenueId;
-        Places.GeoDataApi.getPlacePhotos(mGoogleApiClient, placeId)
-                .setResultCallback(new ResultCallback<PlacePhotoMetadataResult>()
-                {
-                    @Override
-                    public void onResult(PlacePhotoMetadataResult photos)
+        if(getActivity() != null)
+        {
+            final String placeId = mVenueId;
+            Places.GeoDataApi.getPlacePhotos(mGoogleApiClient, placeId)
+                    .setResultCallback(new ResultCallback<PlacePhotoMetadataResult>()
                     {
-                        ((DrawerProfilePictureUpdater) getActivity()).UpdateDrawerProfilePicture();
-
-                        if (!photos.getStatus().isSuccess())
+                        @Override
+                        public void onResult(PlacePhotoMetadataResult photos)
                         {
-                            return;
-                        }
+                            ((DrawerProfilePictureUpdater) getActivity()).UpdateDrawerProfilePicture();
 
-                        PlacePhotoMetadataBuffer photoMetadataBuffer = photos.getPhotoMetadata();
-                        if (photoMetadataBuffer.getCount() > 0)
-                        {
-                            // Display the first bitmap in an ImageView in the size of the view
-                            photoMetadataBuffer.get(0)
-                                    .getScaledPhoto(mGoogleApiClient, venueImageView.getWidth(),
-                                            venueImageView.getHeight())
-                                    .setResultCallback(mDisplayPhotoResultCallback);
-                        }
-
-                        else
-                        {
-                            // This reference looks at the Firebase storage and works out whether the current venue has an image
-                            mProfileImageReference.child("VenueProfileImages/" + mVenueId + "/profileImage")
-                                    .getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>()
+                            if (!photos.getStatus().isSuccess())
                             {
-                                // If the venue has an image this is loaded into the image view
-                                @Override
-                                public void onSuccess(Uri uri)
-                                {
-                                    // The caching and memory features have been disabled to allow only the latest image to display
-                                    Glide.with(getContext()).using(new FirebaseImageLoader()).load
-                                            (mProfileImageReference.child("VenueProfileImages/" + mVenueId + "/profileImage"))
-                                            .diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).override(500, 500).into(venueImageView);
-                                }
+                                return;
+                            }
 
-                                // If the venue doesn't have an image the default image is loaded
-                            }).addOnFailureListener(new OnFailureListener()
+                            PlacePhotoMetadataBuffer photoMetadataBuffer = photos.getPhotoMetadata();
+                            if (photoMetadataBuffer.getCount() > 0)
                             {
-                                @Override
-                                public void onFailure(@NonNull Exception e)
+                                // Display the first bitmap in an ImageView in the size of the view
+                                photoMetadataBuffer.get(0)
+                                        .getScaledPhoto(mGoogleApiClient, venueImageView.getWidth(),
+                                                venueImageView.getHeight())
+                                        .setResultCallback(mDisplayPhotoResultCallback);
+                            }
+
+                            else
+                            {
+                                // This reference looks at the Firebase storage and works out whether the current venue has an image
+                                mProfileImageReference.child("VenueProfileImages/" + mVenueId + "/profileImage")
+                                        .getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>()
                                 {
-                                    Picasso.with(getContext()).load(R.drawable.com_facebook_profile_picture_blank_portrait).resize(500, 500).into(venueImageView);
-                                }
-                            });
+                                    // If the venue has an image this is loaded into the image view
+                                    @Override
+                                    public void onSuccess(Uri uri)
+                                    {
+                                        // The caching and memory features have been disabled to allow only the latest image to display
+                                        Glide.with(getContext()).using(new FirebaseImageLoader()).load
+                                                (mProfileImageReference.child("VenueProfileImages/" + mVenueId + "/profileImage"))
+                                                .diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).override(500, 500).into(venueImageView);
+                                    }
+
+                                    // If the venue doesn't have an image the default image is loaded
+                                }).addOnFailureListener(new OnFailureListener()
+                                {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e)
+                                    {
+                                        Picasso.with(getContext()).load(R.drawable.com_facebook_profile_picture_blank_portrait).resize(500, 500).into(venueImageView);
+                                    }
+                                });
+                            }
+                            photoMetadataBuffer.release();
                         }
-                        photoMetadataBuffer.release();
-                    }
-                });
+                    });
+        }
     }
 }
