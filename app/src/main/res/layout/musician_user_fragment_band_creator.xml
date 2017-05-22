@@ -31,7 +31,8 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:inputType="textPersonName"
-                android:paddingLeft="10dp"/>
+                android:paddingLeft="10dp"
+                android:maxLength="35"/>
 
             <TextView
                 android:id="@+id/genreHeadingTextView"
@@ -232,7 +233,8 @@
                 android:inputType="textUri"
                 android:ems="10"
                 android:id="@+id/youtubeUrlEditText"
-                android:paddingLeft="10dp"/>
+                android:paddingLeft="10dp"
+                android:maxLength="50"/>
 
             <TextView
                 android:id="@+id/youtubeHelpTextView"

@@ -72,7 +72,8 @@
                 android:inputType="textPersonName"
                 android:ems="10"
                 android:id="@+id/firstNameEditText"
-                android:paddingLeft="10dp"/>
+                android:paddingLeft="10dp"
+                android:maxLength="35"/>
 
             <TextView
                 android:text="Last Name"
@@ -90,7 +91,8 @@
                 android:inputType="textPersonName"
                 android:ems="10"
                 android:id="@+id/lastNameEditText"
-                android:paddingLeft="10dp"/>
+                android:paddingLeft="10dp"
+                android:maxLength="35"/>
 
             <TextView
                 android:text="Email"

@@ -245,6 +245,11 @@ public class FanUserMainActivity extends AppCompatActivity implements Navigation
                     .commit();
         }
 
+        else if(id == R.id.nav_logout)
+        {
+            Logout();
+        }
+
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
@@ -288,7 +293,7 @@ public class FanUserMainActivity extends AppCompatActivity implements Navigation
 
     private void Logout()
     {
-        // Stop the notification service on logout
+        // Stop the notification service when the user logs out
         stopService(new Intent(this, NotificationService.class));
 
         // Will log the user out of Gmail or email/password login
@@ -298,6 +303,13 @@ public class FanUserMainActivity extends AppCompatActivity implements Navigation
 
         // Will log the user out of facebook
         LoginManager.getInstance().logOut();
+
+        finish();
+
+        if(!isFinishing())
+        {
+            finish();
+        }
 
         Intent intent = new Intent(this, LoginActivity.class);// New activity
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

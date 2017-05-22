@@ -4,9 +4,6 @@
              android:layout_width="match_parent"
              android:layout_height="match_parent"
              tools:context="com.liamd.giggity_app.MusicianUserBandCreatorFragment">
-
-    <!-- TODO: Update blank fragment layout -->
-
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -74,7 +71,8 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:inputType="textPersonName"
-                android:paddingLeft="10dp"/>
+                android:paddingLeft="10dp"
+                android:maxLength="35"/>
 
             <TextView
                 android:id="@+id/genreHeadingTextView"
@@ -256,7 +254,8 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:inputType="textUri"
-                android:paddingLeft="10dp"/>
+                android:paddingLeft="10dp"
+                android:maxLength="50"/>
 
             <TextView
                 android:id="@+id/youtubeHelpTextView"

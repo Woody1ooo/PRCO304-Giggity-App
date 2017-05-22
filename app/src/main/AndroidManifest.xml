@@ -86,6 +86,7 @@
         <activity
             android:name=".FanUserMainActivity"
             android:label="@string/title_activity_fan_user_main"
+            android:launchMode="singleInstance"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
     </application>

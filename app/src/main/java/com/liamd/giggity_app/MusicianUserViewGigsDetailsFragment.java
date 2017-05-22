@@ -465,7 +465,10 @@ public class MusicianUserViewGigsDetailsFragment extends Fragment implements OnM
 
         try
         {
-            BitMatrix bitMatrix = multiFormatWriter.encode(ticketId + "\n" + admissionQuantity + "\n" + mGigId + "\n" + mGigNameTextView.getText().toString(), BarcodeFormat.QR_CODE, 750, 750);
+            BitMatrix bitMatrix = multiFormatWriter.encode(
+                    ticketId + "\n" + admissionQuantity + "\n" + mGigId + "\n" +
+                            mGigNameTextView.getText().toString(), BarcodeFormat.QR_CODE, 750, 750);
+
             BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
             Bitmap bitmap = barcodeEncoder.createBitmap(bitMatrix);
             mTicketImageView.setImageBitmap(bitmap);

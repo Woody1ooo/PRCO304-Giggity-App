@@ -29,7 +29,8 @@
             android:inputType="textPersonName"
             android:paddingLeft="10dp"
             android:ems="10"
-            android:id="@+id/gigNameEditText"/>
+            android:id="@+id/gigNameEditText"
+            android:maxLength="50"/>
 
         <TextView
             android:text="Venue"
@@ -249,7 +250,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:ems="10"
-                android:inputType="number"/>
+                android:inputType="number"
+                android:maxLength="4"/>
 
             <CheckBox
                 android:id="@+id/matchVenueCapacityItemCheckBox"
@@ -296,7 +298,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:ems="10"
-            android:inputType="number"/>
+            android:inputType="number"
+            android:maxLength="2"/>
 
             <Button
                 android:text="Create Gig"

@@ -71,7 +71,8 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:inputType="textPersonName"
-                android:paddingLeft="10dp"/>
+                android:paddingLeft="10dp"
+                android:maxLength="35"/>
 
             <TextView
                 android:id="@+id/textView13"
@@ -152,7 +153,8 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:inputType="number"
-                android:paddingLeft="10dp"/>
+                android:paddingLeft="10dp"
+                android:maxLength="4"/>
 
             <TextView
                 android:id="@+id/userAgeHeadingTextView"
@@ -170,7 +172,8 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:inputType="number"
-                android:paddingLeft="10dp"/>
+                android:paddingLeft="10dp"
+                android:maxLength="2"/>
 
             <Button
                 android:id="@+id/saveButton"
