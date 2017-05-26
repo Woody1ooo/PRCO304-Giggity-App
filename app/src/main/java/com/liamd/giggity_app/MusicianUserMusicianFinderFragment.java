@@ -146,6 +146,7 @@ public class MusicianUserMusicianFinderFragment extends Fragment
                 // selected when setting up their account
                 mGenreSelectSpinner.setSelection(PopulateBandGenreData());
                 mRoleSelectSpinner.setSelection(PopulateUserInstrumentData());
+
             }
 
             @Override
@@ -270,6 +271,7 @@ public class MusicianUserMusicianFinderFragment extends Fragment
     private void Search()
     {
         String mGenreListString = mGenreSelectSpinner.getSelectedItemsAsString();
+        String mInstrumentListString = mRoleSelectSpinner.getSelectedItemsAsString();
 
         // This then stores the id of the selected gig in a bundle which is then
         // passed to the result fragment to display the gig details
@@ -278,7 +280,7 @@ public class MusicianUserMusicianFinderFragment extends Fragment
 
         arguments.putString("BandId", mBandId);
         arguments.putString("Genres", mGenreListString);
-        arguments.putString("Instruments", mPositionInstruments);
+        arguments.putString("Instruments", mInstrumentListString);
         arguments.putString("BandPosition", mBandPosition);
         arguments.putDouble("BandLocationLatitude", mBandLocation.latitude);
         arguments.putDouble("BandLocationLongitude", mBandLocation.longitude);

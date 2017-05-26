@@ -168,12 +168,15 @@ public class MusicianUserBandRequestsInBandReceivedDetailsFragment extends Fragm
         // This value event listener gets the latest request status state so that a decision can never be overriden by two band users at the same time
         if(getActivity() != null)
         {
-            mDatabase.child("MusicianSentBandRequests/" + mUserId + "/" + mBandId + "/requestStatus").addValueEventListener(new ValueEventListener()
+            mDatabase.child("MusicianSentBandRequests/" + mUserId + "/" + mBandId).addValueEventListener(new ValueEventListener()
             {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot)
                 {
-                    mRequestStatus = dataSnapshot.getValue().toString();
+                    if(dataSnapshot.child("/requestStatus").exists())
+                    {
+                        mRequestStatus = dataSnapshot.child("/requestStatus").getValue().toString();
+                    }
                 }
 
                 @Override

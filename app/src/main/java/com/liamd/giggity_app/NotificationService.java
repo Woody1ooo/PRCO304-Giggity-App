@@ -13,6 +13,7 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -29,6 +30,7 @@ public class NotificationService extends Service
     // Declare firebase variables
     private DatabaseReference mDatabase;
     private FirebaseAuth mAuth;
+    private FirebaseUser mUser;
 
     @Nullable
     @Override
@@ -48,7 +50,9 @@ public class NotificationService extends Service
         // Creates a reference to Firebase's authentication
         mAuth = FirebaseAuth.getInstance();
 
-        if(mAuth.getCurrentUser() != null)
+        mUser = mAuth.getCurrentUser();
+
+        if(mUser != null)
         {
             mDatabase.child("Users/" + mAuth.getCurrentUser().getUid() + "/notifications").addValueEventListener(new ValueEventListener()
             {
@@ -124,6 +128,7 @@ public class NotificationService extends Service
         }
     }
 
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId)
     {
@@ -176,7 +181,7 @@ public class NotificationService extends Service
         else if(notificationTypeId == 2)
         {
             Intent notificationIntent = new Intent(this, MusicianUserMainActivity.class);
-            notificationIntent.putExtra("FragmentToOpenExtra", "MusicianUserBandRequestsInBandFragment");
+            notificationIntent.putExtra("FragmentToOpenExtra", "MusicianUserBandRequestsNotInBandFragment");
             PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
             builder.setContentIntent(resultPendingIntent);
         }
@@ -192,7 +197,7 @@ public class NotificationService extends Service
         else if(notificationTypeId == 4)
         {
             Intent notificationIntent = new Intent(this, MusicianUserMainActivity.class);
-            notificationIntent.putExtra("FragmentToOpenExtra", "MusicianUserBandRequestsNotInBandFragment");
+            notificationIntent.putExtra("FragmentToOpenExtra", "MusicianUserBandRequestsInBandFragment");
             PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
             builder.setContentIntent(resultPendingIntent);
         }
@@ -200,7 +205,7 @@ public class NotificationService extends Service
         else if(notificationTypeId == 5)
         {
             Intent notificationIntent = new Intent(this, MusicianUserMainActivity.class);
-            notificationIntent.putExtra("FragmentToOpenExtra", "MusicianUserBandRequestsNotInBandFragment");
+            notificationIntent.putExtra("FragmentToOpenExtra", "MusicianUserBandRequestsInBandFragment");
             PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
             builder.setContentIntent(resultPendingIntent);
         }

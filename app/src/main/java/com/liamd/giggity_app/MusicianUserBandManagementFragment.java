@@ -97,6 +97,11 @@ public class MusicianUserBandManagementFragment extends Fragment implements YouT
     private MultiSelectSpinner mPositionFiveSpinner;
     private EditText youtubeUrlEditText;
     private TextView mYoutubeHelpTextView;
+    private String mPositionOneUser = "Vacant";
+    private String mPositionTwoUser = "Vacant";
+    private String mPositionThreeUser = "Vacant";
+    private String mPositionFourUser = "Vacant";
+    private String mPositionFiveUser = "Vacant";
 
     // Declare general variables
     private List<String> mGenreList;
@@ -117,6 +122,7 @@ public class MusicianUserBandManagementFragment extends Fragment implements YouT
     private String mPositionFiveValue;
     private String youtubeUrlEntered;
     private String parsedYouTubeURL;
+    private int mExistingSelectedPosition;
 
     // Declare Firebase specific variables
     private FirebaseAuth mAuth;
@@ -249,6 +255,9 @@ public class MusicianUserBandManagementFragment extends Fragment implements YouT
         mPositionFourSpinner.setItems(mInstrumentList);
         mPositionFiveSpinner.setItems(mInstrumentList);
 
+        /// Get the position selected before the value is changed
+        mExistingSelectedPosition = mPositionsSpinner.getSelectedItemPosition();
+
         // This gets the number from the band positions spinner and then displays/hides the relevant components as needed
         mPositionsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
         {
@@ -257,84 +266,154 @@ public class MusicianUserBandManagementFragment extends Fragment implements YouT
             {
                 if(mPositionsSpinner.getItemAtPosition(position).equals("0"))
                 {
-                    mPositionOneTitle.setVisibility(View.GONE);
-                    mPositionOneSpinner.setVisibility(View.GONE);
-                    mPositionTwoTitle.setVisibility(View.GONE);
-                    mPositionTwoSpinner.setVisibility(View.GONE);
-                    mPositionThreeTitle.setVisibility(View.GONE);
-                    mPositionThreeSpinner.setVisibility(View.GONE);
-                    mPositionFourTitle.setVisibility(View.GONE);
-                    mPositionFourSpinner.setVisibility(View.GONE);
-                    mPositionFiveTitle.setVisibility(View.GONE);
-                    mPositionFiveSpinner.setVisibility(View.GONE);
+                    if(mPositionOneUser.equals("Vacant")
+                        && mPositionTwoUser.equals("Vacant")
+                        && mPositionThreeUser.equals("Vacant")
+                        && mPositionFourUser.equals("Vacant")
+                        && mPositionFiveUser.equals("Vacant"))
+                    {
+                        mPositionOneTitle.setVisibility(View.GONE);
+                        mPositionOneSpinner.setVisibility(View.GONE);
+                        mPositionTwoTitle.setVisibility(View.GONE);
+                        mPositionTwoSpinner.setVisibility(View.GONE);
+                        mPositionThreeTitle.setVisibility(View.GONE);
+                        mPositionThreeSpinner.setVisibility(View.GONE);
+                        mPositionFourTitle.setVisibility(View.GONE);
+                        mPositionFourSpinner.setVisibility(View.GONE);
+                        mPositionFiveTitle.setVisibility(View.GONE);
+                        mPositionFiveSpinner.setVisibility(View.GONE);
+
+                        // Get the position selected before the value is changed
+                        mExistingSelectedPosition = mPositionsSpinner.getSelectedItemPosition();
+                    }
+
+                    else
+                    {
+                        Toast.makeText(getActivity(), "You cannot remove band positions unless they are vacant!", Toast.LENGTH_SHORT).show();
+                        mPositionsSpinner.setSelection(mExistingSelectedPosition);
+                    }
                 }
 
                 else if(mPositionsSpinner.getItemAtPosition(position).equals("1"))
                 {
-                    // Display the relevant visual components
-                    mPositionOneTitle.setVisibility(View.VISIBLE);
-                    mPositionOneSpinner.setVisibility(View.VISIBLE);
+                    if(mPositionTwoUser.equals("Vacant")
+                        && mPositionThreeUser.equals("Vacant")
+                        && mPositionFourUser.equals("Vacant")
+                        && mPositionFiveUser.equals("Vacant"))
+                    {
+                        // Display the relevant visual components
+                        mPositionOneTitle.setVisibility(View.VISIBLE);
+                        mPositionOneSpinner.setVisibility(View.VISIBLE);
 
-                    // Hide the others
-                    mPositionTwoTitle.setVisibility(View.GONE);
-                    mPositionTwoSpinner.setVisibility(View.GONE);
-                    mPositionThreeTitle.setVisibility(View.GONE);
-                    mPositionThreeSpinner.setVisibility(View.GONE);
-                    mPositionFourTitle.setVisibility(View.GONE);
-                    mPositionFourSpinner.setVisibility(View.GONE);
-                    mPositionFiveTitle.setVisibility(View.GONE);
-                    mPositionFiveSpinner.setVisibility(View.GONE);
+                        // Hide the others
+                        mPositionTwoTitle.setVisibility(View.GONE);
+                        mPositionTwoSpinner.setVisibility(View.GONE);
+                        mPositionThreeTitle.setVisibility(View.GONE);
+                        mPositionThreeSpinner.setVisibility(View.GONE);
+                        mPositionFourTitle.setVisibility(View.GONE);
+                        mPositionFourSpinner.setVisibility(View.GONE);
+                        mPositionFiveTitle.setVisibility(View.GONE);
+                        mPositionFiveSpinner.setVisibility(View.GONE);
+
+                        // Get the position selected before the value is changed
+                        mExistingSelectedPosition = mPositionsSpinner.getSelectedItemPosition();
+                    }
+
+                    else
+                    {
+                        Toast.makeText(getActivity(), "You cannot remove band positions unless they are vacant!", Toast.LENGTH_SHORT).show();
+                        mPositionsSpinner.setSelection(mExistingSelectedPosition);
+                    }
                 }
 
                 else if(mPositionsSpinner.getItemAtPosition(position).equals("2"))
                 {
-                    // Display the relevant visual components
-                    mPositionOneTitle.setVisibility(View.VISIBLE);
-                    mPositionOneSpinner.setVisibility(View.VISIBLE);
-                    mPositionTwoTitle.setVisibility(View.VISIBLE);
-                    mPositionTwoSpinner.setVisibility(View.VISIBLE);
+                    if(mPositionThreeUser.equals("Vacant")
+                        && mPositionFourUser.equals("Vacant")
+                        && mPositionFiveUser.equals("Vacant"))
+                    {
+                        // Display the relevant visual components
+                        mPositionOneTitle.setVisibility(View.VISIBLE);
+                        mPositionOneSpinner.setVisibility(View.VISIBLE);
+                        mPositionTwoTitle.setVisibility(View.VISIBLE);
+                        mPositionTwoSpinner.setVisibility(View.VISIBLE);
 
-                    // Hide the others
-                    mPositionThreeTitle.setVisibility(View.GONE);
-                    mPositionThreeSpinner.setVisibility(View.GONE);
-                    mPositionFourTitle.setVisibility(View.GONE);
-                    mPositionFourSpinner.setVisibility(View.GONE);
-                    mPositionFiveTitle.setVisibility(View.GONE);
-                    mPositionFiveSpinner.setVisibility(View.GONE);
+                        // Hide the others
+                        mPositionThreeTitle.setVisibility(View.GONE);
+                        mPositionThreeSpinner.setVisibility(View.GONE);
+                        mPositionFourTitle.setVisibility(View.GONE);
+                        mPositionFourSpinner.setVisibility(View.GONE);
+                        mPositionFiveTitle.setVisibility(View.GONE);
+                        mPositionFiveSpinner.setVisibility(View.GONE);
+
+                        // Get the position selected before the value is changed
+                        mExistingSelectedPosition = mPositionsSpinner.getSelectedItemPosition();
+                    }
+
+                    else
+                    {
+                        Toast.makeText(getActivity(), "You cannot remove band positions unless they are vacant!", Toast.LENGTH_SHORT).show();
+                        mPositionsSpinner.setSelection(mExistingSelectedPosition);
+                    }
                 }
 
                 else if(mPositionsSpinner.getItemAtPosition(position).equals("3"))
                 {
-                    // Display the relevant visual components
-                    mPositionOneTitle.setVisibility(View.VISIBLE);
-                    mPositionOneSpinner.setVisibility(View.VISIBLE);
-                    mPositionTwoTitle.setVisibility(View.VISIBLE);
-                    mPositionTwoSpinner.setVisibility(View.VISIBLE);
-                    mPositionThreeTitle.setVisibility(View.VISIBLE);
-                    mPositionThreeSpinner.setVisibility(View.VISIBLE);
+                    if(mPositionFourUser.equals("Vacant")
+                        && mPositionFiveUser.equals("Vacant"))
+                    {
+                        // Display the relevant visual components
+                        mPositionOneTitle.setVisibility(View.VISIBLE);
+                        mPositionOneSpinner.setVisibility(View.VISIBLE);
+                        mPositionTwoTitle.setVisibility(View.VISIBLE);
+                        mPositionTwoSpinner.setVisibility(View.VISIBLE);
+                        mPositionThreeTitle.setVisibility(View.VISIBLE);
+                        mPositionThreeSpinner.setVisibility(View.VISIBLE);
 
-                    // Hide the others
-                    mPositionFourTitle.setVisibility(View.GONE);
-                    mPositionFourSpinner.setVisibility(View.GONE);
-                    mPositionFiveTitle.setVisibility(View.GONE);
-                    mPositionFiveSpinner.setVisibility(View.GONE);
+                        // Hide the others
+                        mPositionFourTitle.setVisibility(View.GONE);
+                        mPositionFourSpinner.setVisibility(View.GONE);
+                        mPositionFiveTitle.setVisibility(View.GONE);
+                        mPositionFiveSpinner.setVisibility(View.GONE);
+
+                        // Get the position selected before the value is changed
+                        mExistingSelectedPosition = mPositionsSpinner.getSelectedItemPosition();
+                    }
+
+                    else
+                    {
+                        Toast.makeText(getActivity(), "You cannot remove band positions unless they are vacant!", Toast.LENGTH_SHORT).show();
+                        mPositionsSpinner.setSelection(mExistingSelectedPosition);
+                    }
                 }
 
                 else if(mPositionsSpinner.getItemAtPosition(position).equals("4"))
                 {
-                    // Display the relevant visual components
-                    mPositionOneTitle.setVisibility(View.VISIBLE);
-                    mPositionOneSpinner.setVisibility(View.VISIBLE);
-                    mPositionTwoTitle.setVisibility(View.VISIBLE);
-                    mPositionTwoSpinner.setVisibility(View.VISIBLE);
-                    mPositionThreeTitle.setVisibility(View.VISIBLE);
-                    mPositionThreeSpinner.setVisibility(View.VISIBLE);
-                    mPositionFourTitle.setVisibility(View.VISIBLE);
-                    mPositionFourSpinner.setVisibility(View.VISIBLE);
+                    if(mPositionFiveUser.equals("Vacant"))
+                    {
+                        // Display the relevant visual components
+                        mPositionOneTitle.setVisibility(View.VISIBLE);
+                        mPositionOneSpinner.setVisibility(View.VISIBLE);
+                        mPositionTwoTitle.setVisibility(View.VISIBLE);
+                        mPositionTwoSpinner.setVisibility(View.VISIBLE);
+                        mPositionThreeTitle.setVisibility(View.VISIBLE);
+                        mPositionThreeSpinner.setVisibility(View.VISIBLE);
+                        mPositionFourTitle.setVisibility(View.VISIBLE);
+                        mPositionFourSpinner.setVisibility(View.VISIBLE);
 
-                    // Hide the others
-                    mPositionFiveTitle.setVisibility(View.GONE);
-                    mPositionFiveSpinner.setVisibility(View.GONE);
+                        // Hide the others
+                        mPositionFiveTitle.setVisibility(View.GONE);
+                        mPositionFiveSpinner.setVisibility(View.GONE);
+
+                        // Get the position selected before the value is changed
+                        mExistingSelectedPosition = mPositionsSpinner.getSelectedItemPosition();
+                    }
+
+                    else
+                    {
+                        Toast.makeText(getActivity(), "You cannot remove band positions unless they are vacant!", Toast.LENGTH_SHORT).show();
+                        mPositionsSpinner.setSelection(mExistingSelectedPosition);
+                    }
                 }
 
                 else if(mPositionsSpinner.getItemAtPosition(position).equals("5"))
@@ -350,6 +429,10 @@ public class MusicianUserBandManagementFragment extends Fragment implements YouT
                     mPositionFourSpinner.setVisibility(View.VISIBLE);
                     mPositionFiveTitle.setVisibility(View.VISIBLE);
                     mPositionFiveSpinner.setVisibility(View.VISIBLE);
+
+                    // Get the position selected before the value is changed
+                    mExistingSelectedPosition = mPositionsSpinner.getSelectedItemPosition();
+                    mPositionsSpinner.setSelection(mExistingSelectedPosition);
                 }
             }
 
@@ -770,6 +853,42 @@ public class MusicianUserBandManagementFragment extends Fragment implements YouT
         mBandLocationLatLng = mBandFromDatabase.getBaseLocation();
 
         mLocationChosenTextView.setText(GetAddressFromLatLng(mBandLocationLatLng));
+
+        // Determine the number of positions and the users in each one
+        if(mBandFromDatabase.getNumberOfPositions().equals("1"))
+        {
+            mPositionOneUser = mBandFromDatabase.getPositionOneMember();
+        }
+
+        else if(mBandFromDatabase.getNumberOfPositions().equals("2"))
+        {
+            mPositionOneUser = mBandFromDatabase.getPositionOneMember();
+            mPositionTwoUser = mBandFromDatabase.getPositionTwoMember();
+        }
+
+        else if(mBandFromDatabase.getNumberOfPositions().equals("3"))
+        {
+            mPositionOneUser = mBandFromDatabase.getPositionOneMember();
+            mPositionTwoUser = mBandFromDatabase.getPositionTwoMember();
+            mPositionThreeUser = mBandFromDatabase.getPositionThreeMember();
+        }
+
+        else if(mBandFromDatabase.getNumberOfPositions().equals("4"))
+        {
+            mPositionOneUser = mBandFromDatabase.getPositionOneMember();
+            mPositionTwoUser = mBandFromDatabase.getPositionTwoMember();
+            mPositionThreeUser = mBandFromDatabase.getPositionThreeMember();
+            mPositionFourUser = mBandFromDatabase.getPositionFourMember();
+        }
+
+        else if(mBandFromDatabase.getNumberOfPositions().equals("5"))
+        {
+            mPositionOneUser = mBandFromDatabase.getPositionOneMember();
+            mPositionTwoUser = mBandFromDatabase.getPositionTwoMember();
+            mPositionThreeUser = mBandFromDatabase.getPositionThreeMember();
+            mPositionFourUser = mBandFromDatabase.getPositionFourMember();
+            mPositionFiveUser = mBandFromDatabase.getPositionFiveMember();
+        }
 
         mProgressDialog.hide();
     }

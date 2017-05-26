@@ -417,8 +417,8 @@ public class MusicianUserBandRequestsNotInBandReceivedDetailsFragment extends Fr
                             notificationID = mDatabase.push().getKey();
 
                             // Get the band members name using the ID
-                            bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
-                                    mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
+                            bandMemberName = mSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/firstName").getValue().toString() + " " +
+                                    mSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/lastName").getValue().toString();
 
                             Notification notification = new Notification(notificationID, bandMemberName + " has accepted a request at your band!", "BandSentMusicianRequestAccepted", bandMemberUserID);
 
@@ -439,8 +439,8 @@ public class MusicianUserBandRequestsNotInBandReceivedDetailsFragment extends Fr
                             notificationID = mDatabase.push().getKey();
 
                             // Get the band members name using the ID
-                            bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
-                                    mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
+                            bandMemberName = mSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/firstName").getValue().toString() + " " +
+                                    mSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/lastName").getValue().toString();
 
                             Notification notification = new Notification(notificationID, bandMemberName + " has accepted a request at your band!", "BandSentMusicianRequestAccepted", bandMemberUserID);
 
@@ -465,8 +465,8 @@ public class MusicianUserBandRequestsNotInBandReceivedDetailsFragment extends Fr
                             notificationID = mDatabase.push().getKey();
 
                             // Get the band members name using the ID
-                            bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
-                                    mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
+                            bandMemberName = mSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/firstName").getValue().toString() + " " +
+                                    mSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/lastName").getValue().toString();
 
                             Notification notification = new Notification(notificationID, bandMemberName + " has accepted a request at your band!", "BandSentMusicianRequestAccepted", bandMemberUserID);
 
@@ -487,8 +487,8 @@ public class MusicianUserBandRequestsNotInBandReceivedDetailsFragment extends Fr
                             notificationID = mDatabase.push().getKey();
 
                             // Get the band members name using the ID
-                            bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
-                                    mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
+                            bandMemberName = mSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/firstName").getValue().toString() + " " +
+                                    mSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/lastName").getValue().toString();
 
                             Notification notification = new Notification(notificationID, bandMemberName + " has accepted a request at your band!", "BandSentMusicianRequestAccepted", bandMemberUserID);
 
@@ -509,8 +509,8 @@ public class MusicianUserBandRequestsNotInBandReceivedDetailsFragment extends Fr
                             notificationID = mDatabase.push().getKey();
 
                             // Get the band members name using the ID
-                            bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
-                                    mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
+                            bandMemberName = mSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/firstName").getValue().toString() + " " +
+                                    mSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/lastName").getValue().toString();
 
                             Notification notification = new Notification(notificationID, bandMemberName + " has accepted a request at your band!", "BandSentMusicianRequestAccepted", bandMemberUserID);
 
@@ -535,8 +535,8 @@ public class MusicianUserBandRequestsNotInBandReceivedDetailsFragment extends Fr
                             notificationID = mDatabase.push().getKey();
 
                             // Get the band members name using the ID
-                            bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
-                                    mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
+                            bandMemberName = mSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/firstName").getValue().toString() + " " +
+                                    mSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/lastName").getValue().toString();
 
                             Notification notification = new Notification(notificationID, bandMemberName + " has accepted a request at your band!", "BandSentMusicianRequestAccepted", bandMemberUserID);
 
@@ -557,8 +557,8 @@ public class MusicianUserBandRequestsNotInBandReceivedDetailsFragment extends Fr
                             notificationID = mDatabase.push().getKey();
 
                             // Get the band members name using the ID
-                            bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
-                                    mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
+                            bandMemberName = mSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/firstName").getValue().toString() + " " +
+                                    mSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/lastName").getValue().toString();
 
                             Notification notification = new Notification(notificationID, bandMemberName + " has accepted a request at your band!", "BandSentMusicianRequestAccepted", bandMemberUserID);
 
@@ -579,8 +579,8 @@ public class MusicianUserBandRequestsNotInBandReceivedDetailsFragment extends Fr
                             notificationID = mDatabase.push().getKey();
 
                             // Get the band members name using the ID
-                            bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
-                                    mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
+                            bandMemberName = mSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/firstName").getValue().toString() + " " +
+                                    mSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/lastName").getValue().toString();
 
                             Notification notification = new Notification(notificationID, bandMemberName + " has accepted a request at your band!", "BandSentMusicianRequestAccepted", bandMemberUserID);
 
@@ -601,8 +601,8 @@ public class MusicianUserBandRequestsNotInBandReceivedDetailsFragment extends Fr
                             notificationID = mDatabase.push().getKey();
 
                             // Get the band members name using the ID
-                            bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
-                                    mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
+                            bandMemberName = mSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/firstName").getValue().toString() + " " +
+                                    mSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/lastName").getValue().toString();
 
                             Notification notification = new Notification(notificationID, bandMemberName + " has accepted a request at your band!", "BandSentMusicianRequestAccepted", bandMemberUserID);
 
@@ -627,8 +627,8 @@ public class MusicianUserBandRequestsNotInBandReceivedDetailsFragment extends Fr
                             notificationID = mDatabase.push().getKey();
 
                             // Get the band members name using the ID
-                            bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
-                                    mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
+                            bandMemberName = mSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/firstName").getValue().toString() + " " +
+                                    mSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/lastName").getValue().toString();
 
                             Notification notification = new Notification(notificationID, bandMemberName + " has accepted a request at your band!", "BandSentMusicianRequestAccepted", bandMemberUserID);
 
@@ -649,8 +649,8 @@ public class MusicianUserBandRequestsNotInBandReceivedDetailsFragment extends Fr
                             notificationID = mDatabase.push().getKey();
 
                             // Get the band members name using the ID
-                            bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
-                                    mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
+                            bandMemberName = mSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/firstName").getValue().toString() + " " +
+                                    mSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/lastName").getValue().toString();
 
                             Notification notification = new Notification(notificationID, bandMemberName + " has accepted a request at your band!", "BandSentMusicianRequestAccepted", bandMemberUserID);
 
@@ -671,8 +671,8 @@ public class MusicianUserBandRequestsNotInBandReceivedDetailsFragment extends Fr
                             notificationID = mDatabase.push().getKey();
 
                             // Get the band members name using the ID
-                            bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
-                                    mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
+                            bandMemberName = mSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/firstName").getValue().toString() + " " +
+                                    mSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/lastName").getValue().toString();
 
                             Notification notification = new Notification(notificationID, bandMemberName + " has accepted a request at your band!", "BandSentMusicianRequestAccepted", bandMemberUserID);
 
@@ -693,8 +693,8 @@ public class MusicianUserBandRequestsNotInBandReceivedDetailsFragment extends Fr
                             notificationID = mDatabase.push().getKey();
 
                             // Get the band members name using the ID
-                            bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
-                                    mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
+                            bandMemberName = mSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/firstName").getValue().toString() + " " +
+                                    mSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/lastName").getValue().toString();
 
                             Notification notification = new Notification(notificationID, bandMemberName + " has accepted a request at your band!", "BandSentMusicianRequestAccepted", bandMemberUserID);
 
@@ -715,8 +715,8 @@ public class MusicianUserBandRequestsNotInBandReceivedDetailsFragment extends Fr
                             notificationID = mDatabase.push().getKey();
 
                             // Get the band members name using the ID
-                            bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
-                                    mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
+                            bandMemberName = mSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/firstName").getValue().toString() + " " +
+                                    mSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/lastName").getValue().toString();
 
                             Notification notification = new Notification(notificationID, bandMemberName + " has accepted a request at your band!", "BandSentMusicianRequestAccepted", bandMemberUserID);
 
@@ -805,8 +805,8 @@ public class MusicianUserBandRequestsNotInBandReceivedDetailsFragment extends Fr
                             notificationID = mDatabase.push().getKey();
 
                             // Get the band members name using the ID
-                            bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
-                                    mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
+                            bandMemberName = mSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/firstName").getValue().toString() + " " +
+                                    mSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/lastName").getValue().toString();
 
                             Notification notification = new Notification(notificationID, bandMemberName + " has rejected a request at your band!", "BandSentMusicianRequestRejected", bandMemberUserID);
 
@@ -827,8 +827,8 @@ public class MusicianUserBandRequestsNotInBandReceivedDetailsFragment extends Fr
                             notificationID = mDatabase.push().getKey();
 
                             // Get the band members name using the ID
-                            bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
-                                    mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
+                            bandMemberName = mSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/firstName").getValue().toString() + " " +
+                                    mSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/lastName").getValue().toString();
 
                             Notification notification = new Notification(notificationID, bandMemberName + " has rejected a request at your band!", "BandSentMusicianRequestRejected", bandMemberUserID);
 
@@ -853,8 +853,8 @@ public class MusicianUserBandRequestsNotInBandReceivedDetailsFragment extends Fr
                             notificationID = mDatabase.push().getKey();
 
                             // Get the band members name using the ID
-                            bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
-                                    mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
+                            bandMemberName = mSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/firstName").getValue().toString() + " " +
+                                    mSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/lastName").getValue().toString();
 
                             Notification notification = new Notification(notificationID, bandMemberName + " has rejected a request at your band!", "BandSentMusicianRequestRejected", bandMemberUserID);
 
@@ -875,8 +875,8 @@ public class MusicianUserBandRequestsNotInBandReceivedDetailsFragment extends Fr
                             notificationID = mDatabase.push().getKey();
 
                             // Get the band members name using the ID
-                            bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
-                                    mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
+                            bandMemberName = mSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/firstName").getValue().toString() + " " +
+                                    mSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/lastName").getValue().toString();
 
                             Notification notification = new Notification(notificationID, bandMemberName + " has rejected a request at your band!", "BandSentMusicianRequestRejected", bandMemberUserID);
 
@@ -897,8 +897,8 @@ public class MusicianUserBandRequestsNotInBandReceivedDetailsFragment extends Fr
                             notificationID = mDatabase.push().getKey();
 
                             // Get the band members name using the ID
-                            bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
-                                    mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
+                            bandMemberName = mSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/firstName").getValue().toString() + " " +
+                                    mSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/lastName").getValue().toString();
 
                             Notification notification = new Notification(notificationID, bandMemberName + " has rejected a request at your band!", "BandSentMusicianRequestRejected", bandMemberUserID);
 
@@ -923,8 +923,8 @@ public class MusicianUserBandRequestsNotInBandReceivedDetailsFragment extends Fr
                             notificationID = mDatabase.push().getKey();
 
                             // Get the band members name using the ID
-                            bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
-                                    mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
+                            bandMemberName = mSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/firstName").getValue().toString() + " " +
+                                    mSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/lastName").getValue().toString();
 
                             Notification notification = new Notification(notificationID, bandMemberName + " has rejected a request at your band!", "BandSentMusicianRequestRejected", bandMemberUserID);
 
@@ -945,8 +945,8 @@ public class MusicianUserBandRequestsNotInBandReceivedDetailsFragment extends Fr
                             notificationID = mDatabase.push().getKey();
 
                             // Get the band members name using the ID
-                            bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
-                                    mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
+                            bandMemberName = mSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/firstName").getValue().toString() + " " +
+                                    mSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/lastName").getValue().toString();
 
                             Notification notification = new Notification(notificationID, bandMemberName + " has rejected a request at your band!", "BandSentMusicianRequestRejected", bandMemberUserID);
 
@@ -967,8 +967,8 @@ public class MusicianUserBandRequestsNotInBandReceivedDetailsFragment extends Fr
                             notificationID = mDatabase.push().getKey();
 
                             // Get the band members name using the ID
-                            bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
-                                    mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
+                            bandMemberName = mSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/firstName").getValue().toString() + " " +
+                                    mSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/lastName").getValue().toString();
 
                             Notification notification = new Notification(notificationID, bandMemberName + " has rejected a request at your band!", "BandSentMusicianRequestRejected", bandMemberUserID);
 
@@ -989,8 +989,8 @@ public class MusicianUserBandRequestsNotInBandReceivedDetailsFragment extends Fr
                             notificationID = mDatabase.push().getKey();
 
                             // Get the band members name using the ID
-                            bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
-                                    mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
+                            bandMemberName = mSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/firstName").getValue().toString() + " " +
+                                    mSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/lastName").getValue().toString();
 
                             Notification notification = new Notification(notificationID, bandMemberName + " has rejected a request at your band!", "BandSentMusicianRequestRejected", bandMemberUserID);
 
@@ -1015,8 +1015,8 @@ public class MusicianUserBandRequestsNotInBandReceivedDetailsFragment extends Fr
                             notificationID = mDatabase.push().getKey();
 
                             // Get the band members name using the ID
-                            bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
-                                    mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
+                            bandMemberName = mSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/firstName").getValue().toString() + " " +
+                                    mSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/lastName").getValue().toString();
 
                             Notification notification = new Notification(notificationID, bandMemberName + " has rejected a request at your band!", "BandSentMusicianRequestRejected", bandMemberUserID);
 
@@ -1037,8 +1037,8 @@ public class MusicianUserBandRequestsNotInBandReceivedDetailsFragment extends Fr
                             notificationID = mDatabase.push().getKey();
 
                             // Get the band members name using the ID
-                            bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
-                                    mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
+                            bandMemberName = mSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/firstName").getValue().toString() + " " +
+                                    mSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/lastName").getValue().toString();
 
                             Notification notification = new Notification(notificationID, bandMemberName + " has rejected a request at your band!", "BandSentMusicianRequestRejected", bandMemberUserID);
 
@@ -1059,8 +1059,8 @@ public class MusicianUserBandRequestsNotInBandReceivedDetailsFragment extends Fr
                             notificationID = mDatabase.push().getKey();
 
                             // Get the band members name using the ID
-                            bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
-                                    mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
+                            bandMemberName = mSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/firstName").getValue().toString() + " " +
+                                    mSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/lastName").getValue().toString();
 
                             Notification notification = new Notification(notificationID, bandMemberName + " has rejected a request at your band!", "BandSentMusicianRequestRejected", bandMemberUserID);
 
@@ -1081,8 +1081,8 @@ public class MusicianUserBandRequestsNotInBandReceivedDetailsFragment extends Fr
                             notificationID = mDatabase.push().getKey();
 
                             // Get the band members name using the ID
-                            bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
-                                    mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
+                            bandMemberName = mSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/firstName").getValue().toString() + " " +
+                                    mSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/lastName").getValue().toString();
 
                             Notification notification = new Notification(notificationID, bandMemberName + " has rejected a request at your band!", "BandSentMusicianRequestRejected", bandMemberUserID);
 
@@ -1103,8 +1103,8 @@ public class MusicianUserBandRequestsNotInBandReceivedDetailsFragment extends Fr
                             notificationID = mDatabase.push().getKey();
 
                             // Get the band members name using the ID
-                            bandMemberName = mSnapshot.child("Users/" + bandMemberUserID + "/firstName").getValue().toString() + " " +
-                                    mSnapshot.child("Users/" + bandMemberUserID + "/lastName").getValue().toString();
+                            bandMemberName = mSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/firstName").getValue().toString() + " " +
+                                    mSnapshot.child("Users/" + mAuth.getCurrentUser().getUid() + "/lastName").getValue().toString();
 
                             Notification notification = new Notification(notificationID, bandMemberName + " has rejected a request at your band!", "BandSentMusicianRequestRejected", bandMemberUserID);
 

@@ -1137,7 +1137,6 @@ public class VenueUserCreateGigFragment extends Fragment implements DatePickerDi
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i)
                 {
-                    // This value is then stored in the database so edits can be made to the event
                     ReturnToHome();
                 }
             });
